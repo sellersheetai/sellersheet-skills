@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Archives that shouldn't ship
+*.zip
+*.tar
+*.tar.gz
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*~
+
+# Local install cache
+.cache/
+
+# Local dev artifacts
+*.local.md
+*.local.json
