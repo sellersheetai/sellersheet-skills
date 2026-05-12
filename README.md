@@ -8,19 +8,19 @@
 
 ## What's in here
 
-Two production-ready skills for working in Google Sheets via SellerSheet MCP. More skills coming after their reviews complete.
+Three production-ready skills for working with the SellerSheet MCP. More skills coming after their reviews complete.
 
 | Skill | What it does |
 |---|---|
 | **sellersheet-sheets** | Google Sheets I/O via SellerSheet MCP — reads, writes, formats, builds reports, dashboards, financial models with brand palette + live `SQL()` + image-thumbnail patterns. Self-contained — production-quality conventions for color, number formats, formulas, and layout are inlined. |
 | **sellersheet-dashboard** | Multi-tab operator dashboards with freshness instrumentation, agent insights, status tabs — for inventory, PPC, account health, listings, profit/margin, returns, buy box, cash conversion. Builds on `sellersheet-sheets`. |
+| **report-data** | Amazon SP-API + Ads-API report querying — 50+ `rpt_*` tables in the SellerSheet warehouse (inventory, listings, orders, returns, financial, brand analytics, ads SP/SB/SD), sync-schedule monitoring, on-demand report flow (create → poll → download to Drive). Use for inventory levels, restock needs, search terms, settlements, listing status, and any synced-report question. |
 
 ### Coming soon (under review)
 
 - `sellersheet` — Amazon business operations orchestrator
 - `amazon-api` — Amazon SP-API guide
 - `amazon-ads` — Amazon Advertising operations
-- `report-data` — SP-API report querying
 - `fba-inbound` — FBA inbound shipment workflow
 - `listing-optimizer` — Full listing optimization
 - `listing-refurbish` — FBA ASIN migration

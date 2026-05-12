@@ -1,0 +1,203 @@
+{
+  "_meta": {
+    "table": "rpt_listings_snapshot",
+    "report_type": "GET_MERCHANT_LISTINGS_ALL_DATA",
+    "is_snapshot": true,
+    "description": "Daily all-listings snapshot for merchant catalog state.",
+    "pii": false,
+    "queryable": true,
+    "deprecated": false,
+    "strategy": "request",
+    "date_column": "snapshot_date",
+    "unique_key": [
+      "store_id",
+      "snapshot_date",
+      "seller_sku",
+      "country_code",
+      "item_condition"
+    ],
+    "cron": "0 6 * * *"
+  },
+  "columns": [
+    {
+      "db_column": "item_name",
+      "amazon_header": "item-name",
+      "type": "str"
+    },
+    {
+      "db_column": "item_description",
+      "amazon_header": "item-description",
+      "type": "str"
+    },
+    {
+      "db_column": "listing_id",
+      "amazon_header": "listing-id",
+      "type": "str"
+    },
+    {
+      "db_column": "seller_sku",
+      "amazon_header": "seller-sku",
+      "type": "str"
+    },
+    {
+      "db_column": "price",
+      "amazon_header": "price",
+      "type": "decimal"
+    },
+    {
+      "db_column": "quantity",
+      "amazon_header": "quantity",
+      "type": "int"
+    },
+    {
+      "db_column": "open_date",
+      "amazon_header": "open-date",
+      "type": "datetime"
+    },
+    {
+      "db_column": "image_url",
+      "amazon_header": "image-url",
+      "type": "str"
+    },
+    {
+      "db_column": "item_is_marketplace",
+      "amazon_header": "item-is-marketplace",
+      "type": "str"
+    },
+    {
+      "db_column": "product_id_type",
+      "amazon_header": "product-id-type",
+      "type": "str"
+    },
+    {
+      "db_column": "zshop_shipping_fee",
+      "amazon_header": "zshop-shipping-fee",
+      "type": "decimal"
+    },
+    {
+      "db_column": "item_note",
+      "amazon_header": "item-note",
+      "type": "str"
+    },
+    {
+      "db_column": "item_condition",
+      "amazon_header": "item-condition",
+      "type": "str"
+    },
+    {
+      "db_column": "zshop_category1",
+      "amazon_header": "zshop-category1",
+      "type": "str"
+    },
+    {
+      "db_column": "zshop_browse_path",
+      "amazon_header": "zshop-browse-path",
+      "type": "str"
+    },
+    {
+      "db_column": "zshop_storefront_feature",
+      "amazon_header": "zshop-storefront-feature",
+      "type": "str"
+    },
+    {
+      "db_column": "asin1",
+      "amazon_header": "asin1",
+      "type": "str"
+    },
+    {
+      "db_column": "asin2",
+      "amazon_header": "asin2",
+      "type": "str"
+    },
+    {
+      "db_column": "asin3",
+      "amazon_header": "asin3",
+      "type": "str"
+    },
+    {
+      "db_column": "will_ship_internationally",
+      "amazon_header": "will-ship-internationally",
+      "type": "str"
+    },
+    {
+      "db_column": "expedited_shipping",
+      "amazon_header": "expedited-shipping",
+      "type": "str"
+    },
+    {
+      "db_column": "zshop_boldface",
+      "amazon_header": "zshop-boldface",
+      "type": "str"
+    },
+    {
+      "db_column": "product_id",
+      "amazon_header": "product-id",
+      "type": "str"
+    },
+    {
+      "db_column": "bid_for_featured_placement",
+      "amazon_header": "bid-for-featured-placement",
+      "type": "decimal"
+    },
+    {
+      "db_column": "add_delete",
+      "amazon_header": "add-delete",
+      "type": "str"
+    },
+    {
+      "db_column": "pending_quantity",
+      "amazon_header": "pending-quantity",
+      "type": "int"
+    },
+    {
+      "db_column": "fulfillment_channel",
+      "amazon_header": "fulfillment-channel",
+      "type": "str"
+    },
+    {
+      "db_column": "optional_payment_type_exclusion",
+      "amazon_header": "optional-payment-type-exclusion",
+      "type": "str"
+    },
+    {
+      "db_column": "merchant_shipping_group",
+      "amazon_header": "merchant-shipping-group",
+      "type": "str"
+    },
+    {
+      "db_column": "status",
+      "amazon_header": "status",
+      "type": "str"
+    }
+  ],
+  "notes": [
+    "main_image_url and listing_status are NOT in this table. They live in listing_images (persistent cache).",
+    "To get images alongside snapshot data, query listing_images separately by seller_sku."
+  ],
+  "example_query": {
+    "store": "myStore-AE",
+    "tables": [
+      "rpt_listings_snapshot"
+    ],
+    "columns": [
+      "rpt_listings_snapshot.seller_sku",
+      "rpt_listings_snapshot.item_name",
+      "rpt_listings_snapshot.asin1",
+      "rpt_listings_snapshot.price",
+      "rpt_listings_snapshot.quantity",
+      "rpt_listings_snapshot.status",
+      "rpt_listings_snapshot.fulfillment_channel"
+    ],
+    "filters": [
+      {"column": "rpt_listings_snapshot.quantity", "op": "gt", "value": 0}
+    ],
+    "order_by": [
+      {
+        "column": "rpt_listings_snapshot.seller_sku",
+        "dir": "asc"
+      }
+    ],
+    "limit": 100,
+    "report_date": "latest"
+  }
+}

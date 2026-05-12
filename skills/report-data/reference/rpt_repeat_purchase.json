@@ -1,0 +1,81 @@
+{
+  "_meta": {
+    "table": "rpt_repeat_purchase",
+    "report_type": "GET_BRAND_ANALYTICS_REPEAT_PURCHASE_REPORT",
+    "is_snapshot": false,
+    "description": "Brand Analytics repeat purchase summary.",
+    "pii": false,
+    "queryable": true,
+    "deprecated": false,
+    "strategy": "request",
+    "date_column": "report_date",
+    "unique_key": [
+      "store_id",
+      "report_date",
+      "asin"
+    ],
+    "cron": "0 11 1 * *"
+  },
+  "columns": [
+    {
+      "db_column": "startdate",
+      "amazon_header": "startDate",
+      "type": "date"
+    },
+    {
+      "db_column": "enddate",
+      "amazon_header": "endDate",
+      "type": "date"
+    },
+    {
+      "db_column": "asin",
+      "amazon_header": "asin",
+      "type": "str"
+    },
+    {
+      "db_column": "orders",
+      "amazon_header": "orders",
+      "type": "int"
+    },
+    {
+      "db_column": "uniquecustomers",
+      "amazon_header": "uniqueCustomers",
+      "type": "int"
+    },
+    {
+      "db_column": "repeatcustomerspcttotal",
+      "amazon_header": "repeatCustomersPctTotal",
+      "type": "decimal"
+    },
+    {
+      "db_column": "repeatpurchaserevenue",
+      "amazon_header": "repeatPurchaseRevenue",
+      "type": "decimal"
+    },
+    {
+      "db_column": "repeatpurchaserevenuepcttotal",
+      "amazon_header": "repeatPurchaseRevenuePctTotal",
+      "type": "decimal"
+    }
+  ],
+  "example_query": {
+    "store": "myStore-AE",
+    "tables": [
+      "rpt_repeat_purchase"
+    ],
+    "columns": [
+      "rpt_repeat_purchase.startdate",
+      "rpt_repeat_purchase.enddate",
+      "rpt_repeat_purchase.asin"
+    ],
+    "filters": [],
+    "order_by": [
+      {
+        "column": "rpt_repeat_purchase.startdate",
+        "dir": "asc"
+      }
+    ],
+    "limit": 100,
+    "report_date": "latest"
+  }
+}

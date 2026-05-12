@@ -1,0 +1,39 @@
+{
+  "_meta": {
+    "table": "rpt_sp_campaign_placement",
+    "report_type": "spCampaigns (groupBy=campaignPlacement)",
+    "is_snapshot": false,
+    "description": "SP campaign x placement performance. placement_classification is one of 'Top of Search on-Amazon' / 'Detail Page on-Amazon' / 'Other on-Amazon' (Amazon's actual values; the spec docs older PLACEMENT_TOP/REST/PRODUCT_PAGE constants are not what the live API ships). top_of_search_impression_share is populated only when Amazon's volume threshold is met for the campaign-day; small accounts will see NULL.",
+    "pii": false,
+    "queryable": true,
+    "deprecated": false,
+    "strategy": "ad_cron",
+    "date_column": "report_date",
+    "unique_key": ["store_id", "profile_id", "report_date", "campaign_id", "placement_classification"],
+    "cron": "daily"
+  },
+  "columns": [
+    {"db_column": "report_date", "type": "date"},
+    {"db_column": "start_date", "type": "date"},
+    {"db_column": "end_date", "type": "date"},
+    {"db_column": "ingested_at", "type": "datetime"},
+    {"db_column": "profile_id", "type": "str"},
+    {"db_column": "campaign_id", "type": "str"},
+    {"db_column": "campaign_name", "type": "str"},
+    {"db_column": "placement_classification", "type": "str", "comment": "Top of Search on-Amazon / Detail Page on-Amazon / Other on-Amazon"},
+    {"db_column": "impressions", "type": "int"},
+    {"db_column": "clicks", "type": "int"},
+    {"db_column": "cost", "type": "decimal"},
+    {"db_column": "spend", "type": "decimal"},
+    {"db_column": "cost_per_click", "type": "decimal"},
+    {"db_column": "click_through_rate", "type": "decimal"},
+    {"db_column": "sales_14d", "type": "decimal"},
+    {"db_column": "purchases_14d", "type": "int"},
+    {"db_column": "units_sold_clicks_14d", "type": "int"},
+    {"db_column": "acos_clicks_14d", "type": "decimal"},
+    {"db_column": "roas_clicks_14d", "type": "decimal"},
+    {"db_column": "top_of_search_impression_share", "type": "decimal", "comment": "Populated only when Amazon volume threshold met"},
+    {"db_column": "currency", "type": "str"},
+    {"db_column": "extra", "type": "json"}
+  ]
+}

@@ -3,7 +3,7 @@
   "name": "sellersheet-skills",
   "displayName": "SellerSheet Skills",
   "description": "Production-ready agent skills for Amazon sellers using SellerSheet — Google Sheets I/O and multi-tab operator dashboards. More skills coming after review.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": {
     "name": "SellerSheet AI",
     "url": "https://sellersheetai.com",
@@ -26,10 +26,19 @@
       "type": "skill",
       "path": "./skills/sellersheet-dashboard",
       "description": "Multi-tab operator dashboards with freshness instrumentation, agent insights, status tabs. Covers inventory, PPC, account health, listings, profit/margin, returns, buy box, cash conversion. Builds on sellersheet-sheets."
+    },
+    {
+      "name": "report-data",
+      "version": "0.2.0",
+      "type": "skill",
+      "path": "./skills/report-data",
+      "description": "Amazon SP-API + Ads-API report data — query 50+ rpt_* tables in the SellerSheet warehouse (inventory, listings, orders, returns, financial, brand analytics, ads SP/SB/SD), monitor sync schedules, run on-demand reports with TSV-to-Drive download. Use when the user asks for inventory levels, restock needs, search terms, settlements, listing status, etc."
     }
   ],
   "requirements": {
-    "mcpServers": ["sellersheet"],
+    "mcpServers": [
+      "sellersheet"
+    ],
     "minClaudeCodeVersion": "1.0.0"
   }
 }

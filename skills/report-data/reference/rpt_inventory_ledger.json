@@ -1,0 +1,119 @@
+{
+  "_meta": {
+    "table": "rpt_inventory_ledger",
+    "report_type": "GET_LEDGER_DETAIL_VIEW_DATA",
+    "is_snapshot": false,
+    "description": "Inventory ledger events across fulfillment centers.",
+    "pii": false,
+    "queryable": true,
+    "deprecated": false,
+    "strategy": "request",
+    "date_column": "report_date",
+    "unique_key": [
+      "store_id",
+      "date",
+      "fnsku",
+      "reference_id",
+      "event_type",
+      "fulfillment_center"
+    ],
+    "cron": "0 8 * * *"
+  },
+  "columns": [
+    {
+      "db_column": "date",
+      "amazon_header": "\"Date\"",
+      "type": "date"
+    },
+    {
+      "db_column": "fnsku",
+      "amazon_header": "\"FNSKU\"",
+      "type": "str"
+    },
+    {
+      "db_column": "asin",
+      "amazon_header": "\"ASIN\"",
+      "type": "str"
+    },
+    {
+      "db_column": "msku",
+      "amazon_header": "\"MSKU\"",
+      "type": "str"
+    },
+    {
+      "db_column": "title",
+      "amazon_header": "\"Title\"",
+      "type": "str"
+    },
+    {
+      "db_column": "event_type",
+      "amazon_header": "\"Event Type\"",
+      "type": "str"
+    },
+    {
+      "db_column": "reference_id",
+      "amazon_header": "\"Reference ID\"",
+      "type": "str"
+    },
+    {
+      "db_column": "quantity",
+      "amazon_header": "\"Quantity\"",
+      "type": "int"
+    },
+    {
+      "db_column": "fulfillment_center",
+      "amazon_header": "\"Fulfillment Center\"",
+      "type": "str"
+    },
+    {
+      "db_column": "disposition",
+      "amazon_header": "\"Disposition\"",
+      "type": "str"
+    },
+    {
+      "db_column": "reason",
+      "amazon_header": "\"Reason\"",
+      "type": "str"
+    },
+    {
+      "db_column": "country",
+      "amazon_header": "\"Country\"",
+      "type": "str"
+    },
+    {
+      "db_column": "reconciled_quantity",
+      "amazon_header": "\"Reconciled Quantity\"",
+      "type": "int"
+    },
+    {
+      "db_column": "unreconciled_quantity",
+      "amazon_header": "\"Unreconciled Quantity\"",
+      "type": "int"
+    },
+    {
+      "db_column": "date_and_time",
+      "amazon_header": "\"Date and Time\"",
+      "type": "str"
+    }
+  ],
+  "example_query": {
+    "store": "myStore-AE",
+    "tables": [
+      "rpt_inventory_ledger"
+    ],
+    "columns": [
+      "rpt_inventory_ledger.date",
+      "rpt_inventory_ledger.fnsku",
+      "rpt_inventory_ledger.asin"
+    ],
+    "filters": [],
+    "order_by": [
+      {
+        "column": "rpt_inventory_ledger.date",
+        "dir": "asc"
+      }
+    ],
+    "limit": 100,
+    "report_date": "latest"
+  }
+}

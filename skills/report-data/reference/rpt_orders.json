@@ -1,0 +1,231 @@
+{
+  "_meta": {
+    "table": "rpt_orders",
+    "report_type": "GET_FLAT_FILE_ALL_ORDERS_DATA_BY_ORDER_DATE_GENERAL",
+    "is_snapshot": false,
+    "description": "Order-level flat file report with item pricing and fulfillment details.",
+    "pii": false,
+    "queryable": true,
+    "deprecated": false,
+    "strategy": "request",
+    "date_column": "report_date",
+    "unique_key": [
+      "store_id",
+      "amazon_order_id",
+      "sku",
+      "quantity"
+    ],
+    "cron": "0 8 * * *"
+  },
+  "columns": [
+    {
+      "db_column": "amazon_order_id",
+      "amazon_header": "amazon-order-id",
+      "type": "str"
+    },
+    {
+      "db_column": "merchant_order_id",
+      "amazon_header": "merchant-order-id",
+      "type": "str"
+    },
+    {
+      "db_column": "purchase_date",
+      "amazon_header": "purchase-date",
+      "type": "datetime"
+    },
+    {
+      "db_column": "last_updated_date",
+      "amazon_header": "last-updated-date",
+      "type": "datetime"
+    },
+    {
+      "db_column": "order_status",
+      "amazon_header": "order-status",
+      "type": "str"
+    },
+    {
+      "db_column": "fulfillment_channel",
+      "amazon_header": "fulfillment-channel",
+      "type": "str"
+    },
+    {
+      "db_column": "sales_channel",
+      "amazon_header": "sales-channel",
+      "type": "str"
+    },
+    {
+      "db_column": "order_channel",
+      "amazon_header": "order-channel",
+      "type": "str"
+    },
+    {
+      "db_column": "ship_service_level",
+      "amazon_header": "ship-service-level",
+      "type": "str"
+    },
+    {
+      "db_column": "product_name",
+      "amazon_header": "product-name",
+      "type": "str"
+    },
+    {
+      "db_column": "sku",
+      "amazon_header": "sku",
+      "type": "str"
+    },
+    {
+      "db_column": "asin",
+      "amazon_header": "asin",
+      "type": "str"
+    },
+    {
+      "db_column": "item_status",
+      "amazon_header": "item-status",
+      "type": "str"
+    },
+    {
+      "db_column": "quantity",
+      "amazon_header": "quantity",
+      "type": "int"
+    },
+    {
+      "db_column": "currency",
+      "amazon_header": "currency",
+      "type": "str"
+    },
+    {
+      "db_column": "item_price",
+      "amazon_header": "item-price",
+      "type": "decimal"
+    },
+    {
+      "db_column": "item_tax",
+      "amazon_header": "item-tax",
+      "type": "decimal"
+    },
+    {
+      "db_column": "shipping_price",
+      "amazon_header": "shipping-price",
+      "type": "decimal"
+    },
+    {
+      "db_column": "shipping_tax",
+      "amazon_header": "shipping-tax",
+      "type": "decimal"
+    },
+    {
+      "db_column": "gift_wrap_price",
+      "amazon_header": "gift-wrap-price",
+      "type": "decimal"
+    },
+    {
+      "db_column": "gift_wrap_tax",
+      "amazon_header": "gift-wrap-tax",
+      "type": "decimal"
+    },
+    {
+      "db_column": "item_promotion_discount",
+      "amazon_header": "item-promotion-discount",
+      "type": "decimal"
+    },
+    {
+      "db_column": "ship_promotion_discount",
+      "amazon_header": "ship-promotion-discount",
+      "type": "decimal"
+    },
+    {
+      "db_column": "ship_city",
+      "amazon_header": "ship-city",
+      "type": "str"
+    },
+    {
+      "db_column": "ship_state",
+      "amazon_header": "ship-state",
+      "type": "str"
+    },
+    {
+      "db_column": "ship_postal_code",
+      "amazon_header": "ship-postal-code",
+      "type": "str"
+    },
+    {
+      "db_column": "ship_country",
+      "amazon_header": "ship-country",
+      "type": "str"
+    },
+    {
+      "db_column": "promotion_ids",
+      "amazon_header": "promotion-ids",
+      "type": "str"
+    },
+    {
+      "db_column": "is_business_order",
+      "amazon_header": "is-business-order",
+      "type": "str",
+      "values": ["true", "false"],
+      "note": "Use to filter B2B vs B2C orders"
+    },
+    {
+      "db_column": "number_of_items",
+      "amazon_header": "number-of-items",
+      "type": "int",
+      "note": "Documented in Amazon SP-API spec but not shipped on the accounts we serve (verified 2026-05-06 — 0/lifetime population, not present in any rpt_orders.extra JSON either). Column exists for forward-compat; expect NULL."
+    },
+    {
+      "db_column": "price_designation",
+      "amazon_header": "price-designation",
+      "type": "str",
+      "note": "EU/US — 'BusinessPrice' on B2B-specific pricing"
+    },
+    {
+      "db_column": "buyer_company_name",
+      "amazon_header": "buyer-company-name",
+      "type": "str",
+      "note": "EU/AE B2B"
+    },
+    {
+      "db_column": "purchase_order_number",
+      "amazon_header": "purchase-order-number",
+      "type": "str",
+      "note": "US B2B"
+    },
+    {
+      "db_column": "buyer_tax_registration_country",
+      "amazon_header": "buyer-tax-registration-country",
+      "type": "str",
+      "note": "AE"
+    },
+    {
+      "db_column": "buyer_tax_registration_type",
+      "amazon_header": "buyer-tax-registration-type",
+      "type": "str",
+      "note": "AE"
+    },
+    {
+      "db_column": "extra",
+      "amazon_header": "(unrecognized columns + intentional low-value flags)",
+      "type": "json",
+      "note": "Intentional opt-out (calibrated 2026-05-04 — kept in extra rather than promoted): is-iba, order-invoice-type, cpf, signature-confirmation-recommended, is-buyer-requested-cancellation, buyer-requested-cancel-reason. Read via SQL JSON operators if needed: `extra ->> 'is-iba'`."
+    }
+  ],
+  "example_query": {
+    "store": "myStore-AE",
+    "tables": [
+      "rpt_orders"
+    ],
+    "columns": [
+      "rpt_orders.amazon_order_id",
+      "rpt_orders.merchant_order_id",
+      "rpt_orders.purchase_date"
+    ],
+    "filters": [],
+    "order_by": [
+      {
+        "column": "rpt_orders.amazon_order_id",
+        "dir": "asc"
+      }
+    ],
+    "limit": 100,
+    "report_date": "latest"
+  }
+}

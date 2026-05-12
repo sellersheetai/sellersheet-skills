@@ -1,0 +1,42 @@
+{
+  "_meta": {
+    "table": "rpt_sd_negative_targets",
+    "report_type": "sdNegativeTargets",
+    "is_snapshot": true,
+    "description": "Sponsored Display negative targets. Daily snapshot — every fire upserts the full current set. Sourced via Ads-API v3 paginated POST /sd/negativeTargets/list. SD has only target-level negatives (no separate keyword negatives or campaign-level endpoint as of API v3).",
+    "pii": false,
+    "queryable": true,
+    "deprecated": false,
+    "strategy": "ads_list",
+    "date_column": "snapshot_date",
+    "unique_key": ["store_id", "profile_id", "snapshot_date", "target_id"],
+    "cron": "40 4 * * *"
+  },
+  "columns": [
+    {"db_column": "store_id", "type": "str", "comment": "Owning store (FK amazon_stores.store_id)."},
+    {"db_column": "profile_id", "type": "str", "comment": "Amazon Ads profile id."},
+    {"db_column": "snapshot_date", "type": "date", "comment": "Marketplace-local date the snapshot was captured."},
+    {"db_column": "ingested_at", "type": "datetime", "comment": "Server-side timestamp the row was UPSERTed."},
+    {"db_column": "target_id", "type": "str", "comment": "Amazon's SD target identifier."},
+    {"db_column": "campaign_id", "type": "str", "comment": "Campaign id this negative scopes to."},
+    {"db_column": "ad_group_id", "type": "str", "comment": "Ad group id this negative scopes to."},
+    {"db_column": "targeting_expression", "type": "str", "comment": "JSON-stringified array of Amazon's targeting clauses (asinSameAs / asinCategorySameAs / asinBrandSameAs)."},
+    {"db_column": "expression_type", "type": "str", "comment": "'MANUAL' | 'AUTO'."},
+    {"db_column": "state", "type": "str", "comment": "'ENABLED' | 'PAUSED' | 'ARCHIVED' | 'USER_DELETED'."},
+    {"db_column": "extra", "type": "json", "comment": "Any Amazon response fields not promoted to a typed column."}
+  ],
+  "example_query": {
+    "store": "myStore-AE",
+    "tables": ["rpt_sd_negative_targets"],
+    "columns": [
+      "rpt_sd_negative_targets.targeting_expression",
+      "rpt_sd_negative_targets.campaign_id",
+      "rpt_sd_negative_targets.ad_group_id"
+    ],
+    "filters": [
+      {"column": "rpt_sd_negative_targets.state", "op": "=", "value": "ENABLED"}
+    ],
+    "snapshot_date": "latest",
+    "limit": 100
+  }
+}

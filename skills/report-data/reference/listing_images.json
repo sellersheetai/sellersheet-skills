@@ -1,0 +1,79 @@
+{
+  "_meta": {
+    "table": "listing_images",
+    "report_type": null,
+    "is_snapshot": false,
+    "description": "Persistent listing image cache. One row per (store_id, country_code, seller_sku). Populated automatically after GET_MERCHANT_LISTINGS_ALL_DATA syncs via ListingsItems API — fetch-once, only new SKUs trigger API calls. No date partitioning — omit report_date when querying.",
+    "pii": false,
+    "queryable": true,
+    "deprecated": false,
+    "strategy": "enrichment",
+    "date_column": "fetched_at",
+    "unique_key": [
+      "store_id",
+      "country_code",
+      "seller_sku"
+    ],
+    "cron": "triggered after GET_MERCHANT_LISTINGS_ALL_DATA"
+  },
+  "columns": [
+    {
+      "db_column": "store_id",
+      "type": "str",
+      "note": "FK to amazon_stores.store_id"
+    },
+    {
+      "db_column": "country_code",
+      "type": "str",
+      "note": "Marketplace country code e.g. AE, SA, US"
+    },
+    {
+      "db_column": "seller_sku",
+      "type": "str",
+      "note": "Merchant SKU"
+    },
+    {
+      "db_column": "asin",
+      "type": "str",
+      "note": "ASIN from ListingsItems API (nullable)"
+    },
+    {
+      "db_column": "main_image_url",
+      "type": "str",
+      "note": "Main product image URL from Amazon CDN (nullable if no image or enrichment failed)"
+    },
+    {
+      "db_column": "listing_status",
+      "type": "str",
+      "note": "Listing status string from ListingsItems API e.g. BUYABLE (nullable)"
+    },
+    {
+      "db_column": "fetched_at",
+      "type": "timestamp",
+      "note": "Timestamp when this row was last fetched/inserted"
+    }
+  ],
+  "example_query": {
+    "store": "myStore-AE",
+    "tables": [
+      "listing_images"
+    ],
+    "columns": [
+      "listing_images.seller_sku",
+      "listing_images.asin",
+      "listing_images.main_image_url",
+      "listing_images.listing_status",
+      "listing_images.fetched_at"
+    ],
+    "filters": [
+      {"column": "listing_images.main_image_url", "op": "not_null", "value": null}
+    ],
+    "order_by": [
+      {
+        "column": "listing_images.seller_sku",
+        "dir": "asc"
+      }
+    ],
+    "limit": 100
+  }
+}

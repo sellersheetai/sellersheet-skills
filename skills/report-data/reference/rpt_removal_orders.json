@@ -1,0 +1,126 @@
+{
+  "_meta": {
+    "table": "rpt_removal_orders",
+    "report_type": "GET_FBA_FULFILLMENT_REMOVAL_ORDER_DETAIL_DATA",
+    "is_snapshot": false,
+    "description": "FBA removal order events and quantity outcomes.",
+    "pii": false,
+    "queryable": true,
+    "deprecated": false,
+    "strategy": "request",
+    "date_column": "report_date",
+    "unique_key": [
+      "store_id",
+      "order_id",
+      "sku"
+    ],
+    "cron": "0 9 * * *"
+  },
+  "columns": [
+    {
+      "db_column": "request_date",
+      "amazon_header": "request-date",
+      "type": "date"
+    },
+    {
+      "db_column": "order_id",
+      "amazon_header": "order-id",
+      "type": "str"
+    },
+    {
+      "db_column": "order_source",
+      "amazon_header": "order-source",
+      "type": "str"
+    },
+    {
+      "db_column": "order_type",
+      "amazon_header": "order-type",
+      "type": "str"
+    },
+    {
+      "db_column": "service_speed",
+      "amazon_header": "service-speed",
+      "type": "str"
+    },
+    {
+      "db_column": "order_status",
+      "amazon_header": "order-status",
+      "type": "str"
+    },
+    {
+      "db_column": "last_updated_date",
+      "amazon_header": "last-updated-date",
+      "type": "date"
+    },
+    {
+      "db_column": "sku",
+      "amazon_header": "sku",
+      "type": "str"
+    },
+    {
+      "db_column": "fnsku",
+      "amazon_header": "fnsku",
+      "type": "str"
+    },
+    {
+      "db_column": "disposition",
+      "amazon_header": "disposition",
+      "type": "str"
+    },
+    {
+      "db_column": "requested_quantity",
+      "amazon_header": "requested-quantity",
+      "type": "int"
+    },
+    {
+      "db_column": "cancelled_quantity",
+      "amazon_header": "cancelled-quantity",
+      "type": "int"
+    },
+    {
+      "db_column": "disposed_quantity",
+      "amazon_header": "disposed-quantity",
+      "type": "int"
+    },
+    {
+      "db_column": "shipped_quantity",
+      "amazon_header": "shipped-quantity",
+      "type": "int"
+    },
+    {
+      "db_column": "in_process_quantity",
+      "amazon_header": "in-process-quantity",
+      "type": "int"
+    },
+    {
+      "db_column": "removal_fee",
+      "amazon_header": "removal-fee",
+      "type": "decimal"
+    },
+    {
+      "db_column": "currency",
+      "amazon_header": "currency",
+      "type": "str"
+    }
+  ],
+  "example_query": {
+    "store": "myStore-AE",
+    "tables": [
+      "rpt_removal_orders"
+    ],
+    "columns": [
+      "rpt_removal_orders.request_date",
+      "rpt_removal_orders.order_id",
+      "rpt_removal_orders.order_source"
+    ],
+    "filters": [],
+    "order_by": [
+      {
+        "column": "rpt_removal_orders.request_date",
+        "dir": "asc"
+      }
+    ],
+    "limit": 100,
+    "report_date": "latest"
+  }
+}

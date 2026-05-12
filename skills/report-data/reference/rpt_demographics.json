@@ -1,0 +1,29 @@
+{
+  "_meta": {
+    "table": "rpt_demographics",
+    "report_type": "GET_BRAND_ANALYTICS_DEMOGRAPHICS_REPORT",
+    "is_snapshot": true,
+    "description": "PENDING customer re-OAuth after Brand Analytics app re-submission — table will be empty until customers re-auth on the new app version. Quarterly demographics per marketplace, flattened so each row is one (dimension, bucket, percentage) tuple. Five dimensions: age_range, gender, household_income, education, marital_status.",
+    "pii": false,
+    "queryable": true,
+    "deprecated": false,
+    "pending_reauth": true,
+    "pending_reason": "Demographics requires Brand Analytics scope. SellerSheet's app re-submission is pending Amazon Appstore approval. Existing customers must re-OAuth after the new app version is live before this table contains rows.",
+    "strategy": "request",
+    "date_column": "period_start",
+    "unique_key": ["store_id", "marketplace_id", "period_start", "period_end", "dimension", "bucket"],
+    "cron": "0 5 1 */3 *"
+  },
+  "columns": [
+    {"db_column": "store_id", "type": "str", "comment": "Owning store (FK amazon_stores.store_id)."},
+    {"db_column": "marketplace_id", "type": "str", "comment": "Amazon marketplaceId, e.g. ATVPDKIKX0DER (US), A1F83G8C2ARO7P (UK)."},
+    {"db_column": "country_code", "type": "str", "comment": "Marketplace country (US, UK, DE, etc). Defaults to '_primary_' on single-mkt stores."},
+    {"db_column": "period_start", "type": "date", "comment": "First day of the quarter the report covers."},
+    {"db_column": "period_end", "type": "date", "comment": "Last day of the quarter the report covers."},
+    {"db_column": "ingested_at", "type": "datetime", "comment": "Server-side timestamp when the row was UPSERTed."},
+    {"db_column": "dimension", "type": "str", "comment": "One of: age_range, gender, household_income, education, marital_status."},
+    {"db_column": "bucket", "type": "str", "comment": "Lowercased bucket label. Vocabulary by dimension (post-lowercase) — gender: 'male', 'female'. age_range: '18-24', '25-34', '35-44', '45-54', '55-64', '65+'. household_income: '$0-25k', '$25k-50k', '$50k-75k', '$75k-100k', '$100k-150k', '$150k+'. education: 'highschool', 'somecollege', 'bachelordegree', 'graduatedegree'. marital_status: 'single', 'married', 'divorced'. Filter on the lowercased form."},
+    {"db_column": "percentage", "type": "decimal", "comment": "Fraction 0.0-1.0; sums to ~1.0 across the buckets within a single (dimension, marketplace_id, period) group."},
+    {"db_column": "extra", "type": "json", "comment": "Anything Amazon ships that isn't promoted to a typed column."}
+  ]
+}

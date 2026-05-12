@@ -1,0 +1,187 @@
+{
+  "_meta": {
+    "table": "rpt_fba_shipments",
+    "report_type": "GET_AMAZON_FULFILLED_SHIPMENTS_DATA_GENERAL",
+    "is_snapshot": false,
+    "description": "Amazon-fulfilled shipment rows including encrypted buyer PII.",
+    "pii": true,
+    "queryable": false,
+    "deprecated": false,
+    "strategy": "request",
+    "date_column": "report_date",
+    "unique_key": [
+      "store_id",
+      "shipment_id",
+      "shipment_item_id"
+    ],
+    "cron": "0 9 * * *"
+  },
+  "columns": [
+    {
+      "db_column": "amazon_order_id",
+      "amazon_header": "amazon-order-id",
+      "type": "str"
+    },
+    {
+      "db_column": "merchant_order_id",
+      "amazon_header": "merchant-order-id",
+      "type": "str"
+    },
+    {
+      "db_column": "shipment_id",
+      "amazon_header": "shipment-id",
+      "type": "str"
+    },
+    {
+      "db_column": "shipment_item_id",
+      "amazon_header": "shipment-item-id",
+      "type": "str"
+    },
+    {
+      "db_column": "amazon_order_item_id",
+      "amazon_header": "amazon-order-item-id",
+      "type": "str"
+    },
+    {
+      "db_column": "merchant_order_item_id",
+      "amazon_header": "merchant-order-item-id",
+      "type": "str"
+    },
+    {
+      "db_column": "purchase_date",
+      "amazon_header": "purchase-date",
+      "type": "datetime"
+    },
+    {
+      "db_column": "payments_date",
+      "amazon_header": "payments-date",
+      "type": "datetime"
+    },
+    {
+      "db_column": "shipment_date",
+      "amazon_header": "shipment-date",
+      "type": "datetime"
+    },
+    {
+      "db_column": "reporting_date",
+      "amazon_header": "reporting-date",
+      "type": "datetime"
+    },
+    {
+      "db_column": "sku",
+      "amazon_header": "sku",
+      "type": "str"
+    },
+    {
+      "db_column": "product_name",
+      "amazon_header": "product-name",
+      "type": "str"
+    },
+    {
+      "db_column": "quantity_shipped",
+      "amazon_header": "quantity-shipped",
+      "type": "int"
+    },
+    {
+      "db_column": "currency",
+      "amazon_header": "currency",
+      "type": "str"
+    },
+    {
+      "db_column": "item_price",
+      "amazon_header": "item-price",
+      "type": "decimal"
+    },
+    {
+      "db_column": "item_tax",
+      "amazon_header": "item-tax",
+      "type": "decimal"
+    },
+    {
+      "db_column": "shipping_price",
+      "amazon_header": "shipping-price",
+      "type": "decimal"
+    },
+    {
+      "db_column": "shipping_tax",
+      "amazon_header": "shipping-tax",
+      "type": "decimal"
+    },
+    {
+      "db_column": "gift_wrap_price",
+      "amazon_header": "gift-wrap-price",
+      "type": "decimal"
+    },
+    {
+      "db_column": "gift_wrap_tax",
+      "amazon_header": "gift-wrap-tax",
+      "type": "decimal"
+    },
+    {
+      "db_column": "ship_service_level",
+      "amazon_header": "ship-service-level",
+      "type": "str"
+    },
+    {
+      "db_column": "ship_city",
+      "amazon_header": "ship-city",
+      "type": "str"
+    },
+    {
+      "db_column": "ship_state",
+      "amazon_header": "ship-state",
+      "type": "str"
+    },
+    {
+      "db_column": "ship_postal_code",
+      "amazon_header": "ship-postal-code",
+      "type": "str"
+    },
+    {
+      "db_column": "ship_country",
+      "amazon_header": "ship-country",
+      "type": "str"
+    },
+    {
+      "db_column": "item_promotion_discount",
+      "amazon_header": "item-promotion-discount",
+      "type": "decimal"
+    },
+    {
+      "db_column": "ship_promotion_discount",
+      "amazon_header": "ship-promotion-discount",
+      "type": "decimal"
+    },
+    {
+      "db_column": "carrier",
+      "amazon_header": "carrier",
+      "type": "str"
+    },
+    {
+      "db_column": "tracking_number",
+      "amazon_header": "tracking-number",
+      "type": "str"
+    },
+    {
+      "db_column": "estimated_arrival_date",
+      "amazon_header": "estimated-arrival-date",
+      "type": "date"
+    },
+    {
+      "db_column": "fulfillment_center_id",
+      "amazon_header": "fulfillment-center-id",
+      "type": "str"
+    },
+    {
+      "db_column": "fulfillment_channel",
+      "amazon_header": "fulfillment-channel",
+      "type": "str"
+    },
+    {
+      "db_column": "sales_channel",
+      "amazon_header": "sales-channel",
+      "type": "str"
+    }
+  ],
+  "example_query": null
+}

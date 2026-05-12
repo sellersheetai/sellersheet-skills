@@ -8,11 +8,19 @@ Planned for upcoming releases (under review):
 - `sellersheet` — Amazon business operations orchestrator
 - `amazon-api` — Amazon SP-API guide
 - `amazon-ads` — Amazon Advertising operations
-- `report-data` — SP-API report querying + 40+ rpt_* table schemas
 - `fba-inbound` — FBA inbound shipment workflow
 - `listing-optimizer` — Full agent-orchestrated listing optimization
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
+
+### Tooling
+- Maintainer `lint.sh` now handles YAML folded-scalar (`description: >`) frontmatter in skill descriptions (fixes a promote.sh bug that left `>` literal in marketplace.json).
+
+## [0.2.0] — 2026-05-13
+
+### Added
+
+- **report-data** — Amazon SP-API + Ads-API report querying via the SellerSheet warehouse. 50+ `rpt_*` table schema references (one JSON per table with `db_column`, `amazon_header`, `type`, business notes, calibration provenance, example query). SKILL.md covers cron-sync vs manual-flow paths, multi-marketplace store resolution, `disabled_reason` interpretation, and the create-poll-download workflow.
 
 ## [0.1.0] — 2026-05-12
 

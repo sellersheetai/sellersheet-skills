@@ -1,0 +1,72 @@
+{
+  "_meta": {
+    "table": "rpt_afn_inventory",
+    "report_type": "GET_AFN_INVENTORY_DATA",
+    "is_snapshot": true,
+    "description": "AFN sellable inventory snapshot per SKU/FNSKU.",
+    "pii": false,
+    "queryable": true,
+    "deprecated": false,
+    "strategy": "request",
+    "date_column": "snapshot_date",
+    "unique_key": [
+      "store_id",
+      "snapshot_date",
+      "fnsku",
+      "warehouse_condition_code"
+    ],
+    "cron": "0 6 * * *"
+  },
+  "columns": [
+    {
+      "db_column": "seller_sku",
+      "amazon_header": "seller-sku",
+      "type": "str"
+    },
+    {
+      "db_column": "fnsku",
+      "amazon_header": "fulfillment-channel-sku",
+      "type": "str"
+    },
+    {
+      "db_column": "asin",
+      "amazon_header": "asin",
+      "type": "str"
+    },
+    {
+      "db_column": "condition_type",
+      "amazon_header": "condition-type",
+      "type": "str"
+    },
+    {
+      "db_column": "warehouse_condition_code",
+      "amazon_header": "Warehouse-Condition-code",
+      "type": "str"
+    },
+    {
+      "db_column": "quantity_available",
+      "amazon_header": "Quantity Available",
+      "type": "int"
+    }
+  ],
+  "example_query": {
+    "store": "myStore-AE",
+    "tables": [
+      "rpt_afn_inventory"
+    ],
+    "columns": [
+      "rpt_afn_inventory.seller_sku",
+      "rpt_afn_inventory.fnsku",
+      "rpt_afn_inventory.asin"
+    ],
+    "filters": [],
+    "order_by": [
+      {
+        "column": "rpt_afn_inventory.seller_sku",
+        "dir": "asc"
+      }
+    ],
+    "limit": 100,
+    "report_date": "latest"
+  }
+}

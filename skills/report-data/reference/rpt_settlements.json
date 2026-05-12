@@ -1,0 +1,164 @@
+{
+  "_meta": {
+    "table": "rpt_settlements",
+    "report_type": "GET_V2_SETTLEMENT_REPORT_DATA_FLAT_FILE_V2",
+    "is_snapshot": false,
+    "description": "Settlement flat file rows from Amazon poll-only delivery.",
+    "pii": false,
+    "queryable": true,
+    "deprecated": false,
+    "strategy": "poll_only",
+    "date_column": "posted_date",
+    "unique_key": [
+      "store_id",
+      "settlement_id",
+      "order_id",
+      "amount_type",
+      "amount_description",
+      "posted_date"
+    ],
+    "cron": "0 6 * * *"
+  },
+  "columns": [
+    {
+      "db_column": "settlement_id",
+      "amazon_header": "settlement-id",
+      "type": "str"
+    },
+    {
+      "db_column": "settlement_start_date",
+      "amazon_header": "settlement-start-date",
+      "type": "date"
+    },
+    {
+      "db_column": "settlement_end_date",
+      "amazon_header": "settlement-end-date",
+      "type": "date"
+    },
+    {
+      "db_column": "deposit_date",
+      "amazon_header": "deposit-date",
+      "type": "date"
+    },
+    {
+      "db_column": "total_amount",
+      "amazon_header": "total-amount",
+      "type": "decimal"
+    },
+    {
+      "db_column": "currency",
+      "amazon_header": "currency",
+      "type": "str"
+    },
+    {
+      "db_column": "transaction_type",
+      "amazon_header": "transaction-type",
+      "type": "str"
+    },
+    {
+      "db_column": "order_id",
+      "amazon_header": "order-id",
+      "type": "str"
+    },
+    {
+      "db_column": "merchant_order_id",
+      "amazon_header": "merchant-order-id",
+      "type": "str"
+    },
+    {
+      "db_column": "adjustment_id",
+      "amazon_header": "adjustment-id",
+      "type": "str"
+    },
+    {
+      "db_column": "shipment_id",
+      "amazon_header": "shipment-id",
+      "type": "str"
+    },
+    {
+      "db_column": "marketplace_name",
+      "amazon_header": "marketplace-name",
+      "type": "str"
+    },
+    {
+      "db_column": "amount_type",
+      "amazon_header": "amount-type",
+      "type": "str"
+    },
+    {
+      "db_column": "amount_description",
+      "amazon_header": "amount-description",
+      "type": "str"
+    },
+    {
+      "db_column": "amount",
+      "amazon_header": "amount",
+      "type": "decimal"
+    },
+    {
+      "db_column": "fulfillment_id",
+      "amazon_header": "fulfillment-id",
+      "type": "str"
+    },
+    {
+      "db_column": "posted_date",
+      "amazon_header": "posted-date",
+      "type": "date"
+    },
+    {
+      "db_column": "posted_date_time",
+      "amazon_header": "posted-date-time",
+      "type": "str"
+    },
+    {
+      "db_column": "order_item_code",
+      "amazon_header": "order-item-code",
+      "type": "str"
+    },
+    {
+      "db_column": "merchant_order_item_id",
+      "amazon_header": "merchant-order-item-id",
+      "type": "str"
+    },
+    {
+      "db_column": "merchant_adjustment_item_id",
+      "amazon_header": "merchant-adjustment-item-id",
+      "type": "str"
+    },
+    {
+      "db_column": "sku",
+      "amazon_header": "sku",
+      "type": "str"
+    },
+    {
+      "db_column": "quantity_purchased",
+      "amazon_header": "quantity-purchased",
+      "type": "int"
+    },
+    {
+      "db_column": "promotion_id",
+      "amazon_header": "promotion-id",
+      "type": "str"
+    }
+  ],
+  "example_query": {
+    "store": "myStore-AE",
+    "tables": [
+      "rpt_settlements"
+    ],
+    "columns": [
+      "rpt_settlements.settlement_id",
+      "rpt_settlements.settlement_start_date",
+      "rpt_settlements.settlement_end_date"
+    ],
+    "filters": [],
+    "order_by": [
+      {
+        "column": "rpt_settlements.settlement_id",
+        "dir": "asc"
+      }
+    ],
+    "limit": 100,
+    "report_date": "latest"
+  }
+}

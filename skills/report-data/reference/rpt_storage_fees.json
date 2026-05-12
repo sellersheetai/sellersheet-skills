@@ -1,0 +1,224 @@
+{
+  "_meta": {
+    "table": "rpt_storage_fees",
+    "report_type": "GET_FBA_STORAGE_FEE_CHARGES_DATA",
+    "is_snapshot": false,
+    "description": "Monthly storage fee charge data.",
+    "pii": false,
+    "queryable": true,
+    "deprecated": false,
+    "strategy": "request",
+    "date_column": "report_date",
+    "unique_key": [
+      "store_id",
+      "report_date",
+      "month_of_charge",
+      "asin",
+      "fnsku",
+      "fulfillment_center"
+    ],
+    "cron": "0 10 5 * *"
+  },
+  "columns": [
+    {
+      "db_column": "asin",
+      "amazon_header": "asin",
+      "type": "str"
+    },
+    {
+      "db_column": "fnsku",
+      "amazon_header": "fnsku",
+      "type": "str"
+    },
+    {
+      "db_column": "product_name",
+      "amazon_header": "product_name",
+      "type": "str"
+    },
+    {
+      "db_column": "fulfillment_center",
+      "amazon_header": "fulfillment_center",
+      "type": "str"
+    },
+    {
+      "db_column": "country_code",
+      "amazon_header": "country_code",
+      "type": "str"
+    },
+    {
+      "db_column": "longest_side",
+      "amazon_header": "longest_side",
+      "type": "decimal"
+    },
+    {
+      "db_column": "median_side",
+      "amazon_header": "median_side",
+      "type": "decimal"
+    },
+    {
+      "db_column": "shortest_side",
+      "amazon_header": "shortest_side",
+      "type": "decimal"
+    },
+    {
+      "db_column": "measurement_units",
+      "amazon_header": "measurement_units",
+      "type": "str"
+    },
+    {
+      "db_column": "weight",
+      "amazon_header": "weight",
+      "type": "decimal"
+    },
+    {
+      "db_column": "weight_units",
+      "amazon_header": "weight_units",
+      "type": "str"
+    },
+    {
+      "db_column": "item_volume",
+      "amazon_header": "item_volume",
+      "type": "decimal"
+    },
+    {
+      "db_column": "volume_units",
+      "amazon_header": "volume_units",
+      "type": "str"
+    },
+    {
+      "db_column": "product_size_tier",
+      "amazon_header": "product_size_tier",
+      "type": "str"
+    },
+    {
+      "db_column": "average_quantity_on_hand",
+      "amazon_header": "average_quantity_on_hand",
+      "type": "decimal"
+    },
+    {
+      "db_column": "average_quantity_pending_removal",
+      "amazon_header": "average_quantity_pending_removal",
+      "type": "decimal"
+    },
+    {
+      "db_column": "estimated_total_item_volume",
+      "amazon_header": "estimated_total_item_volume",
+      "type": "decimal"
+    },
+    {
+      "db_column": "month_of_charge",
+      "amazon_header": "month_of_charge",
+      "type": "str"
+    },
+    {
+      "db_column": "storage_rate",
+      "amazon_header": "storage_rate",
+      "type": "decimal"
+    },
+    {
+      "db_column": "currency",
+      "amazon_header": "currency",
+      "type": "str"
+    },
+    {
+      "db_column": "estimated_monthly_storage_fee",
+      "amazon_header": "estimated_monthly_storage_fee",
+      "type": "decimal"
+    },
+    {
+      "db_column": "dangerous_goods_storage_type",
+      "amazon_header": "dangerous_goods_storage_type",
+      "type": "str"
+    },
+    {
+      "db_column": "eligible_for_inventory_discount",
+      "amazon_header": "eligible_for_inventory_discount",
+      "type": "bool"
+    },
+    {
+      "db_column": "qualifies_for_inventory_discount",
+      "amazon_header": "qualifies_for_inventory_discount",
+      "type": "bool"
+    },
+    {
+      "db_column": "total_incentive_fee_amount",
+      "amazon_header": "total_incentive_fee_amount",
+      "type": "decimal"
+    },
+    {
+      "db_column": "breakdown_incentive_fee_amount",
+      "amazon_header": "breakdown_incentive_fee_amount",
+      "type": "str",
+      "note": "Raw colon-separated value (e.g. 'FBA_NEW_SELECTION:0.7187'). For analytics use derived columns incentive_program + incentive_amount instead."
+    },
+    {
+      "db_column": "incentive_program",
+      "amazon_header": "(derived from breakdown_incentive_fee_amount LHS of ':')",
+      "type": "str",
+      "values": ["FBA_NEW_SELECTION", "FBA_INVENTORY_AGE", "..."]
+    },
+    {
+      "db_column": "incentive_amount",
+      "amazon_header": "(derived from breakdown_incentive_fee_amount RHS of ':')",
+      "type": "decimal"
+    },
+    {
+      "db_column": "average_quantity_customer_orders",
+      "amazon_header": "average_quantity_customer_orders",
+      "type": "decimal"
+    },
+    {
+      "db_column": "avg_qty_for_sus",
+      "amazon_header": "avg_qty_for_sus",
+      "type": "decimal",
+      "note": "SUS = Strategic Use Storage; AU/EU"
+    },
+    {
+      "db_column": "est_vol_for_sus",
+      "amazon_header": "est_vol_for_sus",
+      "type": "decimal"
+    },
+    {
+      "db_column": "est_base_msf",
+      "amazon_header": "est_base_msf",
+      "type": "decimal",
+      "note": "Estimated base monthly storage fee"
+    },
+    {
+      "db_column": "est_sus",
+      "amazon_header": "est_sus",
+      "type": "decimal"
+    },
+    {
+      "db_column": "category",
+      "amazon_header": "category",
+      "type": "str",
+      "note": "Storage category bucket"
+    },
+    {
+      "db_column": "report_date",
+      "amazon_header": "(injected by ingest worker)",
+      "type": "date"
+    }
+  ],
+  "example_query": {
+    "store": "myStore-AE",
+    "tables": [
+      "rpt_storage_fees"
+    ],
+    "columns": [
+      "rpt_storage_fees.asin",
+      "rpt_storage_fees.fnsku",
+      "rpt_storage_fees.product_name"
+    ],
+    "filters": [],
+    "order_by": [
+      {
+        "column": "rpt_storage_fees.asin",
+        "dir": "asc"
+      }
+    ],
+    "limit": 100,
+    "report_date": "latest"
+  }
+}

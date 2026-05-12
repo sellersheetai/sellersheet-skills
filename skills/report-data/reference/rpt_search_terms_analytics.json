@@ -1,0 +1,71 @@
+{
+  "_meta": {
+    "table": "rpt_search_terms_analytics",
+    "report_type": "GET_BRAND_ANALYTICS_SEARCH_TERMS_REPORT",
+    "is_snapshot": false,
+    "description": "Brand Analytics search term performance report.",
+    "pii": false,
+    "queryable": true,
+    "deprecated": false,
+    "strategy": "request",
+    "date_column": "report_date",
+    "unique_key": [
+      "store_id",
+      "report_date",
+      "searchterm"
+    ],
+    "cron": "0 10 * * 2"
+  },
+  "columns": [
+    {
+      "db_column": "searchterm",
+      "amazon_header": "searchTerm",
+      "type": "str"
+    },
+    {
+      "db_column": "searchfrequencyrank",
+      "amazon_header": "searchFrequencyRank",
+      "type": "int"
+    },
+    {
+      "db_column": "clickedasin",
+      "amazon_header": "clickedAsin",
+      "type": "str"
+    },
+    {
+      "db_column": "clicksharerank",
+      "amazon_header": "clickShareRank",
+      "type": "int"
+    },
+    {
+      "db_column": "clickshare",
+      "amazon_header": "clickShare",
+      "type": "decimal"
+    },
+    {
+      "db_column": "conversionshare",
+      "amazon_header": "conversionShare",
+      "type": "decimal"
+    }
+  ],
+  "example_query": {
+    "store": "myStore-AE",
+    "tables": [
+      "rpt_search_terms_analytics"
+    ],
+    "columns": [
+      "rpt_search_terms_analytics.searchterm",
+      "rpt_search_terms_analytics.searchfrequencyrank",
+      "rpt_search_terms_analytics.clickedasin"
+    ],
+    "filters": [],
+    "order_by": [
+      {
+        "column": "rpt_search_terms_analytics.searchterm",
+        "dir": "asc"
+      }
+    ],
+    "limit": 100,
+    "report_date": "latest"
+  }
+}

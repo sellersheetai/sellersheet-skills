@@ -1,0 +1,93 @@
+{
+  "_meta": {
+    "table": "rpt_suppressed_listings",
+    "report_type": "GET_MERCHANTS_LISTINGS_FYP_REPORT",
+    "is_snapshot": true,
+    "description": "Suppressed listings snapshot with issue reasons.",
+    "pii": false,
+    "queryable": true,
+    "deprecated": false,
+    "strategy": "request",
+    "date_column": "snapshot_date",
+    "unique_key": [
+      "store_id",
+      "snapshot_date",
+      "sku",
+      "asin",
+      "condition"
+    ],
+    "cron": "0 7 * * *"
+  },
+  "columns": [
+    {
+      "db_column": "status",
+      "amazon_header": "Status",
+      "type": "str"
+    },
+    {
+      "db_column": "reason",
+      "amazon_header": "Reason",
+      "type": "str"
+    },
+    {
+      "db_column": "sku",
+      "amazon_header": "SKU",
+      "type": "str"
+    },
+    {
+      "db_column": "asin",
+      "amazon_header": "ASIN",
+      "type": "str"
+    },
+    {
+      "db_column": "product_name",
+      "amazon_header": "Product name",
+      "type": "str"
+    },
+    {
+      "db_column": "condition",
+      "amazon_header": "Condition",
+      "type": "str"
+    },
+    {
+      "db_column": "status_change_date",
+      "amazon_header": "Status Change Date",
+      "type": "str"
+    },
+    {
+      "db_column": "issue_description",
+      "amazon_header": "Issue Description (also: 'Issue description' on myStore-CA; 'Description du problème' on FR-account-default EU)",
+      "type": "str"
+    },
+    {
+      "db_column": "country_code",
+      "amazon_header": "(injected by per_mkt fan-out)",
+      "type": "str"
+    },
+    {
+      "db_column": "snapshot_date",
+      "amazon_header": "(injected by ingest worker)",
+      "type": "date"
+    }
+  ],
+  "example_query": {
+    "store": "myStore-AE",
+    "tables": [
+      "rpt_suppressed_listings"
+    ],
+    "columns": [
+      "rpt_suppressed_listings.status",
+      "rpt_suppressed_listings.reason",
+      "rpt_suppressed_listings.sku"
+    ],
+    "filters": [],
+    "order_by": [
+      {
+        "column": "rpt_suppressed_listings.status",
+        "dir": "asc"
+      }
+    ],
+    "limit": 100,
+    "report_date": "latest"
+  }
+}

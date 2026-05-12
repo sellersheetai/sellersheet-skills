@@ -1,0 +1,25 @@
+{
+  "_meta": {
+    "table": "rpt_inventory_adjustments",
+    "report_type": "GET_FBA_FULFILLMENT_INVENTORY_ADJUSTMENTS_DATA",
+    "is_snapshot": false,
+    "description": "RETIRED 2026-05-04. Report type 2605 throttled by Amazon across every store. Table preserved for legacy reads only.",
+    "pii": false,
+    "queryable": false,
+    "deprecated": true,
+    "retired_at": "2026-05-04",
+    "strategy": "request",
+    "date_column": "report_date",
+    "unique_key": [
+      "store_id",
+      "adjusted_date",
+      "sku",
+      "fnsku",
+      "fulfillment_center_id",
+      "reason"
+    ],
+    "cron": "0 8 * * *"
+  },
+  "columns": [],
+  "example_query": null
+}

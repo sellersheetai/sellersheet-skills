@@ -1,0 +1,77 @@
+{
+  "_meta": {
+    "table": "rpt_market_basket",
+    "report_type": "GET_BRAND_ANALYTICS_MARKET_BASKET_REPORT",
+    "is_snapshot": false,
+    "description": "Brand Analytics market basket combinations.",
+    "pii": false,
+    "queryable": true,
+    "deprecated": false,
+    "strategy": "request",
+    "date_column": "report_date",
+    "unique_key": [
+      "store_id",
+      "report_date",
+      "asin",
+      "purchasedwithasin"
+    ],
+    "cron": "0 10 * * 2"
+  },
+  "columns": [
+    {
+      "db_column": "databyasin",
+      "amazon_header": "dataByAsin",
+      "type": "str"
+    },
+    {
+      "db_column": "startdate",
+      "amazon_header": "startDate",
+      "type": "date"
+    },
+    {
+      "db_column": "enddate",
+      "amazon_header": "endDate",
+      "type": "date"
+    },
+    {
+      "db_column": "asin",
+      "amazon_header": "asin",
+      "type": "str"
+    },
+    {
+      "db_column": "purchasedwithasin",
+      "amazon_header": "purchasedWithAsin",
+      "type": "str"
+    },
+    {
+      "db_column": "purchasedwithrank",
+      "amazon_header": "purchasedWithRank",
+      "type": "int"
+    },
+    {
+      "db_column": "combinationpct",
+      "amazon_header": "combinationPct",
+      "type": "decimal"
+    }
+  ],
+  "example_query": {
+    "store": "myStore-AE",
+    "tables": [
+      "rpt_market_basket"
+    ],
+    "columns": [
+      "rpt_market_basket.databyasin",
+      "rpt_market_basket.startdate",
+      "rpt_market_basket.enddate"
+    ],
+    "filters": [],
+    "order_by": [
+      {
+        "column": "rpt_market_basket.databyasin",
+        "dir": "asc"
+      }
+    ],
+    "limit": 100,
+    "report_date": "latest"
+  }
+}

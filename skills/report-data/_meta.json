@@ -1,0 +1,791 @@
+{
+  "_meta": {
+    "description": "Index of SellerSheet SP report tables. Load this first, then load reference/<table>.json for column details.",
+    "queryable_via": "query_report_data",
+    "enable_via": "enable_report_sync",
+    "trigger_via": "trigger_report_sync",
+    "list_via": "list_report_syncs",
+    "pii_tables": [
+      "rpt_fba_shipments",
+      "rpt_seller_feedback"
+    ],
+    "poll_only_tables": [
+      "rpt_settlements"
+    ]
+  },
+  "tables": [
+    {
+      "table": "rpt_afn_inventory",
+      "report_type": "GET_AFN_INVENTORY_DATA",
+      "is_snapshot": true,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "request",
+      "description": "AFN sellable inventory snapshot per SKU/FNSKU.",
+      "key_columns": [
+        "seller_sku",
+        "fnsku",
+        "asin",
+        "snapshot_date"
+      ],
+      "reference": "reference/rpt_afn_inventory.json"
+    },
+    {
+      "table": "rpt_fba_fee_preview",
+      "report_type": "GET_FBA_ESTIMATED_FBA_FEES_TXT_DATA",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "request",
+      "description": "Estimated FBA fee preview snapshots.",
+      "key_columns": [
+        "sku",
+        "fnsku",
+        "asin",
+        "report_date"
+      ],
+      "reference": "reference/rpt_fba_fee_preview.json"
+    },
+    {
+      "table": "rpt_fba_inventory_health",
+      "report_type": "GET_FBA_INVENTORY_PLANNING_DATA",
+      "is_snapshot": true,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "request",
+      "description": "FBA inventory health and age-bucket snapshot.",
+      "key_columns": [
+        "sku",
+        "fnsku",
+        "asin",
+        "snapshot_date"
+      ],
+      "reference": "reference/rpt_fba_inventory_health.json"
+    },
+    {
+      "table": "rpt_fba_reimbursements",
+      "report_type": "GET_FBA_REIMBURSEMENTS_DATA",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "request",
+      "description": "FBA reimbursement events and amounts.",
+      "key_columns": [
+        "approval_date",
+        "reimbursement_id",
+        "case_id",
+        "report_date"
+      ],
+      "reference": "reference/rpt_fba_reimbursements.json"
+    },
+    {
+      "table": "rpt_fba_returns",
+      "report_type": "GET_FBA_FULFILLMENT_CUSTOMER_RETURNS_DATA",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "request",
+      "description": "FBA customer return events by SKU and fulfillment center.",
+      "key_columns": [
+        "return_date",
+        "order_id",
+        "sku",
+        "report_date"
+      ],
+      "reference": "reference/rpt_fba_returns.json"
+    },
+    {
+      "table": "rpt_fba_shipments",
+      "report_type": "GET_AMAZON_FULFILLED_SHIPMENTS_DATA_GENERAL",
+      "is_snapshot": false,
+      "queryable": false,
+      "pii": true,
+      "deprecated": false,
+      "strategy": "request",
+      "description": "Amazon-fulfilled shipment rows including encrypted buyer PII.",
+      "key_columns": [
+        "amazon_order_id",
+        "merchant_order_id",
+        "shipment_id",
+        "report_date"
+      ],
+      "reference": "reference/rpt_fba_shipments.json"
+    },
+    {
+      "table": "rpt_inventory_adjustments",
+      "report_type": "GET_FBA_FULFILLMENT_INVENTORY_ADJUSTMENTS_DATA",
+      "is_snapshot": false,
+      "queryable": false,
+      "pii": false,
+      "deprecated": true,
+      "strategy": "request",
+      "description": "Deprecated inventory adjustment feed retained for legacy data.",
+      "key_columns": [
+        "report_date"
+      ],
+      "reference": "reference/rpt_inventory_adjustments.json"
+    },
+    {
+      "table": "rpt_inventory_age",
+      "report_type": "GET_FBA_INVENTORY_AGED_DATA",
+      "is_snapshot": true,
+      "queryable": false,
+      "pii": false,
+      "deprecated": true,
+      "strategy": "request",
+      "description": "Deprecated aged inventory report retained for legacy data.",
+      "key_columns": [
+        "snapshot_date"
+      ],
+      "reference": "reference/rpt_inventory_age.json"
+    },
+    {
+      "table": "rpt_inventory_ledger",
+      "report_type": "GET_LEDGER_DETAIL_VIEW_DATA",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "request",
+      "description": "Inventory ledger events across fulfillment centers.",
+      "key_columns": [
+        "date",
+        "fnsku",
+        "asin",
+        "report_date"
+      ],
+      "reference": "reference/rpt_inventory_ledger.json"
+    },
+    {
+      "table": "rpt_listings_snapshot",
+      "report_type": "GET_MERCHANT_LISTINGS_ALL_DATA",
+      "is_snapshot": true,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "request",
+      "description": "Daily all-listings snapshot for merchant catalog state. After each parse, new SKUs are automatically enriched into the listing_images table (fetch-once).",
+      "key_columns": [
+        "seller_sku",
+        "status",
+        "fulfillment_channel",
+        "snapshot_date"
+      ],
+      "reference": "reference/rpt_listings_snapshot.json"
+    },
+    {
+      "table": "listing_images",
+      "report_type": null,
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "enrichment",
+      "description": "Persistent listing image cache keyed by (store_id, country_code, seller_sku). Populated automatically after GET_MERCHANT_LISTINGS_ALL_DATA syncs — only new SKUs call ListingsItems API. No date partitioning; omit report_date when querying.",
+      "key_columns": [
+        "seller_sku",
+        "asin",
+        "main_image_url",
+        "listing_status",
+        "fetched_at"
+      ],
+      "reference": "reference/listing_images.json"
+    },
+    {
+      "table": "rpt_ltsf_charges",
+      "report_type": "GET_FBA_FULFILLMENT_LONGTERM_STORAGE_FEE_CHARGES_DATA",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "request",
+      "description": "Long-term storage fee charge data.",
+      "key_columns": [
+        "snapshot_date",
+        "sku",
+        "fnsku",
+        "report_date"
+      ],
+      "reference": "reference/rpt_ltsf_charges.json"
+    },
+    {
+      "table": "rpt_afn_inventory_by_country",
+      "report_type": "GET_AFN_INVENTORY_DATA_BY_COUNTRY",
+      "is_snapshot": true,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "request",
+      "description": "Per-country FBA inventory split for NARF sellers (UK->DE/FR/IT/ES/SE; US->CA/MX). Pairs with rpt_afn_inventory pool total.",
+      "key_columns": [
+        "fnsku",
+        "country",
+        "condition_type",
+        "snapshot_date"
+      ],
+      "reference": "reference/rpt_afn_inventory_by_country.json"
+    },
+    {
+      "table": "rpt_account_health",
+      "report_type": "GET_V2_SELLER_PERFORMANCE_REPORT",
+      "is_snapshot": true,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "request",
+      "description": "Per-marketplace daily snapshot of Amazon account health: AHR score+status, 9 performance rates with sub-counts, 12 policy-violation defects counts.",
+      "key_columns": [
+        "store_id",
+        "marketplace_id",
+        "snapshot_date"
+      ],
+      "reference": "reference/rpt_account_health.json"
+    },
+    {
+      "table": "rpt_demographics",
+      "report_type": "GET_BRAND_ANALYTICS_DEMOGRAPHICS_REPORT",
+      "is_snapshot": true,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "pending_reauth": true,
+      "strategy": "request",
+      "description": "Quarterly demographics per marketplace (age_range, gender, household_income, education, marital_status) — flattened to long format. PENDING customer re-OAuth after Brand Analytics app re-submission.",
+      "key_columns": [
+        "marketplace_id",
+        "period_start",
+        "period_end",
+        "dimension",
+        "bucket"
+      ],
+      "reference": "reference/rpt_demographics.json"
+    },
+    {
+      "table": "rpt_market_basket",
+      "report_type": "GET_BRAND_ANALYTICS_MARKET_BASKET_REPORT",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "request",
+      "description": "Brand Analytics market basket combinations.",
+      "key_columns": [
+        "databyasin",
+        "startdate",
+        "enddate",
+        "report_date"
+      ],
+      "reference": "reference/rpt_market_basket.json"
+    },
+    {
+      "table": "rpt_orders",
+      "report_type": "GET_FLAT_FILE_ALL_ORDERS_DATA_BY_ORDER_DATE_GENERAL",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "request",
+      "description": "Order-level flat file report with item pricing and fulfillment details.",
+      "key_columns": [
+        "amazon_order_id",
+        "merchant_order_id",
+        "purchase_date",
+        "report_date"
+      ],
+      "reference": "reference/rpt_orders.json"
+    },
+    {
+      "table": "rpt_removal_orders",
+      "report_type": "GET_FBA_FULFILLMENT_REMOVAL_ORDER_DETAIL_DATA",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "request",
+      "description": "FBA removal order events and quantity outcomes.",
+      "key_columns": [
+        "request_date",
+        "order_id",
+        "order_source",
+        "report_date"
+      ],
+      "reference": "reference/rpt_removal_orders.json"
+    },
+    {
+      "table": "rpt_repeat_purchase",
+      "report_type": "GET_BRAND_ANALYTICS_REPEAT_PURCHASE_REPORT",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "request",
+      "description": "Brand Analytics repeat purchase summary.",
+      "key_columns": [
+        "startdate",
+        "enddate",
+        "asin",
+        "report_date"
+      ],
+      "reference": "reference/rpt_repeat_purchase.json"
+    },
+    {
+      "table": "rpt_restock_recommendations",
+      "report_type": "GET_FBA_INVENTORY_PLANNING_DATA",
+      "is_snapshot": true,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "request",
+      "description": "Restock recommendation snapshot from Amazon.",
+      "key_columns": [
+        "country",
+        "product_name",
+        "fnsku",
+        "snapshot_date"
+      ],
+      "reference": "reference/rpt_restock_recommendations.json"
+    },
+    {
+      "table": "rpt_returns",
+      "report_type": "GET_FLAT_FILE_RETURNS_DATA_BY_RETURN_DATE",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "request",
+      "description": "Merchant returns flat file with request and resolution details.",
+      "key_columns": [
+        "order_id",
+        "order_date",
+        "return_request_date",
+        "report_date"
+      ],
+      "reference": "reference/rpt_returns.json"
+    },
+    {
+      "table": "rpt_sales_and_traffic",
+      "report_type": "GET_SALES_AND_TRAFFIC_REPORT",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "pending_reauth": true,
+      "strategy": "request",
+      "description": "Sales and Traffic by ASIN/SKU/marketplace/day. TACOS denominator. PENDING customer re-OAuth after Brand Analytics app re-submission — table will be empty until customers re-auth on the new app version.",
+      "key_columns": [
+        "date",
+        "child_asin",
+        "sku",
+        "country_code"
+      ],
+      "reference": "reference/rpt_sales_and_traffic.json"
+    },
+    {
+      "table": "rpt_search_terms_analytics",
+      "report_type": "GET_BRAND_ANALYTICS_SEARCH_TERMS_REPORT",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "request",
+      "description": "Brand Analytics search term performance report.",
+      "key_columns": [
+        "searchterm",
+        "searchfrequencyrank",
+        "clickedasin",
+        "report_date"
+      ],
+      "reference": "reference/rpt_search_terms_analytics.json"
+    },
+    {
+      "table": "rpt_seller_feedback",
+      "report_type": "GET_SELLER_FEEDBACK_DATA",
+      "is_snapshot": false,
+      "queryable": false,
+      "pii": true,
+      "deprecated": false,
+      "strategy": "request",
+      "description": "Seller feedback rows with encrypted rater email.",
+      "key_columns": [
+        "date",
+        "rating",
+        "order_id",
+        "report_date"
+      ],
+      "reference": "reference/rpt_seller_feedback.json"
+    },
+    {
+      "table": "rpt_settlements",
+      "report_type": "GET_V2_SETTLEMENT_REPORT_DATA_FLAT_FILE_V2",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "poll_only",
+      "description": "Settlement flat file rows from Amazon poll-only delivery.",
+      "key_columns": [
+        "settlement_id",
+        "settlement_start_date",
+        "settlement_end_date",
+        "posted_date"
+      ],
+      "reference": "reference/rpt_settlements.json"
+    },
+    {
+      "table": "rpt_storage_fees",
+      "report_type": "GET_FBA_STORAGE_FEE_CHARGES_DATA",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "request",
+      "description": "Monthly storage fee charge data.",
+      "key_columns": [
+        "asin",
+        "fnsku",
+        "product_name",
+        "report_date"
+      ],
+      "reference": "reference/rpt_storage_fees.json"
+    },
+    {
+      "table": "rpt_stranded_inventory",
+      "report_type": "GET_STRANDED_INVENTORY_UI_DATA",
+      "is_snapshot": true,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "request",
+      "description": "Stranded inventory snapshot with removal actions.",
+      "key_columns": [
+        "primary_action",
+        "date_stranded",
+        "date_to_take_auto_removal",
+        "snapshot_date"
+      ],
+      "reference": "reference/rpt_stranded_inventory.json"
+    },
+    {
+      "table": "rpt_suppressed_listings",
+      "report_type": "GET_MERCHANTS_LISTINGS_FYP_REPORT",
+      "is_snapshot": true,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "request",
+      "description": "Suppressed listings snapshot with issue reasons.",
+      "key_columns": [
+        "status",
+        "reason",
+        "sku",
+        "snapshot_date"
+      ],
+      "reference": "reference/rpt_suppressed_listings.json"
+    },
+    {
+      "table": "rpt_sp_campaigns",
+      "report_type": "SP_CAMPAIGNS",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ad_cron",
+      "description": "Sponsored Products campaign-level daily performance.",
+      "key_columns": ["campaign_id", "campaign_name", "spend", "sales_14d", "report_date"],
+      "reference": "reference/rpt_sp_campaigns.json"
+    },
+    {
+      "table": "rpt_sp_campaign_placement",
+      "report_type": "spCampaigns (groupBy=campaignPlacement)",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ad_cron",
+      "description": "SP campaign x placement performance (Top of Search / Detail Page / Other on-Amazon). top_of_search_impression_share populated only when Amazon has enough volume to disclose.",
+      "key_columns": ["profile_id", "report_date", "campaign_id", "placement_classification"],
+      "reference": "reference/rpt_sp_campaign_placement.json"
+    },
+    {
+      "table": "rpt_sp_keywords",
+      "report_type": "SP_KEYWORDS",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ad_cron",
+      "description": "Sponsored Products keyword-level daily performance.",
+      "key_columns": ["keyword", "match_type", "spend", "sales_14d", "report_date"],
+      "reference": "reference/rpt_sp_keywords.json"
+    },
+    {
+      "table": "rpt_sp_targets",
+      "report_type": "SP_TARGETS",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ad_cron",
+      "description": "Sponsored Products target-level daily performance.",
+      "key_columns": ["targeting_text", "targeting_type", "spend", "sales_14d", "report_date"],
+      "reference": "reference/rpt_sp_targets.json"
+    },
+    {
+      "table": "rpt_sp_search_terms",
+      "report_type": "SP_SEARCH_TERMS",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ad_cron",
+      "description": "Sponsored Products search term report.",
+      "key_columns": ["search_term", "keyword", "spend", "purchases_14d", "report_date"],
+      "reference": "reference/rpt_sp_search_terms.json"
+    },
+    {
+      "table": "rpt_sp_advertised_products",
+      "report_type": "SP_ADVERTISED_PRODUCTS",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ad_cron",
+      "description": "Sponsored Products advertised product daily performance.",
+      "key_columns": ["advertised_sku", "advertised_asin", "spend", "sales_14d", "report_date"],
+      "reference": "reference/rpt_sp_advertised_products.json"
+    },
+    {
+      "table": "rpt_sp_purchased_products",
+      "report_type": "SP_PURCHASED_PRODUCTS",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ad_cron",
+      "description": "Sponsored Products purchased products report.",
+      "key_columns": ["advertised_sku", "purchased_asin", "purchases_14d", "sales_14d", "report_date"],
+      "reference": "reference/rpt_sp_purchased_products.json"
+    },
+    {
+      "table": "rpt_sp_ad_groups",
+      "report_type": "SP_AD_GROUPS",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ad_cron",
+      "description": "Sponsored Products ad group daily performance.",
+      "key_columns": ["campaign_name", "ad_group_name", "spend", "sales_14d", "report_date"],
+      "reference": "reference/rpt_sp_ad_groups.json"
+    },
+    {
+      "table": "rpt_sb_campaigns",
+      "report_type": "SB_CAMPAIGNS",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ad_cron",
+      "description": "Sponsored Brands campaign-level daily performance.",
+      "key_columns": ["campaign_id", "campaign_name", "cost", "sales", "report_date"],
+      "reference": "reference/rpt_sb_campaigns.json"
+    },
+    {
+      "table": "rpt_sb_keywords",
+      "report_type": "SB_KEYWORDS",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ad_cron",
+      "description": "Sponsored Brands keyword-level daily performance.",
+      "key_columns": ["keyword", "match_type", "cost", "sales", "report_date"],
+      "reference": "reference/rpt_sb_keywords.json"
+    },
+    {
+      "table": "rpt_sb_targets",
+      "report_type": "SB_TARGETS",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ad_cron",
+      "description": "Sponsored Brands target-level daily performance.",
+      "key_columns": ["targeting_text", "cost", "sales", "report_date"],
+      "reference": "reference/rpt_sb_targets.json"
+    },
+    {
+      "table": "rpt_sb_search_terms",
+      "report_type": "SB_SEARCH_TERMS",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ad_cron",
+      "description": "Sponsored Brands search term report.",
+      "key_columns": ["search_term", "keyword", "cost", "report_date"],
+      "reference": "reference/rpt_sb_search_terms.json"
+    },
+    {
+      "table": "rpt_sb_advertised_products",
+      "report_type": "SB_ADVERTISED_PRODUCTS",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ad_cron",
+      "description": "Sponsored Brands advertised product daily performance.",
+      "key_columns": ["advertised_asin", "cost", "sales", "report_date"],
+      "reference": "reference/rpt_sb_advertised_products.json"
+    },
+    {
+      "table": "rpt_sb_purchased_products",
+      "report_type": "SB_PURCHASED_PRODUCTS",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ad_cron",
+      "description": "Sponsored Brands purchased products report.",
+      "key_columns": ["purchased_asin", "purchases", "sales", "report_date"],
+      "reference": "reference/rpt_sb_purchased_products.json"
+    },
+    {
+      "table": "rpt_sb_ad_groups",
+      "report_type": "SB_AD_GROUPS",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ad_cron",
+      "description": "Sponsored Brands ad group daily performance.",
+      "key_columns": ["campaign_name", "ad_group_name", "cost", "sales", "report_date"],
+      "reference": "reference/rpt_sb_ad_groups.json"
+    },
+    {
+      "table": "rpt_sd_campaigns",
+      "report_type": "SD_CAMPAIGNS",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ad_cron",
+      "description": "Sponsored Display campaign-level daily performance.",
+      "key_columns": ["campaign_id", "campaign_name", "cost", "sales", "report_date"],
+      "reference": "reference/rpt_sd_campaigns.json"
+    },
+    {
+      "table": "rpt_sd_targets",
+      "report_type": "SD_TARGETS",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ad_cron",
+      "description": "Sponsored Display target-level daily performance.",
+      "key_columns": ["targeting_text", "cost", "sales", "report_date"],
+      "reference": "reference/rpt_sd_targets.json"
+    },
+    {
+      "table": "rpt_sd_advertised_products",
+      "report_type": "SD_ADVERTISED_PRODUCTS",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ad_cron",
+      "description": "Sponsored Display advertised product daily performance.",
+      "key_columns": ["asin", "sku", "cost", "sales", "report_date"],
+      "reference": "reference/rpt_sd_advertised_products.json"
+    },
+    {
+      "table": "rpt_sd_ad_groups",
+      "report_type": "SD_AD_GROUPS",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ad_cron",
+      "description": "Sponsored Display ad group daily performance.",
+      "key_columns": ["campaign_name", "ad_group_name", "cost", "sales", "report_date"],
+      "reference": "reference/rpt_sd_ad_groups.json"
+    },
+    {
+      "table": "rpt_sp_negative_keywords",
+      "report_type": "spNegativeKeywords",
+      "is_snapshot": true,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ads_list",
+      "description": "Sponsored Products ad-group-level negative keywords. Daily snapshot. Use to filter search-term mining queries: LEFT JOIN ON (campaign_id, ad_group_id, lower(keyword_text)) WHERE state='ENABLED' AND r.keyword_id IS NULL surfaces terms not yet negated.",
+      "key_columns": ["keyword_id", "campaign_id", "ad_group_id", "keyword_text", "match_type", "state", "snapshot_date"],
+      "reference": "reference/rpt_sp_negative_keywords.json"
+    },
+    {
+      "table": "rpt_sp_campaign_negative_keywords",
+      "report_type": "spCampaignNegativeKeywords",
+      "is_snapshot": true,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ads_list",
+      "description": "Sponsored Products campaign-level negative keywords (apply across every ad group within a campaign). Daily snapshot. Pair with rpt_sp_negative_keywords for full-coverage negation lookup.",
+      "key_columns": ["keyword_id", "campaign_id", "keyword_text", "match_type", "state", "snapshot_date"],
+      "reference": "reference/rpt_sp_campaign_negative_keywords.json"
+    },
+    {
+      "table": "rpt_sp_negative_targets",
+      "report_type": "spNegativeTargets",
+      "is_snapshot": true,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ads_list",
+      "description": "Sponsored Products ad-group-level negative product targets (ASIN / category exclusions). Daily snapshot. targeting_expression is a JSON-stringified Amazon clause array — parse to extract the negated ASIN(s) or category id(s).",
+      "key_columns": ["target_id", "campaign_id", "ad_group_id", "targeting_expression", "expression_type", "state", "snapshot_date"],
+      "reference": "reference/rpt_sp_negative_targets.json"
+    },
+    {
+      "table": "rpt_sp_campaign_negative_targets",
+      "report_type": "spCampaignNegativeTargets",
+      "is_snapshot": true,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ads_list",
+      "description": "Sponsored Products campaign-level negative product targets. Daily snapshot. Campaign-scope negatives apply to every ad group within the campaign.",
+      "key_columns": ["target_id", "campaign_id", "targeting_expression", "expression_type", "state", "snapshot_date"],
+      "reference": "reference/rpt_sp_campaign_negative_targets.json"
+    },
+    {
+      "table": "rpt_sb_negative_keywords",
+      "report_type": "sbNegativeKeywords",
+      "is_snapshot": true,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ads_list",
+      "description": "Sponsored Brands negative keywords. Daily snapshot. Separate from SP — different keyword_id namespace, different Amazon endpoint.",
+      "key_columns": ["keyword_id", "campaign_id", "ad_group_id", "keyword_text", "match_type", "state", "snapshot_date"],
+      "reference": "reference/rpt_sb_negative_keywords.json"
+    },
+    {
+      "table": "rpt_sd_negative_targets",
+      "report_type": "sdNegativeTargets",
+      "is_snapshot": true,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ads_list",
+      "description": "Sponsored Display negative targets. Daily snapshot. SD has only target-level negatives (no separate keyword negatives or campaign-level endpoint as of API v3).",
+      "key_columns": ["target_id", "campaign_id", "ad_group_id", "targeting_expression", "expression_type", "state", "snapshot_date"],
+      "reference": "reference/rpt_sd_negative_targets.json"
+    }
+  ]
+}

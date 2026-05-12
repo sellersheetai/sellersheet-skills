@@ -1,0 +1,37 @@
+{
+  "_meta": {
+    "table": "rpt_seller_feedback",
+    "report_type": "GET_SELLER_FEEDBACK_DATA",
+    "is_snapshot": false,
+    "description": "Seller feedback rows with encrypted rater email.",
+    "pii": true,
+    "queryable": false,
+    "deprecated": false,
+    "strategy": "request",
+    "date_column": "report_date",
+    "unique_key": [
+      "store_id",
+      "order_id",
+      "date"
+    ],
+    "cron": "0 9 * * *"
+  },
+  "columns": [
+    {
+      "db_column": "date",
+      "amazon_header": "Date",
+      "type": "date"
+    },
+    {
+      "db_column": "rating",
+      "amazon_header": "Rating",
+      "type": "int"
+    },
+    {
+      "db_column": "order_id",
+      "amazon_header": "Order ID",
+      "type": "str"
+    }
+  ],
+  "example_query": null
+}

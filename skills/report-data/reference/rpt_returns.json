@@ -1,0 +1,219 @@
+{
+  "_meta": {
+    "table": "rpt_returns",
+    "report_type": "GET_FLAT_FILE_RETURNS_DATA_BY_RETURN_DATE",
+    "is_snapshot": false,
+    "description": "Merchant returns flat file with request and resolution details.",
+    "pii": false,
+    "queryable": true,
+    "deprecated": false,
+    "strategy": "request",
+    "date_column": "report_date",
+    "unique_key": [
+      "store_id",
+      "report_date",
+      "order_id",
+      "merchant_sku",
+      "amazon_rma_id"
+    ],
+    "cron": "0 9 * * *"
+  },
+  "columns": [
+    {
+      "db_column": "order_id",
+      "amazon_header": "Order ID",
+      "type": "str"
+    },
+    {
+      "db_column": "order_date",
+      "amazon_header": "Order date",
+      "type": "date"
+    },
+    {
+      "db_column": "return_request_date",
+      "amazon_header": "Return request date",
+      "type": "date"
+    },
+    {
+      "db_column": "return_request_status",
+      "amazon_header": "Return request status",
+      "type": "str"
+    },
+    {
+      "db_column": "amazon_rma_id",
+      "amazon_header": "Amazon RMA ID",
+      "type": "str"
+    },
+    {
+      "db_column": "merchant_rma_id",
+      "amazon_header": "Merchant RMA ID",
+      "type": "str"
+    },
+    {
+      "db_column": "label_type",
+      "amazon_header": "Label type",
+      "type": "str"
+    },
+    {
+      "db_column": "label_cost",
+      "amazon_header": "Label cost",
+      "type": "decimal"
+    },
+    {
+      "db_column": "currency_code",
+      "amazon_header": "Currency code",
+      "type": "str"
+    },
+    {
+      "db_column": "return_carrier",
+      "amazon_header": "Return carrier",
+      "type": "str"
+    },
+    {
+      "db_column": "tracking_id",
+      "amazon_header": "Tracking ID",
+      "type": "str"
+    },
+    {
+      "db_column": "label_to_be_paid_by",
+      "amazon_header": "Label to be paid by",
+      "type": "str"
+    },
+    {
+      "db_column": "a_to_z_claim",
+      "amazon_header": "A-to-Z Claim",
+      "type": "str"
+    },
+    {
+      "db_column": "is_prime",
+      "amazon_header": "Is prime",
+      "type": "str"
+    },
+    {
+      "db_column": "asin",
+      "amazon_header": "ASIN",
+      "type": "str"
+    },
+    {
+      "db_column": "merchant_sku",
+      "amazon_header": "Merchant SKU",
+      "type": "str"
+    },
+    {
+      "db_column": "item_name",
+      "amazon_header": "Item Name",
+      "type": "str"
+    },
+    {
+      "db_column": "return_quantity",
+      "amazon_header": "Return quantity",
+      "type": "int"
+    },
+    {
+      "db_column": "return_reason",
+      "amazon_header": "Return Reason",
+      "type": "str"
+    },
+    {
+      "db_column": "in_policy",
+      "amazon_header": "In policy",
+      "type": "str"
+    },
+    {
+      "db_column": "return_type",
+      "amazon_header": "Return type",
+      "type": "str"
+    },
+    {
+      "db_column": "resolution",
+      "amazon_header": "Resolution",
+      "type": "str"
+    },
+    {
+      "db_column": "invoice_number",
+      "amazon_header": "Invoice number",
+      "type": "str"
+    },
+    {
+      "db_column": "return_delivery_date",
+      "amazon_header": "Return delivery date",
+      "type": "date"
+    },
+    {
+      "db_column": "order_amount",
+      "amazon_header": "Order Amount",
+      "type": "decimal"
+    },
+    {
+      "db_column": "order_quantity",
+      "amazon_header": "Order quantity",
+      "type": "int"
+    },
+    {
+      "db_column": "safet_action_reason",
+      "amazon_header": "SafeT Action reason",
+      "type": "str"
+    },
+    {
+      "db_column": "safet_claim_id",
+      "amazon_header": "SafeT claim id",
+      "type": "str"
+    },
+    {
+      "db_column": "safet_claim_state",
+      "amazon_header": "SafeT claim state",
+      "type": "str"
+    },
+    {
+      "db_column": "safet_claim_creation_time",
+      "amazon_header": "SafeT claim creation time",
+      "type": "str"
+    },
+    {
+      "db_column": "safet_claim_reimbursement_amount",
+      "amazon_header": "SafeT claim reimbursement amount",
+      "type": "decimal"
+    },
+    {
+      "db_column": "refunded_amount",
+      "amazon_header": "Refunded Amount",
+      "type": "decimal"
+    },
+    {
+      "db_column": "category",
+      "amazon_header": "Category",
+      "type": "str"
+    },
+    {
+      "db_column": "vat_amount",
+      "amazon_header": "VAT",
+      "type": "decimal",
+      "note": "EU/UK B2B refunds — VAT amount on the refund line"
+    },
+    {
+      "db_column": "order_item_id",
+      "amazon_header": "Order Item ID",
+      "type": "str"
+    }
+  ],
+  "example_query": {
+    "store": "myStore-AE",
+    "tables": [
+      "rpt_returns"
+    ],
+    "columns": [
+      "rpt_returns.order_id",
+      "rpt_returns.order_date",
+      "rpt_returns.return_request_date"
+    ],
+    "filters": [],
+    "order_by": [
+      {
+        "column": "rpt_returns.order_id",
+        "dir": "asc"
+      }
+    ],
+    "limit": 100,
+    "report_date": "latest"
+  }
+}

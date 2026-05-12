@@ -1,0 +1,111 @@
+{
+  "_meta": {
+    "table": "rpt_fba_returns",
+    "report_type": "GET_FBA_FULFILLMENT_CUSTOMER_RETURNS_DATA",
+    "is_snapshot": false,
+    "description": "FBA customer return events by SKU and fulfillment center.",
+    "pii": false,
+    "queryable": true,
+    "deprecated": false,
+    "strategy": "request",
+    "date_column": "report_date",
+    "unique_key": [
+      "store_id",
+      "return_date",
+      "order_id",
+      "sku",
+      "fulfillment_center_id"
+    ],
+    "cron": "0 9 * * *"
+  },
+  "columns": [
+    {
+      "db_column": "return_date",
+      "amazon_header": "return-date",
+      "type": "date",
+      "note": "Sparsely populated by Amazon. Verified 2026-05-07 across 947 lifetime test rows: only 73 (7.7%) have a non-NULL value; recent rows uniformly NULL. Parser maps the column correctly — empty values mean Amazon shipped no return-date for that row. The column is part of UNIQUE_COLS but PostgreSQL allows multiple NULL rows under composite-key uniqueness, so dedup still works on (store_id, order_id, sku, fulfillment_center_id) when return_date is NULL. Treat as best-effort: when filtering on a date range, expect to miss most rows. Alternative: filter by `report_date` (always present)."
+    },
+    {
+      "db_column": "order_id",
+      "amazon_header": "order-id",
+      "type": "str"
+    },
+    {
+      "db_column": "sku",
+      "amazon_header": "sku",
+      "type": "str"
+    },
+    {
+      "db_column": "asin",
+      "amazon_header": "asin",
+      "type": "str"
+    },
+    {
+      "db_column": "fnsku",
+      "amazon_header": "fnsku",
+      "type": "str"
+    },
+    {
+      "db_column": "product_name",
+      "amazon_header": "product-name",
+      "type": "str"
+    },
+    {
+      "db_column": "quantity",
+      "amazon_header": "quantity",
+      "type": "int"
+    },
+    {
+      "db_column": "fulfillment_center_id",
+      "amazon_header": "fulfillment-center-id",
+      "type": "str"
+    },
+    {
+      "db_column": "detailed_disposition",
+      "amazon_header": "detailed-disposition",
+      "type": "str"
+    },
+    {
+      "db_column": "reason",
+      "amazon_header": "reason",
+      "type": "str"
+    },
+    {
+      "db_column": "license_plate_number",
+      "amazon_header": "license-plate-number",
+      "type": "str"
+    },
+    {
+      "db_column": "customer_comments",
+      "amazon_header": "customer-comments",
+      "type": "str"
+    },
+    {
+      "db_column": "status",
+      "amazon_header": "status",
+      "type": "str",
+      "values": ["Unit returned to inventory", "Repackaged Successfully", "..."],
+      "note": "EU only — promoted from extra 2026-05-04"
+    }
+  ],
+  "example_query": {
+    "store": "myStore-AE",
+    "tables": [
+      "rpt_fba_returns"
+    ],
+    "columns": [
+      "rpt_fba_returns.return_date",
+      "rpt_fba_returns.order_id",
+      "rpt_fba_returns.sku"
+    ],
+    "filters": [],
+    "order_by": [
+      {
+        "column": "rpt_fba_returns.return_date",
+        "dir": "asc"
+      }
+    ],
+    "limit": 100,
+    "report_date": "latest"
+  }
+}

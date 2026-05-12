@@ -1,0 +1,114 @@
+{
+  "_meta": {
+    "table": "rpt_ltsf_charges",
+    "report_type": "GET_FBA_FULFILLMENT_LONGTERM_STORAGE_FEE_CHARGES_DATA",
+    "is_snapshot": false,
+    "description": "Long-term storage fee charge data.",
+    "pii": false,
+    "queryable": true,
+    "deprecated": false,
+    "strategy": "request",
+    "date_column": "report_date",
+    "unique_key": [
+      "store_id",
+      "report_date",
+      "snapshot_date",
+      "fnsku",
+      "sku",
+      "country"
+    ],
+    "cron": "0 10 17 2,8 *"
+  },
+  "columns": [
+    {
+      "db_column": "snapshot_date",
+      "amazon_header": "snapshot-date",
+      "type": "date"
+    },
+    {
+      "db_column": "sku",
+      "amazon_header": "sku",
+      "type": "str"
+    },
+    {
+      "db_column": "fnsku",
+      "amazon_header": "fnsku",
+      "type": "str"
+    },
+    {
+      "db_column": "asin",
+      "amazon_header": "asin",
+      "type": "str"
+    },
+    {
+      "db_column": "product_name",
+      "amazon_header": "product-name",
+      "type": "str"
+    },
+    {
+      "db_column": "condition",
+      "amazon_header": "condition",
+      "type": "str"
+    },
+    {
+      "db_column": "per_unit_volume",
+      "amazon_header": "per-unit-volume",
+      "type": "decimal"
+    },
+    {
+      "db_column": "currency",
+      "amazon_header": "currency",
+      "type": "str"
+    },
+    {
+      "db_column": "volume_unit",
+      "amazon_header": "volume-unit",
+      "type": "str"
+    },
+    {
+      "db_column": "country",
+      "amazon_header": "country",
+      "type": "str"
+    },
+    {
+      "db_column": "qty_charged",
+      "amazon_header": "qty-charged",
+      "type": "int"
+    },
+    {
+      "db_column": "amount_charged",
+      "amazon_header": "amount-charged",
+      "type": "decimal"
+    },
+    {
+      "db_column": "surcharge_age_tier",
+      "amazon_header": "surcharge-age-tier",
+      "type": "str"
+    },
+    {
+      "db_column": "rate_surcharge",
+      "amazon_header": "rate-surcharge",
+      "type": "decimal"
+    }
+  ],
+  "example_query": {
+    "store": "myStore-AE",
+    "tables": [
+      "rpt_ltsf_charges"
+    ],
+    "columns": [
+      "rpt_ltsf_charges.snapshot_date",
+      "rpt_ltsf_charges.sku",
+      "rpt_ltsf_charges.fnsku"
+    ],
+    "filters": [],
+    "order_by": [
+      {
+        "column": "rpt_ltsf_charges.snapshot_date",
+        "dir": "asc"
+      }
+    ],
+    "limit": 100,
+    "report_date": "latest"
+  }
+}

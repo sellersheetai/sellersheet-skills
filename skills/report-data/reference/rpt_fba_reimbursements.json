@@ -1,0 +1,133 @@
+{
+  "_meta": {
+    "table": "rpt_fba_reimbursements",
+    "report_type": "GET_FBA_REIMBURSEMENTS_DATA",
+    "is_snapshot": false,
+    "description": "FBA reimbursement events and amounts.",
+    "pii": false,
+    "queryable": true,
+    "deprecated": false,
+    "strategy": "request",
+    "date_column": "report_date",
+    "unique_key": [
+      "store_id",
+      "approval_date",
+      "reimbursement_id",
+      "case_id"
+    ],
+    "cron": "0 10 * * *"
+  },
+  "columns": [
+    {
+      "db_column": "approval_date",
+      "amazon_header": "approval-date",
+      "type": "date",
+      "note": "Sparsely populated by Amazon. Verified 2026-05-07 across 387 lifetime test rows: only 5 (1.3%) have a non-NULL value; recent rows uniformly NULL. Parser maps the column correctly — empty values mean Amazon shipped no approval-date for that row. The column is part of UNIQUE_COLS but PostgreSQL allows multiple NULL rows under composite-key uniqueness, so dedup still works on (store_id, reimbursement_id, case_id) when approval_date is NULL. Treat as best-effort: when filtering on a date range, expect to miss most rows. Alternative: filter by `report_date` (always present)."
+    },
+    {
+      "db_column": "reimbursement_id",
+      "amazon_header": "reimbursement-id",
+      "type": "str"
+    },
+    {
+      "db_column": "case_id",
+      "amazon_header": "case-id",
+      "type": "str"
+    },
+    {
+      "db_column": "amazon_order_id",
+      "amazon_header": "amazon-order-id",
+      "type": "str"
+    },
+    {
+      "db_column": "reason",
+      "amazon_header": "reason",
+      "type": "str"
+    },
+    {
+      "db_column": "sku",
+      "amazon_header": "sku",
+      "type": "str"
+    },
+    {
+      "db_column": "fnsku",
+      "amazon_header": "fnsku",
+      "type": "str"
+    },
+    {
+      "db_column": "asin",
+      "amazon_header": "asin",
+      "type": "str"
+    },
+    {
+      "db_column": "product_name",
+      "amazon_header": "product-name",
+      "type": "str"
+    },
+    {
+      "db_column": "condition",
+      "amazon_header": "condition",
+      "type": "str"
+    },
+    {
+      "db_column": "currency_unit",
+      "amazon_header": "currency-unit",
+      "type": "str"
+    },
+    {
+      "db_column": "amount_per_unit",
+      "amazon_header": "amount-per-unit",
+      "type": "decimal"
+    },
+    {
+      "db_column": "amount_total",
+      "amazon_header": "amount-total",
+      "type": "decimal"
+    },
+    {
+      "db_column": "quantity_reimbursed_cash",
+      "amazon_header": "quantity-reimbursed-cash",
+      "type": "int"
+    },
+    {
+      "db_column": "quantity_reimbursed_inventory",
+      "amazon_header": "quantity-reimbursed-inventory",
+      "type": "int"
+    },
+    {
+      "db_column": "quantity_reimbursed_total",
+      "amazon_header": "quantity-reimbursed-total",
+      "type": "int"
+    },
+    {
+      "db_column": "original_reimbursement_id",
+      "amazon_header": "original-reimbursement-id",
+      "type": "str"
+    },
+    {
+      "db_column": "original_reimbursement_type",
+      "amazon_header": "original-reimbursement-type",
+      "type": "str"
+    }
+  ],
+  "example_query": {
+    "store": "myStore-AE",
+    "tables": [
+      "rpt_fba_reimbursements"
+    ],
+    "columns": [
+      "rpt_fba_reimbursements.approval_date",
+      "rpt_fba_reimbursements.reimbursement_id",
+      "rpt_fba_reimbursements.case_id"
+    ],
+    "filters": [],
+    "order_by": [
+      {
+        "column": "rpt_fba_reimbursements.approval_date",
+        "dir": "asc"
+      }
+    ],
+    "limit": 100,
+    "report_date": "latest"
+  }
+}

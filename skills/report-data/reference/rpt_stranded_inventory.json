@@ -1,0 +1,139 @@
+{
+  "_meta": {
+    "table": "rpt_stranded_inventory",
+    "report_type": "GET_STRANDED_INVENTORY_UI_DATA",
+    "is_snapshot": true,
+    "description": "Stranded inventory snapshot with removal actions.",
+    "pii": false,
+    "queryable": true,
+    "deprecated": false,
+    "strategy": "request",
+    "date_column": "snapshot_date",
+    "unique_key": [
+      "store_id",
+      "snapshot_date",
+      "sku",
+      "fnsku",
+      "stranded_reason",
+      "condition"
+    ],
+    "cron": "0 7 * * *"
+  },
+  "columns": [
+    {
+      "db_column": "primary_action",
+      "amazon_header": "primary-action",
+      "type": "str"
+    },
+    {
+      "db_column": "date_stranded",
+      "amazon_header": "date-stranded",
+      "type": "date"
+    },
+    {
+      "db_column": "date_to_take_auto_removal",
+      "amazon_header": "Date-to-take-auto-removal",
+      "type": "date"
+    },
+    {
+      "db_column": "status_primary",
+      "amazon_header": "status-primary",
+      "type": "str"
+    },
+    {
+      "db_column": "status_secondary",
+      "amazon_header": "status-secondary",
+      "type": "str"
+    },
+    {
+      "db_column": "error_message",
+      "amazon_header": "error-message",
+      "type": "str"
+    },
+    {
+      "db_column": "stranded_reason",
+      "amazon_header": "stranded-reason",
+      "type": "str"
+    },
+    {
+      "db_column": "asin",
+      "amazon_header": "asin",
+      "type": "str"
+    },
+    {
+      "db_column": "sku",
+      "amazon_header": "sku",
+      "type": "str"
+    },
+    {
+      "db_column": "image",
+      "amazon_header": "Image",
+      "type": "str"
+    },
+    {
+      "db_column": "fnsku",
+      "amazon_header": "fnsku",
+      "type": "str"
+    },
+    {
+      "db_column": "product_name",
+      "amazon_header": "product-name",
+      "type": "str"
+    },
+    {
+      "db_column": "condition",
+      "amazon_header": "condition",
+      "type": "str"
+    },
+    {
+      "db_column": "fulfilled_by",
+      "amazon_header": "fulfilled-by",
+      "type": "str"
+    },
+    {
+      "db_column": "fulfillable_qty",
+      "amazon_header": "fulfillable-qty",
+      "type": "int"
+    },
+    {
+      "db_column": "your_price",
+      "amazon_header": "your-price",
+      "type": "decimal"
+    },
+    {
+      "db_column": "unfulfillable_qty",
+      "amazon_header": "unfulfillable-qty",
+      "type": "int"
+    },
+    {
+      "db_column": "reserved_quantity",
+      "amazon_header": "reserved-quantity",
+      "type": "int"
+    },
+    {
+      "db_column": "inbound_shipped_qty",
+      "amazon_header": "inbound-shipped-qty",
+      "type": "int"
+    }
+  ],
+  "example_query": {
+    "store": "myStore-AE",
+    "tables": [
+      "rpt_stranded_inventory"
+    ],
+    "columns": [
+      "rpt_stranded_inventory.primary_action",
+      "rpt_stranded_inventory.date_stranded",
+      "rpt_stranded_inventory.date_to_take_auto_removal"
+    ],
+    "filters": [],
+    "order_by": [
+      {
+        "column": "rpt_stranded_inventory.primary_action",
+        "dir": "asc"
+      }
+    ],
+    "limit": 100,
+    "report_date": "latest"
+  }
+}
