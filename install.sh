@@ -21,6 +21,7 @@ PATH_OVERRIDE=""
 SKILLS=""
 UPDATE=0
 DRY_RUN=0
+CHECK=0
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -28,6 +29,7 @@ while [[ $# -gt 0 ]]; do
     --path)      PATH_OVERRIDE="$2"; shift 2 ;;
     --skills)    SKILLS="$2"; shift 2 ;;
     --update)    UPDATE=1; shift ;;
+    --check)     CHECK=1; shift ;;
     --dry-run)   DRY_RUN=1; shift ;;
     --version)   echo "sellersheet-skills installer $VERSION"; exit 0 ;;
     --help|-h)   cat <<EOF
@@ -47,6 +49,8 @@ OPTIONS:
                          amazon-api amazon-ads report-data fba-inbound
                          listing-optimizer listing-refurbish amazon-listing-optimizer
   --update             Pull the latest version and re-install.
+  --check              Compare installed skill versions vs the latest available;
+                       print a status table and exit (no install/update).
   --dry-run            Show what would happen without making changes.
   --version            Print installer version.
   --help               This help.
@@ -113,6 +117,57 @@ detect_target() {
   if [[ -d "$HOME/.antigravity" ]]; then echo "antigravity"; return; fi
   echo "claude-code"  # default
 }
+
+# ---------- helper: read SKILL.md version frontmatter ----------
+read_skill_version() {
+  local dir="$1"
+  awk '
+    /^---$/  { count++; if (count==2) exit; next }
+    count==1 && /^version:/ {
+      sub(/^version:[ \t]*/, "")
+      gsub(/[ '\''"]/, "")
+      print
+      exit
+    }
+  ' "$dir/SKILL.md" 2>/dev/null
+}
+
+# ---------- --check mode ----------
+if [[ $CHECK -eq 1 ]]; then
+  log "Checking installed vs available skill versions..."
+  CACHE_DIR="$HOME/.cache/sellersheet-skills"
+  if [[ ! -d "$CACHE_DIR/.git" ]]; then
+    mkdir -p "$CACHE_DIR"
+    git clone --quiet "$REPO_URL" "$CACHE_DIR"
+  else
+    (cd "$CACHE_DIR" && git pull --quiet 2>/dev/null || true)
+  fi
+  printf "\n%-30s  %-12s  %-12s  %s\n" "SKILL" "INSTALLED" "AVAILABLE" "STATUS"
+  printf "%-30s  %-12s  %-12s  %s\n" "------------------------------" "------------" "------------" "----------"
+  # Check each installed location: claude-code default, codex, gemini, etc.
+  for default_target in claude-code codex gemini antigravity; do
+    dir=$(default_path_for_target "$default_target" 2>/dev/null)
+    [[ -z "$dir" ]] && continue
+    [[ ! -d "$dir" ]] && continue
+    for skill_dir in "$CACHE_DIR/skills"/*/; do
+      name=$(basename "$skill_dir")
+      latest=$(read_skill_version "$skill_dir")
+      installed=$(read_skill_version "$dir/$name")
+      if [[ -z "$installed" ]]; then
+        installed="(missing)"; status="NOT INSTALLED — run install.sh"
+      elif [[ "$installed" == "$latest" ]]; then
+        status="up to date ✓"
+      else
+        status="OUTDATED — run install.sh --update"
+      fi
+      printf "%-30s  %-12s  %-12s  %s  [%s]\n" "$name" "$installed" "$latest" "$status" "$default_target"
+    done
+    break  # only show first detected target
+  done
+  echo ""
+  log "Done."
+  exit 0
+fi
 
 # ---------- resolve target + path ----------
 if [[ -z "$TARGET" ]]; then

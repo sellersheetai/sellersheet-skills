@@ -1,0 +1,34 @@
+{
+  "$schema": "https://sellersheetai.com/schemas/skills-versions.json",
+  "_comment_": "Public-skill version catalog. Source of truth: sellersheet-skills/.claude-plugin/marketplace.json. Regenerated on every promote.sh release. Agents may fetch this directly (https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/versions.json) OR receive it via get_user_context.skills_catalog (MCP-served, cached).",
+  "marketplace": "sellersheet-skills",
+  "marketplace_version": "0.2.0",
+  "updated_at": "2026-05-13",
+  "repository": "https://github.com/sellersheetai/sellersheet-skills",
+  "skills": [
+    {
+      "name": "sellersheet-sheets",
+      "latest_version": "0.1.0",
+      "path": "skills/sellersheet-sheets",
+      "description": "Google Sheets I/O via SellerSheet MCP — reads, writes, formats, builds reports/dashboards/financial models with brand palette, live SQL() spill, image-thumbnail patterns. Self-contained — no xlsx skill required."
+    },
+    {
+      "name": "sellersheet-dashboard",
+      "latest_version": "0.1.0",
+      "path": "skills/sellersheet-dashboard",
+      "description": "Multi-tab operator dashboards with freshness instrumentation, agent insights, status tabs. Covers inventory, PPC, account health, listings, profit/margin, returns, buy box, cash conversion. Builds on sellersheet-sheets."
+    },
+    {
+      "name": "report-data",
+      "latest_version": "0.2.0",
+      "path": "skills/report-data",
+      "description": "Amazon SP-API + Ads-API report data — query 50+ rpt_* tables in the SellerSheet warehouse, monitor sync schedules, run on-demand reports with TSV-to-Drive download."
+    }
+  ],
+  "install_commands": {
+    "claude-code": "/plugin marketplace add sellersheetai/sellersheet-skills",
+    "generic": "bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh)",
+    "update": "bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --update",
+    "check": "bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --check"
+  }
+}

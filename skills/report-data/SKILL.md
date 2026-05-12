@@ -5,6 +5,7 @@ description: >
   checking sync schedules, requesting on-demand reports, polling for completion,
   downloading TSV data to Drive, or analyzing any report table. Covers inventory,
   listings, orders, financial, brand analytics, and ad report (SP/SB/SD) tables.
+version: 0.2.0
 ---
 
 # Report Data
