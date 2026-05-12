@@ -10,6 +10,30 @@ version: 0.2.0
 
 # Report Data
 
+## Prerequisites — confirm SellerSheet MCP is connected
+
+Every operation in this skill talks to Amazon report data through the **SellerSheet MCP server**. Before doing anything else:
+
+1. **Try `get_user_context`** (the MCP tool).
+   - ❌ Tool not in your catalog OR returns auth error → SellerSheet MCP isn't set up. Surface this to the user verbatim, then STOP until they confirm setup is done:
+
+     > **SellerSheet MCP isn't connected.** To use this skill:
+     > 1. Sign up / sign in at [sellersheetai.com](https://sellersheetai.com).
+     > 2. Get your API key at [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → Settings → API.
+     > 3. Add the MCP server to your agent's config (see [setup-mcp.md](https://github.com/sellersheetai/sellersheet-skills/blob/main/docs/setup-mcp.md) for per-agent paths).
+     > 4. Restart your agent.
+     > 5. Reopen this conversation.
+
+   - ✅ Returns a user profile → continue to step 2.
+
+2. **Version check.** `get_user_context` returns `data.skills_catalog` listing the latest public-skill versions. Compare `skills_catalog.skills[name=report-data].latest_version` to the `version:` in this SKILL.md's frontmatter. If yours is older, prompt the user with `data.skills_catalog.install_commands.update`. If `skills_catalog` is missing (older MCP build), skip silently.
+
+3. **Permissions check.** `data.canUseMcp` must be true. If false, surface `data.message` (the blocking issues) and stop. Some report types require additional auth — Ads-API reports (`rpt_sp_*`, `rpt_sb_*`, `rpt_sd_*`) need Amazon Advertising profile access; Brand Analytics reports need Brand Registry.
+
+Only after all three pass: proceed with the skill body below.
+
+---
+
 ## When To Use
 
 Use this skill when the user asks for:

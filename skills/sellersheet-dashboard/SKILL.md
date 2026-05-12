@@ -6,6 +6,30 @@ version: 0.1.0
 
 # SellerSheet Operator Dashboard
 
+## Prerequisites — confirm SellerSheet MCP is connected
+
+Every operation in this skill talks to Amazon and Google Sheets through the **SellerSheet MCP server**. Before doing anything else:
+
+1. **Try `get_user_context`** (the MCP tool).
+   - ❌ Tool not in your catalog OR returns auth error → SellerSheet MCP isn't set up. Surface this to the user verbatim, then STOP until they confirm setup is done:
+
+     > **SellerSheet MCP isn't connected.** To use this skill:
+     > 1. Sign up / sign in at [sellersheetai.com](https://sellersheetai.com).
+     > 2. Get your API key at [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → Settings → API.
+     > 3. Add the MCP server to your agent's config (see [setup-mcp.md](https://github.com/sellersheetai/sellersheet-skills/blob/main/docs/setup-mcp.md) for per-agent paths).
+     > 4. Restart your agent.
+     > 5. Reopen this conversation.
+
+   - ✅ Returns a user profile → continue to step 2.
+
+2. **Version check.** `get_user_context` returns `data.skills_catalog` listing the latest public-skill versions. Compare `skills_catalog.skills[name=sellersheet-dashboard].latest_version` to the `version:` in this SKILL.md's frontmatter. If yours is older, prompt the user with `data.skills_catalog.install_commands.update`. If `skills_catalog` is missing (older MCP build), skip silently.
+
+3. **Permissions check.** `data.canUseMcp` must be true. If false, surface `data.message` (the blocking issues) and stop. For full dashboard functionality, the store also needs **Amazon Advertising profile access** (otherwise PPC tabs render as scaffolds) — verify per the Requirements block below.
+
+Only after all three pass: proceed with the skill body below.
+
+---
+
 > **Author**: sellersheetai.com
 > **Built for**: Amazon sellers running SellerSheet MCP with their own SellerSheet account
 > **Required dependencies**: see Requirements below — read the whole block before starting a build

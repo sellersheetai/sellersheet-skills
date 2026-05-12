@@ -5,6 +5,10 @@
   "marketplace_version": "0.2.0",
   "updated_at": "2026-05-13",
   "repository": "https://github.com/sellersheetai/sellersheet-skills",
+  "dashboard_url": "https://sellersheetai.com/dashboard",
+  "signup_url": "https://sellersheetai.com",
+  "setup_url": "https://github.com/sellersheetai/sellersheet-skills/blob/main/docs/setup-mcp.md",
+  "mcp_config_url": "https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/mcp/sellersheet.json",
   "skills": [
     {
       "name": "sellersheet-sheets",
