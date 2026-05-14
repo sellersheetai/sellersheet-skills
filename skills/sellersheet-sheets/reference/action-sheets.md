@@ -4,26 +4,44 @@ The `_raw_*` + `SQL()` pattern in `growable-tables.md` is for **read-mode/list v
 
 Anchored in the live SellerSheet vendor workbook redesign (May 2026). The three vendor sheets — `Vendor Orders`, `Vendor PO Items`, `Vendor PO Status` — are the canonical reference. If anything in this doc conflicts with what those sheets do, those sheets win.
 
-## The decision: 2-row header vs 4-row header
+## The decision: 3-row header vs 5-row header
 
-A sheet is one of two shapes. Pick before writing anything else.
+Every action surface gets a row-1 title banner (merged emerald). Below the banner, a sheet is one of two shapes. Pick before writing anything else.
 
 | Shape | When | Header rows | Data starts |
 |---|---|---|---|
-| **2-row** (action) | Primary workflow surface — operator's main edit target | Row 1 keys, Row 2 display | Row 3 |
-| **4-row** (filter + browse) | List/status surface with operator-tunable filters on top | Row 1 keys, Row 2 filter labels, Row 3 filter inputs, Row 4 display | Row 5 |
+| **3-row** (action) | Primary workflow surface — operator's main edit target | Row 1 title, Row 2 keys, Row 3 display | Row 4 |
+| **5-row** (filter + browse) | List/status surface with operator-tunable filters on top | Row 1 title, Row 2 keys, Row 3 filter labels, Row 4 filter inputs, Row 5 display | Row 6 |
 
-**2-row** is for sheets like `Vendor PO Items` — operator fills Ack Code / Reject Reason in the data rows themselves. The display header row gets the emerald treatment because this surface is "where the work happens."
+**3-row** is for sheets like `Vendor PO Items` and `Vendor Log` — operator fills Ack Code / Reject Reason in the data rows themselves (Items) or appends audit entries (Log). On Items the display header row gets the emerald treatment because this surface is "where the work happens"; on Log it gets navy because it's an audit trail.
 
-**4-row** is for sheets like `Vendor Orders` / `Vendor PO Status` — operator scans rows, optionally narrows the list via row-3 filter inputs (store, date range, status, etc.). Display header row gets navy because this surface is "where you browse."
+**5-row** is for sheets like `Vendor Orders` / `Vendor PO Status` — operator scans rows, optionally narrows the list via row-4 filter inputs (store, date range, status, etc.). Display header row gets navy because this surface is "where you browse."
 
-`setFrozenRows(2)` or `setFrozenRows(4)` accordingly. Get this right or scrolling breaks.
+`setFrozenRows(3)` or `setFrozenRows(5)` accordingly. Get this right or scrolling breaks.
 
-## Row anatomy — the four bands
+## Row anatomy — the five bands
 
 These names appear throughout the GAS code and this skill. Memorize them.
 
-### Row 1 — key headers (code contract, recessed)
+### Row 1 — title banner (emerald, merged, brand presence)
+
+Merged across the full column width. Brand-and-context text — "SellerSheet • <SheetName>" — in white Arial 14pt bold on emerald `#10B981`. Row height ~34 px. This is the row that makes every visible tab read as one branded workbook, per the brand-standards rule "Title bars on every visible tab wear emerald."
+
+```javascript
+function styleTitleRow(sheet, lastCol, titleText) {
+  sheet.getRange(1, 1, 1, lastCol).breakApart();  // clear any prior merge
+  sheet.getRange(1, 1).setValue(titleText);
+  sheet.getRange(1, 1, 1, lastCol).merge()
+    .setFontFamily('Arial').setFontSize(14).setFontColor('#FFFFFF')
+    .setBackground('#10B981').setFontWeight('bold')
+    .setVerticalAlignment('middle').setHorizontalAlignment('center');
+  sheet.setRowHeight(1, 34);
+}
+```
+
+Title text format: `'SellerSheet • <SheetName>'` (use the bullet `•` U+2022 between brand and sheet name). Keep it short — this row should not need to wrap. The title row counts toward `setFrozenRows`.
+
+### Row 2 — key headers (code contract, recessed)
 
 The CODE reads/writes by these names via `getColumnMapping(headers)` lookup. Humans should barely see this row. Style:
 
@@ -37,19 +55,19 @@ The recessed styling tells the human "this is for the machine — don't worry ab
 
 ```javascript
 // helper used in setupVendorSheet
-function styleKeyHeaderRow(sheet, lastCol) {
-  sheet.getRange(1, 1, 1, lastCol)
+function styleKeyHeaderRow(sheet, row, lastCol) {
+  sheet.getRange(row, 1, 1, lastCol)
     .setFontFamily('Arial').setFontSize(7).setFontColor('#A8AEB8')
     .setBackground('#FFFFFF').setFontWeight('normal').setVerticalAlignment('middle');
-  sheet.setRowHeight(1, 14);
+  sheet.setRowHeight(row, 14);
 }
 ```
 
-### Row 2 — emerald label row (action) OR filter-label band (4-row)
+### Row 3 — emerald display row (3-row sheet) OR filter-label band (5-row sheet)
 
-In a **2-row sheet**, row 2 is the display header — emerald background with white bold Arial 10pt text. This is "the row humans look at." Example: `Vendor PO Items` row 2 = `Image | Image URL | Store | Vendor Code | PO State | PO Number | Seq # | ASIN | Vendor SKU | Ordered Qty | Back Order OK | Ack Code ✏️ | ...`
+In a **3-row sheet**, row 3 is the display header — emerald background with white bold Arial 10pt text. This is "the row humans look at." Example: `Vendor PO Items` row 3 = `Image | Image URL | Store | Vendor Code | PO State | PO Number | Seq # | ASIN | Vendor SKU | Ordered Qty | Back Order OK | Ack Code ✏️ | ...`
 
-In a **4-row sheet**, row 2 is the **filter-label band** — same emerald styling but only spans **columns A–L** (12 cells). Cols M+ get white-background padding so the emerald band stops cleanly mid-row. The narrowing band signals "filters are here; the data viewport extends wider."
+In a **5-row sheet**, row 3 is the **filter-label band** — same emerald styling but only spans **columns A–L** (12 cells). Cols M+ get white-background padding so the emerald band stops cleanly mid-row. The narrowing band signals "filters are here; the data viewport extends wider."
 
 ```javascript
 function styleEmeraldRow(sheet, row, lastCol) {
@@ -60,15 +78,15 @@ function styleEmeraldRow(sheet, row, lastCol) {
   sheet.setRowHeight(row, 28);
 }
 
-// On a 4-row sheet, emerald only spans A-L:
-styleEmeraldRow(ordersSheet, 2, 12);
+// On a 5-row sheet, emerald only spans A-L on the filter-label row:
+styleEmeraldRow(ordersSheet, 3, 12);
 // Right-pad cols M+ with white so the band stops cleanly:
-ordersSheet.getRange(2, 13, 1, lastCol - 12).setBackground('#FFFFFF');
+ordersSheet.getRange(3, 13, 1, lastCol - 12).setBackground('#FFFFFF');
 ```
 
-### Row 3 — filter input band (4-row only)
+### Row 4 — filter input band (5-row only)
 
-Light gray-blue background `[0.929, 0.945, 0.961]` (`#EDF1F5`), italic, Arial 10pt. Cells in A3:L3 are where the operator types filter values. Cols M+ stay white (continuation of the row-2 band-stop).
+Light gray-blue background `[0.929, 0.945, 0.961]` (`#EDF1F5`), italic, Arial 10pt. Cells in A4:L4 are where the operator types filter values. Cols M+ stay white (continuation of the row-3 band-stop).
 
 Filter inputs ARE the data validation surface — apply dropdowns here for Amazon enum values (see "Dropdowns" section below).
 
@@ -84,9 +102,9 @@ function styleFilterInputRow(sheet, row, lastCol) {
 
 Default values: `'DESC'` in the Sort Order column; everything else blank. Operator can type a value or pick from the dropdown. Blank = no filter applied.
 
-### Row 4 — navy display headers (4-row only)
+### Row 5 — navy display headers (5-row only)
 
-Full-width navy `[0.157, 0.2, 0.318]` (`#28334F`) band, Arial 10pt bold white text. Same style as row 2 of a 2-row sheet but in navy because this surface is read-mode, not action-mode.
+Full-width navy `[0.157, 0.2, 0.318]` (`#28334F`) band, Arial 10pt bold white text. Same style as row 3 of a 3-row sheet but in navy because this surface is read-mode, not action-mode.
 
 ```javascript
 function styleNavyHeaderRow(sheet, row, lastCol) {
@@ -102,15 +120,16 @@ function styleNavyHeaderRow(sheet, row, lastCol) {
 
 This is the single most useful design rule in the whole pattern:
 
-- **Emerald `#10B981`** marks the row the operator EDITS/ACTS on. Display headers of an action sheet (2-row layout), filter-label rows on a browse sheet (4-row).
-- **Navy `#28334F`** marks the row the operator READS. Display headers of a list/browse sheet (4-row layout).
+- **Emerald `#10B981`** marks the row the operator EDITS/ACTS on. Display headers of an action sheet (3-row layout), filter-label rows on a browse sheet (5-row). Also the title banner on every sheet.
+- **Navy `#28334F`** marks the row the operator READS. Display headers of a list/browse sheet (5-row layout).
 
 Same workbook can have both. The vendor workbook:
-- `Vendor PO Items` (action) — row 2 emerald
-- `Vendor Orders` (browse) — row 2 emerald (filter labels), row 4 navy (display)
-- `Vendor PO Status` (browse) — row 2 emerald (filter labels), row 4 navy (display)
+- `Vendor PO Items` (action) — row 1 emerald title, row 3 emerald display
+- `Vendor Log` (audit, read-mode) — row 1 emerald title, row 3 navy display
+- `Vendor Orders` (browse) — row 1 emerald title, row 3 emerald (filter labels), row 5 navy (display)
+- `Vendor PO Status` (browse) — same shape as Vendor Orders
 
-If you find yourself wanting "two emerald rows" on a 4-row sheet (one for filter labels, one for display), stop — you're conflating action and read. The display row must be navy if the operator is browsing, not editing.
+If you find yourself wanting "two emerald rows below the title" on a 5-row sheet (one for filter labels, one for display), stop — you're conflating action and read. The display row must be navy if the operator is browsing, not editing. (The title banner doesn't count — it's a brand surface, not a workflow row.)
 
 ## The IMAGE arrayformula slot
 
@@ -118,22 +137,22 @@ If the sheet has product thumbnails, column A holds an IMAGE arrayformula. Code 
 
 | Layout | A formula cell | Data range |
 |---|---|---|
-| 2-row sheet | `A2` | `B3:B` |
-| 4-row sheet | `A4` | `B5:B` |
+| 3-row sheet | `A3` | `B4:B` |
+| 5-row sheet | `A5` | `B6:B` |
 
 ```javascript
-// 2-row sheet (Vendor PO Items)
-itemsSheet.getRange('A2').setFormula(
-  '={"Image"; arrayformula(if(isblank(B3:B),"",IMAGE(B3:B)))}'
+// 3-row sheet (Vendor PO Items)
+itemsSheet.getRange('A3').setFormula(
+  '={"Image"; arrayformula(if(isblank(B4:B),"",IMAGE(B4:B)))}'
 );
 
-// 4-row sheet (Vendor PO Status)
-statusSheet.getRange('A4').setFormula(
-  '={"Image"; arrayformula(if(isblank(B5:B),"",IMAGE(B5:B)))}'
+// 5-row sheet (Vendor PO Status)
+statusSheet.getRange('A5').setFormula(
+  '={"Image"; arrayformula(if(isblank(B6:B),"",IMAGE(B6:B)))}'
 );
 ```
 
-The literal string `"Image"` is the first element of the array, so the formula cell displays "Image" (the column label) while spilling thumbnails below. Both A2 and A4 inherit the same brand styling as their respective display-header rows — the cell stays emerald or navy with bold white text, and the IMAGE spill below renders against the white data background.
+The literal string `"Image"` is the first element of the array, so the formula cell displays "Image" (the column label) while spilling thumbnails below. Both A3 and A5 inherit the same brand styling as their respective display-header rows — the cell stays emerald or navy with bold white text, and the IMAGE spill below renders against the white data background.
 
 When you write data rows, pass `startCol=2` to `_upsertRows` (or whatever your write helper is) so col A is never touched.
 
@@ -152,7 +171,7 @@ function setDropdown(sheet, range, values) {
 }
 
 // MCP equivalent
-add_sheet_dropdown(spreadsheet_id, "Vendor Orders!F3",
+add_sheet_dropdown(spreadsheet_id, "Vendor Orders!F4",
   ["New", "Acknowledged", "Closed"], strict=false)
 ```
 
@@ -160,26 +179,26 @@ add_sheet_dropdown(spreadsheet_id, "Vendor Orders!F3",
 
 | Sheet | Cell | Values |
 |---|---|---|
-| **Filter rows** (4-row sheets, row 3) | A3:L3 cells matching an enum filter | Amazon enum values |
-| **Action columns** (2-row sheets, data rows 3+) | Open range e.g. `L3:L500` | Amazon enum values |
+| **Filter rows** (5-row sheets, row 4) | A4:L4 cells matching an enum filter | Amazon enum values |
+| **Action columns** (3-row sheets, data rows 4+) | Open range e.g. `L4:L500` | Amazon enum values |
 | **Sort order** | Any sheet, last filter col | `["ASC", "DESC"]` (default `'DESC'`) |
 | **Boolean filters** | Filter cell | `["true", "false"]` (lowercase — Amazon API casing) |
 
-For data-row dropdowns (action sheets), use a bounded range like `'L3:L500'` rather than `'L3:L'` — Sheets accepts open ranges but Apps Script perf degrades on huge ranges.
+For data-row dropdowns (action sheets), use a bounded range like `'L4:L500'` rather than `'L4:L'` — Sheets accepts open ranges but Apps Script perf degrades on huge ranges.
 
 ### Common Amazon SP-API enum dropdowns
 
-Reusable list — match the API spec exactly (case-sensitive).
+Reusable list — match the API spec exactly (case-sensitive). Anchor cells are the live vendor workbook coordinates (post-title-row).
 
 | Domain | Cell context | Values |
 |---|---|---|
-| Vendor PO state (filter) | `Vendor Orders!F3` | `New / Acknowledged / Closed` |
+| Vendor PO state (filter) | `Vendor Orders!F4` | `New / Acknowledged / Closed` |
 | Vendor PO state (data) | `Vendor PO Items!E:E` | `New / Acknowledged / Closed` |
-| PO Item state | `Vendor Orders!I3` | `Cancelled` |
-| Is PO Changed | `Vendor Orders!H3` | `true / false` |
-| PO status (filter) | `Vendor PO Status!G3` | `OPEN / CLOSED` |
-| Confirmation status | `Vendor PO Status!H3`, `Vendor PO Status!O:O` | `ACCEPTED / PARTIALLY_ACCEPTED / REJECTED / UNCONFIRMED` |
-| Receive status | `Vendor PO Status!I3`, `Vendor PO Status!R:R` | `NOT_RECEIVED / PARTIALLY_RECEIVED / RECEIVED` |
+| PO Item state | `Vendor Orders!I4` | `Cancelled` |
+| Is PO Changed | `Vendor Orders!H4` | `true / false` |
+| PO status (filter) | `Vendor PO Status!G4` | `OPEN / CLOSED` |
+| Confirmation status | `Vendor PO Status!H4`, `Vendor PO Status!O:O` | `ACCEPTED / PARTIALLY_ACCEPTED / REJECTED / UNCONFIRMED` |
+| Receive status | `Vendor PO Status!I4`, `Vendor PO Status!R:R` | `NOT_RECEIVED / PARTIALLY_RECEIVED / RECEIVED` |
 | Ack Code (input) | `Vendor PO Items!L:L`, `Vendor PO Items!P:P` | `Accepted / Backordered / Rejected` |
 | Rejection Reason | `Vendor PO Items!O:O`, `Vendor PO Items!S:S` | `TemporarilyUnavailable / InvalidProductIdentifier / ObsoleteProduct` |
 | Sort order | Any filter row | `ASC / DESC` |
@@ -195,14 +214,14 @@ Strict-mode (`setAllowInvalid(false)`) makes all three of those a pain. Use it o
 
 ## Status chips — color rules per Amazon enum
 
-Apply via `add_sheet_conditional_format` or `setStatusChipRules` (GAS). Use **open ranges** like `C5:C` so new rows inherit. One rule per value.
+Apply via `add_sheet_conditional_format` or `setStatusChipRules` (GAS). Use **open ranges** like `C6:C` so new rows inherit. One rule per value.
 
 | Domain | Range | Rule |
 |---|---|---|
-| PO state | `Vendor Orders!C5:C`, `Vendor PO Items!E3:E` | Acknowledged=GREEN, New=AMBER, Closed=RED |
-| PO status | `Vendor PO Status!F5:F` | OPEN=AMBER (action pending), CLOSED=GREEN |
-| Confirmation status | `Vendor PO Status!O5:O` | ACCEPTED=GREEN, PARTIALLY_ACCEPTED=AMBER, UNCONFIRMED=AMBER, REJECTED=RED |
-| Receive status | `Vendor PO Status!R5:R` | RECEIVED=GREEN, PARTIALLY_RECEIVED=AMBER, NOT_RECEIVED=RED |
+| PO state | `Vendor Orders!C6:C`, `Vendor PO Items!E4:E` | Acknowledged=GREEN, New=AMBER, Closed=RED |
+| PO status | `Vendor PO Status!F6:F` | OPEN=AMBER (action pending), CLOSED=GREEN |
+| Confirmation status | `Vendor PO Status!O6:O` | ACCEPTED=GREEN, PARTIALLY_ACCEPTED=AMBER, UNCONFIRMED=AMBER, REJECTED=RED |
+| Receive status | `Vendor PO Status!R6:R` | RECEIVED=GREEN, PARTIALLY_RECEIVED=AMBER, NOT_RECEIVED=RED |
 
 **Semantic rule for color choice**: RED = action needed or terminally rejected; AMBER = in-progress / waiting / partial; GREEN = done / acknowledged / received. "Closed" is GREEN on PO Status (you're done with it) but RED on PO State (you can't act on it anymore). Same word, different color, because the operator's relationship to it differs.
 
@@ -320,32 +339,34 @@ Idempotency rules:
 - For dropdowns: re-applying overwrites cleanly. No filter step needed.
 - For number formats: idempotent; re-apply freely.
 - For frozen rows / col widths: idempotent.
-- For values: `write_sheet` overwrites cleanly. Don't trust `getLastRow()` if you have arrayformulas in col A — they make `getLastRow()` return spurious values. Use a helper that scans a specific data column instead:
+- For values: `write_sheet` overwrites cleanly. Don't trust `getLastRow()` if you have arrayformulas in col A — they make `getLastRow()` return spurious values. Use a helper that scans a specific data column from a known data-start row instead:
   ```javascript
-  function _lastRowOfColumn(sheet, colNum) {
-    const lastRow = sheet.getLastRow();
-    if (lastRow < 1) return 0;
-    const values = sheet.getRange(1, colNum, lastRow).getValues();
+  // dataStartRow is required — encodes the sheet's header anatomy (4 for 3-row, 6 for 5-row)
+  function _lastRowOfColumn(sheet, colNum, dataStartRow) {
+    const maxRow = sheet.getMaxRows();
+    if (maxRow < dataStartRow) return dataStartRow - 1;
+    const values = sheet.getRange(dataStartRow, colNum, maxRow - dataStartRow + 1).getValues();
     for (let i = values.length - 1; i >= 0; i--) {
-      if (values[i][0] !== '' && values[i][0] != null) return i + 1;
+      if (values[i][0] !== '' && values[i][0] != null) return i + dataStartRow;
     }
-    return 0;
+    return dataStartRow - 1;
   }
   ```
 
-## Quick reference — the 9 rules
+## Quick reference — the 10 rules
 
 When building an action sheet, this is the checklist:
 
-1. **Decide shape**: 2-row (action surface) or 4-row (filter + browse). Frozen rows match.
-2. **Row 1 = code contract**: lowerCamelCase keys, Arial 7pt gray, recessed.
-3. **Emerald = where operator acts; Navy = where operator reads.** Never both on same row.
-4. **Filter rows narrow to A-L**: emerald band stops at col 12, cols M+ white-padded.
-5. **Image col A = arrayformula at A2 (2-row) or A4 (4-row)**. Writes always start col B.
-6. **Amazon enum cells get dropdowns** in warning mode (`strict: false`).
-7. **Status chips use soft pastels** (`#C6EFCE / #FFF2CC / #FFC7CE`) on long columns, bold brand on KPIs.
-8. **Editable data columns get `✏️`** in display header. Sparingly.
-9. **Reads use `getColumnMapping(headers)`**, fallbacks match current layout, reorder remaps existing data.
+1. **Row 1 = emerald title banner** merged across full width: `"SellerSheet • <SheetName>"`, Arial 14pt bold white on `#10B981`. Brand presence on every visible tab.
+2. **Decide shape**: 3-row (action surface) or 5-row (filter + browse). Frozen rows match.
+3. **Row 2 = code contract**: lowerCamelCase keys, Arial 7pt gray, recessed. Code reads these via `getColumnMapping(headers)`.
+4. **Emerald = where operator acts; Navy = where operator reads.** Never both on same workflow row. Title row is brand-only and doesn't count toward this rule.
+5. **Filter rows narrow to A-L**: emerald band stops at col 12, cols M+ white-padded.
+6. **Image col A = arrayformula at A3 (3-row) or A5 (5-row)**. Writes always start col B.
+7. **Amazon enum cells get dropdowns** in warning mode (`strict: false`). Filter inputs live at row 4 on 5-row sheets.
+8. **Status chips use soft pastels** (`#C6EFCE / #FFF2CC / #FFC7CE`) on long columns, bold brand on KPIs. Apply to open ranges anchored at data start (e.g. `C6:C` on 5-row, `E4:E` on 3-row).
+9. **Editable data columns get `✏️`** in display header. Sparingly.
+10. **Reads use `getColumnMapping(headers)`**, fallbacks match current layout, reorder remaps existing data. Pass an explicit `dataStartRow` (4 for 3-row, 6 for 5-row) to any helper that scans data.
 
 ## See also
 
