@@ -23,35 +23,48 @@ Every action surface gets a row-1 title banner (merged emerald). Below the banne
 
 These names appear throughout the GAS code and this skill. Memorize them.
 
-### Row 1 — title banner (emerald, merged, brand presence)
+### Row 1 — key headers (code contract, HIDDEN)
 
-Merged across the full column width. Brand-and-context text — "SellerSheet • <SheetName>" — in white Arial 14pt bold on emerald `#10B981`. Row height ~34 px. This is the row that makes every visible tab read as one branded workbook, per the brand-standards rule "Title bars on every visible tab wear emerald."
-
-```javascript
-function styleTitleRow(sheet, lastCol, titleText) {
-  sheet.getRange(1, 1, 1, lastCol).breakApart();  // clear any prior merge
-  sheet.getRange(1, 1).setValue(titleText);
-  sheet.getRange(1, 1, 1, lastCol).merge()
-    .setFontFamily('Arial').setFontSize(14).setFontColor('#FFFFFF')
-    .setBackground('#10B981').setFontWeight('bold')
-    .setVerticalAlignment('middle').setHorizontalAlignment('center');
-  sheet.setRowHeight(1, 34);
-}
-```
-
-Title text format: `'SellerSheet • <SheetName>'` (use the bullet `•` U+2022 between brand and sheet name). Keep it short — this row should not need to wrap. The title row counts toward `setFrozenRows`.
-
-### Row 2 — key headers (code contract, recessed)
-
-The CODE reads/writes by these names via `getColumnMapping(headers)` lookup. Humans should barely see this row. Style:
+The CODE reads/writes by these names via `getColumnMapping(headers)` lookup. **The row is hidden via `sheet.hideRows(1)`** — humans never see it. Style:
 
 - Font: **Arial 7pt**, gray `[0.659, 0.682, 0.722]` (`#A8AEB8`)
 - Background: white
 - Weight: normal (not bold)
-- Row height: 14 px
+- Row height: 14 px (irrelevant once hidden; kept so unhiding for inspection is sane)
 - Values: lowerCamelCase identifiers — `store`, `purchaseOrderNumber`, `sellingParty`, `ackCode1`, `imageUrl`, `lastSyncedAt`
 
-The recessed styling tells the human "this is for the machine — don't worry about it." The header-name lookup means columns can be reordered later without breaking code.
+The hidden row tells the human "you don't need to think about this." The header-name lookup means columns can be reordered later without breaking code. `sheet.getRange(1, 1, ...)` still returns the values — visibility doesn't affect reads.
+
+```javascript
+// helper used in setupVendorSheet
+function styleKeyHeaderRow(sheet, row, lastCol) {
+  sheet.getRange(row, 1, 1, lastCol)
+    .setFontFamily('Arial').setFontSize(7).setFontColor('#A8AEB8')
+    .setBackground('#FFFFFF').setFontWeight('normal').setVerticalAlignment('middle');
+  sheet.setRowHeight(row, 14);
+}
+
+// Hide after writing — code-contract row never displayed
+sheet.hideRows(1);
+```
+
+### Row 2 — title banner (emerald, merged, brand presence)
+
+The first row the operator sees. Merged across the full column width. Brand-and-context text — `"SellerSheet • <SheetName>"` — in white Arial 14pt bold on emerald `#10B981`. Row height ~34 px. This is the row that makes every visible tab read as one branded workbook, per the brand-standards rule "Title bars on every visible tab wear emerald."
+
+```javascript
+function styleTitleRow(sheet, row, lastCol, titleText) {
+  sheet.getRange(row, 1, 1, lastCol).breakApart();  // clear any prior merge
+  sheet.getRange(row, 1).setValue(titleText);
+  sheet.getRange(row, 1, 1, lastCol).merge()
+    .setFontFamily('Arial').setFontSize(14).setFontColor('#FFFFFF')
+    .setBackground('#10B981').setFontWeight('bold')
+    .setVerticalAlignment('middle').setHorizontalAlignment('center');
+  sheet.setRowHeight(row, 34);
+}
+```
+
+Title text format: `'SellerSheet • <SheetName>'` (use the bullet `•` U+2022 between brand and sheet name). Keep it short — this row should not need to wrap. Both rows 1 and 2 count toward `setFrozenRows` (the hidden row still occupies a logical slot in the frozen pane).
 
 ```javascript
 // helper used in setupVendorSheet
@@ -106,6 +119,8 @@ Default values: `'DESC'` in the Sort Order column; everything else blank. Operat
 
 Full-width navy `[0.157, 0.2, 0.318]` (`#28334F`) band, Arial 10pt bold white text. Same style as row 3 of a 3-row sheet but in navy because this surface is read-mode, not action-mode.
 
+This is also the row where Sheets' **basic filter** dropdown arrows appear (see next section). On a 5-row sheet they sit on row 5; on a 3-row sheet they sit on row 3 (the emerald display row).
+
 ```javascript
 function styleNavyHeaderRow(sheet, row, lastCol) {
   sheet.getRange(row, 1, 1, lastCol)
@@ -116,17 +131,64 @@ function styleNavyHeaderRow(sheet, row, lastCol) {
 }
 ```
 
+## Basic filter on the display-header row
+
+Apply Sheets' built-in basic filter on the **display-header row** of any list/action sheet so operators get click-to-filter dropdown arrows on every column without typing into the dedicated filter-input row. The filter dropdowns are native, support multi-select, search, and sort.
+
+```javascript
+function setBasicFilter(sheet, displayHeaderRow, lastCol) {
+  const existing = sheet.getFilter();
+  if (existing) existing.remove();   // idempotent re-setup
+  const lastRow = sheet.getMaxRows();
+  if (lastRow < displayHeaderRow) return;
+  sheet.getRange(displayHeaderRow, 1, lastRow - displayHeaderRow + 1, lastCol)
+    .createFilter();
+}
+
+// 5-row sheet (Vendor Orders, Vendor PO Status) — anchor on row 5
+setBasicFilter(ordersSheet, 5, 17);
+
+// 3-row sheet (Vendor PO Items) — anchor on row 3
+setBasicFilter(itemsSheet, 3, 24);
+```
+
+### When to apply, when to skip
+
+Most action/browse sheets benefit. A few don't.
+
+| Apply when | Skip when |
+|---|---|
+| Operator scans 50+ rows and needs ad-hoc narrowing | Sheet has fewer than ~10 rows |
+| Multiple status columns exist (Confirm Status, Receive Status, etc.) | Append-only audit log where rows are reviewed chronologically |
+| Same dataset gets queried with different filter combinations | Sheet is a single fixed-shape report (KPI tile) |
+
+Examples from the vendor workbook:
+- `Vendor Orders` — YES (filter by PO State, Selling Party, etc.)
+- `Vendor PO Items` — YES (filter by Ack Code, by PO Number while acknowledging)
+- `Vendor PO Status` — YES (filter by Confirm/Receive Status across line items)
+- `Vendor Log` — NO (append-only audit; operator scans chronologically, rarely filters)
+
+### Coexistence with the dedicated filter-input row (row 4)
+
+5-row sheets have a dedicated filter-input row at row 4 that drives the next *API call's* filter (it's read by GAS, sent as a query param to Amazon). The row-5 basic filter is purely client-side — it narrows what's already in the sheet without re-fetching.
+
+Operator mental model:
+- **Row 4 filter inputs** → "narrow what I'm pulling FROM Amazon next time I click sync"
+- **Row 5 basic filter dropdowns** → "narrow what I'm looking at RIGHT NOW in the sheet"
+
+Both can be set at once. Row 4 narrows the pull, then row 5 narrows the view further within what was pulled.
+
 ## Emerald vs navy — the action-vs-read rule
 
 This is the single most useful design rule in the whole pattern:
 
-- **Emerald `#10B981`** marks the row the operator EDITS/ACTS on. Display headers of an action sheet (3-row layout), filter-label rows on a browse sheet (5-row). Also the title banner on every sheet.
+- **Emerald `#10B981`** marks the row the operator EDITS/ACTS on. Display headers of an action sheet (3-row layout), filter-label rows on a browse sheet (5-row). Also the title banner on row 2 of every sheet.
 - **Navy `#28334F`** marks the row the operator READS. Display headers of a list/browse sheet (5-row layout).
 
 Same workbook can have both. The vendor workbook:
-- `Vendor PO Items` (action) — row 1 emerald title, row 3 emerald display
-- `Vendor Log` (audit, read-mode) — row 1 emerald title, row 3 navy display
-- `Vendor Orders` (browse) — row 1 emerald title, row 3 emerald (filter labels), row 5 navy (display)
+- `Vendor PO Items` (action) — row 2 emerald title, row 3 emerald display
+- `Vendor Log` (audit, read-mode) — row 2 emerald title, row 3 navy display
+- `Vendor Orders` (browse) — row 2 emerald title, row 3 emerald (filter labels), row 5 navy (display)
 - `Vendor PO Status` (browse) — same shape as Vendor Orders
 
 If you find yourself wanting "two emerald rows below the title" on a 5-row sheet (one for filter labels, one for display), stop — you're conflating action and read. The display row must be navy if the operator is browsing, not editing. (The title banner doesn't count — it's a brand surface, not a workflow row.)
@@ -353,20 +415,21 @@ Idempotency rules:
   }
   ```
 
-## Quick reference — the 10 rules
+## Quick reference — the 11 rules
 
 When building an action sheet, this is the checklist:
 
-1. **Row 1 = emerald title banner** merged across full width: `"SellerSheet • <SheetName>"`, Arial 14pt bold white on `#10B981`. Brand presence on every visible tab.
-2. **Decide shape**: 3-row (action surface) or 5-row (filter + browse). Frozen rows match.
-3. **Row 2 = code contract**: lowerCamelCase keys, Arial 7pt gray, recessed. Code reads these via `getColumnMapping(headers)`.
+1. **Row 1 = HIDDEN code-contract row**: lowerCamelCase keys, Arial 7pt gray. Hidden via `sheet.hideRows(1)`. Code reads these via `getColumnMapping(headers)`.
+2. **Row 2 = emerald title banner** merged across full width: `"SellerSheet • <SheetName>"`, Arial 14pt bold white on `#10B981`. First row the operator sees on every visible tab.
+3. **Decide shape**: 3-row (action surface) or 5-row (filter + browse). Frozen rows match — including the hidden row 1.
 4. **Emerald = where operator acts; Navy = where operator reads.** Never both on same workflow row. Title row is brand-only and doesn't count toward this rule.
 5. **Filter rows narrow to A-L**: emerald band stops at col 12, cols M+ white-padded.
 6. **Image col A = arrayformula at A3 (3-row) or A5 (5-row)**. Writes always start col B.
 7. **Amazon enum cells get dropdowns** in warning mode (`strict: false`). Filter inputs live at row 4 on 5-row sheets.
-8. **Status chips use soft pastels** (`#C6EFCE / #FFF2CC / #FFC7CE`) on long columns, bold brand on KPIs. Apply to open ranges anchored at data start (e.g. `C6:C` on 5-row, `E4:E` on 3-row).
-9. **Editable data columns get `✏️`** in display header. Sparingly.
-10. **Reads use `getColumnMapping(headers)`**, fallbacks match current layout, reorder remaps existing data. Pass an explicit `dataStartRow` (4 for 3-row, 6 for 5-row) to any helper that scans data.
+8. **Apply Sheets' basic filter on the display-header row** so operators get click-to-filter dropdown arrows on every column. Skip on append-only audit logs.
+9. **Status chips use soft pastels** (`#C6EFCE / #FFF2CC / #FFC7CE`) on long columns, bold brand on KPIs. Apply to open ranges anchored at data start (e.g. `C6:C` on 5-row, `E4:E` on 3-row).
+10. **Editable data columns get `✏️`** in display header. Sparingly.
+11. **Reads use `getColumnMapping(headers)`**, fallbacks match current layout, reorder remaps existing data. Pass an explicit `dataStartRow` (4 for 3-row, 6 for 5-row) to any helper that scans data.
 
 ## See also
 
