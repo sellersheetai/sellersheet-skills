@@ -59,12 +59,12 @@ function styleTitleRow(sheet, row, lastCol, titleText) {
   sheet.getRange(row, 1, 1, lastCol).merge()
     .setFontFamily('Arial').setFontSize(14).setFontColor('#FFFFFF')
     .setBackground('#10B981').setFontWeight('bold')
-    .setVerticalAlignment('middle').setHorizontalAlignment('center');
+    .setVerticalAlignment('middle').setHorizontalAlignment('left');
   sheet.setRowHeight(row, 34);
 }
 ```
 
-Title text format: `'SellerSheet • <SheetName>'` (use the bullet `•` U+2022 between brand and sheet name). Keep it short — this row should not need to wrap. Both rows 1 and 2 count toward `setFrozenRows` (the hidden row still occupies a logical slot in the frozen pane).
+Title text format: `'SellerSheet • <SheetName>'` (use the bullet `•` U+2022 between brand and sheet name). Keep it short — this row should not need to wrap. Left-aligned, not centered — the title is a brand label, not a heading; centering merged banners makes the text float in dead space when the sheet is wide. Both rows 1 and 2 count toward `setFrozenRows` (the hidden row still occupies a logical slot in the frozen pane).
 
 ```javascript
 // helper used in setupVendorSheet
@@ -87,7 +87,7 @@ function styleEmeraldRow(sheet, row, lastCol) {
   sheet.getRange(row, 1, 1, lastCol)
     .setFontFamily('Arial').setFontSize(10).setFontColor('#FFFFFF')
     .setBackground('#10B981').setFontWeight('bold')
-    .setVerticalAlignment('middle').setHorizontalAlignment('center');
+    .setVerticalAlignment('middle').setHorizontalAlignment('left');
   sheet.setRowHeight(row, 28);
 }
 
@@ -126,10 +126,12 @@ function styleNavyHeaderRow(sheet, row, lastCol) {
   sheet.getRange(row, 1, 1, lastCol)
     .setFontFamily('Arial').setFontSize(10).setFontColor('#FFFFFF')
     .setBackground('#28334F').setFontWeight('bold')
-    .setVerticalAlignment('middle').setHorizontalAlignment('center');
+    .setVerticalAlignment('middle').setHorizontalAlignment('left');
   sheet.setRowHeight(row, 26);
 }
 ```
+
+All header rows (title, emerald label, navy display) are **left-aligned**. Matches data-cell default behavior (text left, numbers right), keeps header text anchored to col A so the operator's eye lands in the same place per row. Center-aligning header rows on wide sheets makes labels float in dead space; merged emerald banners look especially awkward centered on a 20-col sheet.
 
 ## Basic filter on the display-header row
 
@@ -217,6 +219,8 @@ statusSheet.getRange('A5').setFormula(
 The literal string `"Image"` is the first element of the array, so the formula cell displays "Image" (the column label) while spilling thumbnails below. Both A3 and A5 inherit the same brand styling as their respective display-header rows — the cell stays emerald or navy with bold white text, and the IMAGE spill below renders against the white data background.
 
 When you write data rows, pass `startCol=2` to `_upsertRows` (or whatever your write helper is) so col A is never touched.
+
+**Do not set a custom row height on image data rows.** Let Sheets keep its default (~21 px). The IMAGE thumbnail is a preview to confirm "is this the right ASIN", not a detail viewer — operators don't zoom in on a 70px-tall preview, they click out to the catalog or the Amazon page if they need details. Taller rows just push other line items off-screen and slow scrolling. If you need a bigger preview, expose it on a per-row hover or a side panel, not by globally inflating every row.
 
 ## Dropdowns — Amazon enum cells get warning-mode validation
 
