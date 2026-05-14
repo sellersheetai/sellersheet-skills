@@ -1,7 +1,7 @@
 ---
 name: sellersheet-sheets
 description: Use whenever Google Sheets is the deliverable surface and SellerSheet MCP is the tool for sheet I/O. Reads, writes, formats, builds reports, dashboards, financial models, and live-data tables in Google Sheets via SellerSheet MCP endpoints (read_sheet, write_sheet, write_sheet_formula, format_sheet_range, set_sheet_number_format, add_sheet_chart, add_sheet_conditional_format, add_sheet_dropdown, etc.). Trigger when the user references a docs.google.com/spreadsheets URL, asks to publish output to a Google Sheet, builds anything in the SellerSheet workbook ecosystem, needs the live SQL() spill + image-thumbnail patterns, or builds an operator action surface (filter rows, Amazon enum dropdowns, status chips). Do NOT trigger for local .xlsx files — that's a different skill. This skill is self-contained — no need to load xlsx or any other sheet skill alongside; xlsx-style conventions (financial color coding, number formats, formula best practices) are adapted inline.
-version: 0.3.0
+version: 0.4.0
 ---
 
 # SellerSheet Google Sheets — via MCP
@@ -113,7 +113,7 @@ Detailed specs live in `reference/`. Load the relevant file before implementing 
 | File | What's in it |
 |---|---|
 | `reference/brand-standards.md` | Color palette, **emerald-vs-navy action/read rule**, professional font, financial-model color coding (blue/black/green/red/yellow), number format patterns (currency / percent / multiples / dates), zero-formula-errors policy |
-| `reference/action-sheets.md` | 3-row vs 5-row header conventions, the five row bands (emerald title banner / code-contract / emerald label / filter input / navy display), narrowing emerald band rule, IMAGE arrayformula slot (A3 / A5), Amazon enum dropdowns in warning mode, status chip mapping table for SP-API enums, editable-cell ✏️ marker, column-reorder discipline, idempotent re-setup |
+| `reference/action-sheets.md` | 3-row vs 5-row header conventions, the five row bands (HIDDEN code-contract row 1 / emerald title row 2 / emerald label / filter input / navy display), narrowing emerald band rule, IMAGE arrayformula slot (A3 / A5), Amazon enum dropdowns in warning mode, **basic-filter-on-display-header convention** (apply where useful, skip on audit logs), status chip mapping table for SP-API enums, editable-cell ✏️ marker, column-reorder discipline, idempotent re-setup |
 | `reference/formula-conventions.md` | Use-formulas-not-hardcoded-values rule with WRONG/CORRECT examples, source documentation for hardcodes via cell notes, formula error prevention checklist, common pitfalls (NaN, division-by-zero, cross-sheet refs, edge cases) |
 | `reference/growable-tables.md` | The four rules, layout shape, store column as multi-store identifier, when NOT to use this pattern |
 | `reference/sql-function.md` | SQL() signature, bracket-quote-every-column-and-alias rule, multi-table JOINs, default LIMITs per data scope, overflow footer pattern |
