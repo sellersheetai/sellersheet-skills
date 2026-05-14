@@ -48,6 +48,19 @@ Title bars on **every visible tab** wear emerald — the workbook reads as one b
 
 The MCP color format is `[r, g, b]` floats in `[0.0, 1.0]`. Not the openpyxl-style hex string. Convert by dividing 0-255 ints by 255.
 
+## Emerald vs navy — the action-vs-read rule
+
+Two band colors, two roles. Get the assignment right or the visual hierarchy collapses.
+
+- **Emerald `#10B981`** marks rows where the operator EDITS or ACTS — display headers of an action sheet, filter-label rows on a browse sheet.
+- **Navy `#28334F`** marks rows where the operator READS — display headers of a list / status / browse sheet.
+
+Same workbook can have both. A typical action workbook has:
+- One primary action sheet → row 2 emerald (operator's main edit target)
+- Several browse sheets → row 2 emerald (filter labels), row 4 navy (display)
+
+If you find yourself wanting "two emerald rows" on the same sheet, stop. The display row must be navy if the operator is browsing, not editing. See `reference/action-sheets.md` for the full layout pattern.
+
 ## Financial-model color coding
 
 When the sheet is a financial model (not a status dashboard), adopt the industry-standard finance color convention used in openpyxl/xlsx workflows. Lets a reviewer scan a model in 10 seconds and know which cells are inputs vs derived vs cross-referenced.

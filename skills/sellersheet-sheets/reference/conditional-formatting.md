@@ -134,7 +134,39 @@ condition_type="CUSTOM_FORMULA", value='=$B9="SOON"', background_color=[...]
 
 For high-cardinality state variables, switch to a chip-emoji + plain-text approach instead of relying on conditional formatting.
 
+## Two chip palettes — pick by density
+
+Brand palette gives bold chips with strong color saturation — great for KPI tiles, freshness badges, one-off status indicators. But on a long status column where every row has a chip, bold colors become visually exhausting.
+
+| Palette | GREEN bg / fg | AMBER bg / fg | RED bg / fg | When |
+|---|---|---|---|---|
+| **Bold (brand)** | `#8ECA94` / `#000` | `#FFD86B` / `#000` | `#ED736E` / `#FFF` | Low-density: KPI tiles, single badges per row, freshness pills |
+| **Soft (pastel)** | `#C6EFCE` / `#1F7333` | `#FFF2CC` / `#996600` | `#FFC7CE` / `#9C0006` | High-density: status column on a 100+ row sheet, multiple chip columns side-by-side |
+
+The vendor workbook uses soft pastels on 4 status columns × 100+ rows. The bold palette would be unreadable at that density. Apply bold only where the chip is the focal point of its row.
+
+> Note: the soft AMBER `#FFF2CC` overlaps with the brand "footer callout / overflow notice" color in `brand-standards.md`. In practice they don't appear on the same tab, but be aware.
+
+## Status chip reference — Amazon SP-API enums
+
+Apply these via `add_sheet_conditional_format` with `TEXT_EQ` condition, open-range `X5:X` (or `X3:X` on 2-row action sheets). Use the **soft palette** by default — these chips appear in status columns with many rows.
+
+| Domain | Range | Rules |
+|---|---|---|
+| Vendor PO state | `C5:C` (Vendor Orders), `E3:E` (Vendor PO Items) | Acknowledged=GREEN, New=AMBER, Closed=RED |
+| Vendor PO status | `F5:F` (Vendor PO Status) | OPEN=AMBER (action pending), CLOSED=GREEN |
+| Vendor confirmation status | `O5:O` | ACCEPTED=GREEN, PARTIALLY_ACCEPTED=AMBER, UNCONFIRMED=AMBER, REJECTED=RED |
+| Vendor receive status | `R5:R` | RECEIVED=GREEN, PARTIALLY_RECEIVED=AMBER, NOT_RECEIVED=RED |
+| Inbound shipment status | `WORKING/READY_TO_SHIP/SHIPPED/IN_TRANSIT/DELIVERED/RECEIVING/CLOSED/CANCELLED/DELETED` | DELIVERED=GREEN, WORKING/READY_TO_SHIP/SHIPPED/IN_TRANSIT/RECEIVING=AMBER, CANCELLED/DELETED=RED, CLOSED=GREEN |
+| FBA inventory health | `Healthy / Investigate / Restock / Liquidate` | Healthy=GREEN, Investigate=AMBER, Restock/Liquidate=RED |
+| Listing status | `BUYABLE / DISCOVERABLE / INACTIVE` | BUYABLE=GREEN, DISCOVERABLE=AMBER, INACTIVE=RED |
+
+**Semantic rule for color assignment**: RED = action needed (or terminally blocked); AMBER = in-progress / partial / waiting; GREEN = done / success / acknowledged.
+
+"Closed" is GREEN on PO Status (the workflow is complete) but RED on PO State (you can no longer act on it). Same word, opposite color, because the operator's relationship to the status differs. Always reason about color from the operator's POV, not from the API enum's nominal meaning.
+
 ## See also
 
 - `reference/brand-standards.md` — chip and gradient color palette
+- `reference/action-sheets.md` — 2-row vs 4-row layout, where chips live in each shape
 - `scripts/formula-templates.md` — common gradient + chip recipes
