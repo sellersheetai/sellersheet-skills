@@ -14,9 +14,11 @@
       "snapshot_date",
       "sku",
       "asin",
-      "condition"
+      "condition",
+      "issue_description",
+      "country_code"
     ],
-    "cron": "0 7 * * *"
+    "cron": "30 6 * * *"
   },
   "columns": [
     {

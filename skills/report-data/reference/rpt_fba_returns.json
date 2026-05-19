@@ -16,7 +16,7 @@
       "sku",
       "fulfillment_center_id"
     ],
-    "cron": "0 9 * * *"
+    "cron": "15 3 * * *"
   },
   "columns": [
     {

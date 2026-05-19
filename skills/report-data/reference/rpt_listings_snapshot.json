@@ -16,7 +16,7 @@
       "country_code",
       "item_condition"
     ],
-    "cron": "0 6 * * *"
+    "cron": "10 4 * * *"
   },
   "columns": [
     {

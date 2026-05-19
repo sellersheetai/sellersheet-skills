@@ -5,7 +5,7 @@
     "is_snapshot": false,
     "description": "Brand Analytics repeat purchase summary.",
     "pii": false,
-    "queryable": true,
+    "queryable": false,
     "deprecated": false,
     "strategy": "request",
     "date_column": "report_date",

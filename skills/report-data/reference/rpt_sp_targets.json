@@ -9,8 +9,8 @@
     "deprecated": false,
     "strategy": "ad_cron",
     "date_column": "report_date",
-    "unique_key": ["store_id", "profile_id", "report_date", "campaign_id", "ad_group_id", "target_id"],
-    "cron": "daily"
+    "unique_key": ["store_id", "profile_id", "report_date", "campaign_id", "ad_group_id", "target_id", "keyword_id", "match_type"],
+    "cron": "0 3 * * *"
   },
   "columns": [
     {"db_column": "report_date", "type": "date"},

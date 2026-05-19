@@ -10,7 +10,7 @@
     "strategy": "ad_cron",
     "date_column": "report_date",
     "unique_key": ["store_id", "profile_id", "report_date", "campaign_id", "ad_group_id", "keyword_id", "target_id", "search_term"],
-    "cron": "daily",
+    "cron": "0 3 * * *",
     "notes": [
       "Amazon field 'targeting' maps to db column 'targeting' (renamed from targeting_text).",
       "spend is always null — Amazon does not include it in spSearchTerm reports."

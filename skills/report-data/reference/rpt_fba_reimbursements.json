@@ -15,7 +15,7 @@
       "reimbursement_id",
       "case_id"
     ],
-    "cron": "0 10 * * *"
+    "cron": "0 4 * * *"
   },
   "columns": [
     {
