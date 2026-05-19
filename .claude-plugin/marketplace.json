@@ -1,44 +1,50 @@
 {
-  "$schema": "https://claude.com/schemas/plugin-marketplace.json",
   "name": "sellersheet-skills",
-  "displayName": "SellerSheet Skills",
-  "description": "Production-ready agent skills for Amazon sellers using SellerSheet — Google Sheets I/O and multi-tab operator dashboards. More skills coming after review.",
-  "version": "0.2.0",
-  "author": {
+  "owner": {
     "name": "SellerSheet AI",
-    "url": "https://sellersheetai.com",
-    "email": "support@sellersheetai.com"
+    "email": "support@sellersheetai.com",
+    "url": "https://sellersheetai.com"
   },
-  "homepage": "https://github.com/sellersheetai/sellersheet-skills",
-  "repository": "https://github.com/sellersheetai/sellersheet-skills",
-  "license": "Apache-2.0",
+  "metadata": {
+    "description": "Production-ready agent skills for Amazon sellers using SellerSheet — Google Sheets I/O, multi-tab operator dashboards, and SP-API/Ads warehouse queries.",
+    "version": "0.2.0"
+  },
   "plugins": [
     {
       "name": "sellersheet-sheets",
-      "version": "0.1.0",
-      "type": "skill",
-      "path": "./skills/sellersheet-sheets",
-      "description": "Google Sheets I/O via SellerSheet MCP — reads, writes, formats, builds reports/dashboards/financial models with brand palette, live SQL() spill, image-thumbnail patterns. Self-contained — no xlsx skill required."
+      "description": "Google Sheets I/O via SellerSheet MCP — reads, writes, formats, builds reports/dashboards/financial models with brand palette, live SQL() spill, image-thumbnail patterns. Self-contained — no xlsx skill required.",
+      "version": "0.5.0",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/sellersheet-sheets"
+      ],
+      "homepage": "https://github.com/sellersheetai/sellersheet-skills",
+      "license": "Apache-2.0"
     },
     {
       "name": "sellersheet-dashboard",
+      "description": "Multi-tab operator dashboards with freshness instrumentation, agent insights, status tabs. Covers inventory, PPC, account health, listings, profit/margin, returns, buy box, cash conversion. Builds on sellersheet-sheets.",
       "version": "0.1.0",
-      "type": "skill",
-      "path": "./skills/sellersheet-dashboard",
-      "description": "Multi-tab operator dashboards with freshness instrumentation, agent insights, status tabs. Covers inventory, PPC, account health, listings, profit/margin, returns, buy box, cash conversion. Builds on sellersheet-sheets."
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/sellersheet-dashboard"
+      ],
+      "homepage": "https://github.com/sellersheetai/sellersheet-skills",
+      "license": "Apache-2.0"
     },
     {
       "name": "report-data",
+      "description": "Amazon SP-API + Ads-API report data — query 50+ rpt_* tables in the SellerSheet warehouse (inventory, listings, orders, returns, financial, brand analytics, ads SP/SB/SD), monitor sync schedules, run on-demand reports with TSV-to-Drive download.",
       "version": "0.2.0",
-      "type": "skill",
-      "path": "./skills/report-data",
-      "description": "Amazon SP-API + Ads-API report data — query 50+ rpt_* tables in the SellerSheet warehouse (inventory, listings, orders, returns, financial, brand analytics, ads SP/SB/SD), monitor sync schedules, run on-demand reports with TSV-to-Drive download. Use when the user asks for inventory levels, restock needs, search terms, settlements, listing status, etc."
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/report-data"
+      ],
+      "homepage": "https://github.com/sellersheetai/sellersheet-skills",
+      "license": "Apache-2.0"
     }
-  ],
-  "requirements": {
-    "mcpServers": [
-      "sellersheet"
-    ],
-    "minClaudeCodeVersion": "1.0.0"
-  }
+  ]
 }
