@@ -44,7 +44,7 @@ For the dashboard skill specifically, if you want PPC tabs to populate with real
 
 ```
 /plugin marketplace add sellersheetai/sellersheet-skills
-/plugin install sellersheet-skills@sellersheet-skills
+/plugin install sellersheet-skills@sellersheet-marketplace
 ```
 
 This installs all three skills (`sellersheet-sheets`, `sellersheet-dashboard`, `report-data`) as one bundle.
