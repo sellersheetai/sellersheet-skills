@@ -5,7 +5,7 @@
     "is_snapshot": false,
     "description": "Sales and Traffic by ASIN/SKU/marketplace/day. PENDING customer re-OAuth after Brand Analytics app re-submission — table will be empty until customers re-auth on the new app version. Sessions, page views, buy box %, units ordered, ordered product sales. Powers TACOS denominator (organic + paid total revenue) and conversion-rate analysis.",
     "pii": false,
-    "queryable": true,
+    "queryable": false,
     "deprecated": false,
     "pending_reauth": true,
     "pending_reason": "Sales & Traffic requires Brand Analytics scope. SellerSheet's app re-submission is pending Amazon Appstore approval. Existing customers must re-OAuth after the new app version is live before this table contains rows.",

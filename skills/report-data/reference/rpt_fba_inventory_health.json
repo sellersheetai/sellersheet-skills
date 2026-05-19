@@ -16,7 +16,7 @@
       "condition",
       "country_code"
     ],
-    "cron": "0 6 * * *"
+    "cron": "15 */6 * * *"
   },
   "columns": [
     {"db_column": "sku",                              "amazon_header": "sku",                              "type": "str"},

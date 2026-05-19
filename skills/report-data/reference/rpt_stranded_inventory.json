@@ -17,7 +17,7 @@
       "stranded_reason",
       "condition"
     ],
-    "cron": "0 7 * * *"
+    "cron": "30 */6 * * *"
   },
   "columns": [
     {

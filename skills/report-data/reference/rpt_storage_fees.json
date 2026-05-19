@@ -17,7 +17,7 @@
       "fnsku",
       "fulfillment_center"
     ],
-    "cron": "0 10 5 * *"
+    "cron": "0 5 * * *"
   },
   "columns": [
     {

@@ -16,7 +16,7 @@
       "merchant_sku",
       "amazon_rma_id"
     ],
-    "cron": "0 9 * * *"
+    "cron": "0 3 * * *"
   },
   "columns": [
     {

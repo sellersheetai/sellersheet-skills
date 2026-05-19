@@ -15,9 +15,10 @@
       "snapshot_date",
       "fnsku",
       "sku",
-      "country"
+      "country",
+      "condition"
     ],
-    "cron": "0 10 17 2,8 *"
+    "cron": "15 5 * * *"
   },
   "columns": [
     {

@@ -5,7 +5,7 @@
     "is_snapshot": true,
     "description": "PENDING customer re-OAuth after Brand Analytics app re-submission — table will be empty until customers re-auth on the new app version. Quarterly demographics per marketplace, flattened so each row is one (dimension, bucket, percentage) tuple. Five dimensions: age_range, gender, household_income, education, marital_status.",
     "pii": false,
-    "queryable": true,
+    "queryable": false,
     "deprecated": false,
     "pending_reauth": true,
     "pending_reason": "Demographics requires Brand Analytics scope. SellerSheet's app re-submission is pending Amazon Appstore approval. Existing customers must re-OAuth after the new app version is live before this table contains rows.",

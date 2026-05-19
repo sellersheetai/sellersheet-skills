@@ -13,9 +13,10 @@
       "store_id",
       "snapshot_date",
       "fnsku",
-      "warehouse_condition_code"
+      "warehouse_condition_code",
+      "condition_type"
     ],
-    "cron": "0 6 * * *"
+    "cron": "0 */6 * * *"
   },
   "columns": [
     {
