@@ -1,0 +1,21 @@
+{
+  "name": "sellersheet-skills",
+  "description": "Production-ready agent skills for Amazon sellers using SellerSheet — Google Sheets I/O, multi-tab operator dashboards, and SP-API/Ads warehouse queries.",
+  "version": "0.2.0",
+  "author": {
+    "name": "SellerSheet AI",
+    "email": "support@sellersheetai.com"
+  },
+  "homepage": "https://github.com/sellersheetai/sellersheet-skills",
+  "repository": "https://github.com/sellersheetai/sellersheet-skills",
+  "license": "Apache-2.0",
+  "keywords": [
+    "amazon",
+    "sellers",
+    "sp-api",
+    "ads-api",
+    "google-sheets",
+    "dashboard",
+    "skills"
+  ]
+}
