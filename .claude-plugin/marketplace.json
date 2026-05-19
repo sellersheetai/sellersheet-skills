@@ -1,50 +1,20 @@
 {
   "name": "sellersheet-skills",
+  "description": "SellerSheet skills marketplace — Amazon seller agent skills built on the SellerSheet MCP.",
   "owner": {
     "name": "SellerSheet AI",
-    "email": "support@sellersheetai.com",
-    "url": "https://sellersheetai.com"
-  },
-  "metadata": {
-    "description": "Production-ready agent skills for Amazon sellers using SellerSheet — Google Sheets I/O, multi-tab operator dashboards, and SP-API/Ads warehouse queries.",
-    "version": "0.2.0"
+    "email": "support@sellersheetai.com"
   },
   "plugins": [
     {
-      "name": "sellersheet-sheets",
-      "description": "Google Sheets I/O via SellerSheet MCP — reads, writes, formats, builds reports/dashboards/financial models with brand palette, live SQL() spill, image-thumbnail patterns. Self-contained — no xlsx skill required.",
-      "version": "0.5.0",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/sellersheet-sheets"
-      ],
-      "homepage": "https://github.com/sellersheetai/sellersheet-skills",
-      "license": "Apache-2.0"
-    },
-    {
-      "name": "sellersheet-dashboard",
-      "description": "Multi-tab operator dashboards with freshness instrumentation, agent insights, status tabs. Covers inventory, PPC, account health, listings, profit/margin, returns, buy box, cash conversion. Builds on sellersheet-sheets.",
-      "version": "0.1.0",
-      "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/sellersheet-dashboard"
-      ],
-      "homepage": "https://github.com/sellersheetai/sellersheet-skills",
-      "license": "Apache-2.0"
-    },
-    {
-      "name": "report-data",
-      "description": "Amazon SP-API + Ads-API report data — query 50+ rpt_* tables in the SellerSheet warehouse (inventory, listings, orders, returns, financial, brand analytics, ads SP/SB/SD), monitor sync schedules, run on-demand reports with TSV-to-Drive download.",
+      "name": "sellersheet-skills",
+      "description": "Production-ready agent skills for Amazon sellers using SellerSheet — Google Sheets I/O, multi-tab operator dashboards, and SP-API/Ads warehouse queries.",
       "version": "0.2.0",
       "source": "./",
-      "strict": false,
-      "skills": [
-        "./skills/report-data"
-      ],
-      "homepage": "https://github.com/sellersheetai/sellersheet-skills",
-      "license": "Apache-2.0"
+      "author": {
+        "name": "SellerSheet AI",
+        "email": "support@sellersheetai.com"
+      }
     }
   ]
 }
