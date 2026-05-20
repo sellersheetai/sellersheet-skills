@@ -32,37 +32,37 @@
     },
     {
       "db_column": "product_name",
-      "amazon_header": "product_name",
+      "amazon_header": "product-name",
       "type": "str"
     },
     {
       "db_column": "fulfillment_center",
-      "amazon_header": "fulfillment_center",
+      "amazon_header": "fulfillment-center",
       "type": "str"
     },
     {
       "db_column": "country_code",
-      "amazon_header": "country_code",
+      "amazon_header": "country-code",
       "type": "str"
     },
     {
       "db_column": "longest_side",
-      "amazon_header": "longest_side",
+      "amazon_header": "longest-side",
       "type": "decimal"
     },
     {
       "db_column": "median_side",
-      "amazon_header": "median_side",
+      "amazon_header": "median-side",
       "type": "decimal"
     },
     {
       "db_column": "shortest_side",
-      "amazon_header": "shortest_side",
+      "amazon_header": "shortest-side",
       "type": "decimal"
     },
     {
       "db_column": "measurement_units",
-      "amazon_header": "measurement_units",
+      "amazon_header": "measurement-units",
       "type": "str"
     },
     {
@@ -72,47 +72,47 @@
     },
     {
       "db_column": "weight_units",
-      "amazon_header": "weight_units",
+      "amazon_header": "weight-units",
       "type": "str"
     },
     {
       "db_column": "item_volume",
-      "amazon_header": "item_volume",
+      "amazon_header": "item-volume",
       "type": "decimal"
     },
     {
       "db_column": "volume_units",
-      "amazon_header": "volume_units",
+      "amazon_header": "volume-units",
       "type": "str"
     },
     {
       "db_column": "product_size_tier",
-      "amazon_header": "product_size_tier",
+      "amazon_header": "product-size-tier",
       "type": "str"
     },
     {
       "db_column": "average_quantity_on_hand",
-      "amazon_header": "average_quantity_on_hand",
+      "amazon_header": "average-quantity-on-hand",
       "type": "decimal"
     },
     {
       "db_column": "average_quantity_pending_removal",
-      "amazon_header": "average_quantity_pending_removal",
+      "amazon_header": "average-quantity-pending-removal",
       "type": "decimal"
     },
     {
       "db_column": "estimated_total_item_volume",
-      "amazon_header": "estimated_total_item_volume",
+      "amazon_header": "estimated-total-item-volume",
       "type": "decimal"
     },
     {
       "db_column": "month_of_charge",
-      "amazon_header": "month_of_charge",
+      "amazon_header": "month-of-charge",
       "type": "str"
     },
     {
       "db_column": "storage_rate",
-      "amazon_header": "storage_rate",
+      "amazon_header": "storage-rate",
       "type": "decimal"
     },
     {
@@ -122,32 +122,32 @@
     },
     {
       "db_column": "estimated_monthly_storage_fee",
-      "amazon_header": "estimated_monthly_storage_fee",
+      "amazon_header": "estimated-monthly-storage-fee",
       "type": "decimal"
     },
     {
       "db_column": "dangerous_goods_storage_type",
-      "amazon_header": "dangerous_goods_storage_type",
+      "amazon_header": "dangerous-goods-storage-type",
       "type": "str"
     },
     {
       "db_column": "eligible_for_inventory_discount",
-      "amazon_header": "eligible_for_inventory_discount",
+      "amazon_header": "eligible-for-inventory-discount",
       "type": "bool"
     },
     {
       "db_column": "qualifies_for_inventory_discount",
-      "amazon_header": "qualifies_for_inventory_discount",
+      "amazon_header": "qualifies-for-inventory-discount",
       "type": "bool"
     },
     {
       "db_column": "total_incentive_fee_amount",
-      "amazon_header": "total_incentive_fee_amount",
+      "amazon_header": "total-incentive-fee-amount",
       "type": "decimal"
     },
     {
       "db_column": "breakdown_incentive_fee_amount",
-      "amazon_header": "breakdown_incentive_fee_amount",
+      "amazon_header": "breakdown-incentive-fee-amount",
       "type": "str",
       "note": "Raw colon-separated value (e.g. 'FBA_NEW_SELECTION:0.7187'). For analytics use derived columns incentive_program + incentive_amount instead."
     },
@@ -155,7 +155,11 @@
       "db_column": "incentive_program",
       "amazon_header": "(derived from breakdown_incentive_fee_amount LHS of ':')",
       "type": "str",
-      "values": ["FBA_NEW_SELECTION", "FBA_INVENTORY_AGE", "..."]
+      "values": [
+        "FBA_NEW_SELECTION",
+        "FBA_INVENTORY_AGE",
+        "..."
+      ]
     },
     {
       "db_column": "incentive_amount",
@@ -164,29 +168,29 @@
     },
     {
       "db_column": "average_quantity_customer_orders",
-      "amazon_header": "average_quantity_customer_orders",
+      "amazon_header": "average-quantity-customer-orders",
       "type": "decimal"
     },
     {
       "db_column": "avg_qty_for_sus",
-      "amazon_header": "avg_qty_for_sus",
+      "amazon_header": "avg-qty-for-sus",
       "type": "decimal",
       "note": "SUS = Strategic Use Storage; AU/EU"
     },
     {
       "db_column": "est_vol_for_sus",
-      "amazon_header": "est_vol_for_sus",
+      "amazon_header": "est-vol-for-sus",
       "type": "decimal"
     },
     {
       "db_column": "est_base_msf",
-      "amazon_header": "est_base_msf",
+      "amazon_header": "est-base-msf",
       "type": "decimal",
       "note": "Estimated base monthly storage fee"
     },
     {
       "db_column": "est_sus",
-      "amazon_header": "est_sus",
+      "amazon_header": "est-sus",
       "type": "decimal"
     },
     {

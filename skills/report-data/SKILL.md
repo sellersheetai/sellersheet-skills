@@ -123,7 +123,12 @@ query_report_data(store='myStore-US', tables=['rpt_sp_campaigns'], ...)
 # auto-injects: rpt_sp_campaigns.profile_id = <ads profile_id for US>
 ```
 
-**Just pass `store='myStore-US'`. Don't filter on the marketplace column directly** — the column name differs per table (`sales_channel` / `country_code` / `marketplace_id` / `profile_id` / `country` / `amazon_store`) and not every table exposes `country_code` at all (e.g. `rpt_orders` uses `sales_channel='Amazon.com'`, no `country_code` column).
+Every ads table (`rpt_sp_*` / `rpt_sb_*` / `rpt_sd_*`) carries both `profile_id`
+and a denormalized `country_code` column (added 2026-05-20). `country_code` is
+populated on every row, so `country_code = 'US'` is an equivalent, simpler
+filter than reverse-mapping `profile_id`.
+
+**Just pass `store='myStore-US'`. Don't filter on the marketplace column directly** — the column name differs per table (`sales_channel` / `country_code` / `marketplace_id` / `profile_id` / `country` / `amazon_store`) and not every table exposes `country_code` (e.g. `rpt_orders` uses `sales_channel='Amazon.com'`, no `country_code` column).
 
 ### Aggregations — get totals, not raw rows
 
