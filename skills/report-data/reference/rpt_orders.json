@@ -168,7 +168,7 @@
       "db_column": "number_of_items",
       "amazon_header": "number-of-items",
       "type": "int",
-      "note": "Documented in Amazon SP-API spec but not shipped on the accounts we serve (verified 2026-05-06 — 0/lifetime population, not present in any rpt_orders.extra JSON either). Column exists for forward-compat; expect NULL."
+      "note": "Populated on US and CA marketplaces (verified 2026-05-20). NULL on most EU/AE/IN marketplaces — Amazon ships the column but leaves it empty there."
     },
     {
       "db_column": "price_designation",
@@ -201,10 +201,95 @@
       "note": "AE"
     },
     {
+      "db_column": "tax_collection_model",
+      "amazon_header": "tax-collection-model",
+      "type": "str",
+      "note": "Tax-remittance model, e.g. 'MarketplaceFacilitator'. US/UK/IE/ES. Promoted 2026-05-20."
+    },
+    {
+      "db_column": "tax_collection_responsible_party",
+      "amazon_header": "tax-collection-responsible-party",
+      "type": "str",
+      "note": "Who remits tax, e.g. 'Amazon Services, Inc.'. US/UK/IE/ES. Promoted 2026-05-20."
+    },
+    {
+      "db_column": "is_exchange_order",
+      "amazon_header": "is-exchange-order",
+      "type": "str",
+      "values": ["true", "false"],
+      "note": "US. Promoted 2026-05-20."
+    },
+    {
+      "db_column": "is_replacement_order",
+      "amazon_header": "is-replacement-order",
+      "type": "str",
+      "values": ["true", "false"],
+      "note": "US. Promoted 2026-05-20."
+    },
+    {
+      "db_column": "is_transparency",
+      "amazon_header": "is-transparency",
+      "type": "str",
+      "values": ["true", "false"],
+      "note": "Amazon Transparency program. US. Promoted 2026-05-20."
+    },
+    {
+      "db_column": "payment_method_details",
+      "amazon_header": "payment-method-details",
+      "type": "str",
+      "note": "Payment method detail (e.g. 'Standard'). US. Promoted 2026-05-20."
+    },
+    {
+      "db_column": "item_amazon_funded_promotion",
+      "amazon_header": "item-amazon-funded-promotion",
+      "type": "str",
+      "values": ["true", "false"],
+      "note": "MX. Promoted 2026-05-20."
+    },
+    {
+      "db_column": "amazon_programs",
+      "amazon_header": "amazon-programs",
+      "type": "str",
+      "note": "Amazon program enrollment tags for the order item. UK. Promoted 2026-05-20."
+    },
+    {
+      "db_column": "fulfilled_by",
+      "amazon_header": "fulfilled-by",
+      "type": "str",
+      "note": "India-specific fulfilment attribution. IN. Promoted 2026-05-20."
+    },
+    {
+      "db_column": "is_iba",
+      "amazon_header": "is-iba",
+      "type": "str",
+      "values": ["true", "false"],
+      "note": "Invoice-by-Amazon flag. All marketplaces. Promoted 2026-05-20 (was in extra)."
+    },
+    {
+      "db_column": "is_buyer_requested_cancellation",
+      "amazon_header": "is-buyer-requested-cancellation",
+      "type": "str",
+      "values": ["true", "false"],
+      "note": "Promoted 2026-05-20 (was in extra)."
+    },
+    {
+      "db_column": "buyer_requested_cancel_reason",
+      "amazon_header": "buyer-requested-cancel-reason",
+      "type": "str",
+      "note": "Promoted 2026-05-20 (was in extra)."
+    },
+    {
+      "db_column": "signature_confirmation_recommended",
+      "amazon_header": "signature-confirmation-recommended",
+      "type": "str",
+      "values": ["true", "false"],
+      "note": "US. Promoted 2026-05-20 (was in extra)."
+    },
+    {
       "db_column": "extra",
-      "amazon_header": "(unrecognized columns + intentional low-value flags)",
+      "amazon_header": "(unrecognized columns + intentional opt-outs)",
       "type": "json",
-      "note": "Intentional opt-out (calibrated 2026-05-04 — kept in extra rather than promoted): is-iba, order-invoice-type, cpf, signature-confirmation-recommended, is-buyer-requested-cancellation, buyer-requested-cancel-reason. Read via SQL JSON operators if needed: `extra ->> 'is-iba'`."
+      "note": "Calibrated 2026-05-20: 13 columns promoted to first-class columns. Still kept in extra: `cpf` (Brazilian buyer tax ID — deliberately NOT promoted, buyer PII), `item-extensions-data` (always empty), `order-invoice-type` (not observed on any marketplace). Read via SQL JSON operators if needed: `extra ->> 'cpf'`."
     }
   ],
   "example_query": {
