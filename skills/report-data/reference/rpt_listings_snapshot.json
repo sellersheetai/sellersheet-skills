@@ -168,6 +168,30 @@
       "db_column": "status",
       "amazon_header": "status",
       "type": "str"
+    },
+    {
+      "db_column": "points",
+      "amazon_header": "ポイント",
+      "type": "int",
+      "note": "Amazon Japan reward Points awarded on purchase (JP marketplace)"
+    },
+    {
+      "db_column": "maximum_retail_price",
+      "amazon_header": "maximum-retail-price",
+      "type": "decimal",
+      "note": "India MRP — maximum retail price (IN marketplace)"
+    },
+    {
+      "db_column": "sell_remainder",
+      "amazon_header": "Sell remainder",
+      "type": "str",
+      "note": "Flag: sell remaining inventory after order (UK/EU)"
+    },
+    {
+      "db_column": "minimum_order_quantity",
+      "amazon_header": "Minimum order quantity",
+      "type": "int",
+      "note": "Minimum order quantity (UK/EU)"
     }
   ],
   "notes": [
@@ -189,7 +213,11 @@
       "rpt_listings_snapshot.fulfillment_channel"
     ],
     "filters": [
-      {"column": "rpt_listings_snapshot.quantity", "op": "gt", "value": 0}
+      {
+        "column": "rpt_listings_snapshot.quantity",
+        "op": "gt",
+        "value": 0
+      }
     ],
     "order_by": [
       {
