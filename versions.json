@@ -1,8 +1,7 @@
 {
   "$schema": "https://sellersheetai.com/schemas/skills-versions.json",
-  "_comment_": "Public-skill version catalog. Source of truth: sellersheet-skills/.claude-plugin/plugin.json '.version'. The plugin ships as one bundle — every skill carries the same version as the plugin. Regenerated on every release (see .github/workflows/auto-tag.yml + .maintainers/promote.sh). Agents may fetch this directly (https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/versions.json) OR receive it via get_user_context.skills_catalog (MCP-served, cached).",
-  "marketplace": "sellersheet-marketplace",
-  "plugin": "sellersheet-skills",
+  "_comment_": "Public-skill version catalog. Source of truth: sellersheet-skills/.claude-plugin/plugin.json '.version'. The plugin ships as one bundle — every skill carries the same version as the plugin. Regenerated on every release (see .github/workflows/auto-tag.yml + .maintainers/promote.sh). Agents fetch this directly (https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/versions.json) OR receive it via get_user_context.skills_catalog, which the SellerSheet MCP server serves by fetching this same file (1-hour cache).",
+  "marketplace": "sellersheet-skills",
   "marketplace_version": "0.3.0",
   "updated_at": "2026-05-21",
   "repository": "https://github.com/sellersheetai/sellersheet-skills",
