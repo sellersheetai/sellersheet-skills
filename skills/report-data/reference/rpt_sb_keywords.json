@@ -1,7 +1,7 @@
 {
   "_meta": {
     "table": "rpt_sb_keywords",
-    "report_type": "SB_KEYWORDS",
+    "report_type": "sbKeywords",
     "is_snapshot": false,
     "description": "Sponsored Brands keyword-level daily performance.",
     "pii": false,

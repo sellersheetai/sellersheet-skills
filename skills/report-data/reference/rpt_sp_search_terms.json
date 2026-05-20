@@ -1,7 +1,7 @@
 {
   "_meta": {
     "table": "rpt_sp_search_terms",
-    "report_type": "SP_SEARCH_TERMS",
+    "report_type": "spSearchTerm",
     "is_snapshot": false,
     "description": "Sponsored Products search term report showing which queries triggered ads.",
     "pii": false,

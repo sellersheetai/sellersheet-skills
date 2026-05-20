@@ -1,7 +1,7 @@
 {
   "_meta": {
     "table": "rpt_sp_purchased_products",
-    "report_type": "SP_PURCHASED_PRODUCTS",
+    "report_type": "spPurchasedProduct",
     "is_snapshot": false,
     "description": "Sponsored Products purchased products report — what customers bought after clicking an SP ad.",
     "pii": false,

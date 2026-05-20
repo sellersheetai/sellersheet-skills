@@ -17,57 +17,270 @@
     "cron": "0 8 * * *"
   },
   "columns": [
-    {"db_column": "marketplace_id",                       "amazon_path": "performanceMetrics[].marketplaceId",                                "type": "str"},
-    {"db_column": "snapshot_date",                        "amazon_path": "(injected by ingest worker)",                                       "type": "date"},
-    {"db_column": "account_status",                       "amazon_path": "accountStatuses[].status",                                          "type": "str", "values": ["NORMAL", "AT_RISK", "DEACTIVATED"]},
-    {"db_column": "ahr_score",                            "amazon_path": "performanceMetrics[].accountHealthRating.ahrScore",                 "type": "decimal"},
-    {"db_column": "ahr_status",                           "amazon_path": "performanceMetrics[].accountHealthRating.ahrStatus",                "type": "str", "values": ["GREAT", "GOOD", "AT_RISK", "CRITICAL"]},
-    {"db_column": "account_health_rating",                "amazon_path": "performanceMetrics[].accountHealthRating.ahrStatus",                "type": "str", "note": "alias of ahr_status (legacy)"},
-    {"db_column": "late_shipment_rate",                   "amazon_path": "performanceMetrics[].lateShipmentRate.rate",                        "type": "decimal", "window": "30d"},
-    {"db_column": "late_shipment_count",                  "amazon_path": "performanceMetrics[].lateShipmentRate.lateShipmentCount",           "type": "int"},
-    {"db_column": "late_shipment_order_count",            "amazon_path": "performanceMetrics[].lateShipmentRate.orderCount",                  "type": "int"},
-    {"db_column": "invoice_defect_rate",                  "amazon_path": "performanceMetrics[].invoiceDefectRate.rate",                       "type": "decimal", "window": "7d"},
-    {"db_column": "missing_invoice_count",                "amazon_path": "performanceMetrics[].invoiceDefectRate.missingInvoice.count",       "type": "int"},
-    {"db_column": "late_invoice_count",                   "amazon_path": "performanceMetrics[].invoiceDefectRate.lateInvoice.count",          "type": "int"},
-    {"db_column": "invoice_defect_order_count",           "amazon_path": "performanceMetrics[].invoiceDefectRate.orderCount",                 "type": "int"},
-    {"db_column": "order_defect_rate",                    "amazon_path": "max(performanceMetrics[].orderDefectRate.{afn,mfn}.rate)",          "type": "decimal", "note": "worse-of"},
-    {"db_column": "afn_order_defect_rate",                "amazon_path": "performanceMetrics[].orderDefectRate.afn.rate",                     "type": "decimal", "window": "60d"},
-    {"db_column": "afn_order_count",                      "amazon_path": "performanceMetrics[].orderDefectRate.afn.orderCount",               "type": "int"},
-    {"db_column": "afn_claims_count",                     "amazon_path": "performanceMetrics[].orderDefectRate.afn.claims.count",             "type": "int"},
-    {"db_column": "afn_chargebacks_count",                "amazon_path": "performanceMetrics[].orderDefectRate.afn.chargebacks.count",        "type": "int"},
-    {"db_column": "afn_negative_feedback_count",          "amazon_path": "performanceMetrics[].orderDefectRate.afn.negativeFeedback.count",   "type": "int"},
-    {"db_column": "mfn_order_defect_rate",                "amazon_path": "performanceMetrics[].orderDefectRate.mfn.rate",                     "type": "decimal", "window": "60d"},
-    {"db_column": "mfn_order_count",                      "amazon_path": "performanceMetrics[].orderDefectRate.mfn.orderCount",               "type": "int"},
-    {"db_column": "mfn_claims_count",                     "amazon_path": "performanceMetrics[].orderDefectRate.mfn.claims.count",             "type": "int"},
-    {"db_column": "mfn_chargebacks_count",                "amazon_path": "performanceMetrics[].orderDefectRate.mfn.chargebacks.count",        "type": "int"},
-    {"db_column": "mfn_negative_feedback_count",          "amazon_path": "performanceMetrics[].orderDefectRate.mfn.negativeFeedback.count",   "type": "int"},
-    {"db_column": "on_time_delivery_rate",                "amazon_path": "performanceMetrics[].onTimeDeliveryRate.rate",                      "type": "decimal", "window": "30d"},
-    {"db_column": "on_time_delivery_count",               "amazon_path": "performanceMetrics[].onTimeDeliveryRate.onTimeDeliveryCount",       "type": "int"},
-    {"db_column": "unit_on_time_delivery_rate",           "amazon_path": "performanceMetrics[].unitOnTimeDeliveryRate.rate",                  "type": "decimal", "window": "14d"},
-    {"db_column": "unit_on_time_delivery_count",          "amazon_path": "performanceMetrics[].unitOnTimeDeliveryRate.unitOnTimeDeliveryCount", "type": "int"},
-    {"db_column": "total_unit_count",                     "amazon_path": "performanceMetrics[].unitOnTimeDeliveryRate.totalUnitCount",        "type": "int"},
-    {"db_column": "valid_tracking_rate",                  "amazon_path": "performanceMetrics[].validTrackingRate.rate",                       "type": "decimal", "window": "30d"},
-    {"db_column": "valid_tracking_count",                 "amazon_path": "performanceMetrics[].validTrackingRate.validTrackingCount",         "type": "int"},
-    {"db_column": "pre_fulfillment_cancel_rate",          "amazon_path": "performanceMetrics[].preFulfillmentCancellationRate.rate",          "type": "decimal", "window": "7d"},
-    {"db_column": "pre_fulfillment_cancel_count",         "amazon_path": "performanceMetrics[].preFulfillmentCancellationRate.cancellationCount", "type": "int"},
-    {"db_column": "listing_policy_violations",            "amazon_path": "performanceMetrics[].listingPolicyViolations.defectsCount",              "type": "int"},
-    {"db_column": "product_authenticity_complaints",      "amazon_path": "performanceMetrics[].productAuthenticityCustomerComplaints.defectsCount", "type": "int"},
-    {"db_column": "product_condition_complaints",         "amazon_path": "performanceMetrics[].productConditionCustomerComplaints.defectsCount",    "type": "int"},
-    {"db_column": "product_safety_complaints",            "amazon_path": "performanceMetrics[].productSafetyCustomerComplaints.defectsCount",       "type": "int"},
-    {"db_column": "received_ip_complaints",               "amazon_path": "performanceMetrics[].receivedIntellectualPropertyComplaints.defectsCount", "type": "int"},
-    {"db_column": "restricted_product_violations",        "amazon_path": "performanceMetrics[].restrictedProductPolicyViolations.defectsCount",      "type": "int"},
-    {"db_column": "suspected_ip_violations",              "amazon_path": "performanceMetrics[].suspectedIntellectualPropertyViolations.defectsCount", "type": "int"},
-    {"db_column": "food_and_product_safety_issues",       "amazon_path": "performanceMetrics[].foodAndProductSafetyIssues.defectsCount",            "type": "int"},
-    {"db_column": "customer_product_reviews_violations",  "amazon_path": "performanceMetrics[].customerProductReviewsPolicyViolations.defectsCount", "type": "int"},
-    {"db_column": "other_policy_violations",              "amazon_path": "performanceMetrics[].otherPolicyViolations.defectsCount",                 "type": "int"},
-    {"db_column": "document_requests",                    "amazon_path": "performanceMetrics[].documentRequests.defectsCount",                      "type": "int"},
-    {"db_column": "policy_violation_warnings",            "amazon_path": "performanceMetrics[].policyViolationWarnings.warningsCount",              "type": "int"},
-    {"db_column": "chargeback_claim_rate",                "amazon_path": "(legacy V1 — V2 splits chargebacks under orderDefectRate.{afn,mfn}.chargebacks.count)", "type": "decimal", "note": "deprecated"},
-    {"db_column": "extra",                                "amazon_path": "{lateShipmentRateList, all reportingDateRanges, targetValues, per-field statuses, full performanceMetrics + accountStatuses entry}", "type": "json"}
+    {
+      "db_column": "marketplace_id",
+      "amazon_path": "performanceMetrics[].marketplaceId",
+      "type": "str"
+    },
+    {
+      "db_column": "snapshot_date",
+      "amazon_path": "(injected by ingest worker)",
+      "type": "date"
+    },
+    {
+      "db_column": "account_status",
+      "amazon_path": "accountStatuses[].status",
+      "type": "str",
+      "values": [
+        "NORMAL",
+        "AT_RISK",
+        "DEACTIVATED"
+      ]
+    },
+    {
+      "db_column": "ahr_score",
+      "amazon_path": "performanceMetrics[].accountHealthRating.ahrScore",
+      "type": "decimal"
+    },
+    {
+      "db_column": "ahr_status",
+      "amazon_path": "performanceMetrics[].accountHealthRating.ahrStatus",
+      "type": "str",
+      "values": [
+        "GREAT",
+        "GOOD",
+        "AT_RISK",
+        "CRITICAL"
+      ]
+    },
+    {
+      "db_column": "account_health_rating",
+      "amazon_path": "performanceMetrics[].accountHealthRating.ahrStatus",
+      "type": "str",
+      "note": "alias of ahr_status (legacy)"
+    },
+    {
+      "db_column": "late_shipment_rate",
+      "amazon_path": "performanceMetrics[].lateShipmentRate.rate",
+      "type": "decimal",
+      "window": "30d"
+    },
+    {
+      "db_column": "late_shipment_count",
+      "amazon_path": "performanceMetrics[].lateShipmentRate.lateShipmentCount",
+      "type": "int"
+    },
+    {
+      "db_column": "late_shipment_order_count",
+      "amazon_path": "performanceMetrics[].lateShipmentRate.orderCount",
+      "type": "int"
+    },
+    {
+      "db_column": "invoice_defect_rate",
+      "amazon_path": "performanceMetrics[].invoiceDefectRate.rate",
+      "type": "decimal",
+      "window": "7d"
+    },
+    {
+      "db_column": "missing_invoice_count",
+      "amazon_path": "performanceMetrics[].invoiceDefectRate.missingInvoice.count",
+      "type": "int"
+    },
+    {
+      "db_column": "late_invoice_count",
+      "amazon_path": "performanceMetrics[].invoiceDefectRate.lateInvoice.count",
+      "type": "int"
+    },
+    {
+      "db_column": "invoice_defect_order_count",
+      "amazon_path": "performanceMetrics[].invoiceDefectRate.orderCount",
+      "type": "int"
+    },
+    {
+      "db_column": "order_defect_rate",
+      "amazon_path": "max(performanceMetrics[].orderDefectRate.{afn,mfn}.rate)",
+      "type": "decimal",
+      "note": "worse-of"
+    },
+    {
+      "db_column": "afn_order_defect_rate",
+      "amazon_path": "performanceMetrics[].orderDefectRate.afn.rate",
+      "type": "decimal",
+      "window": "60d"
+    },
+    {
+      "db_column": "afn_order_count",
+      "amazon_path": "performanceMetrics[].orderDefectRate.afn.orderCount",
+      "type": "int"
+    },
+    {
+      "db_column": "afn_claims_count",
+      "amazon_path": "performanceMetrics[].orderDefectRate.afn.claims.count",
+      "type": "int"
+    },
+    {
+      "db_column": "afn_chargebacks_count",
+      "amazon_path": "performanceMetrics[].orderDefectRate.afn.chargebacks.count",
+      "type": "int"
+    },
+    {
+      "db_column": "afn_negative_feedback_count",
+      "amazon_path": "performanceMetrics[].orderDefectRate.afn.negativeFeedback.count",
+      "type": "int"
+    },
+    {
+      "db_column": "mfn_order_defect_rate",
+      "amazon_path": "performanceMetrics[].orderDefectRate.mfn.rate",
+      "type": "decimal",
+      "window": "60d"
+    },
+    {
+      "db_column": "mfn_order_count",
+      "amazon_path": "performanceMetrics[].orderDefectRate.mfn.orderCount",
+      "type": "int"
+    },
+    {
+      "db_column": "mfn_claims_count",
+      "amazon_path": "performanceMetrics[].orderDefectRate.mfn.claims.count",
+      "type": "int"
+    },
+    {
+      "db_column": "mfn_chargebacks_count",
+      "amazon_path": "performanceMetrics[].orderDefectRate.mfn.chargebacks.count",
+      "type": "int"
+    },
+    {
+      "db_column": "mfn_negative_feedback_count",
+      "amazon_path": "performanceMetrics[].orderDefectRate.mfn.negativeFeedback.count",
+      "type": "int"
+    },
+    {
+      "db_column": "on_time_delivery_rate",
+      "amazon_path": "performanceMetrics[].onTimeDeliveryRate.rate",
+      "type": "decimal",
+      "window": "30d"
+    },
+    {
+      "db_column": "on_time_delivery_count",
+      "amazon_path": "performanceMetrics[].onTimeDeliveryRate.onTimeDeliveryCount",
+      "type": "int"
+    },
+    {
+      "db_column": "unit_on_time_delivery_rate",
+      "amazon_path": "performanceMetrics[].unitOnTimeDeliveryRate.rate",
+      "type": "decimal",
+      "window": "14d"
+    },
+    {
+      "db_column": "unit_on_time_delivery_count",
+      "amazon_path": "performanceMetrics[].unitOnTimeDeliveryRate.unitOnTimeDeliveryCount",
+      "type": "int"
+    },
+    {
+      "db_column": "total_unit_count",
+      "amazon_path": "performanceMetrics[].unitOnTimeDeliveryRate.totalUnitCount",
+      "type": "int"
+    },
+    {
+      "db_column": "valid_tracking_rate",
+      "amazon_path": "performanceMetrics[].validTrackingRate.rate",
+      "type": "decimal",
+      "window": "30d"
+    },
+    {
+      "db_column": "valid_tracking_count",
+      "amazon_path": "performanceMetrics[].validTrackingRate.validTrackingCount",
+      "type": "int"
+    },
+    {
+      "db_column": "pre_fulfillment_cancel_rate",
+      "amazon_path": "performanceMetrics[].preFulfillmentCancellationRate.rate",
+      "type": "decimal",
+      "window": "7d"
+    },
+    {
+      "db_column": "pre_fulfillment_cancel_count",
+      "amazon_path": "performanceMetrics[].preFulfillmentCancellationRate.cancellationCount",
+      "type": "int"
+    },
+    {
+      "db_column": "listing_policy_violations",
+      "amazon_path": "performanceMetrics[].listingPolicyViolations.defectsCount",
+      "type": "int"
+    },
+    {
+      "db_column": "product_authenticity_complaints",
+      "amazon_path": "performanceMetrics[].productAuthenticityCustomerComplaints.defectsCount",
+      "type": "int"
+    },
+    {
+      "db_column": "product_condition_complaints",
+      "amazon_path": "performanceMetrics[].productConditionCustomerComplaints.defectsCount",
+      "type": "int"
+    },
+    {
+      "db_column": "product_safety_complaints",
+      "amazon_path": "performanceMetrics[].productSafetyCustomerComplaints.defectsCount",
+      "type": "int"
+    },
+    {
+      "db_column": "received_ip_complaints",
+      "amazon_path": "performanceMetrics[].receivedIntellectualPropertyComplaints.defectsCount",
+      "type": "int"
+    },
+    {
+      "db_column": "restricted_product_violations",
+      "amazon_path": "performanceMetrics[].restrictedProductPolicyViolations.defectsCount",
+      "type": "int"
+    },
+    {
+      "db_column": "suspected_ip_violations",
+      "amazon_path": "performanceMetrics[].suspectedIntellectualPropertyViolations.defectsCount",
+      "type": "int"
+    },
+    {
+      "db_column": "food_and_product_safety_issues",
+      "amazon_path": "performanceMetrics[].foodAndProductSafetyIssues.defectsCount",
+      "type": "int"
+    },
+    {
+      "db_column": "customer_product_reviews_violations",
+      "amazon_path": "performanceMetrics[].customerProductReviewsPolicyViolations.defectsCount",
+      "type": "int"
+    },
+    {
+      "db_column": "other_policy_violations",
+      "amazon_path": "performanceMetrics[].otherPolicyViolations.defectsCount",
+      "type": "int"
+    },
+    {
+      "db_column": "document_requests",
+      "amazon_path": "performanceMetrics[].documentRequests.defectsCount",
+      "type": "int"
+    },
+    {
+      "db_column": "policy_violation_warnings",
+      "amazon_path": "performanceMetrics[].policyViolationWarnings.warningsCount",
+      "type": "int"
+    },
+    {
+      "db_column": "chargeback_claim_rate",
+      "amazon_path": "(legacy V1 — V2 splits chargebacks under orderDefectRate.{afn,mfn}.chargebacks.count)",
+      "type": "decimal",
+      "note": "deprecated"
+    },
+    {
+      "db_column": "extra",
+      "amazon_path": "{lateShipmentRateList, all reportingDateRanges, targetValues, per-field statuses, full performanceMetrics + accountStatuses entry}",
+      "type": "json",
+      "note": "Intentional forensic blobs written by AccountHealthParser — NOT unmapped columns. Keys: performanceMetrics (full per-marketplace metrics: lateShipmentRateList, reportingDateRanges, targetValues) and accountStatusesEntry (per-field account statuses). The flat columns above are extracted from these; the raw blobs are retained for audit. Read via SQL JSON operators if needed."
+    }
   ],
   "example_query": {
     "store": "myStore-AE",
-    "tables": ["rpt_account_health"],
+    "tables": [
+      "rpt_account_health"
+    ],
     "columns": [
       "rpt_account_health.marketplace_id",
       "rpt_account_health.account_status",
@@ -79,7 +292,12 @@
       "rpt_account_health.suspected_ip_violations"
     ],
     "filters": [],
-    "order_by": [{"column": "rpt_account_health.snapshot_date", "dir": "desc"}],
+    "order_by": [
+      {
+        "column": "rpt_account_health.snapshot_date",
+        "dir": "desc"
+      }
+    ],
     "limit": 30,
     "report_date": "latest"
   }

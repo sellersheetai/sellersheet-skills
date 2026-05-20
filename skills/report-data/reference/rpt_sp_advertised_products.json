@@ -1,7 +1,7 @@
 {
   "_meta": {
     "table": "rpt_sp_advertised_products",
-    "report_type": "SP_ADVERTISED_PRODUCTS",
+    "report_type": "spAdvertisedProduct",
     "is_snapshot": false,
     "description": "Sponsored Products advertised product (ad) daily performance.",
     "pii": false,
