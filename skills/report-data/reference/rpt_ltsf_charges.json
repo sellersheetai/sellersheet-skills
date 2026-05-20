@@ -12,7 +12,6 @@
     "unique_key": [
       "store_id",
       "report_date",
-      "snapshot_date",
       "fnsku",
       "sku",
       "country",
@@ -21,11 +20,6 @@
     "cron": "15 5 * * *"
   },
   "columns": [
-    {
-      "db_column": "snapshot_date",
-      "amazon_header": "snapshot-date",
-      "type": "date"
-    },
     {
       "db_column": "sku",
       "amazon_header": "sku",
