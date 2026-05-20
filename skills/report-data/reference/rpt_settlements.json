@@ -139,6 +139,51 @@
       "db_column": "promotion_id",
       "amazon_header": "promotion-id",
       "type": "str"
+    },
+    {
+      "db_column": "item_related_fee_type",
+      "amazon_header": "item-related-fee-type",
+      "type": "str"
+    },
+    {
+      "db_column": "item_related_fee_amount",
+      "amazon_header": "item-related-fee-amount",
+      "type": "decimal"
+    },
+    {
+      "db_column": "promotion_type",
+      "amazon_header": "promotion-type",
+      "type": "str"
+    },
+    {
+      "db_column": "promotion_amount",
+      "amazon_header": "promotion-amount",
+      "type": "decimal"
+    },
+    {
+      "db_column": "other_amount",
+      "amazon_header": "other-amount",
+      "type": "decimal"
+    },
+    {
+      "db_column": "other_fee_amount",
+      "amazon_header": "other-fee-amount",
+      "type": "decimal"
+    },
+    {
+      "db_column": "other_fee_reason_description",
+      "amazon_header": "other-fee-reason-description",
+      "type": "str"
+    },
+    {
+      "db_column": "price_type",
+      "amazon_header": "price-type",
+      "type": "str"
+    },
+    {
+      "db_column": "price_amount",
+      "amazon_header": "price-amount",
+      "type": "decimal"
     }
   ],
   "example_query": {
