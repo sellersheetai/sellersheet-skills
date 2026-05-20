@@ -23,4 +23,3 @@
 # Maintainer-only tooling (lives at repo root, not shipped publicly)
 /.maintainers/
 /scripts/
-/.github/

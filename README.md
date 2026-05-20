@@ -4,7 +4,7 @@
 
 **Author**: [sellersheetai.com](https://sellersheetai.com)
 **License**: Apache-2.0
-**Latest release**: v0.1.0 ([changelog](./CHANGELOG.md))
+**Latest release**: v0.3.0 ([changelog](./CHANGELOG.md))
 
 ## What's in here
 
@@ -34,7 +34,7 @@ Before installing, confirm:
 
 1. **A SellerSheet account** at [sellersheetai.com](https://sellersheetai.com).
 2. **At least one Amazon store connected** in your SellerSheet workspace.
-3. **SellerSheet MCP** configured in your agent. See `mcp/sellersheet.json` for the config snippet.
+3. **A SellerSheet API key** from [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard). On Claude Code the plugin ships a `.mcp.json` and auto-registers the SellerSheet MCP server — you only expose your key as the `SELLERSHEET_API_KEY` environment variable. On other agents, register the MCP server manually using `mcp/sellersheet.json`. See [docs/setup-mcp.md](./docs/setup-mcp.md).
 
 For the dashboard skill specifically, if you want PPC tabs to populate with real data, the connected store needs **Amazon Advertising profile access** authorized in SellerSheet at [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → Stores → Connect Advertising. Without it, ad-related sections render as scaffolds.
 
@@ -100,23 +100,56 @@ git clone https://github.com/sellersheetai/sellersheet-skills.git
 cp -r sellersheet-skills/skills/* <your-agent-skills-directory>/
 ```
 
-## Update
+## Update & auto-update
+
+### Claude Code
+
+`sellersheet-skills` ships as a git-based marketplace, so updates land whenever Claude Code refreshes the marketplace.
+
+**Enable auto-update (recommended).** Third-party marketplaces do *not* auto-update by default — turn it on once and new releases install themselves:
+
+- Run `/plugin`, open the **Marketplaces** tab, select **sellersheet-marketplace**, and choose **Enable auto-update**, **or**
+- Add this to `~/.claude/settings.json`:
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "sellersheet-marketplace": {
+      "source": { "source": "github", "repo": "sellersheetai/sellersheet-skills" },
+      "autoUpdate": true
+    }
+  }
+}
+```
+
+With auto-update on, Claude Code refreshes the marketplace at startup and updates the plugin when a new version ships; you'll see a notification to run `/reload-plugins`.
+
+**Update manually** at any time:
+
+```
+/plugin marketplace update sellersheet-marketplace
+/plugin update sellersheet-skills
+```
+
+### Other agents
 
 ```bash
-# Claude Code
-/plugin update sellersheet-skills
-
-# Anywhere else (re-runs install with current latest)
+# Re-install at current latest
 bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --update
+
+# Check installed vs latest without changing anything
+bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --check
 ```
+
+Full mechanism: [docs/auto-update.md](./docs/auto-update.md).
 
 ## Version compatibility
 
-| Skill release | SellerSheet MCP minimum | Agent compatibility |
+| Plugin release | SellerSheet MCP minimum | Agent compatibility |
 |---|---|---|
-| v0.1.x | 2025-Q4 build | Claude Code 1.0+, Claude Desktop 0.10+, Codex CLI any, Gemini CLI 0.5+, Antigravity any |
+| v0.3.x | 2025-Q4 build | Claude Code 1.0+, Claude Desktop 0.10+, Codex CLI any, Gemini CLI 0.5+, Antigravity any |
 
-Each individual skill carries its own version in its `SKILL.md` frontmatter for skill-level pinning.
+The plugin ships as one bundle — all three skills release together at the plugin version. Each `SKILL.md` frontmatter `version:` mirrors `.claude-plugin/plugin.json`.
 
 ## Documentation
 

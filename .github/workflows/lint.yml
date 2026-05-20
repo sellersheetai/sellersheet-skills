@@ -1,0 +1,112 @@
+name: lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    name: Validate plugin structure, versioning, and privacy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Manifests are valid JSON
+        run: |
+          set -e
+          for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json .mcp.json versions.json mcp/sellersheet.json; do
+            jq empty "$f" && echo "  ok: $f"
+          done
+
+      - name: Every skill has SKILL.md with required frontmatter
+        run: |
+          set -e
+          fail=0
+          for d in skills/*/; do
+            name="$(basename "$d")"
+            f="${d}SKILL.md"
+            if [[ ! -f "$f" ]]; then
+              echo "::error file=$d::Missing SKILL.md"; fail=1; continue
+            fi
+            fm=$(awk '/^---$/{c++; next} c==1{print}' "$f")
+            echo "$fm" | grep -q '^name:'        || { echo "::error file=$f::Missing 'name:' in frontmatter"; fail=1; }
+            echo "$fm" | grep -q '^description:' || { echo "::error file=$f::Missing 'description:' in frontmatter"; fail=1; }
+            fm_name=$(echo "$fm" | awk '/^name:/{sub(/^name:[ \t]*/,""); gsub(/['\''" ]/,""); print; exit}')
+            if [[ "$fm_name" != "$name" ]]; then
+              echo "::error file=$f::Frontmatter name '$fm_name' does not match folder name '$name'"; fail=1
+            fi
+          done
+          [[ $fail -eq 0 ]] || exit 1
+          echo "All SKILL.md frontmatter valid"
+
+      - name: Version is unified across every file
+        run: |
+          set -e
+          PV=$(jq -r '.version' .claude-plugin/plugin.json)
+          echo "Canonical plugin.json version: $PV"
+          [[ "$PV" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "::error::plugin.json version '$PV' is not semver"; exit 1; }
+          fail=0
+          # marketplace.json plugin entry must NOT carry its own version — plugin.json wins silently
+          if jq -e '.plugins[] | select(.name=="sellersheet-skills") | has("version")' .claude-plugin/marketplace.json | grep -q true; then
+            echo "::error::marketplace.json plugin entry has a 'version' field — remove it; plugin.json is the single source of truth"
+            fail=1
+          fi
+          for d in skills/*/; do
+            sv=$(awk '/^---$/{c++; if(c==2)exit; next} c==1 && /^version:/{sub(/^version:[ \t]*/,""); gsub(/['\''" ]/,""); print; exit}' "${d}SKILL.md")
+            [[ "$sv" == "$PV" ]] || { echo "::error::${d}SKILL.md version '$sv' != plugin.json '$PV'"; fail=1; }
+          done
+          vjm=$(jq -r '.marketplace_version' versions.json)
+          [[ "$vjm" == "$PV" ]] || { echo "::error::versions.json marketplace_version '$vjm' != '$PV'"; fail=1; }
+          while read -r sv; do
+            [[ "$sv" == "$PV" ]] || { echo "::error::versions.json skill latest_version '$sv' != '$PV'"; fail=1; }
+          done < <(jq -r '.skills[].latest_version' versions.json)
+          iv=$(awk -F'"' '/^VERSION=/{print $2; exit}' install.sh)
+          [[ "$iv" == "$PV" ]] || { echo "::error::install.sh VERSION '$iv' != '$PV'"; fail=1; }
+          grep -qF "v$PV" README.md      || { echo "::error::README.md has no 'v$PV' reference"; fail=1; }
+          grep -qE "^## \[$PV\]" CHANGELOG.md || { echo "::error::CHANGELOG.md has no '## [$PV]' entry"; fail=1; }
+          [[ $fail -eq 0 ]] || exit 1
+          echo "Version $PV is consistent across plugin.json, marketplace.json, every SKILL.md, versions.json, install.sh, README.md, and CHANGELOG.md"
+
+      - name: marketplace.json matches the repo
+        run: |
+          set -e
+          fail=0
+          count=$(jq '.plugins | length' .claude-plugin/marketplace.json)
+          [[ "$count" == "1" ]] || { echo "::error::Expected exactly 1 plugin entry, found $count"; fail=1; }
+          name=$(jq -r '.plugins[0].name' .claude-plugin/marketplace.json)
+          [[ "$name" == "sellersheet-skills" ]] || { echo "::error::plugin entry name '$name' != 'sellersheet-skills'"; fail=1; }
+          src=$(jq -r '.plugins[0].source' .claude-plugin/marketplace.json)
+          [[ "$src" == "./" ]] || { echo "::error::plugin source '$src' != './'"; fail=1; }
+          pj_name=$(jq -r '.name' .claude-plugin/plugin.json)
+          [[ "$pj_name" == "$name" ]] || { echo "::error::plugin.json name '$pj_name' != marketplace entry '$name'"; fail=1; }
+          vj=$(jq -r '.skills[].name' versions.json | sort)
+          fs=$(ls -1 skills/ | sort)
+          if [[ "$vj" != "$fs" ]]; then
+            echo "::error::versions.json skills do not match skills/ folder"
+            diff <(echo "$vj") <(echo "$fs") || true
+            fail=1
+          fi
+          [[ $fail -eq 0 ]] || exit 1
+          echo "Manifest is in sync with the repo"
+
+      - name: Scan for private identifiers
+        run: |
+          patterns='(\bSS-[A-Z]{2}\b|\bTJ-[A-Z]{2}\b|\bSML-[A-Z]{2}\b|\bSmilee\b|\bYumLock\b|\bSpireHues\b|sellersheet0430|sellersheet-bot@|tjme-amz|test\.sellersheetai|/home/claude/listing-optimizer-workspace)'
+          if grep -rEn "$patterns" skills/ docs/ README.md CHANGELOG.md 2>/dev/null; then
+            echo "::error::Private identifiers detected. Replace with generic placeholders (myStore-XX, <brand>, etc.)"
+            exit 1
+          fi
+          echo "No private identifiers found"
+
+      - name: Scan for real-looking ASINs
+        run: |
+          if grep -rEn '\bB0[A-Z0-9]{8}\b' skills/ docs/ README.md CHANGELOG.md 2>/dev/null | grep -vE '(B0ABCDEFGH|B0ABCDEFG[0-9]|B0XXXXXXXX)'; then
+            echo "::error::Real-looking ASINs detected. Replace with B0ABCDEFGH or similar placeholder."
+            exit 1
+          fi
+          echo "ASIN scan clean"

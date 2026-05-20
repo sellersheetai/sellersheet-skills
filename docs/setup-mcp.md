@@ -35,13 +35,15 @@ The location of this config differs per agent:
 | Antigravity | `~/.antigravity/mcp.json` |
 | Openclaw / Hermes / generic | per the agent's docs — the `mcpServers` block is universal |
 
+> **Claude Code shortcut:** if you install `sellersheet-skills` as a plugin (`/plugin install sellersheet-skills@sellersheet-marketplace`), the plugin ships its own `.mcp.json` and registers the `sellersheet` server for you — you skip the manual config above. Just expose your key as an environment variable instead of pasting it into JSON: `export SELLERSHEET_API_KEY="your-key"`. See [install-claude-code.md](./install-claude-code.md).
+
 ## After installing MCP — install the skills
 
 Skills are a separate artifact from the MCP server. Pick the path that fits your agent:
 
 | Agent | Install command |
 |---|---|
-| **Claude Code** | `/plugin marketplace add sellersheetai/sellersheet-skills` then `/plugin install sellersheet-sheets sellersheet-dashboard report-data` |
+| **Claude Code** | `/plugin marketplace add sellersheetai/sellersheet-skills` then `/plugin install sellersheet-skills@sellersheet-marketplace` (one bundle, all three skills) |
 | **Other agents** | `bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --target <agent>` |
 
 After both MCP and skills are installed, restart your agent.
@@ -54,23 +56,24 @@ Expected outcome: the agent calls `get_user_context`, returns your profile, stor
 
 If you instead see "tool not found" or "unauthorized": one of the three setup pieces is incomplete. The most common cause is forgetting to restart the agent after editing the MCP config.
 
-## Auto-update flow
+## Keeping skills up to date
 
-`get_user_context` returns a `skills_catalog` field listing the latest published version of every public skill. Your agent compares this against your locally-installed skill versions (`SKILL.md` frontmatter `version:` line) and prompts you to update when one is outdated. Updates run via:
+**Claude Code** — enable marketplace auto-update once (third-party marketplaces are opt-in), then new releases install themselves:
 
-```bash
-# Claude Code
-/plugin update sellersheet-skills
-
-# Other agents
-bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --update
+```
+/plugin   →   Marketplaces tab   →   sellersheet-marketplace   →   Enable auto-update
 ```
 
-Or check what's installed vs available without doing anything:
+Or update on demand: `/plugin marketplace update sellersheet-marketplace` then `/plugin update sellersheet-skills`.
+
+**Other agents** — re-run the installer with `--update`, or `--check` to compare installed vs latest:
 
 ```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --update
 bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --check
 ```
+
+The full mechanism — version resolution, the `extraKnownMarketplaces` snippet, and the maintainer release flow — is in [auto-update.md](./auto-update.md).
 
 ## Common setup failures
 

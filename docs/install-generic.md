@@ -45,20 +45,13 @@ bash <(curl -fsSL ...install.sh) --target hermes --path /srv/hermes/skills
 bash <(curl -fsSL ...install.sh) --target generic --path /your/custom/path
 ```
 
-This copies all 10 skills to the specified directory. Each lands as its own folder:
+This copies all skills in the bundle to the specified directory. Each lands as its own folder:
 
 ```
 /your/path/
-├── sellersheet/
 ├── sellersheet-sheets/
 ├── sellersheet-dashboard/
-├── amazon-api/
-├── amazon-ads/
-├── report-data/
-├── fba-inbound/
-├── listing-optimizer/
-├── listing-refurbish/
-└── amazon-listing-optimizer/
+└── report-data/
 ```
 
 ## Step 3: Restart your agent
@@ -73,7 +66,7 @@ Install only specific skills:
 bash <(curl -fsSL ...install.sh) \
   --target openclaw \
   --path /opt/openclaw/skills \
-  --skills "sellersheet sellersheet-sheets sellersheet-dashboard"
+  --skills "sellersheet-sheets report-data"
 ```
 
 ## Update
