@@ -1,5 +1,7 @@
 # Install on Antigravity
 
+> **Recommended:** the quickest install is [`npx skills`](./install-npx-skills.md) — `npx skills add sellersheetai/sellersheet-skills -a antigravity`, one command across 50+ agents. The `install.sh` steps below are the no-Node fallback.
+
 ## Prerequisites
 
 - Antigravity agent runtime installed
