@@ -1,0 +1,68 @@
+name: auto-tag
+
+# Tags a release whenever the canonical version in .claude-plugin/plugin.json
+# changes on main. The tag keeps the marketplace's release history aligned with
+# the version Claude Code reads for update detection.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.claude-plugin/plugin.json'
+
+permissions:
+  contents: write
+
+jobs:
+  auto-tag:
+    name: Tag a release when plugin.json version changes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Read plugin version
+        id: ver
+        run: |
+          version=$(jq -r '.version' .claude-plugin/plugin.json)
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::plugin.json version '$version' is not semver"; exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "Plugin version: $version"
+
+      - name: Check whether the tag already exists
+        id: tag
+        run: |
+          v="v${{ steps.ver.outputs.version }}"
+          if git rev-parse "$v" >/dev/null 2>&1; then
+            echo "Tag $v already exists — nothing to do."
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Tag $v does not exist yet — will create."
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Verify CHANGELOG has a matching entry
+        if: steps.tag.outputs.exists == 'false'
+        run: |
+          v="${{ steps.ver.outputs.version }}"
+          if ! grep -qE "^## \[$v\]" CHANGELOG.md; then
+            echo "::error::plugin.json is v$v but CHANGELOG.md has no '## [$v]' entry"
+            exit 1
+          fi
+          echo "CHANGELOG entry for $v found"
+
+      - name: Create and push the release tag
+        if: steps.tag.outputs.exists == 'false'
+        run: |
+          v="v${{ steps.ver.outputs.version }}"
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$v" -m "Release $v"
+          git push origin "$v"
+          echo "Tagged $v at $(git rev-parse HEAD)"
