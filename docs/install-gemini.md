@@ -51,7 +51,7 @@ gemini config set skills.auto_activate true
 gemini chat "list active skills"
 ```
 
-Should include `sellersheet`, `sellersheet-sheets`, `sellersheet-dashboard`, etc.
+Should include `sellersheet-sheets`, `sellersheet-dashboard`, and `report-data`.
 
 ## Update
 

@@ -43,7 +43,7 @@ Restart the agent runtime to pick up the new skills.
 
 ## Verify
 
-Trigger any sellersheet skill via a natural-language phrase ("build me an FBA inbound shipment for myStore-US"). The agent should load the relevant skill from the installed directory.
+Trigger any sellersheet skill via a natural-language phrase ("build me an operator dashboard for myStore-US"). The agent should load the relevant skill from the installed directory.
 
 ## Update
 

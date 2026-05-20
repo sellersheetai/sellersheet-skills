@@ -13,8 +13,25 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
-### Tooling
-- Maintainer `lint.sh` now handles YAML folded-scalar (`description: >`) frontmatter in skill descriptions (fixes a promote.sh bug that left `>` literal in marketplace.json).
+## [0.3.0] — 2026-05-21
+
+A plugin-standard and auto-update hardening pass, plus the accumulated `report-data` calibration work since 0.2.0.
+
+### Changed
+
+- **Single-source versioning.** `.claude-plugin/plugin.json` `version` is now the one canonical version. `marketplace.json` no longer carries a duplicate `version` on the plugin entry — Claude Code lets `plugin.json` win silently, so a duplicate only invites drift. `versions.json`, every `SKILL.md` frontmatter, `install.sh`, and `README.md` are mirrors, enforced by CI.
+- `report-data` skill description converted from a YAML folded scalar (`description: >`) to a single-line string for frontmatter-parser robustness.
+
+### Added
+
+- **`.mcp.json`** at the plugin root — installing the plugin now auto-registers the SellerSheet MCP server. Users only set the `SELLERSHEET_API_KEY` environment variable instead of hand-editing agent config JSON.
+- **GitHub Actions CI** (`.github/workflows/`): `lint.yml` validates plugin structure, version consistency, and the privacy/ASIN scans on every push and PR; `auto-tag.yml` creates a release tag whenever `plugin.json` `version` changes on `main`.
+- **Auto-update documentation** — `docs/auto-update.md` plus a README section covering how to enable marketplace auto-update (third-party marketplaces are opt-in by default) and the `extraKnownMarketplaces` settings snippet.
+
+### report-data calibration (since 0.2.0)
+
+- `rpt_orders` +13 promoted columns; `rpt_settlements` +9 typed breakdown columns; `rpt_fba_fee_preview` +7 future-fee columns; `rpt_restock_recommendations` +17 calibration columns; `rpt_listings_snapshot` +4 calibration columns.
+- `rpt_sb_purchased_products` calibrated to the Ads API v3 schema; ads tables now document the `country_code` column; `rpt_ltsf_charges` dropped a dead `snapshot_date`; phantom restock columns removed; ads `_meta.report_type` drift corrected.
 
 ## [0.2.0] — 2026-05-13
 

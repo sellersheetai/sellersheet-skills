@@ -57,18 +57,18 @@ In a new conversation, ask:
 
 > "What skills do you have available for Amazon ops?"
 
-Claude should list `sellersheet`, `sellersheet-sheets`, `sellersheet-dashboard`, etc.
+Claude should list `sellersheet-sheets`, `sellersheet-dashboard`, and `report-data`.
 
 Try a real test:
 
 > "Pull my inventory health for myStore-US and tell me which SKUs need restocking."
 
-Claude should call `get_user_context`, then `query_report_data`, then propose actions per the `sellersheet` skill.
+Claude should call `get_user_context`, then `query_report_data` via the `report-data` skill.
 
 ## Selective install
 
 ```bash
-bash <(curl -fsSL ...install.sh) --target claude-desktop --skills "sellersheet sellersheet-dashboard"
+bash <(curl -fsSL ...install.sh) --target claude-desktop --skills "sellersheet-dashboard report-data"
 ```
 
 ## Update

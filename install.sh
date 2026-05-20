@@ -13,7 +13,7 @@ set -euo pipefail
 
 REPO_URL="https://github.com/sellersheetai/sellersheet-skills.git"
 REPO_RAW="https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main"
-VERSION="0.1.0"
+VERSION="0.3.0"
 
 # ---------- args ----------
 TARGET=""
@@ -45,9 +45,7 @@ OPTIONS:
                        Required for openclaw, hermes, generic.
   --skills "<list>"    Space-separated skill names to install. Default: all.
                        Available skills:
-                         sellersheet sellersheet-sheets sellersheet-dashboard
-                         amazon-api amazon-ads report-data fba-inbound
-                         listing-optimizer listing-refurbish amazon-listing-optimizer
+                         sellersheet-sheets sellersheet-dashboard report-data
   --update             Pull the latest version and re-install.
   --check              Compare installed skill versions vs the latest available;
                        print a status table and exit (no install/update).
@@ -60,7 +58,7 @@ EXAMPLES:
   install.sh --target claude-code             # global ~/.claude/skills
   install.sh --target codex                   # ~/.codex/skills
   install.sh --target openclaw --path /opt/openclaw/skills
-  install.sh --skills "sellersheet sellersheet-sheets"
+  install.sh --skills "sellersheet-sheets report-data"
 EOF
                 exit 0 ;;
     *)           echo "Unknown arg: $1"; exit 1 ;;
