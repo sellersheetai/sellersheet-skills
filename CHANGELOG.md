@@ -13,6 +13,9 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+### Documentation
+- `docs/install-npx-skills.md` — install guide for the [`npx skills`](https://github.com/vercel-labs/skills) cross-agent installer, now the recommended path for Codex, Cursor, Gemini, Antigravity, and 50+ other agents. README + per-agent docs updated to surface it ahead of the `install.sh` fallback.
+
 ## [0.3.0] — 2026-05-21
 
 A plugin-standard and auto-update hardening pass, plus the accumulated `report-data` calibration work since 0.2.0.

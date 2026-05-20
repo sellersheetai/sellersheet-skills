@@ -70,7 +70,19 @@ Get-Content mcp\sellersheet.json >> "$env:APPDATA\Claude\claude_desktop_config.j
 bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --target claude-desktop
 ```
 
-### Codex, Gemini CLI, Antigravity
+### Codex, Cursor, Gemini & 50+ other agents — `npx skills` (recommended)
+
+[`npx skills`](https://github.com/vercel-labs/skills) is the open cross-agent skill installer — one command, works across Codex, Cursor, Gemini CLI, Antigravity, and 50+ other coding agents.
+
+```bash
+npx skills add sellersheetai/sellersheet-skills            # install all three skills
+npx skills add sellersheetai/sellersheet-skills --list     # preview first
+npx skills add sellersheetai/sellersheet-skills -a codex   # target a specific agent
+```
+
+Skills are a separate artifact from the MCP server — you still register the SellerSheet MCP server for your agent (see [docs/setup-mcp.md](./docs/setup-mcp.md)). Full guide: [docs/install-npx-skills.md](./docs/install-npx-skills.md).
+
+### No Node.js? — `install.sh` fallback
 
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --target <agent>
@@ -153,12 +165,15 @@ The plugin ships as one bundle — all three skills release together at the plug
 
 ## Documentation
 
+- [Install via `npx skills` (Codex, Cursor, Gemini & 50+ agents)](./docs/install-npx-skills.md)
 - [Install on Claude Code](./docs/install-claude-code.md)
 - [Install on Claude Desktop](./docs/install-claude-desktop.md)
 - [Install on Codex](./docs/install-codex.md)
 - [Install on Gemini CLI](./docs/install-gemini.md)
 - [Install on Antigravity](./docs/install-antigravity.md)
 - [Install on Openclaw / Hermes / generic agents](./docs/install-generic.md)
+- [SellerSheet MCP setup](./docs/setup-mcp.md)
+- [Auto-update](./docs/auto-update.md)
 
 ## Contributing
 
