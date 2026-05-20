@@ -1,7 +1,7 @@
 {
   "_meta": {
     "table": "rpt_sd_ad_groups",
-    "report_type": "SD_AD_GROUPS",
+    "report_type": "sdAdGroups",
     "is_snapshot": false,
     "description": "Sponsored Display ad group daily performance.",
     "pii": false,

@@ -1,7 +1,7 @@
 {
   "_meta": {
     "table": "rpt_sd_targets",
-    "report_type": "SD_TARGETS",
+    "report_type": "sdTargets",
     "is_snapshot": false,
     "description": "Sponsored Display target-level daily performance.",
     "pii": false,

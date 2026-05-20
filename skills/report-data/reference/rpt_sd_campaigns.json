@@ -1,7 +1,7 @@
 {
   "_meta": {
     "table": "rpt_sd_campaigns",
-    "report_type": "SD_CAMPAIGNS",
+    "report_type": "sdCampaigns",
     "is_snapshot": false,
     "description": "Sponsored Display campaign-level daily performance.",
     "pii": false,

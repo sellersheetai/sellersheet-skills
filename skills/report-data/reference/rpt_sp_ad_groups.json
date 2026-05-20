@@ -1,7 +1,7 @@
 {
   "_meta": {
     "table": "rpt_sp_ad_groups",
-    "report_type": "SP_AD_GROUPS",
+    "report_type": "spAdGroups",
     "is_snapshot": false,
     "description": "Sponsored Products ad group daily performance with campaign dimensions.",
     "pii": false,

@@ -1,7 +1,7 @@
 {
   "_meta": {
     "table": "rpt_sp_targets",
-    "report_type": "SP_TARGETS",
+    "report_type": "spTargets",
     "is_snapshot": false,
     "description": "Sponsored Products target-level daily performance.",
     "pii": false,

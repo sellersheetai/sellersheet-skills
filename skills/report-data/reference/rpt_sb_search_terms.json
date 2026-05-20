@@ -1,7 +1,7 @@
 {
   "_meta": {
     "table": "rpt_sb_search_terms",
-    "report_type": "SB_SEARCH_TERMS",
+    "report_type": "sbSearchTerm",
     "is_snapshot": false,
     "description": "Sponsored Brands search term report.",
     "pii": false,

@@ -1,7 +1,7 @@
 {
   "_meta": {
     "table": "rpt_sb_ad_groups",
-    "report_type": "SB_AD_GROUPS",
+    "report_type": "sbAdGroups",
     "is_snapshot": false,
     "description": "Sponsored Brands ad group daily performance.",
     "pii": false,

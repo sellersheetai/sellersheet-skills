@@ -1,7 +1,7 @@
 {
   "_meta": {
     "table": "rpt_sp_campaign_placement",
-    "report_type": "spCampaigns (groupBy=campaignPlacement)",
+    "report_type": "spCampaignsByPlacement",
     "is_snapshot": false,
     "description": "SP campaign x placement performance. placement_classification is one of 'Top of Search on-Amazon' / 'Detail Page on-Amazon' / 'Other on-Amazon' (Amazon's actual values; the spec docs older PLACEMENT_TOP/REST/PRODUCT_PAGE constants are not what the live API ships). top_of_search_impression_share is populated only when Amazon's volume threshold is met for the campaign-day; small accounts will see NULL.",
     "pii": false,
