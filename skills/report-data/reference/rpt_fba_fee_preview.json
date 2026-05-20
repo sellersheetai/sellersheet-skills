@@ -204,6 +204,41 @@
       "note": "Authoritative date column. report_date column was dropped 2026-05-19 — it was never populated by the parser and broke get_date_col() priority probing."
     },
     {
+      "db_column": "estimated_delivery_services_fee_per_unit",
+      "amazon_header": "estimated-delivery-services-fee-per-unit",
+      "type": "decimal"
+    },
+    {
+      "db_column": "estimated_future_fee",
+      "amazon_header": "estimated-future-fee (Current Selling on Amazon + Future Fulfillment fees)",
+      "type": "decimal"
+    },
+    {
+      "db_column": "estimated_future_pick_pack_fee_per_unit",
+      "amazon_header": "estimated-future-pick-pack-fee-per-unit",
+      "type": "decimal"
+    },
+    {
+      "db_column": "estimated_future_weight_handling_fee_per_unit",
+      "amazon_header": "estimated-future-weight-handling-fee-per-unit",
+      "type": "decimal"
+    },
+    {
+      "db_column": "estimated_future_order_handling_fee_per_order",
+      "amazon_header": "estimated-future-order-handling-fee-per-order",
+      "type": "decimal"
+    },
+    {
+      "db_column": "expected_fulfillment_fee_per_unit",
+      "amazon_header": "expected-fulfillment-fee-per-unit",
+      "type": "decimal"
+    },
+    {
+      "db_column": "expected_future_fulfillment_fee_per_unit",
+      "amazon_header": "expected-future-fulfillment-fee-per-unit",
+      "type": "decimal"
+    },
+    {
       "db_column": "extra",
       "amazon_header": "(unrecognized columns fall back here)",
       "type": "json"
