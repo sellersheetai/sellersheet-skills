@@ -151,6 +151,16 @@
       "amazon_header": "productName",
       "type": "str",
       "note": "purchased ASIN title"
+    },
+    {
+      "db_column": "campaign_budget",
+      "amazon_header": "campaignBudgetAmount",
+      "type": "decimal"
+    },
+    {
+      "db_column": "campaign_budget_type",
+      "amazon_header": "campaignBudgetType",
+      "type": "str"
     }
   ],
   "example_query": {

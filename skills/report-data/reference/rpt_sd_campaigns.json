@@ -255,6 +255,11 @@
     {
       "db_column": "viewability_rate",
       "type": "decimal"
+    },
+    {
+      "db_column": "campaign_budget_type",
+      "amazon_header": "(see parser)",
+      "type": "str"
     }
   ],
   "example_query": {
