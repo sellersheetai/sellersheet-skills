@@ -243,6 +243,36 @@
     {
       "db_column": "roas_clicks_7d",
       "type": "decimal"
+    },
+    {
+      "db_column": "start_date",
+      "amazon_header": "startDate",
+      "type": "date"
+    },
+    {
+      "db_column": "end_date",
+      "amazon_header": "endDate",
+      "type": "date"
+    },
+    {
+      "db_column": "target_id",
+      "amazon_header": "targetId",
+      "type": "str"
+    },
+    {
+      "db_column": "targeting_expression",
+      "amazon_header": "targetingExpression",
+      "type": "str"
+    },
+    {
+      "db_column": "targeting_type",
+      "amazon_header": "targetingType",
+      "type": "str"
+    },
+    {
+      "db_column": "spend",
+      "amazon_header": "spend",
+      "type": "decimal"
     }
   ],
   "example_query": {

@@ -248,6 +248,26 @@
     {
       "db_column": "viewability_rate",
       "type": "decimal"
+    },
+    {
+      "db_column": "campaign_budget",
+      "amazon_header": "campaignBudgetAmount",
+      "type": "decimal"
+    },
+    {
+      "db_column": "campaign_budget_type",
+      "amazon_header": "campaignBudgetType",
+      "type": "str"
+    },
+    {
+      "db_column": "purchases_same_sku",
+      "amazon_header": "purchasesSameSku",
+      "type": "int"
+    },
+    {
+      "db_column": "view_impressions",
+      "amazon_header": "viewImpressions",
+      "type": "int"
     }
   ],
   "example_query": {

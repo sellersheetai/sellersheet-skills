@@ -232,6 +232,16 @@
     {
       "db_column": "search_impression_share",
       "type": "decimal"
+    },
+    {
+      "db_column": "start_date",
+      "amazon_header": "startDate",
+      "type": "date"
+    },
+    {
+      "db_column": "end_date",
+      "amazon_header": "endDate",
+      "type": "date"
     }
   ],
   "example_query": {
