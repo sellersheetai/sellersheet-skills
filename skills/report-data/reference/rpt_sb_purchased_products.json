@@ -71,32 +71,86 @@
       "type": "str"
     },
     {
-      "db_column": "purchases",
+      "db_column": "orders_14d",
+      "amazon_header": "orders14d",
+      "type": "int",
+      "note": "14-day attributed orders"
+    },
+    {
+      "db_column": "sales_14d",
+      "amazon_header": "sales14d",
+      "type": "decimal",
+      "note": "14-day attributed sales"
+    },
+    {
+      "db_column": "units_sold_14d",
+      "amazon_header": "unitsSold14d",
+      "type": "int",
+      "note": "14-day attributed units sold"
+    },
+    {
+      "db_column": "new_to_brand_orders_14d",
+      "amazon_header": "newToBrandOrders14d",
       "type": "int"
     },
     {
-      "db_column": "purchases_same_sku",
-      "type": "int"
-    },
-    {
-      "db_column": "sales",
+      "db_column": "new_to_brand_orders_percentage_14d",
+      "amazon_header": "newToBrandOrdersPercentage14d",
       "type": "decimal"
     },
     {
-      "db_column": "attributed_sales_same_sku",
-      "type": "decimal"
-    },
-    {
-      "db_column": "new_to_brand_purchases",
+      "db_column": "new_to_brand_purchases_14d",
+      "amazon_header": "newToBrandPurchases14d",
       "type": "int"
     },
     {
-      "db_column": "new_to_brand_sales",
+      "db_column": "new_to_brand_purchases_percentage_14d",
+      "amazon_header": "newToBrandPurchasesPercentage14d",
       "type": "decimal"
     },
     {
-      "db_column": "new_to_brand_units_sold",
+      "db_column": "new_to_brand_sales_14d",
+      "amazon_header": "newToBrandSales14d",
+      "type": "decimal"
+    },
+    {
+      "db_column": "new_to_brand_sales_percentage_14d",
+      "amazon_header": "newToBrandSalesPercentage14d",
+      "type": "decimal"
+    },
+    {
+      "db_column": "new_to_brand_units_sold_14d",
+      "amazon_header": "newToBrandUnitsSold14d",
       "type": "int"
+    },
+    {
+      "db_column": "new_to_brand_units_sold_percentage_14d",
+      "amazon_header": "newToBrandUnitsSoldPercentage14d",
+      "type": "decimal"
+    },
+    {
+      "db_column": "attribution_type",
+      "amazon_header": "attributionType",
+      "type": "str",
+      "note": "e.g. Promoted"
+    },
+    {
+      "db_column": "budget_currency",
+      "amazon_header": "budgetCurrency",
+      "type": "str",
+      "note": "campaign budget currency"
+    },
+    {
+      "db_column": "product_category",
+      "amazon_header": "productCategory",
+      "type": "str",
+      "note": "purchased ASIN category"
+    },
+    {
+      "db_column": "product_name",
+      "amazon_header": "productName",
+      "type": "str",
+      "note": "purchased ASIN title"
     }
   ],
   "example_query": {
