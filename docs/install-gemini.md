@@ -1,5 +1,7 @@
 # Install on Gemini CLI
 
+> **Recommended:** the quickest install is [`npx skills`](./install-npx-skills.md) — `npx skills add sellersheetai/sellersheet-skills -a gemini`, one command across 50+ agents. The `install.sh` steps below are the no-Node fallback.
+
 ## Prerequisites
 
 - Gemini CLI 0.5+

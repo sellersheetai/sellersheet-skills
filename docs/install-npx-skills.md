@@ -1,0 +1,78 @@
+# Install via `npx skills`
+
+[`npx skills`](https://github.com/vercel-labs/skills) is the open cross-agent
+skill installer. It installs SellerSheet skills into Codex, Cursor, Gemini CLI,
+Antigravity, and 50+ other coding agents from one command — no per-agent setup
+script needed.
+
+For **Claude Code**, the plugin marketplace is still the best path because it
+also auto-registers the MCP server — see [install-claude-code.md](./install-claude-code.md).
+For every other agent, `npx skills` is the recommended installer; the repo's
+`install.sh` is the no-Node fallback.
+
+## Prerequisites
+
+- Node.js 18+ (for `npx`)
+- A SellerSheet API key — [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard)
+
+## Install the skills
+
+```bash
+# Install all three skills, auto-detecting your agent
+npx skills add sellersheetai/sellersheet-skills
+
+# Preview what would be installed, without installing
+npx skills add sellersheetai/sellersheet-skills --list
+
+# Install a single skill
+npx skills add sellersheetai/sellersheet-skills --skill report-data
+
+# Target a specific agent (codex, cursor, gemini, claude-code, …)
+npx skills add sellersheetai/sellersheet-skills -a codex
+```
+
+`npx skills` discovers the three skills — `sellersheet-sheets`,
+`sellersheet-dashboard`, `report-data` — from the repo's `skills/` directory
+and installs each as a `SKILL.md` skill folder into your agent's skill path.
+
+## Register the MCP server
+
+Skills are a separate artifact from the MCP server. `npx skills` installs the
+skill *instructions*, not the SellerSheet MCP *connection* — and every skill
+needs that connection. Follow [setup-mcp.md](./setup-mcp.md) for the per-agent
+`mcpServers` config.
+
+(Claude Code is the exception: installing the plugin auto-registers the MCP
+server. See [install-claude-code.md](./install-claude-code.md).)
+
+## Update
+
+Re-run `add` to pull the latest published version:
+
+```bash
+npx skills add sellersheetai/sellersheet-skills
+```
+
+`npx skills` reads each skill's `SKILL.md` `version:` (currently `0.3.0`,
+mirrored from the plugin's canonical version). See [auto-update.md](./auto-update.md)
+for how versioning works across all install channels.
+
+## Remove
+
+```bash
+npx skills remove sellersheet-sheets -g
+npx skills remove sellersheet-dashboard -g
+npx skills remove report-data -g
+```
+
+## When to use `install.sh` instead
+
+If Node.js isn't available, the repo's bundled installer does the same job:
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --target <agent>
+```
+
+See the per-agent guides — [Codex](./install-codex.md), [Gemini](./install-gemini.md),
+[Antigravity](./install-antigravity.md), [Openclaw / Hermes / generic](./install-generic.md)
+— for `install.sh` details and custom skill-directory paths.
