@@ -58,6 +58,36 @@ A growing catalog can push a SQL spill to thousands of rows. Two failure modes:
 
 **Rule:** every SQL spill that scales with data size MUST end with `LIMIT N` where N matches the row budget reserved for that section.
 
+## Minimum gap before the next section
+
+A SQL() spill at row R with `LIMIT N` occupies rows R through R+N (1 header row + N data rows). Any content — a section band, a note, another SQL anchor — placed at row R+N or earlier causes:
+
+```
+#REF! Array result was not expanded because it would overwrite data in <cell>
+```
+
+**Rule:** place the next content at row R + N + 2 minimum (the +2 gives one overflow footer row and one spacer).
+
+```
+Row R      SQL() anchor   ← header lands here
+Row R+1    data row 1
+...
+Row R+N    data row N
+Row R+N+1  overflow footer (soft yellow note)
+Row R+N+2  spacer
+Row R+N+3  ← safe to start the next section band
+```
+
+For a tab with multiple SQL() sections, compute the anchor for each section from the previous section's end:
+
+| Section | Anchor | LIMIT | Overflow footer | Next section |
+|---|---|---|---|---|
+| 1 | row 6 | 20 | row 27 | row 28+ |
+| 2 | row 29 | 15 | row 45 | row 46+ |
+| 3 | row 47 | 10 | row 58 | row 59+ |
+
+If you get a `#REF!` on a SQL() formula, the first thing to check is whether the next non-empty row above the error is within LIMIT rows of the anchor.
+
 ## Default LIMITs per data scope
 
 | Data scope | Default LIMIT | Why |
@@ -150,9 +180,71 @@ ORDER BY [store] ASC, [decision] ASC, [sku] ASC
 ORDER BY s.[store], s.[sku]
 ```
 
+## Post-anchor number formatting
+
+**SQL() outputs raw numbers. It never applies number formatting to the cells it writes into.** After anchoring every SQL() formula, apply `numberFormat` to each numeric output column in the spill zone.
+
+Without this step:
+- ACoS stored as `0.141` renders as `0.141` not `14.1%`
+- ROAS stored as `7.1` renders as `7.1` not `7.1x`
+- Spend stored as `20.48` renders as `20.48` not `$20.48`
+
+**How to apply:** use `sheet_batch_update` with `repeatCell` + `userEnteredFormat.numberFormat`. One call covers all numeric columns across all SQL anchors on a tab. Never use individual `set_sheet_number_format` calls for this — each one is a separate HTTP request and will hit the rate limit on accounts with multiple SQL sections.
+
+```python
+# After anchoring SQL() at row R (1-indexed), LIMIT N, for sheetId SID:
+# Apply to rows R through R+N (header + all data rows = R-1 to R+N in 0-indexed)
+sheet_batch_update(spreadsheet_id, [
+    # Currency column at index COL (0-indexed from A)
+    {"repeatCell": {
+        "range": {"sheetId": SID,
+                  "startRowIndex": R-1, "endRowIndex": R+N,
+                  "startColumnIndex": COL, "endColumnIndex": COL+1},
+        "cell": {"userEnteredFormat": {
+            "numberFormat": {"type": "CURRENCY", "pattern": "$#,##0.00"}
+        }},
+        "fields": "userEnteredFormat.numberFormat"
+    }},
+    # Percent column — NOTE: stores fraction (0.141), PERCENT format multiplies ×100
+    {"repeatCell": {
+        "range": {"sheetId": SID,
+                  "startRowIndex": R-1, "endRowIndex": R+N,
+                  "startColumnIndex": COL, "endColumnIndex": COL+1},
+        "cell": {"userEnteredFormat": {
+            "numberFormat": {"type": "NUMBER", "pattern": "0.0%"}
+        }},
+        "fields": "userEnteredFormat.numberFormat"
+    }},
+    # ROAS / multiples column
+    {"repeatCell": {
+        "range": {"sheetId": SID,
+                  "startRowIndex": R-1, "endRowIndex": R+N,
+                  "startColumnIndex": COL, "endColumnIndex": COL+1},
+        "cell": {"userEnteredFormat": {
+            "numberFormat": {"type": "NUMBER", "pattern": "0.0\"x\""}
+        }},
+        "fields": "userEnteredFormat.numberFormat"
+    }},
+])
+```
+
+**Column index from SELECT order:** the first column in the SELECT is index 0 (column A), the second is index 1 (column B), etc. Map each alias to its 0-indexed column position to know which `startColumnIndex` to use.
+
+**Also applies to SUMIF/COUNTIF KPI tile cells.** Formula cells that compute totals (not SQL spills) also return raw numbers. Apply the same `numberFormat` treatment to them directly — especially ROAS tiles which need `0.0"x"`, not CURRENCY.
+
+**Common format patterns for Amazon ad metrics:**
+
+| Metric | Stored as | Pattern | Type |
+|---|---|---|---|
+| Spend, Sales, CPC, Budget | decimal (`20.48`) | `$#,##0.00` | CURRENCY |
+| ACoS, CTR, CVR, utilisation | fraction (`0.141`) | `0.0%` | NUMBER |
+| ROAS | multiple (`7.1`) | `0.0"x"` | NUMBER |
+| Impressions, Clicks, Orders | integer (`1260`) | `#,##0` | NUMBER |
+
 ## See also
 
 - `reference/image-pattern.md` — Image MAP+SQL alignment with data SQL
 - `reference/growable-tables.md` — when this pattern applies
 - `reference/error-semantics.md` — `#NAME?` is pending; `#REF!` is real bug
 - `scripts/formula-templates.md` — copy-paste SQL + overflow footer
+- `reference/mcp-gotchas.md` — rate limit and why `sheet_batch_update` beats individual format calls
