@@ -91,14 +91,47 @@ condition_type="CUSTOM_FORMULA", value='=LEFT($I2,5)="GREEN"'
 
 See `reference/conditional-formatting.md` for full examples.
 
-## Rate limits scale with plan
+## Rate limits — use `sheet_batch_update` for all multi-step formatting
 
-SellerSheet MCP rate limits depend on the user's SellerSheet plan. Free ≈ 10 req/min; paid tiers go higher.
+SellerSheet MCP enforces a **burst limit on individual tool calls**: on the Business plan this is 3 requests per burst window. Sending 3 `format_sheet_range` calls in the same message will reliably hit it — the third call returns 429 and you lose the operation.
+
+**The fix is always `sheet_batch_update`**, not spreading calls across messages.
+
+`sheet_batch_update` sends all operations as a single HTTP request to the Sheets API — it bypasses the per-tool burst limit entirely. 43 `repeatCell` requests in one `sheet_batch_update` call = 1 MCP tool call, well inside any rate limit.
+
+**Use `sheet_batch_update` whenever you have 3+ format operations** — not just "structural ops". This includes:
+
+- Applying section band colors across a multi-section tab
+- Applying `numberFormat` to multiple columns after SQL() anchors (see `reference/sql-function.md`)
+- Resetting stale formatting from previous layouts
+- Applying any combination of background, font, border, and numberFormat in one pass
+
+```python
+# ✅ One call — applies all 8 format ops atomically, no rate limit risk
+sheet_batch_update(spreadsheet_id, [
+    {"repeatCell": {...}},   # section band emerald
+    {"repeatCell": {...}},   # SQL header navy
+    {"repeatCell": {...}},   # number format: currency
+    {"repeatCell": {...}},   # number format: percent
+    {"repeatCell": {...}},   # number format: roas
+    {"repeatCell": {...}},   # reset stale emerald from old layout
+    {"repeatCell": {...}},   # overflow footer soft yellow
+    {"repeatCell": {...}},   # metadata row gray
+])
+
+# ❌ 8 calls — guaranteed 429 on the 4th
+format_sheet_range(...)   # hit 1
+format_sheet_range(...)   # hit 2
+format_sheet_range(...)   # hit 3
+format_sheet_range(...)   # 429 — lost
+```
+
+**`format_sheet_range` is fine for single one-off ops** during exploration. Switch to `sheet_batch_update` the moment you're doing a build pass with multiple formatting steps.
 
 **Batch into one tool call when possible**:
 - Write a 500-row block in a single `write_sheet`, not 500 calls.
 - Apply `format_sheet_range` over a whole header band, not per-column.
-- Use `sheet_batch_update` for 3+ structural ops in one HTTP round-trip.
+- Use `sheet_batch_update` for 3+ format/structural ops in one HTTP round-trip.
 
 ## See also
 
