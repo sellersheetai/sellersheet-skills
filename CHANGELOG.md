@@ -13,6 +13,16 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.4.0] — 2026-06-07
+
+A docs-hardening pass on the `SQL()` / `IMAGE()` sheet workflow, plus the cross-agent installer guide.
+
+### Changed
+- **`sellersheet-sheets` / `sellersheet-dashboard`** — clarified `SQL()` / `IMAGE()` / `IMPORTRANGE()` error semantics: the browser-pending `#NAME?` state (expected — it renders once the SellerSheet add-on loads in a browser) is now clearly separated from real bugs (`#REF!`, `#ERROR!`, `#VALUE!`, unwrapped `#DIV/0!`). Golden Rule: a `#REF!` is always a real bug, never "pending."
+- **Browser-handoff rule** — the agent never opens or drives a browser to "finish" a build. The one-time approval (Extensions → SellerSheet → Open, allow external images, allow `IMPORTRANGE`) and the final Image-Store-SKU render check are the user's; server-side verification ends at the read-back sweep.
+- **Final review gate** — every `sellersheet-sheets` build now ends with a mandatory checklist (error sweep across all tabs, row-count match, number-format/brand-color spot check, growth test) before the build is declared done.
+- Reserved-word bracket-quoting guidance for `SQL()` column names (`store`, `status`, `date`, `order`, …).
+
 ### Documentation
 - `docs/install-npx-skills.md` — install guide for the [`npx skills`](https://github.com/vercel-labs/skills) cross-agent installer, now the recommended path for Codex, Cursor, Gemini, Antigravity, and 50+ other agents. README + per-agent docs updated to surface it ahead of the `install.sh` fallback.
 

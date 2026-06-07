@@ -129,19 +129,23 @@ read_sheet(spreadsheet_id, "<tab>!A1:Z<reasonable_extent>")
 
 `#NAME?` is acceptable on `=SQL(` and `=IMAGE(` cells only.
 
-## Browser open — what server-side can't catch
+## What server-side can't catch — the user finishes it, once
 
 Server-side `read_sheet` cannot verify:
 
-1. **SQL() syntax errors from reserved-word column names.** Cells show `#NAME?` server-side regardless — both correct and broken SQL render identically until a browser opens the sheet.
+1. **SQL() syntax errors from reserved-word column names.** Cells show `#NAME?` server-side regardless — both correct and broken SQL render identically until the add-on evaluates them in a browser.
 2. **Image-column off-by-one alignment.** `IMAGE()` cells are blank pre-Allow-Access, so alignment with SKU rows can't be visually verified until after the consent prompt.
 3. **Merged-cell side effects** that silently eat SQL spills.
+4. **IMPORTRANGE() pulls from other workbooks** — blocked until the user grants the one-time per-pair access prompt.
 
-**Rule:** before declaring a Sheets build done, open it in a real browser as a user with the SellerSheet add-on. Wait for `SQL()` to evaluate (10-30 seconds). Click "Allow access to external images" once. Walk every spill and confirm:
-- Image column aligns row-for-row with SKU column.
-- No `#ERROR!` cells (alasql parse errors only surface in browser).
-- Conditional chips render with correct colors.
-- Number formats display correctly.
+**You do not open the browser. The user does — once.** Never drive a browser to "finish" the sheet; your verification ends at the server-side sweep (Steps 1–8). To close the build, hand the user the one-time approval steps and what they should see:
+
+> The `=SQL()` / `=IMAGE()` / `=IMPORTRANGE()` cells show `#NAME?` until you approve them **once** in a browser:
+> 1. **Extensions → SellerSheet → Open** — loads the add-on so `SQL()` evaluates (wait 10–30s).
+> 2. Click **"Allow access to external images"** when prompted — for `IMAGE()` thumbnails.
+> 3. Click **Allow access** on any `IMPORTRANGE` prompt — for cross-workbook pulls.
+>
+> Then please confirm: image column aligns row-for-row with the SKU column, no `#ERROR!` cells (`SQL()` parse errors only surface in the browser), chips render in the right colors, number formats display correctly. After this one approval the cells stay live on every future open.
 
 ## Quick verification cheat sheet
 
@@ -154,13 +158,13 @@ Server-side `read_sheet` cannot verify:
 | Spills don't collide with footers/sections | spill anchor cell's `effective_value` is non-error; `effective_value.error.message` if present mentions specific overflow cell |
 | Open ranges grow correctly | append one test row to `_raw_*`; re-read visible tab |
 | Conditional formats applied | check the conditional-format list or visually inspect |
-| Image alignment correct | (browser-only) open in browser, walk SKU table, confirm thumbnails match rows |
+| Image alignment correct | (browser-only, user-confirmed) hand the user the one-time approval steps; they walk the SKU table and confirm thumbnails match rows — you never open the browser |
 
 ## What "done" means
 
 - Step 1-7 passed with no real bugs.
-- Step 8 surfaces only `#NAME?` on `=SQL(` / `=IMAGE(` cells (pending — expected).
-- Browser open confirms SQL() + IMAGE() render correctly.
+- Step 8 surfaces only `#NAME?` on `=SQL(` / `=IMAGE(` / `=IMPORTRANGE(` cells (pending — expected).
+- You have told the user the one-time browser approval steps and what to confirm. The final browser render check is **theirs to perform** — you never open the browser. Don't claim `SQL()`/`IMAGE()` "render correctly" yourself; you cannot see it server-side.
 
 Document any deferred items in cell notes so the operator and future-you know about them.
 

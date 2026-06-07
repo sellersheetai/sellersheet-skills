@@ -42,7 +42,7 @@ This is the real cause of many "JOIN didn't work" reports in early iterations �
 
 ## Numeric `_raw_*` columns must be NULL (blank), never empty-string
 
-alasql / `SQL()` evaluates `WHERE woc_t30 > 4` against the literal contents of a Sheets cell. If the cell holds `""` (empty string) instead of being blank, the comparison silently fails — the row is included or excluded unpredictably. Same for `ORDER BY`: text-zero `"0"` sorts after numeric `100`.
+`SQL()` evaluates `WHERE woc_t30 > 4` against the literal contents of a Sheets cell. If the cell holds `""` (empty string) instead of being blank, the comparison silently fails — the row is included or excluded unpredictably. Same for `ORDER BY`: text-zero `"0"` sorts after numeric `100`.
 
 Rule: when writing a numeric value to a `_raw_*` cell:
 - Real number → write the number directly (`3.14`, `0`, `100`).
