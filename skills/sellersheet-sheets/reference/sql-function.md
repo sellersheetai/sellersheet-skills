@@ -1,6 +1,6 @@
 # `SQL()` function — the SellerSheet add-on custom function
 
-Defined in the SellerSheet GAS add-on (browser-side, alasql under the hood). Powers every growable table in this skill. Server-side reads cannot evaluate it — `#NAME?` is the expected pending state until first browser-side eval.
+Defined in the SellerSheet GAS add-on (browser-side). Powers every growable table in this skill. Server-side reads cannot evaluate it — `#NAME?` is the expected pending state until first browser-side eval.
 
 ## Signature
 
@@ -8,13 +8,13 @@ Defined in the SellerSheet GAS add-on (browser-side, alasql under the hood). Pow
 =SQL(sqlAsString, dataAsArray1, ...dataAsArrays)
 ```
 
-- First row of each range = headers (becomes alasql column names).
+- First row of each range = headers (becomes the `SQL()` column names).
 - `?` in the SQL string is the placeholder for the first range; repeat `?` for additional ranges.
 - Output: 2D array — header row first, then data rows. Spills from the anchor cell.
 
 ## Bracket-quote every column reference AND every alias
 
-alasql treats many common words as reserved keywords — `store`, `status`, `date`, `index`, `order`, `year`, `month`, `decision`, `action`, `currency`, `unique`, `column`, `select`, `from`, `where`, `group`, `having`, `count`. Bare `SELECT store AS Store` throws:
+The `SQL()` engine treats many common words as reserved keywords — `store`, `status`, `date`, `index`, `order`, `year`, `month`, `decision`, `action`, `currency`, `unique`, `column`, `select`, `from`, `where`, `group`, `having`, `count`. Bare `SELECT store AS Store` throws:
 
 ```
 SyntaxError: Parse error... Expecting 'LITERAL', 'BRALITERAL', ... got 'STORE'
@@ -142,7 +142,7 @@ Always reference `_raw_*` with an open-ended range:
 | `'_raw_inventory'!A1:R1000` | `'_raw_inventory'!A1:R` |
 | `'_raw_cogs'!A2:R500` | `'_raw_cogs'!A2:R` |
 
-alasql's `SQL()` ignores trailing blank rows. The closed-range form silently truncates when the source grows past the locked row count.
+`SQL()` ignores trailing blank rows. The closed-range form silently truncates when the source grows past the locked row count.
 
 ## WHERE clause patterns
 

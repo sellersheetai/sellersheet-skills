@@ -1,7 +1,7 @@
 ---
 name: sellersheet-dashboard
 description: Use when building or maintaining an Amazon operator dashboard on Google Sheets via SellerSheet MCP — multi-tab status views for inventory, PPC, account health, listings, profit/margin, returns, buy box, cash conversion. Triggers on phrases like "build a dashboard", "operator dashboard", "FBA dashboard", "PPC dashboard", "Amazon overview sheet", "seller dashboard", and on follow-ups like "refresh the dashboard", "add an insight", "the freshness is wrong". Composes the tab plan, applies SellerSheet brand visuals, wires `rpt_*` warehouse data → `_raw_*` tabs → `SQL()` spill → visible tabs with thumbnails, and instruments each cell with provenance + freshness so the dashboard self-explains. Builds on `sellersheet-sheets` (sheet primitives + brand palette + SQL() patterns) and `report-data` (rpt_* tables). NOT for one-off reports — use `sellersheet-sheets` directly for those.
-version: 0.3.0
+version: 0.4.0
 ---
 
 # SellerSheet Operator Dashboard
@@ -82,7 +82,7 @@ rpt_* warehouse tables (your SellerSheet data warehouse)
         │  query_report_data() MCP
         ▼
 _raw_*   hidden Sheets tabs (one row per source rpt_*)
-        │  alasql SQL() function (SellerSheet GAS add-on, browser-side)
+        │  SQL() function (SellerSheet GAS add-on, browser-side)
         ▼
 visible tabs   (emerald + navy + chips + agent insights)
         │  =HYPERLINK("#gid=...")
@@ -158,7 +158,7 @@ When asked to build a dashboard:
 7. **For each non-HOME visible tab:** create the `_raw_<topic>` tab with canonical left-five columns. Populate. Anchor SQL() at the end of the visible tab with the appropriate `LIMIT N` from `reference/sql-limits.md`. Apply navy bg to the spill's header row. Use the Image-at-A JOIN pattern. Apply provenance fills from `reference/provenance-colors.md`. Add the AGENT INSIGHTS section at the right row anchor (row 150 for bounded tabs, row 400 for catalog-scaling tabs). Add the overflow footer right below the max spill extent.
 8. **HOME tab:** hand-lay KPI tiles + TOP 3 FIRES section at rows 4-8. Add `=HYPERLINK("#gid=<sheet_id>", "→ Open X")` to drill tabs (pull real `sheetId` from `list_sheet_tabs`).
 9. **Seed `_agent_notes`** with 5-10 real insights based on the data you pulled. Three top fires get `scope_key = "fire-1"`, `"fire-2"`, `"fire-3"` so they spill into HOME's TOP 3 FIRES section.
-10. **Verify** — run `scripts/post-build-checklist.md`. Open in a browser for the final `SQL()` and image-alignment check.
+10. **Verify** — run `scripts/post-build-checklist.md` (server-side sweep). Then hand the user the one-time browser approval steps for the final `SQL()` + image-alignment check — **you never open the browser yourself**; that confirmation is theirs.
 
 ## Maintenance workflow (refresh, update, alert)
 
@@ -204,7 +204,7 @@ Copy-paste templates and verification routines live in `scripts/`.
 - **AGENT INSIGHTS placed at row 60** → SQL spill collides → `#REF!` everywhere → `reference/agent-insights.md`
 - **`_status` read by SQL()** → fails because column I has `NOW()` → use ARRAYFORMULA per column → `reference/freshness-system.md`
 - **`_raw_cogs!F1` mislabeled** as anything other than `selling_price_{ccy}` → Profit and Cash SQL silently returns empty → `reference/cogs-schema.md`
-- **Bare-word SQL column names** (`SELECT store AS Store`) → alasql parser error → bracket-quote everything → `reference/image-catalog.md`
+- **Bare-word SQL column names** (`SELECT store AS Store`) → `SQL()` parser error → bracket-quote everything → `reference/image-catalog.md`
 - **Spill exceeds AGENT INSIGHTS anchor** → `#REF!` → add `LIMIT N` per `reference/sql-limits.md` and overflow footer
 - **Ad profile not connected** but PPC tab built without alerting user → operator confused why ad data is empty → check + alert per Requirements block
 

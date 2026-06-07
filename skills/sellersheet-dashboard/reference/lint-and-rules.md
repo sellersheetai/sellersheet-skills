@@ -93,14 +93,14 @@ Image column on every visible SKU/ASIN table must consume the SQL output's row o
 
 **Canonical pattern:** see `reference/image-catalog.md`. The visible table's data SQL and the image MAP+SQL must use the **same** `ORDER BY`, `WHERE`, and `LIMIT`.
 
-### Browser-open verification is mandatory before declaring done
+### The user's one-time browser approval is mandatory before declaring done — you never open the browser
 
 Server-side `read_sheet` cannot catch two classes of bugs:
 
-1. **SQL() syntax errors from reserved-word column names.** Cells show `#NAME?` server-side regardless — both correct and broken SQL render identically until a browser opens the sheet.
+1. **SQL() syntax errors from reserved-word column names.** Cells show `#NAME?` server-side regardless — both correct and broken SQL render identically until the add-on evaluates them in a browser.
 2. **Image-column off-by-one alignment.** `IMAGE()` cells are blank pre-Allow-Access, so alignment with SKU rows can't be visually verified until after the consent prompt.
 
-**Rule:** before declaring a dashboard done, open it in a real browser as a user with the SellerSheet add-on. Wait for `SQL()` to evaluate, click "Allow access to external images" once, then visually walk every SKU table to confirm Image-Store-SKU rows align.
+**Rule:** before declaring a dashboard done, hand the user the one-time browser approval steps — **Extensions → SellerSheet → Open**, click "Allow access to external images" once, and Allow access on any `IMPORTRANGE` prompt — and ask them to walk every SKU table to confirm Image-Store-SKU rows align. Never open or drive the browser yourself; that render check is the user's.
 
 ### `_config` cells must be named ranges before any consumer reference
 
