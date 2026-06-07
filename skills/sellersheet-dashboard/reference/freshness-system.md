@@ -35,7 +35,7 @@ Every workbook has a `_status` tab. **One row per `_raw_*` × store** (so single
 
 ### SQL() incompatibility with NOW() — IMPORTANT
 
-Google Sheets' alasql add-on **refuses to read any range that touches a cell containing `NOW()`, `RAND()`, `RANDARRAY()`, or `RANDBETWEEN()`**. This means `=SQL("SELECT ... FROM ?", '_status'!A1:L)` ERRORS with:
+The `SQL()` add-on function **refuses to read any range that touches a cell containing `NOW()`, `RAND()`, `RANDARRAY()`, or `RANDBETWEEN()`**. This means `=SQL("SELECT ... FROM ?", '_status'!A1:L)` ERRORS with:
 
 ```
 "This function is not allowed to reference a cell with NOW(), RAND(), RANDARRAY(), or RANDBETWEEN()"

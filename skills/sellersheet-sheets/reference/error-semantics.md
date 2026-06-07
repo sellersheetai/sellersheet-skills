@@ -34,7 +34,7 @@ When a cell with `=SQL(...)` shows `#ERROR!`:
 
 1. **`get_sheet_cell`** → read `effective_value.error.message`.
 2. **`"This function is not allowed to reference a cell with NOW(), RAND(), RANDARRAY(), or RANDBETWEEN()"`** — your SQL range includes a cell with a volatile function. Common cause: reading `_status` (which has `NOW()` in the status formula). Replace `SQL()` with per-column `ARRAYFORMULA`.
-3. **`"SyntaxError: ... got 'STORE'"`** or similar — alasql parser hit a reserved word. Bracket-quote every column name and alias. See `reference/sql-function.md`.
+3. **`"SyntaxError: ... got 'STORE'"`** or similar — the `SQL()` parser hit a reserved word. Bracket-quote every column name and alias. See `reference/sql-function.md`.
 4. **Other parser errors** — usually a typo or missing comma in the SELECT list.
 
 ## Diagnosing `#NAME?` on a non-SQL/non-IMAGE cell
@@ -51,7 +51,7 @@ Don't dismiss it as "pending state."
 
 > **Never accept `#REF!`, `#ERROR!`, or `#VALUE!` as "the add-on will fix it on open."** Those are real bugs. Only `#NAME?` on cells whose formula begins with `=SQL(` or `=IMAGE(` is the documented pending state.
 
-Common builder mistake: claiming `#REF!` is pending because "alasql isn't loaded yet." It isn't. `#REF!` is always a real bug. The fix may be simple (move a section down 250 rows) but the diagnosis is non-negotiable.
+Common builder mistake: claiming `#REF!` is pending because "the `SQL()` engine isn't loaded yet." It isn't. `#REF!` is always a real bug. The fix may be simple (move a section down 250 rows) but the diagnosis is non-negotiable.
 
 ## How to verify a fresh sheet
 
@@ -69,7 +69,7 @@ See `scripts/verify-after-write.md` for the full read-back routine.
 
 | Cell formula starts with | `#NAME?` means | Action |
 |---|---|---|
-| `=SQL(...)` | alasql not loaded server-side | Pending — expected. Open in browser. |
+| `=SQL(...)` | `SQL()` add-on not loaded server-side | Pending — expected. User opens in browser once. |
 | `=IMAGE(...)` | image fetch pending external-resource consent | Pending — expected. Allow Access in browser. |
 | `=ARRAYFORMULA(...)` | typo in function name OR referenced range doesn't exist | Real bug — fix the formula |
 | `=FILTER(...)` | typo or undefined named range | Real bug — fix |
@@ -78,6 +78,6 @@ See `scripts/verify-after-write.md` for the full read-back routine.
 
 ## See also
 
-- `reference/sql-function.md` — bracket-quote rule (prevents `#ERROR!` on alasql parse errors)
+- `reference/sql-function.md` — bracket-quote rule (prevents `#ERROR!` on `SQL()` parse errors)
 - `reference/mcp-gotchas.md` — NULL vs empty-string (prevents `#VALUE!` on WHERE filters)
 - `scripts/verify-after-write.md` — the full read-back routine

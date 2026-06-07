@@ -87,7 +87,7 @@ _raw_<topic> hidden Sheets tab
   - one row per source rpt_* row
   - first 5 cols: store, sku, asin, image_url, product
   - then domain-specific columns
-        │  alasql SQL() function (SellerSheet GAS add-on, browser-side)
+        │  SQL() function (SellerSheet GAS add-on, browser-side)
         ▼
 visible "<Tab>" Sheets tab
   - row 1: emerald title

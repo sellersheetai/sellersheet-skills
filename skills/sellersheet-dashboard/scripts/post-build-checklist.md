@@ -126,7 +126,7 @@ If any check fails, categorize:
 
 | Symptom | Class | Action |
 |---|---|---|
-| `#NAME?` on a `=SQL(...)` cell | Pending | Wait for browser open + add-on |
+| `#NAME?` on a `=SQL(...)` / `=IMAGE(...)` / `=IMPORTRANGE(...)` cell | Pending | Expected — user opens browser + grants approval once |
 | `#REF!` on a `=SQL(...)` cell with `effective_value.error.message` mentioning "Array result was not expanded" | Real bug | Move AGENT INSIGHTS row anchor down or add `LIMIT 200` |
 | `#ERROR!` mentioning "function not allowed to reference a cell with NOW()" | Real bug | Replace `SQL(_status!A1:L)` with per-column `ARRAYFORMULA` |
 | `#VALUE!` on a formula | Real bug | Schema drift — check column labels match formula refs |
@@ -136,21 +136,29 @@ If any check fails, categorize:
 | `_status!F2 = =DATEVALUE("2026-05-12")+TIME(7,0,0)` | Lint fail | Replace with literal datetime value |
 | All `_status!I` rows show GREEN-fresh OR all RED-stale uniformly | Likely faked timestamps | Verify F column has varied real datetimes |
 
-## Final browser check
+## Final browser check — the user does this once. You never open the browser.
 
 Server-side checks cannot verify:
 1. SQL() syntax errors from reserved-word column names — only browser eval catches these.
 2. Image-column off-by-one alignment.
+3. `IMPORTRANGE()` cross-workbook pulls — blocked until the user grants the one-time access prompt.
 
-**Open the dashboard in a browser as a user with the SellerSheet add-on installed.** Wait for SQL() to evaluate (10-30 seconds). Click "Allow access to external images" once. Walk every SKU table and confirm Image-Store-SKU rows align row-for-row.
+Your verification ends at the server-side sweep above. **Never open or drive a browser to "finish" the dashboard.** Hand the user the one-time approval steps and what to confirm:
 
-If `SQL()` returns a parse error after browser eval, check `reference/image-catalog.md` for the bracket-quote rule.
+> The `=SQL()` / `=IMAGE()` / `=IMPORTRANGE()` cells show `#NAME?` until you approve them **once** in a browser:
+> 1. **Extensions → SellerSheet → Open** — loads the add-on so `SQL()` evaluates (wait 10–30s).
+> 2. Click **"Allow access to external images"** when prompted — for product thumbnails.
+> 3. Click **Allow access** on any `IMPORTRANGE` prompt — for cross-workbook pulls.
+>
+> Then please confirm: every SKU table's Image-Store-SKU rows align row-for-row, and no `#ERROR!` cells remain. After this one approval the cells stay live on every future open.
+
+If the user reports a `SQL()` parse error after browser eval, check `reference/image-catalog.md` for the bracket-quote rule.
 
 ## Sign-off criteria
 
 - All P0 checks pass.
 - ≥10 of the 13 P1 checks pass.
-- Browser open confirms SQL() + IMAGE() render correctly.
+- You have handed the user the one-time browser approval steps and what to confirm. The final render check (`SQL()` + `IMAGE()`) is **theirs to perform** — you never open the browser, and you don't claim those cells render correctly on a server-side read alone.
 - TOP 3 FIRES has 3 specific fires (not boilerplate) OR explicit "no fires — enjoy the morning" with operator agreement that the store really is clean today.
 
 Document any P2 deferrals in `_agent_log` with rationale.

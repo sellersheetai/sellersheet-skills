@@ -75,7 +75,7 @@ After adding a new domain or store:
 
 1. `scripts/post-build-checklist.md` — full read-back sweep.
 2. Verify no spill collisions (`#REF!`) on the existing tabs — the new domain's spill could push the AGENT INSIGHTS row anchor.
-3. Open in browser; check Image-Store-SKU alignment on the new tab.
+3. Hand the user the one-time browser approval steps and ask them to confirm Image-Store-SKU alignment on the new tab — you never open the browser yourself.
 4. Confirm `_status` shows the new rows with correct status (GREEN-fresh if data wired, RED-error if scaffold).
 5. Add a row to `_agent_log` documenting the grow event (`prior_value`: tab list before, `new_value`: tab list after, `rationale`: why this grew).
 

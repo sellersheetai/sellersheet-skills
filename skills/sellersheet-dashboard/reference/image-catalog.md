@@ -1,6 +1,6 @@
 # Single-source image catalog + SQL() patterns
 
-`image_url` lives in exactly one tab — `_raw_catalog`. Every visible SKU table joins to it for the Image column. Also covers the alasql bracket-quote rule and the canonical Image-at-A formula.
+`image_url` lives in exactly one tab — `_raw_catalog`. Every visible SKU table joins to it for the Image column. Also covers the `SQL()` bracket-quote rule and the canonical Image-at-A formula.
 
 ## `_raw_catalog` schema
 
@@ -65,7 +65,7 @@ Examples:
 
 ## Bracket-quote every column name AND alias in SQL()
 
-alasql reserves many common words: `store`, `status`, `date`, `index`, `order`, `year`, `month`, `decision`, `action`, `currency`, `column`, `unique`, etc. Bare `SELECT store AS ...` throws `SyntaxError: Parse error ... got 'STORE'`.
+The `SQL()` engine reserves many common words: `store`, `status`, `date`, `index`, `order`, `year`, `month`, `decision`, `action`, `currency`, `column`, `unique`, etc. Bare `SELECT store AS ...` throws `SyntaxError: Parse error ... got 'STORE'`.
 
 **Rule:** wrap **every** column name AND **every alias** in square brackets in `SELECT`, `ORDER BY`, `WHERE`, `GROUP BY`, `HAVING`. Even ones that look safe. Uniform style, future-safe.
 
@@ -113,7 +113,7 @@ All SQL spills use open-ended `A:Z` / `A2:A` ranges. Locked row counts like `A1:
 | `'_raw_inventory'!A1:R1000` | `'_raw_inventory'!A1:R` |
 | `'_raw_cogs'!A2:R500` | `'_raw_cogs'!A2:R` |
 
-alasql's `SQL()` ignores trailing blank rows, so open-range is safe.
+`SQL()` ignores trailing blank rows, so open-range is safe.
 
 ## Same shared attributes belong in `_raw_catalog` too
 
@@ -122,5 +122,5 @@ Same JOIN logic for: `product` display name, `asin` (canonical), base category, 
 ## See also
 
 - `reference/agent-insights.md` — `LIMIT 200` + overflow footer pattern that must match data and image SQL
-- `reference/error-semantics.md` — diagnosing alasql parse errors
+- `reference/error-semantics.md` — diagnosing `SQL()` parse errors
 - `scripts/formula-templates.md` — copy-paste image MAP+JOIN + Profit-and-Cash SQL spill

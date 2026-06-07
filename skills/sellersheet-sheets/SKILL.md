@@ -1,7 +1,7 @@
 ---
 name: sellersheet-sheets
 description: Use whenever Google Sheets is the deliverable surface and SellerSheet MCP is the tool for sheet I/O. Reads, writes, formats, builds reports, dashboards, financial models, and live-data tables in Google Sheets via SellerSheet MCP endpoints (read_sheet, write_sheet, write_sheet_formula, format_sheet_range, set_sheet_number_format, add_sheet_chart, add_sheet_conditional_format, add_sheet_dropdown, etc.). Trigger when the user references a docs.google.com/spreadsheets URL, asks to publish output to a Google Sheet, builds anything in the SellerSheet workbook ecosystem, needs the live SQL() spill + image-thumbnail patterns, or builds an operator action surface (filter rows, Amazon enum dropdowns, status chips). Do NOT trigger for local .xlsx files — that's a different skill. This skill is self-contained — no need to load xlsx or any other sheet skill alongside; xlsx-style conventions (financial color coding, number formats, formula best practices) are adapted inline.
-version: 0.3.0
+version: 0.4.0
 ---
 
 # SellerSheet Google Sheets — via MCP
@@ -51,11 +51,11 @@ For full operator dashboards (multi-tab status views, freshness instrumentation,
 These rules apply to every sheet this skill produces. Detailed explanations live in `reference/`.
 
 1. **Professional font**: Arial 10pt default. Override only for headers and titles.
-2. **Zero formula errors**: scan the output for `#REF!`, `#DIV/0!`, `#VALUE!`, `#N/A`. (`#NAME?` on `=SQL(` and `=IMAGE(` cells is the documented browser-pending state — not a bug.)
+2. **Zero formula errors**: scan the output for `#REF!`, `#VALUE!`, `#N/A`, `#ERROR!` — these are real bugs, fix them. `#DIV/0!` is tolerable *only if* wrapped in `IFERROR`/`IF(denom=0,…)`; an unwrapped one is a bug. `#NAME?` on `=SQL(` and `=IMAGE(` cells is the documented browser-pending state — not a bug. Full triage: `reference/error-semantics.md`.
 3. **Use formulas, never hardcoded values** for any calculated number — `=SUM(B2:B10)`, not `=23456`. See `reference/formula-conventions.md` for the WRONG/CORRECT pattern.
 4. **Open-range SQL spills** with `LIMIT N` per data scope — see `reference/sql-function.md`.
 5. **Emerald = where the operator acts; Navy = where the operator reads.** Never both on the same row. See `reference/brand-standards.md` for the action-vs-read rule.
-6. **Verify with a read-back** before declaring done — see `scripts/verify-after-write.md`.
+6. **Verify with a read-back** before declaring done — the mandatory **Final review gate** below; full routine in `scripts/verify-after-write.md`.
 
 For action sheets (operator inputs into the data) the additional 9-rule checklist lives in `reference/action-sheets.md`.
 
@@ -89,7 +89,33 @@ When asked to build a Google Sheet report:
 5. **Format numbers + headers** — `set_sheet_number_format` for currency / percent / dates. `format_sheet_range` for header bands. See `reference/brand-standards.md`.
 6. **Visualize** — `add_sheet_chart`, `add_sheet_conditional_format` for gradients and value-based chips. See `reference/conditional-formatting.md`.
 7. **Polish** — `resize_sheet_columns`, `add_sheet_filter`, `protect_sheet_range`.
-8. **Verify** — run `scripts/verify-after-write.md` — read back the just-written range, scan for errors, triage per `reference/error-semantics.md`.
+8. **Verify** — run the Final review gate below. Do not declare the build done until it passes.
+
+## Final review gate — do NOT skip
+
+Every build ends here. Create a TodoWrite item per line, work through them, and only then report. The full routine (exact tool calls per step) is `scripts/verify-after-write.md`; this is the checklist that must be ticked.
+
+- [ ] **Error sweep, all visible tabs.** `read_sheet` each tab; scan for `#REF!`, `#ERROR!`, `#VALUE!`, `#N/A`, unwrapped `#DIV/0!`. Each is a real bug — `get_sheet_cell` → read `effective_value.error.message`, triage per `reference/error-semantics.md`, fix.
+- [ ] **`#NAME?` is pending ONLY on `=SQL(` / `=IMAGE(` cells.** `#NAME?` on any other formula (`=ARRAYFORMULA`, `=FILTER`, `=VLOOKUP`, …) is a real bug — fix it. Never wave a `#REF!`/`#ERROR!` through as "the add-on will fix it on open" — that is the #1 builder mistake (`error-semantics.md` Golden Rule).
+- [ ] **Spot-check server-side formulas evaluate.** 2–3 `=SUM`/`=VLOOKUP`/`=ARRAYFORMULA` cells: `effective_value` is the computed result, not the formula string and not `None`.
+- [ ] **Row counts match.** Wrote N rows → `_raw_*` has N+1 (with header). A shortfall signals chunked-write truncation or empty-string masquerading (`reference/mcp-gotchas.md`).
+- [ ] **Number formats + brand colors applied.** Sample a currency/percent/date cell and a header cell; confirm `effective_format` matches intent (navy header ≈ `[0.157, 0.2, 0.318]`).
+- [ ] **Growth test** (growable tables only). Append one `_raw_*` row, confirm the SQL spill + chips + image join expand, then remove it.
+
+### Server-side can't see everything — the user finishes it, once
+
+`read_sheet` cannot evaluate `SQL()`, `IMAGE()`, or `IMPORTRANGE()` — these are add-on / browser-side functions. So three error classes stay invisible to you (`SQL()` parse errors, image-column off-by-one alignment, merged-cell-eaten spills), and the cells show `#NAME?` pending state until the **user** opens the workbook and grants the one-time approvals.
+
+**Never open or drive the browser yourself.** Your job ends at the server-side sweep. Close the build by telling the user the one-time steps in your final message:
+
+> Verified server-side: no `#REF!` / `#ERROR!` / `#VALUE!`. The `=SQL()` / `=IMAGE()` cells show the expected `#NAME?` pending state. To make them render, please do this **once** in a browser:
+> 1. **Extensions → SellerSheet → Open** (loads the add-on so `SQL()` evaluates).
+> 2. Click **"Allow access to external images"** when prompted (for `IMAGE()` thumbnails).
+> 3. If the sheet pulls from another workbook, click **Allow access** on the `IMPORTRANGE` prompt.
+>
+> After that one approval the live cells populate (10–30s) and stay live on every future open.
+
+Never report a build as fully verified on a server-side read alone — flag the pending cells and hand the one-time approval to the user.
 
 ## Picking the right pattern — read-mode vs action-mode
 

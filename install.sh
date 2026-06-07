@@ -13,7 +13,7 @@ set -euo pipefail
 
 REPO_URL="https://github.com/sellersheetai/sellersheet-skills.git"
 REPO_RAW="https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main"
-VERSION="0.3.0"
+VERSION="0.4.0"
 
 # ---------- args ----------
 TARGET=""

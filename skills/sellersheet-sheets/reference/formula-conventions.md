@@ -83,7 +83,7 @@ Run through this before bulk-writing a model's formulas. Most issues caught here
 - **Open-range refs** (`'_raw_*'!A:Z`) instead of locked-row refs (`A2:Z1000`).
 
 ### Common pitfalls
-- **NaN / empty-string handling**: an empty cell behaves differently from `""`. For numeric `_raw_*` columns, write `None` (blank), never `""`. See `reference/mcp-gotchas.md` for the alasql implication.
+- **NaN / empty-string handling**: an empty cell behaves differently from `""`. For numeric `_raw_*` columns, write `None` (blank), never `""`. See `reference/mcp-gotchas.md` for the `SQL()` implication.
 - **Division by zero**: wrap with `IFERROR(numerator/denom, "")` or `IF(denom=0, "—", numerator/denom)`. Don't ship a model that returns `#DIV/0!` on day-1 with empty inputs.
 - **Wrong references** after rearranging columns: do a final sweep — does B5 still mean what you think it means?
 - **Cross-sheet references** break if the source tab is renamed. Use named ranges for stable cross-references (`cfg_fx` not `_config!$B$2`).
@@ -116,7 +116,7 @@ Run through this before bulk-writing a model's formulas. Most issues caught here
 
 ## Numeric column rule — blank, never empty-string
 
-alasql / `SQL()` evaluates `WHERE col > 4` against literal cell contents. If a cell holds `""` (empty string) instead of being blank, comparisons silently fail. For `_raw_*` numeric columns:
+`SQL()` evaluates `WHERE col > 4` against literal cell contents. If a cell holds `""` (empty string) instead of being blank, comparisons silently fail. For `_raw_*` numeric columns:
 
 - Real number → write the number directly (`3.14`, `0`, `100`).
 - Missing / N/A → write **blank** (omit from row, or write `None` in Python which becomes blank), NOT `""`.
