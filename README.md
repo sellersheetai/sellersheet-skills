@@ -4,17 +4,18 @@
 
 **Author**: [sellersheetai.com](https://sellersheetai.com)
 **License**: Apache-2.0
-**Latest release**: v0.4.0 ([changelog](./CHANGELOG.md))
+**Latest release**: v0.5.0 ([changelog](./CHANGELOG.md))
 
 ## What's in here
 
-Three production-ready skills for working with the SellerSheet MCP. More skills coming after their reviews complete.
+Four production-ready skills for working with the SellerSheet MCP. More skills coming after their reviews complete.
 
 | Skill | What it does |
 |---|---|
 | **sellersheet-sheets** | Google Sheets I/O via SellerSheet MCP — reads, writes, formats, builds reports, dashboards, financial models with brand palette + live `SQL()` + image-thumbnail patterns. Self-contained — production-quality conventions for color, number formats, formulas, and layout are inlined. |
 | **sellersheet-dashboard** | Multi-tab operator dashboards with freshness instrumentation, agent insights, status tabs — for inventory, PPC, account health, listings, profit/margin, returns, buy box, cash conversion. Builds on `sellersheet-sheets`. |
 | **report-data** | Amazon SP-API + Ads-API report querying — 50+ `rpt_*` tables in the SellerSheet warehouse (inventory, listings, orders, returns, financial, brand analytics, ads SP/SB/SD), sync-schedule monitoring, on-demand report flow (create → poll → download to Drive). Use for inventory levels, restock needs, search terms, settlements, listing status, and any synced-report question. |
+| **image-gen** | Amazon listing images + A+ Content via gpt-image-2 — learn mature competitors' image style, generate/recolor product-faithful images, enforce main-image compliance, build A+ modules, score, and record to the 'Images Generation' sheet. Covers the s0–s8 slot model, OpenAI prompting fundamentals, and the Basic A+ module spec. |
 
 ### Coming soon (under review)
 
@@ -47,7 +48,7 @@ For the dashboard skill specifically, if you want PPC tabs to populate with real
 /plugin install sellersheet-skills@sellersheet-marketplace
 ```
 
-This installs all three skills (`sellersheet-sheets`, `sellersheet-dashboard`, `report-data`) as one bundle.
+This installs all four skills (`sellersheet-sheets`, `sellersheet-dashboard`, `report-data`, `image-gen`) as one bundle.
 
 ### Claude Desktop
 
