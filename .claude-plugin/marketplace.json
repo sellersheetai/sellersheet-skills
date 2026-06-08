@@ -10,7 +10,7 @@
       "name": "sellersheet-skills",
       "displayName": "SellerSheet Skills",
       "source": "./",
-      "description": "Production-ready agent skills for Amazon sellers using SellerSheet — Google Sheets I/O, multi-tab operator dashboards, and SP-API/Ads warehouse queries.",
+      "description": "Production-ready agent skills for Amazon sellers using SellerSheet — Google Sheets I/O, multi-tab operator dashboards, SP-API/Ads warehouse queries, and gpt-image-2 listing/A+ image generation.",
       "author": {
         "name": "SellerSheet AI",
         "email": "support@sellersheetai.com"

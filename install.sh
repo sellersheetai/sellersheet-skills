@@ -13,7 +13,7 @@ set -euo pipefail
 
 REPO_URL="https://github.com/sellersheetai/sellersheet-skills.git"
 REPO_RAW="https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main"
-VERSION="0.4.0"
+VERSION="0.5.0"
 
 # ---------- args ----------
 TARGET=""
@@ -45,7 +45,7 @@ OPTIONS:
                        Required for openclaw, hermes, generic.
   --skills "<list>"    Space-separated skill names to install. Default: all.
                        Available skills:
-                         sellersheet-sheets sellersheet-dashboard report-data
+                         sellersheet-sheets sellersheet-dashboard report-data image-gen
   --update             Pull the latest version and re-install.
   --check              Compare installed skill versions vs the latest available;
                        print a status table and exit (no install/update).
