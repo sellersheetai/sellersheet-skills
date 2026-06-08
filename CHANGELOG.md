@@ -13,6 +13,18 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.5.0] — 2026-06-09
+
+Adds the **image-gen** skill — the fourth production skill. (Per single-source versioning, every skill's `version` bumps to 0.5.0 with the plugin.)
+
+### Added
+
+- **image-gen** — Amazon listing image + A+ Content suite, generated with gpt-image-2 via the SellerSheet MCP. Learns mature competitors' image style (`reverse_prompt`), generates and recolors product-faithful images (`generate_image` / `edit_image`), enforces Amazon main-image compliance, builds A+ modules, scores them, builds review previews, and records to the operator's 'Images Generation' sheet. 9 reference files (slot canon s0–s8, amazon-compliance + QA gate, A+ modules incl. the Amazon SP-API Basic A+ spec, OpenAI gpt-image prompting fundamentals, provider matrix, multi-turn chain, gotchas, sheet contract) + 1 preview-builder script. Universal-install ready — no harness- or backend-specific coupling.
+
+### Changed
+
+- Marketplace/plugin description now mentions gpt-image-2 listing/A+ image generation; added `image-generation` + `a-plus-content` keywords.
+
 ## [0.4.0] — 2026-06-07
 
 A docs-hardening pass on the `SQL()` / `IMAGE()` sheet workflow, plus the cross-agent installer guide.
