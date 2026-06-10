@@ -48,7 +48,36 @@ Title bars on **every visible tab** wear emerald — the workbook reads as one b
 
 The MCP color format is `[r, g, b]` floats in `[0.0, 1.0]`. Not the openpyxl-style hex string. Convert by dividing 0-255 ints by 255.
 
-## Emerald vs navy — the action-vs-read rule
+## Header System v2 — "Direction D" (CANONICAL since 2026-06-11)
+
+Chosen by the operator after a four-direction mockup review (full spec:
+`docs/design/SHEET-DESIGN-SYSTEM.md` in the sellersheet_flask_app repo). **One header
+background; font color carries the input semantics.** Supersedes the emerald-vs-navy
+band split below.
+
+- **Banner**: emerald `#10B981` `[0.063, 0.725, 0.506]`, white 14pt bold. Title text in the
+  first cell only — band formatted across its width, **NEVER merged** (merges break freeze panes).
+- **Every header/label row** (display headers, filter labels, config labels) on every sheet:
+  navy `#28334F` `[0.157, 0.2, 0.318]` background. No emerald display rows, no amber or
+  soft-yellow header fills.
+- **Font color = input class**:
+  - REQUIRED input → gold `#FFD86B` `[1, 0.847, 0.42]` bold, plus a trailing ` ✎`
+  - OPTIONAL input → white `#FFFFFF` bold, plus a trailing ` ✎`
+  - AUTO (button/agent-filled) → slate `#8CA0B3` `[0.549, 0.627, 0.702]`
+- **The pencil is the TEXT glyph `✎` (U+270E)** — it inherits the cell font color. Never the
+  emoji `✏️` (fixed emoji colors = palette noise).
+- **Machine-parsed rows get formatting only** — row-1 key rows and any row code reads to build
+  payloads (e.g. Publish Queue row 5): font color may classify, but the TEXT must never change
+  (no `✎`, no `✱`, no suffixes).
+- **Never merge cells. Never set row heights.** Long content clips; users click to read.
+- Filter-input / config-value rows keep the light gray-blue `#EDF1F5` input band, italic.
+- Cell notes are bilingual and tag-first (`REQUIRED · 必填` / `OPTIONAL · 可选` /
+  `CONDITIONAL · 视情况必填` / `AUTO · 自动填写（勿改）`), matching the font-color class.
+
+## [SUPERSEDED 2026-06-11] Emerald vs navy — the action-vs-read rule
+
+> **Superseded by Header System v2 above** — kept for historical context on workbooks
+> built before 2026-06-11. Do not apply to new builds.
 
 Two band colors, two roles. Get the assignment right or the visual hierarchy collapses.
 
