@@ -1,5 +1,18 @@
 # Action sheets — operator input surfaces
 
+> **⚠ Header System v2 override (2026-06-11)** — the operator adopted "Direction D"
+> (see `brand-standards.md` → Header System v2). Where this file conflicts, v2 wins:
+> 1. ALL display-header / filter-label rows are **navy `#28334F`** — no emerald display
+>    rows anymore (emerald = banner only).
+> 2. Input semantics live in the **header font color**: gold `#FFD86B` = required input,
+>    white = optional input, slate `#8CA0B3` = button-filled.
+> 3. Title banners are **never merged** (merges break freeze panes) — format the band,
+>    write the title in the first cell only.
+> 4. **Never set row heights** (including image rows and title rows — Sheets defaults only).
+> 5. The editable marker is the monochrome glyph **`✎`** (inherits font color), never the
+>    emoji `✏️`, and only on pure display rows — never on machine-parsed rows
+>    (row-1 keys, Publish Queue row 5).
+
 The `_raw_*` + `SQL()` pattern in `growable-tables.md` is for **read-mode/list views** — operator scans data, doesn't fill in cells. This file is the complement: **action sheets** where the operator types into the sheet to drive a workflow (filters, acknowledgements, manual overrides).
 
 Anchored in the live SellerSheet vendor workbook redesign (May 2026). The three vendor sheets — `Vendor Orders`, `Vendor PO Items`, `Vendor PO Status` — are the canonical reference. If anything in this doc conflicts with what those sheets do, those sheets win.
