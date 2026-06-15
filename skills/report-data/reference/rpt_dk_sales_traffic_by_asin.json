@@ -10,7 +10,7 @@
     "strategy": "data_kiosk",
     "date_column": "date",
     "unique_key": ["store_id", "date", "child_asin", "sku", "country_code"],
-    "cron": "0 6 * * *"
+    "cron": "20 8 * * *"
   },
   "columns": [
     {"db_column": "id", "type": "int", "comment": "Surrogate primary key (autoincrement)."},
