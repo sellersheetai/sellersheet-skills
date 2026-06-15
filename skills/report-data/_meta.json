@@ -386,6 +386,40 @@
       "reference": "reference/rpt_sales_and_traffic.json"
     },
     {
+      "table": "rpt_dk_sales_traffic_by_date",
+      "report_type": "DK_SALES_TRAFFIC_BY_DATE",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "data_kiosk",
+      "description": "Store-level daily Sales & Traffic KPIs (one row per store/marketplace/day) from Amazon Data Kiosk analytics_salesAndTraffic_2024_04_24 — NOT the legacy GET_SALES_AND_TRAFFIC_REPORT. Nested Amount objects unwrapped to numeric + shared currency_code. unit_session_percentage = conversion rate; buy_box_percentage = buy-box win rate.",
+      "key_columns": [
+        "store_id",
+        "date",
+        "country_code"
+      ],
+      "reference": "reference/rpt_dk_sales_traffic_by_date.json"
+    },
+    {
+      "table": "rpt_dk_sales_traffic_by_asin",
+      "report_type": "DK_SALES_TRAFFIC_BY_ASIN",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "data_kiosk",
+      "description": "ASIN-level daily Sales & Traffic (one row per store/marketplace/day/child_asin/sku) from Amazon Data Kiosk analytics_salesAndTraffic_2024_04_24 — NOT the legacy GET_SALES_AND_TRAFFIC_REPORT. Nested Amount objects unwrapped to numeric + shared currency_code. unit_session_percentage = conversion rate; buy_box_percentage = buy-box win rate.",
+      "key_columns": [
+        "store_id",
+        "date",
+        "child_asin",
+        "sku",
+        "country_code"
+      ],
+      "reference": "reference/rpt_dk_sales_traffic_by_asin.json"
+    },
+    {
       "table": "rpt_search_terms_analytics",
       "report_type": "GET_BRAND_ANALYTICS_SEARCH_TERMS_REPORT",
       "is_snapshot": false,
