@@ -177,12 +177,14 @@ Allowed ops: `sum`, `count`, `avg`, `min`, `max`. Returns one row per distinct g
 | `rpt_orders` | GET_FLAT_FILE_ALL_ORDERS_DATA_BY_LAST_UPDATE_GENERAL | rolling 30 days; includes `is_business_order` + 6 B2B/locale cols (added 2026-05-04) |
 | `rpt_storage_fees` | GET_FBA_STORAGE_FEE_CHARGES_DATA | monthly; `breakdown_incentive_fee_amount` is a colon-separated str — use derived `incentive_program` + `incentive_amount` |
 | `rpt_fba_returns` | GET_FBA_FULFILLMENT_CUSTOMER_RETURNS_DATA | EU samples populate `status` ('Unit returned to inventory', etc.) |
-| `rpt_sales_and_traffic` | GET_SALES_AND_TRAFFIC_REPORT | page views, sessions, conversions (Brand Analytics permission required) |
+| `rpt_sales_and_traffic` | GET_SALES_AND_TRAFFIC_REPORT | legacy S&T flat file — page views, sessions, conversions (Brand Analytics permission required) |
+| `rpt_dk_sales_traffic_by_date` | Data Kiosk analytics_salesAndTraffic_2024_04_24 (byDate) | store-level daily KPIs; nested Amount objects unwrapped to numeric + shared `currency_code`; `unit_session_percentage` = conversion rate |
+| `rpt_dk_sales_traffic_by_asin` | Data Kiosk analytics_salesAndTraffic_2024_04_24 (byAsin) | ASIN-level daily KPIs; same unwrap + conversion-rate semantics as by_date |
 | `rpt_search_terms_analytics` | GET_BRAND_ANALYTICS_SEARCH_TERMS_REPORT | weekly, brand analytics |
 | `rpt_suppressed_listings` | GET_MERCHANTS_LISTINGS_FYP_REPORT | suppressed SKUs; parser handles English + FR + lowercase header variants |
 | `listing_images` | (enriched from rpt_listings_snapshot) | persistent image URL cache — see below |
 
-Full index: `.claude/skills/report-data/_meta.json` (43 entries; 2 marked deprecated).
+Full index: `.claude/skills/report-data/_meta.json` (45 entries; 2 marked deprecated). S&T now comes from Data Kiosk into `rpt_dk_sales_traffic_by_date` / `rpt_dk_sales_traffic_by_asin`; reference schemas for the Data Kiosk path live in `docs/sp-api-data-kiosk-schemas/` and `docs/sp-api-report-schemas/`.
 
 **Calibration verified 2026-05-04** end-to-end against real Amazon TSV/JSON across 5 stores. See `amz-reporting-server/docs/REPORT_CALIBRATION_STATUS.md` for per-report findings.
 

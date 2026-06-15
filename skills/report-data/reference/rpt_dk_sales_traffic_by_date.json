@@ -1,0 +1,73 @@
+{
+  "_meta": {
+    "table": "rpt_dk_sales_traffic_by_date",
+    "report_type": "DK_SALES_TRAFFIC_BY_DATE",
+    "is_snapshot": false,
+    "description": "Store-level daily Sales & Traffic KPIs (one row per store/marketplace/day). Sourced from Amazon Data Kiosk GraphQL `analytics_salesAndTraffic_2024_04_24` (salesAndTrafficByDate, DAY granularity) — NOT the legacy GET_SALES_AND_TRAFFIC_REPORT. Amazon's nested `Amount {amount, currencyCode}` objects are unwrapped: the numeric money columns (ordered_product_sales, average_selling_price, etc.) hold `.amount`, and `currency_code` holds the single shared currency for the row. `unit_session_percentage` is the conversion-rate metric (units_ordered / sessions); `buy_box_percentage` is the buy-box (featured offer) win rate. Use for store-wide daily sales/traffic trends and the TACOS denominator.",
+    "pii": false,
+    "queryable": true,
+    "deprecated": false,
+    "strategy": "data_kiosk",
+    "date_column": "date",
+    "unique_key": ["store_id", "date", "country_code"],
+    "cron": "0 6 * * *"
+  },
+  "columns": [
+    {"db_column": "id", "type": "int", "comment": "Surrogate primary key (autoincrement)."},
+    {"db_column": "store_id", "type": "str", "comment": "Owning store (FK amazon_stores.store_id)."},
+    {"db_column": "report_date", "type": "date", "comment": "Ingest run tag (when the report was pulled). Use `date` for the business day."},
+    {"db_column": "date", "type": "date", "comment": "Business day the metrics describe — the field to filter/group on for time-series analysis."},
+    {"db_column": "country_code", "type": "str", "comment": "Marketplace (e.g. US, UK, DE). Defaults to '_primary_' on single-mkt stores. Always include in filters for multi-mkt stores."},
+    {"db_column": "marketplace_id", "type": "str", "comment": "Amazon marketplaceId the Data Kiosk row was reported for."},
+    {"db_column": "currency_code", "type": "str", "comment": "Shared currency for all money columns in this row. Unwrapped from Amazon's `Amount.currencyCode` (the per-Amount currencyCode is dropped — they are identical within a row)."},
+    {"db_column": "ordered_product_sales", "type": "decimal", "comment": "Total ordered product sales (organic + paid) in currency_code. Unwrapped from `Amount.amount`. TACOS denominator."},
+    {"db_column": "ordered_product_sales_b2b", "type": "decimal", "comment": "Ordered product sales from B2B buyers. Unwrapped from `Amount.amount`."},
+    {"db_column": "average_sales_per_order_item", "type": "decimal", "comment": "Unwrapped from `Amount.amount`."},
+    {"db_column": "average_selling_price", "type": "decimal", "comment": "Unwrapped from `Amount.amount`."},
+    {"db_column": "average_units_per_order_item", "type": "decimal"},
+    {"db_column": "shipped_product_sales", "type": "decimal", "comment": "Unwrapped from `Amount.amount`."},
+    {"db_column": "claims_amount", "type": "decimal", "comment": "Unwrapped from `Amount.amount`."},
+    {"db_column": "claims_granted", "type": "int"},
+    {"db_column": "units_ordered", "type": "int"},
+    {"db_column": "units_ordered_b2b", "type": "int"},
+    {"db_column": "total_order_items", "type": "int"},
+    {"db_column": "total_order_items_b2b", "type": "int"},
+    {"db_column": "units_refunded", "type": "int"},
+    {"db_column": "refund_rate", "type": "decimal"},
+    {"db_column": "units_shipped", "type": "int"},
+    {"db_column": "orders_shipped", "type": "int"},
+    {"db_column": "browser_page_views", "type": "int"},
+    {"db_column": "mobile_app_page_views", "type": "int"},
+    {"db_column": "page_views", "type": "int", "comment": "Total page views (browser + mobile app)."},
+    {"db_column": "browser_sessions", "type": "int"},
+    {"db_column": "mobile_app_sessions", "type": "int"},
+    {"db_column": "sessions", "type": "int", "comment": "Total sessions (browser + mobile app)."},
+    {"db_column": "buy_box_percentage", "type": "decimal", "comment": "Buy-box (featured offer) win rate."},
+    {"db_column": "order_item_session_percentage", "type": "decimal", "comment": "Order items / sessions."},
+    {"db_column": "unit_session_percentage", "type": "decimal", "comment": "Conversion-rate metric: units_ordered / sessions."},
+    {"db_column": "average_offer_count", "type": "int"},
+    {"db_column": "average_parent_items", "type": "int"},
+    {"db_column": "feedback_received", "type": "int"},
+    {"db_column": "negative_feedback_received", "type": "int"},
+    {"db_column": "received_negative_feedback_rate", "type": "decimal"},
+    {"db_column": "extra", "type": "json", "comment": "Anything Amazon's Data Kiosk response ships that isn't promoted to a typed column."}
+  ],
+  "example_query": {
+    "store": "myStore-AE",
+    "tables": ["rpt_dk_sales_traffic_by_date"],
+    "columns": [
+      "rpt_dk_sales_traffic_by_date.date",
+      "rpt_dk_sales_traffic_by_date.ordered_product_sales",
+      "rpt_dk_sales_traffic_by_date.units_ordered",
+      "rpt_dk_sales_traffic_by_date.sessions",
+      "rpt_dk_sales_traffic_by_date.unit_session_percentage",
+      "rpt_dk_sales_traffic_by_date.buy_box_percentage"
+    ],
+    "filters": [],
+    "order_by": [
+      {"column": "rpt_dk_sales_traffic_by_date.date", "dir": "desc"}
+    ],
+    "limit": 30,
+    "report_date": "latest"
+  }
+}
