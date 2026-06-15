@@ -13,6 +13,14 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.5.1] — 2026-06-15
+
+A packaging fix. No skill content changes — every skill's `version` bumps to 0.5.1 with the plugin per single-source versioning.
+
+### Fixed
+
+- Removed the broken bundled MCP server (`.mcp.json`). It pointed at `npx @sellersheet/mcp-server`, which is not published to the npm registry (404), and also required an unset `SELLERSHEET_API_KEY` — so the plugin's stdio MCP server failed to start on every load (JSON-RPC `-32000`). The plugin ships **skills only**; users connect the hosted SellerSheet MCP via the remote connector. The setup template at `mcp/sellersheet.json` is retained as documentation.
+
 ## [0.5.0] — 2026-06-09
 
 Adds the **image-gen** skill — the fourth production skill. (Per single-source versioning, every skill's `version` bumps to 0.5.0 with the plugin.)
