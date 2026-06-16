@@ -63,7 +63,7 @@ For action sheets (operator inputs into the data) the additional 9-rule checklis
 
 | Use | Color name | RGB |
 |---|---|---|
-| **Title bar (row 1)** | SellerSheet emerald | `[0.063, 0.725, 0.506]` |
+| **Banner row** (row 2; row 1 is the hidden machine row) | SellerSheet emerald | `[0.063, 0.725, 0.506]` |
 | **Section band** | Same emerald | `[0.063, 0.725, 0.506]` |
 | **Sub-header / column header / SQL-spilled table header** | Navy | `[0.157, 0.2, 0.318]` |
 | **Status chip RED** | Red | `[0.929, 0.451, 0.431]` |
@@ -117,20 +117,61 @@ Every build ends here. Create a TodoWrite item per line, work through them, and 
 
 Never report a build as fully verified on a server-side read alone — flag the pending cells and hand the one-time approval to the user.
 
-## Picking the right pattern — read-mode vs action-mode
+## Header grammar (v2) — build it in one pass
 
-Two patterns. Pick before writing anything.
+> **Build by copy first.** The master template workbook `1BVm1knCy_9DZGtCsaD9dKjvRVBMnF2_Vj7kyRiENF40`
+> holds a pristine, fully-formatted tab for most surfaces (48 tabs: Vendor ×4, STA, SP/SB/SD,
+> Store Reports, Live Listings, Publish Queue, noon Reports, …). To provision a sheet, **copy
+> the tab from the master** (`copy_sheet_tab` / Sheets-API `copyTo`) and rename it — formatting,
+> notes, conditional formats, dropdowns, frozen panes and image formulas come for free in one
+> call. Build cell-by-cell from this grammar **only** when no master tab exists or you're
+> authoring the master itself.
 
-| Pattern | When | Anchor file |
-|---|---|---|
-| **Growable table** (read-mode) | Live list/report that grows from raw data — inventory, ad performance, financials, anything where the operator scans rows but doesn't edit them | `reference/growable-tables.md` |
-| **Action sheet** (input surface) | Operator types into the sheet — filter inputs, acknowledgements, manual overrides, anything driving a workflow forward | `reference/action-sheets.md` |
+Every SellerSheet tab is a stack of typed **header bands** above a data zone. The band
+*order* never changes; a sheet just includes the bands it needs. This lets you lay a sheet
+out in one pass without probing it.
 
-A workbook usually has both. The vendor workbook has one action sheet (`Vendor PO Items` where operators fill Ack Codes) and two browse sheets (`Vendor Orders`, `Vendor PO Status` — filter at top, read below). The action sheet uses a 2-row header with emerald display row; the browse sheets use a 4-row header with emerald filter labels and navy display row.
+### The five bands
 
-Quick decision: *does the operator type into the data rows?* If yes → action sheet. If they only type into a filter row at the top → browse sheet. If they neither type nor filter → growable table.
+| Band | Role | Style | Hidden? |
+|---|---|---|---|
+| **machine** | code-contract keys (`store`, `asn_nr`, `imageUrl`, lowerCamelCase) — code reads/writes by name via a header-map lookup, so columns can be reordered later | Arial 7pt, grey `#A8AEB8`, white bg, normal weight | **yes — `hideRows(1)`** |
+| **banner** | brand band `SellerSheet • <Sheet>` | Arial 14pt bold white on emerald `#10B981`, left-aligned, **never merged** | no |
+| **bands** *(opt)* | section spans (STA metadata, noon Inbound ①②③) | navy `#28334F` spans, label in first cell of each span | no |
+| **controls** *(opt)* | a **label row + a value row** — operator inputs (Store/Status/filters) | label: navy bg + font-color semantics; value: input-bg `#EDF1F5` | no |
+| **display** | the human-read column header | navy `#28334F` bg, **slate `#8CA0B3`** font, **EN·CN cell notes** | no |
 
-NOT for either: single-cell KPI tiles, small fixed-shape sections (≤3 rows), cell-level styling that varies with data values beyond conditional formatting reach.
+**Input semantics live in the label font-color** (not background): gold `#FFD86B` = required
+input, white = optional input, slate `#8CA0B3` = button/sync-filled. Editable label cells
+carry a trailing **`✎`** (monochrome glyph, inherits color — never the emoji `✏️`), and only
+on display/label rows, never on the machine row.
+
+**Always:** never merge (breaks freeze panes); never set row heights (Sheets defaults);
+`setFrozenRows(<display row>)`; basic filter on the display row where useful (skip on audit
+logs); EN·CN cell notes on the display row so the operator knows each column's logic.
+
+### The three shapes — pick before writing
+
+| Shape | When | Bands (top→down) | Data starts | Frozen |
+|---|---|---|---|---|
+| **action** | operator types **into the data rows** (Ack codes, overrides) | machine · banner · display | row 4 | 3 |
+| **filter+browse** | operator scans a list, narrows via top filters | machine · banner · filter-labels · filter-inputs · display | row 6 | 5 |
+| **control-block** | a Store/Status/page-size control block above a list | machine · banner · label-row · value-row · display | row 6 | 5 |
+
+`control-block` worked example — **noon Shipments**: row 1 keys (hidden) · row 2 emerald
+banner · row 3 labels `Store ✎ · Status ✎ · Page Size ✎` · row 4 values (Store input,
+Status dropdown, 200) · row 5 navy display header with EN·CN notes · row 6+ ASN list.
+
+Quick decision: *type into data rows?* → **action**. *narrow a list via top filters?* →
+**filter+browse**. *set a few controls (store/status/qty) that drive one list?* →
+**control-block**. *neither type nor filter, just scan a live spill?* → **growable table**
+(`reference/growable-tables.md`).
+
+NOT for any: single-cell KPI tiles, fixed-shape sections ≤3 rows, data-value-driven
+cell styling beyond conditional-format reach.
+
+Deep dive (per-band helper code, narrowing-band rule, IMAGE arrayformula slot, dropdown
+warning mode, status-chip map, idempotent re-setup): `reference/action-sheets.md`.
 
 ## Reference index
 
