@@ -1,7 +1,7 @@
 ---
 name: amazon-report
 description: Use when requesting or parsing an Amazon SP-API on-demand report document — Brand Analytics (search query performance, search terms, search catalog performance, market basket, repeat purchase), Sales & Traffic, Promotion/Coupon performance, Vendor (sales, traffic, inventory, forecasting, net pure product margin, real-time), B2B product opportunities, marketplace ASIN page-view, end-user data, account health. Provides the exact reportType, required reportOptions enums, and the full JSON field tree of the returned document so you don't guess field names. NOT for the synced rpt_* warehouse (use report-data).
-version: 0.1.0
+version: 0.1.1
 ---
 
 # Amazon Report
@@ -100,12 +100,16 @@ account type, document data key, schema path). Highlights:
 - **A request cannot span periods.** A `WEEK` report's `dataStartTime`/`dataEndTime`
   must fall inside one Amazon week (search-query perf, market basket, etc.). The
   schema `description` states the period rule.
-- **`reportPeriod` enum is WEEK | MONTH | QUARTER** (not all reports support all
-  three — check the schema description).
+- **`reportPeriod` values vary by report** — a subset of `DAY | WEEK | MONTH |
+  QUARTER | YEAR`. Read the schema's `reportOptions.reportPeriod` enum; don't
+  assume. Verified examples: Search Query Performance = `WEEK | MONTH | QUARTER`
+  (no DAY); Market Basket & Search Terms = `DAY | WEEK | MONTH | QUARTER`; Vendor
+  Sales & Inventory = `DAY | WEEK | MONTH | QUARTER | YEAR`.
 - **Money fields are objects**, e.g. `{ "amount": 19.99, "currencyCode": "USD" }`,
   not scalars. Don't write the object into a numeric cell.
-- **Vendor `distributorView`** = `MANUFACTURING | SOURCING`; `sellingProgram` =
-  `RETAIL | BUSINESS | FRESH`. Confirm in the schema.
+- **Vendor `distributorView`** = `MANUFACTURING | SOURCING`. **`sellingProgram`
+  varies by report**: Vendor Sales = `RETAIL | BUSINESS | FRESH`; Vendor Inventory
+  & Forecasting = `RETAIL | FRESH` (no BUSINESS). Confirm in the schema.
 - **Brand Analytics → Brand Registry; Vendor → vendor account.** Missing role =
   access error, not an empty report.
 
