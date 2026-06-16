@@ -1,5 +1,11 @@
 # Action sheets — operator input surfaces
 
+> **Quick grammar lives in `SKILL.md` → "Header grammar (v2)".** That section is enough to
+> build the common case (the five bands, the three shapes — action / filter+browse /
+> control-block — hidden machine row, ✎ glyph, copy-from-master). This file is the deep
+> dive: per-band helper code, the narrowing-band rule, IMAGE arrayformula slot, dropdown
+> warning mode, status-chip map, idempotent re-setup.
+
 > **⚠ Header System v2 override (2026-06-11)** — the operator adopted "Direction D"
 > (see `brand-standards.md` → Header System v2). Where this file conflicts, v2 wins:
 > 1. ALL display-header / filter-label rows are **navy `#28334F`** — no emerald display
