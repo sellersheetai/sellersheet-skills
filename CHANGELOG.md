@@ -13,6 +13,12 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.6.0] — 2026-06-17
+
+### Added
+
+- **`noon-report-data`** skill — query the 4 `rpt_noon_*` noon (noon Partners) warehouse tables (orders, finance/transactions, FBN inventory aging, product-views & sales) for a connected noon store, via the same `query_report_data` MCP tool. Covers the twice-daily ingestion schedule, project-scoped (owner-only) access, per-marketplace semantics (orders by `market_place_country_code`, finance by `contract_title`→`marketplace`, aging/views per-marketplace), the `partner_barcode` grain on aging, and the snapshot-vs-incremental `report_date` rules (FBN current stock = latest `snapshot_date`, never `report_date='latest'`).
+
 ## [0.5.1] — 2026-06-15
 
 A packaging fix. No skill content changes — every skill's `version` bumps to 0.5.1 with the plugin per single-source versioning.
