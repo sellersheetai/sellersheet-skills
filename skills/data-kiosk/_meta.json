@@ -1,0 +1,57 @@
+{
+  "_meta": {
+    "description": "Index of Amazon SP-API Data Kiosk GraphQL schemas. Load this first, then read reference/<schema>.graphql for the exact query type name, dataset fields, required arguments, enums, and the per-field @resultRetention durations before authoring a createQuery GraphQL string.",
+    "create_via": "create_data_kiosk_query (pass the GraphQL query string; returns queryId)",
+    "poll_via": "get_data_kiosk_query (processingStatus: IN_QUEUE|IN_PROGRESS|DONE|CANCELLED|FATAL)",
+    "list_via": "get_data_kiosk_queries (filter by processingStatuses)",
+    "fetch_via": "get_data_kiosk_document (use the result's dataDocumentId — the field is dataDocumentId, NOT dataDocument; errorDocumentId on FATAL)",
+    "cancel_via": "cancel_data_kiosk_query (only IN_QUEUE / IN_PROGRESS)",
+    "query_shape": "A query wraps datasets under the versioned root: { analytics_<area>_<version> { <dataset>(args) { fields } } }",
+    "retention_note": "@resultRetention is per-FIELD; the query inherits the SHORTEST retention of any field it selects (and the result document expires after that). Sales & Traffic + Economics fields are mostly P30D (30 days). This is the document/result retention, NOT the queryable history window (startDate may go ~2 years back).",
+    "warehouse_note": "SellerSheet ingests Data Kiosk Sales & Traffic into rpt_dk_sales_traffic_by_date / by_asin. To query that synced data instead of authoring a raw query, see the report-data skill."
+  },
+  "schemas": [
+    {
+      "area": "salesAndTraffic",
+      "version": "2024_04_24",
+      "root": "analytics_salesAndTraffic_2024_04_24",
+      "schema": "reference/analytics_salesAndTraffic_2024_04_24.graphql",
+      "datasets": ["salesAndTrafficByDate", "salesAndTrafficByAsin", "salesAndTrafficTrends"],
+      "common_args": {
+        "startDate": "Date! (YYYY-MM-DD; <= ~2 years ago)",
+        "endDate": "Date!",
+        "marketplaceIds": "[String!]! (US = ATVPDKIKX0DER)",
+        "aggregateBy": "byDate: DateGranularity! (DAY|WEEK|MONTH); byAsin: AsinGranularity! (CHILD|PARENT|SKU)"
+      },
+      "status": "current",
+      "note": "Adds salesAndTrafficTrends vs 2023_11_15. byDate and byAsin populate different field sets."
+    },
+    {
+      "area": "salesAndTraffic",
+      "version": "2023_11_15",
+      "root": "analytics_salesAndTraffic_2023_11_15",
+      "schema": "reference/analytics_salesAndTraffic_2023_11_15.graphql",
+      "datasets": ["salesAndTrafficByDate", "salesAndTrafficByAsin"],
+      "status": "prior (still accepted; prefer 2024_04_24 for new queries)"
+    },
+    {
+      "area": "economics",
+      "version": "2024_03_15",
+      "root": "analytics_economics_2024_03_15",
+      "schema": "reference/analytics_economics_2024_03_15.graphql",
+      "datasets": ["economics", "economicsPreview", "economicsSimulation"],
+      "note": "Per-unit fee/cost/margin economics by ASIN/MSKU. economicsPreview/economicsSimulation model fee changes.",
+      "status": "current"
+    },
+    {
+      "area": "vendorAnalytics",
+      "version": "2024_09_30",
+      "root": "analytics_vendorAnalytics_2024_09_30",
+      "schema": "reference/analytics_vendorAnalytics_2024_09_30.graphql",
+      "datasets": ["manufacturingView", "sourcingView"],
+      "account": "vendor",
+      "note": "1P vendor sourcing/manufacturing analytics. Requires a vendor account.",
+      "status": "current"
+    }
+  ]
+}
