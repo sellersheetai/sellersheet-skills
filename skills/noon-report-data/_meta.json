@@ -1,0 +1,91 @@
+{
+  "_meta": {
+    "description": "Index of noon (noon Partners) report tables ingested by the reporting server. Query with query_report_data using a noon store ref (e.g. myStore-AE); scoping is by project_code (resolved from the caller's connected noon accounts), not store_id.",
+    "queryable_via": "query_report_data",
+    "schema_via": "get_table_schema",
+    "scope": "project_code (owner-only; resolved from connected noon_accounts)",
+    "marketplace_auto_filter": false,
+    "cadence": "twice daily (UTC): orders 03/15, finance 04/16, fbn_aging 06/18, product_views 08/20",
+    "notes": "Marketplace is NOT auto-injected from the store suffix for noon \u2014 add an explicit filter. orders+finance are project-wide single reports sliced per-row (orders: market_place_country_code; finance: marketplace derived from contract_title NOON-XX). fbn_aging+product_views are exported per marketplace. fbn_aging key includes partner_barcode (a sku has many barcodes; sku may be empty with partner_barcode=UNIDENTIFIED)."
+  },
+  "tables": [
+    {
+      "table": "rpt_noon_orders",
+      "report_type": "NOON_ORDERS_EXPORT",
+      "noon_category": "noon_noonoms_ordersexport",
+      "cron_utc": "0 3,15 * * *",
+      "is_snapshot": false,
+      "strategy": "noon_export",
+      "lookback_days": 7,
+      "report_date_mode": "all",
+      "marketplace_column": "market_place_country_code",
+      "event_date_column": "order_placed_at",
+      "key_columns": [
+        "project_code",
+        "marketplace",
+        "item_nr"
+      ],
+      "description": "noon order items: status, fulfillment (is_fulfilled_by_noon), shipment_nr/awb_nr, delivery windows. marketplace = per-row country."
+    },
+    {
+      "table": "rpt_noon_finance",
+      "report_type": "NOON_FINANCE",
+      "noon_category": "noon_financeweb_transactionviewreportonitemlevel",
+      "cron_utc": "0 4,16 * * *",
+      "is_snapshot": false,
+      "strategy": "noon_export",
+      "lookback_days": 14,
+      "report_date_mode": "all",
+      "marketplace_column": "marketplace",
+      "event_date_column": "transaction_date",
+      "key_columns": [
+        "project_code",
+        "reference_nr",
+        "item_nr",
+        "transaction_type"
+      ],
+      "description": "Item-level finance transactions, all money VAT-inclusive numeric(16,2). Project-wide single report; marketplace derived per-row from contract_title (NOON-AE->AE) \u2014 filter marketplace or contract_title. Sum total for net payout."
+    },
+    {
+      "table": "rpt_noon_fbn_aging",
+      "report_type": "NOON_FBN_AGING",
+      "noon_category": "fbn_inventoryv2_aging",
+      "cron_utc": "0 6,18 * * *",
+      "is_snapshot": true,
+      "strategy": "noon_export",
+      "report_date_mode": "all",
+      "marketplace_column": "country_code",
+      "event_date_column": "snapshot_date",
+      "key_columns": [
+        "project_code",
+        "snapshot_date",
+        "country_code",
+        "sku",
+        "partner_barcode",
+        "inventory_condition",
+        "qc_fail_item_identifier"
+      ],
+      "description": "Daily FBN inventory aging snapshot per marketplace. One row per partner_barcode (a sku can have many; sku may be empty with partner_barcode=UNIDENTIFIED). Single 181-365d bucket (quantity_181_365d). Query latest snapshot for current stock.",
+      "current_stock": "filter snapshot_date = MAX(snapshot_date); report_date='latest' is WRONG (one pull holds ~1yr of month-end snapshots, all stamped same report_date -> sums them)"
+    },
+    {
+      "table": "rpt_noon_product_views",
+      "report_type": "NOON_PRODUCT_VIEWS",
+      "noon_category": "noon_catalog_reports_productviewsandsalesdata",
+      "cron_utc": "0 8,20 * * *",
+      "is_snapshot": false,
+      "strategy": "noon_export",
+      "lookback_days": 14,
+      "report_date_mode": "all",
+      "marketplace_column": "country_code",
+      "event_date_column": "visit_date",
+      "key_columns": [
+        "project_code",
+        "visit_date",
+        "sku",
+        "country_code"
+      ],
+      "description": "Daily product views & sales per marketplace. asp_shipped is a PRICE not a percent; conversion_visitors_percentage can exceed 100; sales columns sparse."
+    }
+  ]
+}

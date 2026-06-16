@@ -4,11 +4,11 @@
 
 **Author**: [sellersheetai.com](https://sellersheetai.com)
 **License**: Apache-2.0
-**Latest release**: v0.5.1 ([changelog](./CHANGELOG.md))
+**Latest release**: v0.6.0 ([changelog](./CHANGELOG.md))
 
 ## What's in here
 
-Four production-ready skills for working with the SellerSheet MCP. More skills coming after their reviews complete.
+Five production-ready skills for working with the SellerSheet MCP. More skills coming after their reviews complete.
 
 | Skill | What it does |
 |---|---|
@@ -16,6 +16,7 @@ Four production-ready skills for working with the SellerSheet MCP. More skills c
 | **sellersheet-dashboard** | Multi-tab operator dashboards with freshness instrumentation, agent insights, status tabs — for inventory, PPC, account health, listings, profit/margin, returns, buy box, cash conversion. Builds on `sellersheet-sheets`. |
 | **report-data** | Amazon SP-API + Ads-API report querying — 50+ `rpt_*` tables in the SellerSheet warehouse (inventory, listings, orders, returns, financial, brand analytics, ads SP/SB/SD), sync-schedule monitoring, on-demand report flow (create → poll → download to Drive). Use for inventory levels, restock needs, search terms, settlements, listing status, and any synced-report question. |
 | **image-gen** | Amazon listing images + A+ Content via gpt-image-2 — learn mature competitors' image style, generate/recolor product-faithful images, enforce main-image compliance, build A+ modules, score, and record to the 'Images Generation' sheet. Covers the s0–s8 slot model, OpenAI prompting fundamentals, and the Basic A+ module spec. |
+| **noon-report-data** | noon.com (noon Partners) report querying — the 4 `rpt_noon_*` warehouse tables (orders, finance/transactions, FBN inventory aging, product-views & sales) for a connected noon store. Covers the twice-daily schedule, project-scoped access, per-marketplace semantics, and the snapshot-vs-incremental query nuances. |
 
 ### Coming soon (under review)
 
@@ -48,7 +49,7 @@ For the dashboard skill specifically, if you want PPC tabs to populate with real
 /plugin install sellersheet-skills@sellersheet-marketplace
 ```
 
-This installs all four skills (`sellersheet-sheets`, `sellersheet-dashboard`, `report-data`, `image-gen`) as one bundle.
+This installs all five skills (`sellersheet-sheets`, `sellersheet-dashboard`, `report-data`, `image-gen`, `noon-report-data`) as one bundle.
 
 ### Claude Desktop
 
@@ -160,7 +161,7 @@ Full mechanism: [docs/auto-update.md](./docs/auto-update.md).
 
 | Plugin release | SellerSheet MCP minimum | Agent compatibility |
 |---|---|---|
-| v0.5.x | 2025-Q4 build | Claude Code 1.0+, Claude Desktop 0.10+, Codex CLI any, Gemini CLI 0.5+, Antigravity any |
+| v0.6.x | 2025-Q4 build | Claude Code 1.0+, Claude Desktop 0.10+, Codex CLI any, Gemini CLI 0.5+, Antigravity any |
 
 The plugin ships as one bundle — all three skills release together at the plugin version. Each `SKILL.md` frontmatter `version:` mirrors `.claude-plugin/plugin.json`.
 
