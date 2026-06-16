@@ -119,13 +119,10 @@ Never report a build as fully verified on a server-side read alone — flag the 
 
 ## Header grammar (v2) — build it in one pass
 
-> **Build by copy first.** The master template workbook `1BVm1knCy_9DZGtCsaD9dKjvRVBMnF2_Vj7kyRiENF40`
-> holds a pristine, fully-formatted tab for most surfaces (48 tabs: Vendor ×4, STA, SP/SB/SD,
-> Store Reports, Live Listings, Publish Queue, noon Reports, …). To provision a sheet, **copy
-> the tab from the master** (`copy_sheet_tab` / Sheets-API `copyTo`) and rename it — formatting,
-> notes, conditional formats, dropdowns, frozen panes and image formulas come for free in one
-> call. Build cell-by-cell from this grammar **only** when no master tab exists or you're
-> authoring the master itself.
+> **Already have a styled tab to clone?** `copy_sheet_tab` an existing well-formatted tab and
+> rename it — formatting, notes, conditional formats, dropdowns, frozen panes and image
+> formulas come for free in one call. Build from this grammar when you're laying out a tab
+> from scratch.
 
 Every SellerSheet tab is a stack of typed **header bands** above a data zone. The band
 *order* never changes; a sheet just includes the bands it needs. This lets you lay a sheet

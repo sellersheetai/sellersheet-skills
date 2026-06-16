@@ -2,7 +2,7 @@
 
 > **Quick grammar lives in `SKILL.md` → "Header grammar (v2)".** That section is enough to
 > build the common case (the five bands, the three shapes — action / filter+browse /
-> control-block — hidden machine row, ✎ glyph, copy-from-master). This file is the deep
+> control-block — hidden machine row, ✎ glyph). This file is the deep
 > dive: per-band helper code, the narrowing-band rule, IMAGE arrayformula slot, dropdown
 > warning mode, status-chip map, idempotent re-setup.
 
