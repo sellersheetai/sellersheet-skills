@@ -19,49 +19,49 @@
         {
           "startTime": "2022-04-20T20:00:00Z",
           "endTime": "2022-04-20T21:00:00Z",
-          "asin": "B00ABCD123",
+          "asin": "B0ABCDEFGH",
           "orderedUnits": 1,
           "orderedRevenue": 167.14
         },
         {
           "startTime": "2022-04-20T20:00:00Z",
           "endTime": "2022-04-20T21:00:00Z",
-          "asin": "B00ABCD456",
+          "asin": "B0ABCDEFGH",
           "orderedUnits": 0,
           "orderedRevenue": 0.00
         },
         {
           "startTime": "2022-04-20T20:00:00Z",
           "endTime": "2022-04-20T21:00:00Z",
-          "asin": "B00ABCD789",
+          "asin": "B0ABCDEFGH",
           "orderedUnits": 0,
           "orderedRevenue": 0.00
         },
         {
           "startTime": "2022-04-20T20:00:00Z",
           "endTime": "2022-04-20T21:00:00Z",
-          "asin": "B00LMNO789",
+          "asin": "B0ABCDEFGH",
           "orderedUnits": 1,
           "orderedRevenue": 65.99
         },
         {
           "startTime": "2022-04-20T20:00:00Z",
           "endTime": "2022-04-20T21:00:00Z",
-          "asin": "B00LMNO456",
+          "asin": "B0ABCDEFGH",
           "orderedUnits": 1,
           "orderedRevenue": 50.99
         },
         {
           "startTime": "2022-04-20T20:00:00Z",
           "endTime": "2022-04-20T21:00:00Z",
-          "asin": "B00LMNO147",
+          "asin": "B0ABCDEFGH",
           "orderedUnits": 2,
           "orderedRevenue": 103.98
         },
         {
           "startTime": "2022-04-20T20:00:00Z",
           "endTime": "2022-04-20T21:00:00Z",
-          "asin": "B00LMNO963",
+          "asin": "B0ABCDEFGH",
           "orderedUnits": 1,
           "orderedRevenue": 64.53
         }

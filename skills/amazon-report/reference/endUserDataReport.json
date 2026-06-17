@@ -34,7 +34,7 @@
               "startDate": "2023-09-10",
               "endDate": "2023-09-16",
               "marketplaceId": "A1PA6795UKMFR9",
-              "asin": "B00EZ1IGCO",
+              "asin": "B0ABCDEFGH",
               "pageViews": 12352,
               "gms": 145.2,
               "currencyCode": "EUR"
@@ -68,7 +68,7 @@
               "startDate": "2023-09-10",
               "endDate": "2023-09-16",
               "marketplaceId": "APJ6JRA9NG5V4",
-              "asin": "B00EZ1IGCO",
+              "asin": "B0ABCDEFGH",
               "pageViews": 12352,
               "gms": 145.2,
               "currencyCode": "EUR"
@@ -114,7 +114,7 @@
               "startDate": "2023-09-01",
               "endDate": "2023-09-30",
               "marketplaceId": "A1PA6795UKMFR9",
-              "asin": "B00EZ1IGCO",
+              "asin": "B0ABCDEFGH",
               "pageViews": 1256,
               "gms": 125.2,
               "currencyCode": "EUR"
@@ -123,7 +123,7 @@
               "startDate": "2023-08-01",
               "endDate": "2023-08-31",
               "marketplaceId": "A1PA6795UKMFR9",
-              "asin": "B00EZ1IGCO",
+              "asin": "B0ABCDEFGH",
               "pageViews": 12352,
               "gms": 145.2,
               "currencyCode": "EUR"
@@ -132,7 +132,7 @@
               "startDate": "2023-07-01",
               "endDate": "2023-07-31",
               "marketplaceId": "A1PA6795UKMFR9",
-              "asin": "B00EZ1IGCO",
+              "asin": "B0ABCDEFGH",
               "pageViews": 12352,
               "gms": 145.2,
               "currencyCode": "EUR"
@@ -141,7 +141,7 @@
               "startDate": "2023-06-01",
               "endDate": "2023-06-30",
               "marketplaceId": "A1PA6795UKMFR9",
-              "asin": "B00EZ1IGCO",
+              "asin": "B0ABCDEFGH",
               "pageViews": 12352,
               "gms": 145.2,
               "currencyCode": "EUR"
@@ -150,7 +150,7 @@
               "startDate": "2023-05-01",
               "endDate": "2023-05-31",
               "marketplaceId": "A1PA6795UKMFR9",
-              "asin": "B00EZ1IGCO",
+              "asin": "B0ABCDEFGH",
               "pageViews": 12352,
               "gms": 145.2,
               "currencyCode": "EUR"
@@ -159,7 +159,7 @@
               "startDate": "2023-04-01",
               "endDate": "2023-04-30",
               "marketplaceId": "A1PA6795UKMFR9",
-              "asin": "B00EZ1IGCO",
+              "asin": "B0ABCDEFGH",
               "pageViews": 12352,
               "gms": 145.2,
               "currencyCode": "EUR"
@@ -168,7 +168,7 @@
               "startDate": "2023-03-01",
               "endDate": "2023-03-31",
               "marketplaceId": "A1PA6795UKMFR9",
-              "asin": "B00EZ1IGCO",
+              "asin": "B0ABCDEFGH",
               "pageViews": 12352,
               "gms": 145.2,
               "currencyCode": "EUR"
@@ -177,7 +177,7 @@
               "startDate": "2023-02-01",
               "endDate": "2023-02-28",
               "marketplaceId": "A1PA6795UKMFR9",
-              "asin": "B00EZ1IGCO",
+              "asin": "B0ABCDEFGH",
               "pageViews": 12352,
               "gms": 145.2,
               "currencyCode": "EUR"
@@ -186,7 +186,7 @@
               "startDate": "2023-01-01",
               "endDate": "2023-01-31",
               "marketplaceId": "A1PA6795UKMFR9",
-              "asin": "B00EZ1IGCO",
+              "asin": "B0ABCDEFGH",
               "pageViews": 12352,
               "gms": 145.2,
               "currencyCode": "EUR"
@@ -195,7 +195,7 @@
               "startDate": "2022-12-01",
               "endDate": "2022-12-31",
               "marketplaceId": "A1PA6795UKMFR9",
-              "asin": "B00EZ1IGCO",
+              "asin": "B0ABCDEFGH",
               "pageViews": 12352,
               "gms": 145.2,
               "currencyCode": "EUR"
@@ -204,7 +204,7 @@
               "startDate": "2022-11-01",
               "endDate": "2022-11-30",
               "marketplaceId": "A1PA6795UKMFR9",
-              "asin": "B00EZ1IGCO",
+              "asin": "B0ABCDEFGH",
               "pageViews": 12352,
               "gms": 145.2,
               "currencyCode": "EUR"
@@ -213,7 +213,7 @@
               "startDate": "2022-10-01",
               "endDate": "2022-10-31",
               "marketplaceId": "A1PA6795UKMFR9",
-              "asin": "B00EZ1IGCO",
+              "asin": "B0ABCDEFGH",
               "pageViews": 12352,
               "gms": 145.2,
               "currencyCode": "EUR"
@@ -222,7 +222,7 @@
               "startDate": "2022-09-01",
               "endDate": "2022-09-30",
               "marketplaceId": "A1PA6795UKMFR9",
-              "asin": "B00EZ1IGCO",
+              "asin": "B0ABCDEFGH",
               "pageViews": 12352,
               "gms": 145.2,
               "currencyCode": "EUR"
@@ -404,7 +404,7 @@
             "type": "string",
             "description": "ASIN for which the metrics are provided. Only ASINs with an active offer from the Seller are included.",
             "examples": [
-              "B00EZ1IGCO"
+              "B0ABCDEFGH"
             ]
           },
           "pageViews": {

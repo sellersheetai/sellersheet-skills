@@ -13,6 +13,13 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.7.0] — 2026-06-17
+
+### Added
+
+- **`amazon-report`** skill — authoritative DOCUMENT schemas for 22 Amazon SP-API on-demand reports (Brand Analytics: search query/catalog performance, search terms, market basket, repeat purchase; Sales & Traffic; Promotion/Coupon; all Vendor reports; marketplace ASIN page-view; end-user data; account health). Bundles each report's JSON-Schema under `reference/`, plus a `_meta.json` index mapping `reportType` → required `reportOptions` (with enums) → document data-key → schema file, so agents request the right report and parse fields by their real names instead of guessing. Includes a warehouse-first routing gate (check `report-data` before requesting on-demand).
+- **`data-kiosk`** skill — authoritative GraphQL schemas for Amazon SP-API Data Kiosk (Sales & Traffic, Economics, Vendor Analytics). Bundles the SDL under `reference/`, plus a `_meta.json` index of versioned root query types, datasets, required args, enums (`DateGranularity`/`AsinGranularity`), and per-field `@resultRetention`, so agents author a valid `createQuery` string instead of guessing. Same warehouse-first routing gate (`report-data` → `query_report_data` before authoring a query).
+
 ## [0.6.0] — 2026-06-17
 
 ### Added
