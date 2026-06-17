@@ -569,7 +569,7 @@ This type contains the core identifiers used across Amazon's fulfillment and cat
 @example
 {
   idType: ASIN
-  idValue: "B08N5WRWNW"
+  idValue: "B0ABCDEFGH"
   inputContext: { ... }
 }
 """
