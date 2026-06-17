@@ -20,49 +20,49 @@
           "startTime": "2023-04-27T00:00:00Z",
           "endTime": "2023-04-28T00:00:00Z",
           "marketplaceId": "A1PA6795UKMFR9",
-          "asin": "B00EZ1IGCO",
+          "asin": "B0ABCDEFGH",
           "pageViews": 12352
         },
         {
           "startTime": "2023-04-28T00:00:00Z",
           "endTime": "2023-04-29T00:00:00Z",
           "marketplaceId": "A1PA6795UKMFR9",
-          "asin": "B00EZ1IGCO",
+          "asin": "B0ABCDEFGH",
           "pageViews": 12321
         },
         {
           "startTime": "2023-04-29T00:00:00Z",
           "endTime": "2023-04-30T00:00:00Z",
           "marketplaceId": "A1PA6795UKMFR9",
-          "asin": "B00EZ1IGCO",
+          "asin": "B0ABCDEFGH",
           "pageViews": 10021
         },
         {
           "startTime": "2023-04-30T00:00:00Z",
           "endTime": "2023-05-01T00:00:00Z",
           "marketplaceId": "A1PA6795UKMFR9",
-          "asin": "B00EZ1IGCO",
+          "asin": "B0ABCDEFGH",
           "pageViews": 1432
         },
         {
           "startTime": "2023-05-01T00:00:00Z",
           "endTime": "2023-05-02T00:00:00Z",
           "marketplaceId": "A1PA6795UKMFR9",
-          "asin": "B00EZ1IGCO",
+          "asin": "B0ABCDEFGH",
           "pageViews": 342
         },
         {
           "startTime": "2023-05-02T00:00:00Z",
           "endTime": "2023-05-03T00:00:00Z",
           "marketplaceId": "A1PA6795UKMFR9",
-          "asin": "B00EZ1IGCO",
+          "asin": "B0ABCDEFGH",
           "pageViews": 450
         },
         {
           "startTime": "2023-05-03T00:00:00Z",
           "endTime": "2023-05-04T00:00:00Z",
           "marketplaceId": "A1PA6795UKMFR9",
-          "asin": "B00EZ1IGCO",
+          "asin": "B0ABCDEFGH",
           "pageViews": 1250
         },
         {
@@ -131,7 +131,7 @@
           "startTime": "2023-05-03T00:00:00Z",
           "endTime": "2023-05-04T00:00:00Z",
           "marketplaceId": "A1PA6795UKMFR9",
-          "asin": "B00EZ1IGCO",
+          "asin": "B0ABCDEFGH",
           "pageViews": 1250
         },
         {
@@ -253,7 +253,7 @@
           "type": "string",
           "description": "ASIN for which the page view metrics are provided.",
           "examples": [
-            "B00EZ1IGCO"
+            "B0ABCDEFGH"
           ]
         },
         "pageViews": {
