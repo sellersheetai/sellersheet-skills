@@ -37,7 +37,7 @@
           "lastUpdatedDateTime": "2020-09-18T13:24:39Z",
           "includedProducts": [
             {
-              "asin": "B08755Z2ND",
+              "asin": "B0ABCDEFGH",
               "productName": "BrandX Product, Travel Size, 3 Pack",
               "productGlanceViews": 380,
               "productUnitsSold": 20,
@@ -163,7 +163,7 @@
           "lastUpdatedDateTime": "2020-09-18T13:24:39Z",
           "includedProducts": [
             {
-              "asin": "B08755Z2ND",
+              "asin": "B0ABCDEFGH",
               "productName": "Save on BrandX Product Name",
               "productGlanceViews": 380,
               "productUnitsSold": 20,
@@ -377,7 +377,7 @@
       "description": "An object that contains details about a product.",
       "examples": [
         {
-          "asin": "B08755Z2ND",
+          "asin": "B0ABCDEFGH",
           "productName": "BrandX Product, Travel Size, 3 Pack",
           "productGlanceViews": 380,
           "productUnitsSold": 20,
@@ -399,7 +399,7 @@
           "type": "string",
           "description": "The product ASIN.",
           "examples": [
-            "B08755Z2ND"
+            "B0ABCDEFGH"
           ]
         },
         "productName": {

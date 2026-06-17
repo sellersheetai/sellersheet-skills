@@ -45,12 +45,12 @@
               "budgetPercentageUsed": 0.4,
               "asins": [
                 {
-                  "asin": "B08XJWMYR5",
+                  "asin": "B0ABCDEFGH",
                   "discountType": "PERCENT_OFF_LIST_PRICE",
                   "discountAmount": 10
                 },
                 {
-                  "asin": "B07Z7XTQKZ",
+                  "asin": "B0ABCDEFGH",
                   "discountType": "AMOUNT_OFF_LIST_PRICE",
                   "discountAmount": 4.99
                 }
@@ -181,12 +181,12 @@
               "budgetPercentageUsed": 0.4,
               "asins": [
                 {
-                  "asin": "B08XJWMYR5",
+                  "asin": "B0ABCDEFGH",
                   "discountType": "PERCENT_OFF_LIST_PRICE",
                   "discountAmount": 10
                 },
                 {
-                  "asin": "B07Z7XTQKZ",
+                  "asin": "B0ABCDEFGH",
                   "discountType": "AMOUNT_OFF_LIST_PRICE",
                   "discountAmount": 4.99
                 }
@@ -212,7 +212,7 @@
           "coupons": [
             {
               "couponId": "A2NW32V27GZS2T",
-              "name": "B07KKXTNK1 $20, 11.26-11.29",
+              "name": "B0ABCDEFGH $20, 11.26-11.29",
               "websiteMessage": "Save on BrandY Product",
               "startDateTime": "2021-11-26T05:59:59Z",
               "endDateTime": "2021-11-29T23:59:59Z",
@@ -225,7 +225,7 @@
               "budgetPercentageUsed": 0.8,
               "asins": [
                 {
-                  "asin": "B07KKXTNK1",
+                  "asin": "B0ABCDEFGH",
                   "discountType": "PERCENT_OFF_LIST_PRICE",
                   "discountAmount": 25
                 }
@@ -233,7 +233,7 @@
             },
             {
               "couponId": "A2NW32V27GZS2T",
-              "name": "B08W3JHG19 $20, 11.26-11.29",
+              "name": "B0ABCDEFGH $20, 11.26-11.29",
               "couponVendorCode": "ABCDE",
               "websiteMessage": "Save on BrandZ Product",
               "startDateTime": "2021-11-26T05:59:59Z",
@@ -247,7 +247,7 @@
               "budgetPercentageUsed": 1.7,
               "asins": [
                 {
-                  "asin": "B08W3JHG19",
+                  "asin": "B0ABCDEFGH",
                   "discountType": "PERCENT_OFF_LIST_PRICE",
                   "discountAmount": 10
                 }
@@ -403,12 +403,12 @@
           "budgetPercentageUsed": 0.4,
           "asins": [
             {
-              "asin": "B08XJWMYR5",
+              "asin": "B0ABCDEFGH",
               "discountType": "PERCENT_OFF_LIST_PRICE",
               "discountAmount": 10
             },
             {
-              "asin": "B07Z7XTQKZ",
+              "asin": "B0ABCDEFGH",
               "discountType": "AMOUNT_OFF_LIST_PRICE",
               "discountAmount": 5
             }
@@ -550,12 +550,12 @@
       "description": "Contains details about an asin.",
       "examples": [
         {
-          "asin": "B08XJWMYR5",
+          "asin": "B0ABCDEFGH",
           "discountType": "PERCENT_OFF_LIST_PRICE",
           "discountAmount": 10
         },
         {
-          "asin": "B07Z7XTQKZ",
+          "asin": "B0ABCDEFGH",
           "discountType": "AMOUNT_OFF_LIST_PRICE",
           "discountAmount": 4.99
         }
@@ -570,7 +570,7 @@
           "type": "string",
           "description": "Asin of the product.",
           "examples": [
-            "B08XJWMYR5"
+            "B0ABCDEFGH"
           ]
         },
         "discountType": {
