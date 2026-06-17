@@ -1,7 +1,7 @@
 ---
 name: data-kiosk
 description: Use when authoring or running an Amazon SP-API Data Kiosk GraphQL query — Sales & Traffic (by date / by ASIN / trends), Economics (per-unit fees, cost, margin, preview, simulation), or Vendor Analytics (manufacturing/sourcing view). Provides the exact versioned root query type, dataset fields, required arguments, enums (DateGranularity/AsinGranularity), and per-field @resultRetention so you write a valid query instead of guessing. NOT for the synced rpt_dk_* warehouse (use report-data).
-version: 0.1.0
+version: 0.2.0
 ---
 
 # Data Kiosk
@@ -32,9 +32,25 @@ against the live Data Kiosk endpoints.
 NOT for: querying SellerSheet's already-synced `rpt_dk_*` tables (→ `report-data` +
 `query_report_data`).
 
+## Check the warehouse FIRST (before creating a query)
+
+Creating a Data Kiosk query costs Amazon quota and minutes of polling. **Sales &
+Traffic is already synced into the SellerSheet warehouse** (`rpt_dk_sales_traffic_by_date`,
+`rpt_dk_sales_traffic_by_asin`, and the report-based `rpt_sales_and_traffic`). So:
+
+1. If the user wants **Sales & Traffic**, default to the **`report-data`** skill —
+   `list_report_syncs` to confirm the table is synced and fresh, then
+   `query_report_data`. Do NOT author a new query for data that's already in the warehouse.
+2. Only author a Data Kiosk query here when: the dataset is **not** warehoused
+   (**Economics**, **Vendor Analytics**), the sync is stale/disabled for the
+   marketplace, or you need an ad-hoc shape the warehouse can't serve.
+
+When unsure whether it's synced, check `report-data`'s `_meta.json` / `list_report_syncs` before creating.
+
 ## Workflow
 
 ```
+0. Check report-data FIRST — if the dataset is synced & fresh, query_report_data and STOP (don't create)
 1. Pick area + version from _meta.json   →  get the analytics_<area>_<version> root + dataset
 2. read reference/<schema>.graphql        →  confirm dataset args, enums, field names, retention
 3. create_data_kiosk_query(query)         →  returns data.result.queryId
