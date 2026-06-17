@@ -1,7 +1,7 @@
 ---
 name: amazon-report
 description: Use when requesting or parsing an Amazon SP-API on-demand report document — Brand Analytics (search query performance, search terms, search catalog performance, market basket, repeat purchase), Sales & Traffic, Promotion/Coupon performance, Vendor (sales, traffic, inventory, forecasting, net pure product margin, real-time), B2B product opportunities, marketplace ASIN page-view, end-user data, account health. Provides the exact reportType, required reportOptions enums, and the full JSON field tree of the returned document so you don't guess field names. NOT for the synced rpt_* warehouse (use report-data).
-version: 0.1.1
+version: 0.2.0
 ---
 
 # Amazon Report
@@ -35,9 +35,29 @@ on-demand analytics/Brand-Analytics/Vendor report **content schemas**.
 NOT for: querying already-synced data (→ `report-data` + `query_report_data`),
 or adding a brand-new report type to the warehouse (→ `add-report-type`).
 
+## Check the warehouse FIRST (before requesting a report)
+
+Requesting a report costs Amazon quota and minutes of polling. Several of these
+datasets are **already synced into the SellerSheet warehouse** — query those
+instead of re-requesting:
+
+- **Synced → use `report-data` + `query_report_data`** (don't re-request):
+  Sales & Traffic (`rpt_sales_and_traffic`, `rpt_dk_sales_traffic_*`), orders
+  (`rpt_orders`), inventory (`rpt_afn_inventory*`, `rpt_inventory_*`,
+  `rpt_fba_inventory_health`), returns/removals (`rpt_returns`, `rpt_fba_returns`,
+  `rpt_removal_orders`). Run `list_report_syncs` to confirm it's synced & fresh.
+- **Not synced → request on-demand here** (this skill's purpose): Brand Analytics
+  (Market Basket, Search Query/Catalog Performance, Search Terms, Repeat Purchase),
+  Promotion/Coupon, all Vendor reports, marketplace ASIN page-view, end-user data.
+
+Rule: check `report-data` (`list_report_syncs` / its `_meta.json` index) first;
+only create on-demand when the data isn't warehoused, the sync is stale/disabled,
+or you need an ad-hoc window the sync doesn't cover.
+
 ## Workflow
 
 ```
+0. Check report-data FIRST — if the report is synced & fresh, query_report_data and STOP (don't re-request)
 1. Look up the report in _meta.json  →  get reportType + reportOptions + schema file
 2. read reference/<schema>.json      →  confirm reportOptions enum values + document field tree
 3. sp_api_search_reports             →  reuse an existing DONE report if recent enough (saves quota)
