@@ -37,10 +37,10 @@
           "sales": 62.10,
           "asins": [
             {
-              "asin": "B08XJWMYR5"
+              "asin": "B0ABCDEFGH"
             },
             {
-              "asin": "B07Z7XTQKZ"
+              "asin": "B0ABCDEFGH"
             }
           ]
         }
@@ -159,10 +159,10 @@
           "sales": 62.10,
           "asins": [
             {
-              "asin": "B08XJWMYR5"
+              "asin": "B0ABCDEFGH"
             },
             {
-              "asin": "B07Z7XTQKZ"
+              "asin": "B0ABCDEFGH"
             }
           ]
         }
@@ -345,10 +345,10 @@
       "description": "Contains details about an asin.",
       "examples": [
         {
-          "asin": "B08XJWMYR5"
+          "asin": "B0ABCDEFGH"
         },
         {
-          "asin": "B07Z7XTQKZ"
+          "asin": "B0ABCDEFGH"
         }
       ],
       "required": [
@@ -359,7 +359,7 @@
           "type": "string",
           "description": "The asin of the product.",
           "examples": [
-            "B08XJWMYR5"
+            "B0ABCDEFGH"
           ]
         }
       }

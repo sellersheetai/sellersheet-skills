@@ -4,7 +4,7 @@
 
 **Author**: [sellersheetai.com](https://sellersheetai.com)
 **License**: Apache-2.0
-**Latest release**: v0.6.0 ([changelog](./CHANGELOG.md))
+**Latest release**: v0.7.0 ([changelog](./CHANGELOG.md))
 
 ## What's in here
 
@@ -161,7 +161,7 @@ Full mechanism: [docs/auto-update.md](./docs/auto-update.md).
 
 | Plugin release | SellerSheet MCP minimum | Agent compatibility |
 |---|---|---|
-| v0.6.x | 2025-Q4 build | Claude Code 1.0+, Claude Desktop 0.10+, Codex CLI any, Gemini CLI 0.5+, Antigravity any |
+| v0.7.x | 2025-Q4 build | Claude Code 1.0+, Claude Desktop 0.10+, Codex CLI any, Gemini CLI 0.5+, Antigravity any |
 
 The plugin ships as one bundle — all three skills release together at the plugin version. Each `SKILL.md` frontmatter `version:` mirrors `.claude-plugin/plugin.json`.
 
