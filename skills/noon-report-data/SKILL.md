@@ -1,7 +1,7 @@
 ---
 name: noon-report-data
 description: Use when working with noon.com (noon Partners) report data that SellerSheet ingests on a schedule — querying noon orders, finance/transactions, FBN inventory aging, or product-views & sales for a connected noon store. Covers the 4 rpt_noon_* warehouse tables, their schedules, grain, and the query nuances (project-scoped, marketplace semantics, snapshot vs incremental).
-version: 0.7.0
+version: 0.7.1
 ---
 
 # noon Report Data
@@ -37,14 +37,14 @@ marketplace (see per-table notes).
 Tools: `get_table_schema(table_name)` for live columns; `query_report_data(...)`
 to read. Single-table per call (use `joins` to add tables).
 
-## Schedule (twice daily, marketplace-local; UTC cron on the reporting server)
+## Schedule (twice daily at 04:00 + 16:00 UTC)
 
 | Table | Report | Cron (UTC) | Lookback | Mode |
 |---|---|---|---|---|
-| `rpt_noon_orders` | OMS orders export | `0 3,15 * * *` (03:00, 15:00) | 7d, full re-pull each fire | incremental (UPSERT) |
+| `rpt_noon_orders` | OMS orders export | `0 4,16 * * *` (04:00, 16:00) | 7d, full re-pull each fire | incremental (UPSERT) |
 | `rpt_noon_finance` | Transaction view (item level) | `0 4,16 * * *` (04:00, 16:00) | 14d, full re-pull | incremental (UPSERT) |
-| `rpt_noon_fbn_aging` | FBN inventory v2 aging | `0 6,18 * * *` (06:00, 18:00) | — | **snapshot** (one full picture per `snapshot_date`) |
-| `rpt_noon_product_views` | Catalog product-views & sales | `0 8,20 * * *` (08:00, 20:00) | 14d, full re-pull | incremental (UPSERT) |
+| `rpt_noon_fbn_aging` | FBN inventory v2 aging | `0 4,16 * * *` (04:00, 16:00) | — | **snapshot** (one full picture per `snapshot_date`) |
+| `rpt_noon_product_views` | Catalog product-views & sales | `0 4,16 * * *` (04:00, 16:00) | 14d, full re-pull | incremental (UPSERT) |
 
 The 3 time-based reports re-pull their whole lookback window every run (so late
 status/finance/analytics revisions are caught), then UPSERT — no duplicates.
