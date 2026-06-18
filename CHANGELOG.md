@@ -13,6 +13,12 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.7.1] — 2026-06-19
+
+### Changed
+
+- **`noon-report-data`** — all 4 noon reports (orders, finance, FBN aging, product views) now run on `0 4,16 * * *` (04:00 + 16:00 UTC); the schedule table was previously staggered (03/04/06/08). Matches the reporting-server registry.
+
 ## [0.7.0] — 2026-06-17
 
 ### Added
