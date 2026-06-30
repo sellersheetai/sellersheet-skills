@@ -1,0 +1,95 @@
+{
+  "configuration": {
+    "adProduct": "SPONSORED_BRANDS",
+    "columns": [
+      "adGroupId",
+      "adGroupName",
+      "addToCart",
+      "addToCartClicks",
+      "addToCartRate",
+      "brandedSearches",
+      "brandedSearchesClicks",
+      "campaignBudgetAmount",
+      "campaignBudgetCurrencyCode",
+      "campaignBudgetType",
+      "campaignId",
+      "campaignName",
+      "campaignStatus",
+      "clicks",
+      "cost",
+      "costType",
+      "date",
+      "detailPageViews",
+      "detailPageViewsClicks",
+      "eCPAddToCart",
+      "endDate",
+      "impressions",
+      "keywordBid",
+      "keywordId",
+      "keywordStatus",
+      "keywordText",
+      "keywordType",
+      "matchType",
+      "newToBrandDetailPageViewRate",
+      "newToBrandDetailPageViews",
+      "newToBrandDetailPageViewsClicks",
+      "newToBrandECPDetailPageView",
+      "newToBrandPurchases",
+      "newToBrandPurchasesClicks",
+      "newToBrandPurchasesPercentage",
+      "newToBrandPurchasesRate",
+      "newToBrandSales",
+      "newToBrandSalesClicks",
+      "newToBrandSalesPercentage",
+      "newToBrandUnitsSold",
+      "newToBrandUnitsSoldClicks",
+      "newToBrandUnitsSoldPercentage",
+      "purchases",
+      "purchasesClicks",
+      "purchasesPromoted",
+      "sales",
+      "salesClicks",
+      "salesPromoted",
+      "startDate",
+      "topOfSearchImpressionShare",
+      "unitsSold",
+      "unitsSoldClicks",
+      "video5SecondViewRate",
+      "video5SecondViews",
+      "videoCompleteViews",
+      "videoFirstQuartileViews",
+      "videoMidpointViews",
+      "videoThirdQuartileViews",
+      "videoUnmutes",
+      "viewClickThroughRate",
+      "viewabilityRate",
+      "viewableImpressions"
+    ],
+    "filters": [
+      {
+        "field": "keywordStatus",
+        "values": [
+          "ARCHIVED",
+          "ENABLED",
+          "PAUSED"
+        ]
+      },
+      {
+        "field": "keywordType",
+        "values": [
+          "TARGETING_EXPRESSION",
+          "TARGETING_EXPRESSION_PREDEFINED"
+        ]
+      }
+    ],
+    "format": "GZIP_JSON",
+    "groupBy": [
+      "targeting"
+    ],
+    "reportTypeId": "sbTargeting",
+    "timeUnit": "DAILY"
+  },
+  "endDate": "2022-07-04",
+  "name": "[Preview Only] SponsoredBrandsCampaignDailyReport",
+  "startDate": "2022-07-01"
+}

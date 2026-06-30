@@ -1,0 +1,28 @@
+{
+  "configuration": {
+    "adProduct": "SPONSORED_DISPLAY",
+    "columns": [
+      "campaignName",
+      "campaignStatus",
+      "clicks",
+      "endDate",
+      "grossClickThroughs",
+      "grossImpressions",
+      "impressions",
+      "invalidClickThroughRate",
+      "invalidClickThroughs",
+      "invalidImpressionRate",
+      "invalidImpressions",
+      "startDate"
+    ],
+    "format": "GZIP_JSON",
+    "groupBy": [
+      "campaign"
+    ],
+    "reportTypeId": "sdGrossAndInvalids",
+    "timeUnit": "SUMMARY"
+  },
+  "endDate": "2023-11-10",
+  "name": "SponsoredDisplayGrossAndInvalidTrafficSummaryReport",
+  "startDate": "2023-11-01"
+}
