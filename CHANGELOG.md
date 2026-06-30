@@ -12,6 +12,15 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.8.2] — 2026-06-30
+
+### Changed
+
+- **`amazon-ads`** — §1 now states the `store` param norm explicitly: always pass
+  `<name>-<countryCode>` (e.g. `store="myStore-US"`). A bare name is ambiguous when the
+  same brand exists in multiple marketplaces (different stores / ad profiles) and is now
+  rejected server-side; the cc-qualified `store` is what disambiguates.
+
 ## [0.8.1] — 2026-06-30
 
 ### Fixed
