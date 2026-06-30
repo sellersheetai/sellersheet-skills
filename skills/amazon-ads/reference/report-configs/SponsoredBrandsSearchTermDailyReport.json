@@ -14,19 +14,15 @@
       "cost",
       "costType",
       "date",
-      "endDate",
       "impressions",
       "keywordBid",
       "keywordId",
-      "keywordStatus",
       "keywordText",
       "matchType",
       "purchases",
       "purchasesClicks",
-      "query",
       "sales",
       "salesClicks",
-      "startDate",
       "unitsSold",
       "video5SecondViewRate",
       "video5SecondViews",
@@ -40,14 +36,6 @@
       "viewableImpressions"
     ],
     "filters": [
-      {
-        "field": "keywordStatus",
-        "values": [
-          "ARCHIVED",
-          "ENABLED",
-          "PAUSED"
-        ]
-      },
       {
         "field": "keywordType",
         "values": [

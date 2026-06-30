@@ -54,16 +54,6 @@
       "unitsSoldSameSku30d",
       "unitsSoldSameSku7d"
     ],
-    "filters": [
-      {
-        "field": "campaignStatus",
-        "values": [
-          "ARCHIVED",
-          "ENABLED",
-          "PAUSED"
-        ]
-      }
-    ],
     "format": "GZIP_JSON",
     "groupBy": [
       "advertiser"
