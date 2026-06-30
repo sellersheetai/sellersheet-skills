@@ -1,7 +1,7 @@
 ---
 name: amazon-ads
 description: Guide for managing Amazon Advertising (SP, SB, SD) using SellerSheet MCP tools. Use when working with Amazon Ads campaigns, ad groups, keywords, targets, bids, budgets, bulk creation, negative keywords, ad performance data, bulk exports, change history, account management, invoices, or validation configs.
-version: 0.8.1
+version: 0.8.2
 ---
 
 # Amazon Ads — SellerSheet MCP Guide
@@ -25,7 +25,11 @@ Call `get_user_context` first — always. It returns:
 - Valid `countryCode` values per store
 - Workspace config: spreadsheet ID and Drive folder ID
 
-Both `store` and `countryCode` are required by every ads tool.
+Both `store` and `countryCode` are required by every ads tool. **Always pass `store`
+in `<name>-<countryCode>` format** (e.g. `store="myStore-US"`, `countryCode="US"`) — a
+bare name is ambiguous when you own the same brand in multiple marketplaces (e.g.
+`myStore-US` vs `myStore-DE` are different stores / ad profiles) and is rejected with
+"Store name '…' is ambiguous". The cc-qualified `store` is what disambiguates.
 
 **Workspace not configured?**
 If `get_user_context` returns no spreadsheet ID / folder ID, or `read_sheet` /
