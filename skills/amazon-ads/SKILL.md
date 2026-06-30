@@ -1,7 +1,7 @@
 ---
 name: amazon-ads
 description: Guide for managing Amazon Advertising (SP, SB, SD) using SellerSheet MCP tools. Use when working with Amazon Ads campaigns, ad groups, keywords, targets, bids, budgets, bulk creation, negative keywords, ad performance data, bulk exports, change history, account management, invoices, or validation configs.
-version: 0.8.0
+version: 0.8.1
 ---
 
 # Amazon Ads — SellerSheet MCP Guide
@@ -191,8 +191,15 @@ traffic, placement breakdowns, or a column set the `rpt_*` tables don't carry)._
 4. Notify user the report is in progress — do not block waiting
 5. When user returns: `ads_get_report` → if `COMPLETED`, write `data.report` rows to sheet and summarize; if still `IN_PROGRESS`, check again later
 
-**`timeUnit` rule:** `DAILY` reports must include a `date` column; `SUMMARY` reports must
-not. Each template already pairs the two correctly — don't mix them.
+**`timeUnit` rule:** `DAILY` reports must include a `date` column (NOT
+`startDate`/`endDate`); `SUMMARY` reports must include `startDate`/`endDate` (NOT `date`).
+The bundled templates were corrected against live Amazon validation (2026-06-30) and
+pair these correctly — don't re-add the wrong one. Filters are **groupBy-specific**:
+if Amazon 400s `"filters includes fields …"`, drop the offending field.
+
+**Throttling:** Amazon throttles `createReport` hard (429 `Throttled`), separate from
+the SellerSheet rate limit. Submit reports **one at a time, a few seconds apart**, and
+back off on 429 — never fan out a batch of `ads_create_report` calls.
 
 ### H. Bulk Entity Export (Snapshot of Live Structure)
 
