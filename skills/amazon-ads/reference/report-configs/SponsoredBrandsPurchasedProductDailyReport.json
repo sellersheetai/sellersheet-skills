@@ -1,0 +1,38 @@
+{
+  "configuration": {
+    "adProduct": "SPONSORED_BRANDS",
+    "columns": [
+      "adGroupId",
+      "adGroupName",
+      "attributionType",
+      "budgetCurrency",
+      "campaignBudgetCurrencyCode",
+      "campaignId",
+      "campaignName",
+      "date",
+      "newToBrandOrders14d",
+      "newToBrandOrdersPercentage14d",
+      "newToBrandPurchases14d",
+      "newToBrandPurchasesPercentage14d",
+      "newToBrandSales14d",
+      "newToBrandSalesPercentage14d",
+      "newToBrandUnitsSold14d",
+      "newToBrandUnitsSoldPercentage14d",
+      "orders14d",
+      "productCategory",
+      "productName",
+      "purchasedAsin",
+      "sales14d",
+      "unitsSold14d"
+    ],
+    "format": "GZIP_JSON",
+    "groupBy": [
+      "purchasedAsin"
+    ],
+    "reportTypeId": "sbPurchasedProduct",
+    "timeUnit": "DAILY"
+  },
+  "endDate": "2022-06-04",
+  "name": "SponsoredBrandsPurchasedProductDailyReportTest",
+  "startDate": "2022-06-01"
+}

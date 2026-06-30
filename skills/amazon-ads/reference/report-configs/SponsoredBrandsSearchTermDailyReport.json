@@ -1,0 +1,72 @@
+{
+  "configuration": {
+    "adProduct": "SPONSORED_BRANDS",
+    "columns": [
+      "adGroupId",
+      "adGroupName",
+      "campaignBudgetAmount",
+      "campaignBudgetCurrencyCode",
+      "campaignBudgetType",
+      "campaignId",
+      "campaignName",
+      "campaignStatus",
+      "clicks",
+      "cost",
+      "costType",
+      "date",
+      "endDate",
+      "impressions",
+      "keywordBid",
+      "keywordId",
+      "keywordStatus",
+      "keywordText",
+      "matchType",
+      "purchases",
+      "purchasesClicks",
+      "query",
+      "sales",
+      "salesClicks",
+      "startDate",
+      "unitsSold",
+      "video5SecondViewRate",
+      "video5SecondViews",
+      "videoCompleteViews",
+      "videoFirstQuartileViews",
+      "videoMidpointViews",
+      "videoThirdQuartileViews",
+      "videoUnmutes",
+      "viewClickThroughRate",
+      "viewabilityRate",
+      "viewableImpressions"
+    ],
+    "filters": [
+      {
+        "field": "keywordStatus",
+        "values": [
+          "ARCHIVED",
+          "ENABLED",
+          "PAUSED"
+        ]
+      },
+      {
+        "field": "keywordType",
+        "values": [
+          "BROAD",
+          "EXACT",
+          "PHRASE",
+          "TARGETING_EXPRESSION",
+          "TARGETING_EXPRESSION_PREDEFINED"
+        ]
+      }
+    ],
+    "format": "GZIP_JSON",
+    "groupBy": [
+      "searchTerm"
+    ],
+    "reportTypeId": "sbSearchTerm",
+    "timeUnit": "DAILY"
+  },
+  "endDate": "2022-07-04",
+  "name": "[Preview Only] SponsoredBrandsSearchTermDailyReport",
+  "startDate": "2022-07-01"
+}

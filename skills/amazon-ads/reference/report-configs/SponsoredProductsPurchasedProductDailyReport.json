@@ -1,0 +1,68 @@
+{
+  "configuration": {
+    "adProduct": "SPONSORED_PRODUCTS",
+    "columns": [
+      "adGroupId",
+      "adGroupName",
+      "advertisedAsin",
+      "advertisedSku",
+      "campaignBudgetCurrencyCode",
+      "campaignId",
+      "campaignName",
+      "date",
+      "keyword",
+      "keywordId",
+      "keywordType",
+      "kindleEditionNormalizedPagesRead14d",
+      "kindleEditionNormalizedPagesRoyalties14d",
+      "matchType",
+      "portfolioId",
+      "purchasedAsin",
+      "purchases14d",
+      "purchases1d",
+      "purchases30d",
+      "purchases7d",
+      "purchasesOtherSku14d",
+      "purchasesOtherSku1d",
+      "purchasesOtherSku30d",
+      "purchasesOtherSku7d",
+      "sales14d",
+      "sales1d",
+      "sales30d",
+      "sales7d",
+      "salesOtherSku14d",
+      "salesOtherSku1d",
+      "salesOtherSku30d",
+      "salesOtherSku7d",
+      "unitsSoldClicks14d",
+      "unitsSoldClicks1d",
+      "unitsSoldClicks30d",
+      "unitsSoldClicks7d",
+      "unitsSoldOtherSku14d",
+      "unitsSoldOtherSku1d",
+      "unitsSoldOtherSku30d",
+      "unitsSoldOtherSku7d"
+    ],
+    "filters": [
+      {
+        "field": "keywordType",
+        "values": [
+          "BROAD",
+          "EXACT",
+          "PHRASE",
+          "TARGETING_EXPRESSION",
+          "TARGETING_EXPRESSION_PREDEFINED"
+        ]
+      }
+    ],
+    "format": "GZIP_JSON",
+    "groupBy": [
+      "asin"
+    ],
+    "reportTypeId": "spPurchasedProduct",
+    "timeUnit": "DAILY"
+  },
+  "endDate": "2022-07-04",
+  "name": "SponsoredProductsPurchasedProductDailyReport",
+  "startDate": "2022-07-01"
+}

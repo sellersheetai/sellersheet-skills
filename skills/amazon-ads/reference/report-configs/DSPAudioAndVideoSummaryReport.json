@@ -1,0 +1,45 @@
+{
+  "configuration": {
+    "adProduct": "DEMAND_SIDE_PLATFORM",
+    "columns": [
+      "advertiserId",
+      "advertiserName",
+      "contentGenre",
+      "contentRating",
+      "costPerThousandImpressions",
+      "creativeId",
+      "creativeName",
+      "grossImpressions",
+      "impressions",
+      "invalidImpressions",
+      "lineItemId",
+      "lineItemName",
+      "orderId",
+      "orderName",
+      "showTitle",
+      "supplySource",
+      "supplySourceId"
+    ],
+    "filters": [
+      {
+        "field": "advertiserId",
+        "values": [
+          "12345678910"
+        ]
+      }
+    ],
+    "format": "CSV",
+    "groupBy": [
+      "ad",
+      "campaign",
+      "content",
+      "creative",
+      "supplySource"
+    ],
+    "reportTypeId": "dspAudioAndVideo",
+    "timeUnit": "SUMMARY"
+  },
+  "endDate": "2024-04-12",
+  "name": "DSPAudioAndVideoSummaryReport",
+  "startDate": "2024-04-06"
+}

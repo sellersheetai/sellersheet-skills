@@ -1,0 +1,31 @@
+{
+  "configuration": {
+    "adProduct": "SPONSORED_DISPLAY",
+    "columns": [
+      "adGroupId",
+      "adGroupName",
+      "asinBrandHalo",
+      "campaignBudgetCurrencyCode",
+      "campaignId",
+      "campaignName",
+      "conversionsBrandHalo",
+      "conversionsBrandHaloClicks",
+      "date",
+      "promotedAsin",
+      "promotedSku",
+      "salesBrandHalo",
+      "salesBrandHaloClicks",
+      "unitsSoldBrandHalo",
+      "unitsSoldBrandHaloClicks"
+    ],
+    "format": "GZIP_JSON",
+    "groupBy": [
+      "asin"
+    ],
+    "reportTypeId": "sdPurchasedProduct",
+    "timeUnit": "DAILY"
+  },
+  "endDate": "2023-10-04",
+  "name": "[Preview Only] SponsoredDisplayPurchasedProductDailyReport",
+  "startDate": "2023-10-01"
+}

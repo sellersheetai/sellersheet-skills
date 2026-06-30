@@ -1,0 +1,27 @@
+{
+  "configuration": {
+    "adProduct": "SPONSORED_BRANDS",
+    "columns": [
+      "campaignName",
+      "campaignStatus",
+      "clicks",
+      "date",
+      "grossClickThroughs",
+      "grossImpressions",
+      "impressions",
+      "invalidClickThroughRate",
+      "invalidClickThroughs",
+      "invalidImpressionRate",
+      "invalidImpressions"
+    ],
+    "format": "GZIP_JSON",
+    "groupBy": [
+      "campaign"
+    ],
+    "reportTypeId": "sbGrossAndInvalids",
+    "timeUnit": "DAILY"
+  },
+  "endDate": "2023-11-10",
+  "name": "SponsoredBrandsGrossAndInvalidTrafficDailyReport",
+  "startDate": "2023-11-01"
+}
