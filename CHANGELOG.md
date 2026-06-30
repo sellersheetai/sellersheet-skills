@@ -12,6 +12,20 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.8.1] — 2026-06-30
+
+### Fixed
+
+- **`amazon-ads` report-configs** — corrected 11 of the 35 bundled v3 `createReport`
+  templates that Amazon's live `createReport` rejects: SB `*Daily` configs dropped the
+  `startDate`/`endDate` columns (DAILY requires `date`); `SponsoredProductsKeywordsSummaryReport`
+  dropped its `date` column (SUMMARY requires `startDate`/`endDate`); both Sponsored TV
+  `*Daily` configs gained a `date` column; and groupBy-invalid filters/columns were
+  removed (spAdvertisedProduct `campaignStatus`, sbAds filters, sbTargeting `keywordStatus`,
+  sbSearchTerm `keywordStatus`/`query`). All verified accepted live. README + Recipe G
+  hardened with the timeUnit↔date rule, groupBy-specific-filters rule, and the
+  `createReport` throttling guidance (submit one-at-a-time, back off on 429).
+
 ## [0.8.0] — 2026-06-30
 
 ### Added

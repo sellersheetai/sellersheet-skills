@@ -22,7 +22,6 @@
       "detailPageViews",
       "detailPageViewsClicks",
       "eCPAddToCart",
-      "endDate",
       "impressions",
       "keywordBid",
       "keywordId",
@@ -50,7 +49,6 @@
       "sales",
       "salesClicks",
       "salesPromoted",
-      "startDate",
       "topOfSearchImpressionShare",
       "unitsSold",
       "unitsSoldClicks",
@@ -66,14 +64,6 @@
       "viewableImpressions"
     ],
     "filters": [
-      {
-        "field": "keywordStatus",
-        "values": [
-          "ARCHIVED",
-          "ENABLED",
-          "PAUSED"
-        ]
-      },
       {
         "field": "keywordType",
         "values": [

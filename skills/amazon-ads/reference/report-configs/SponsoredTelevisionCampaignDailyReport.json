@@ -2,6 +2,7 @@
   "configuration": {
     "adProduct": "SPONSORED_TELEVISION",
     "columns": [
+      "date",
       "addToCart",
       "addToCartClicks",
       "addToCartViews",

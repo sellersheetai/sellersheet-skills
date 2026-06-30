@@ -86,6 +86,24 @@ them as column references for what DSP exposes, and confirm DSP access before at
 | `dspProduct` | `["lineItem"]` | SUMMARY | DSPProductSummaryReport.json |
 | `dspTech` | `["lineItem"]` | SUMMARY | DSPTechSummaryReport.json |
 
+## Validity (corrected 2026-06-30 against live Amazon createReport)
+
+Amazon's raw "[Preview Only]" sample configs are **column-superset previews and are NOT
+all directly submittable** — 11 were rejected by live `createReport` and have been
+**corrected here** (verified accepted). The two rules they violated — now enforced
+across every file:
+1. **`timeUnit` ↔ date column.** `DAILY` must include `date` and must NOT include
+   `startDate`/`endDate`; `SUMMARY` must include `startDate`/`endDate` and must NOT
+   include `date`. (Mixing → 400 `"… not supported for … time unit"`.)
+2. **Filters are groupBy-specific.** A filter field valid for one `groupBy` is rejected
+   for another (e.g. `campaignStatus` is invalid for `groupBy: advertiser`; `sbAds`
+   accepts no filters; `keywordStatus` is not a valid `sbTargeting`/`sbSearchTerm`
+   filter). When adding a filter back, use the allowed set Amazon names in the 400.
+
+**Throttling:** `createReport` is **aggressively rate-limited by Amazon** (429
+`Throttled`) — independent of the SellerSheet plan limiter. Submit reports **one at a
+time with a few seconds between calls** and back off on 429; do not fan them out.
+
 ## Notes & gotchas
 
 - **`timeUnit` controls grain.** `SUMMARY` collapses the whole date range into one row per

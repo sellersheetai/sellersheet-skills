@@ -22,7 +22,6 @@
       "detailPageViews",
       "detailPageViewsClicks",
       "eCPAddToCart",
-      "endDate",
       "impressions",
       "matchType",
       "newToBrandDetailPageViewRate",
@@ -45,7 +44,6 @@
       "sales",
       "salesClicks",
       "salesPromoted",
-      "startDate",
       "targetingExpression",
       "targetingId",
       "targetingText",
@@ -65,14 +63,6 @@
       "viewableImpressions"
     ],
     "filters": [
-      {
-        "field": "keywordStatus",
-        "values": [
-          "ARCHIVED",
-          "ENABLED",
-          "PAUSED"
-        ]
-      },
       {
         "field": "keywordType",
         "values": [
