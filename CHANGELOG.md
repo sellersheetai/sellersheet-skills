@@ -7,11 +7,16 @@ All notable changes to SellerSheet Skills are documented here. Format follows [K
 Planned for upcoming releases (under review):
 - `sellersheet` — Amazon business operations orchestrator
 - `amazon-api` — Amazon SP-API guide
-- `amazon-ads` — Amazon Advertising operations
 - `fba-inbound` — FBA inbound shipment workflow
 - `listing-optimizer` — Full agent-orchestrated listing optimization
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
+
+## [0.8.0] — 2026-06-30
+
+### Added
+
+- **`amazon-ads`** — Amazon Advertising (SP, SB, SD) operations guide for SellerSheet MCP: cross-cutting conventions, campaign naming, two performance-data paths (warehouse vs offline report), and workflow recipes (account health, waste mining, bid/budget optimization, bulk launch, negatives, export, change history, recommendations). Bundles `reference/report-configs/` — 35 real Amazon Ads Reporting API v3 `createReport` request bodies (SP/SB/SD/Sponsored TV/DSP) with full authoritative column sets, plus a lookup index.
 
 ## [0.7.1] — 2026-06-19
 

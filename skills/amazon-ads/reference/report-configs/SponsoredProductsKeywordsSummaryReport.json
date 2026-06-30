@@ -1,0 +1,82 @@
+{
+  "configuration": {
+    "adProduct": "SPONSORED_PRODUCTS",
+    "columns": [
+      "acosClicks14d",
+      "acosClicks7d",
+      "adGroupId",
+      "adGroupName",
+      "adKeywordStatus",
+      "attributedSalesSameSku14d",
+      "attributedSalesSameSku1d",
+      "attributedSalesSameSku30d",
+      "attributedSalesSameSku7d",
+      "campaignBudgetAmount",
+      "campaignBudgetCurrencyCode",
+      "campaignBudgetType",
+      "campaignId",
+      "campaignName",
+      "campaignStatus",
+      "clickThroughRate",
+      "clicks",
+      "cost",
+      "costPerClick",
+      "date",
+      "endDate",
+      "impressions",
+      "keyword",
+      "keywordBid",
+      "keywordId",
+      "keywordType",
+      "kindleEditionNormalizedPagesRead14d",
+      "kindleEditionNormalizedPagesRoyalties14d",
+      "matchType",
+      "portfolioId",
+      "purchases14d",
+      "purchases1d",
+      "purchases30d",
+      "purchases7d",
+      "purchasesSameSku14d",
+      "purchasesSameSku1d",
+      "purchasesSameSku30d",
+      "purchasesSameSku7d",
+      "roasClicks14d",
+      "roasClicks7d",
+      "sales14d",
+      "sales1d",
+      "sales30d",
+      "sales7d",
+      "salesOtherSku7d",
+      "startDate",
+      "targeting",
+      "unitsSoldClicks14d",
+      "unitsSoldClicks1d",
+      "unitsSoldClicks30d",
+      "unitsSoldClicks7d",
+      "unitsSoldOtherSku7d",
+      "unitsSoldSameSku14d",
+      "unitsSoldSameSku1d",
+      "unitsSoldSameSku30d",
+      "unitsSoldSameSku7d"
+    ],
+    "filters": [
+      {
+        "field": "keywordType",
+        "values": [
+          "BROAD",
+          "EXACT",
+          "PHRASE"
+        ]
+      }
+    ],
+    "format": "GZIP_JSON",
+    "groupBy": [
+      "targeting"
+    ],
+    "reportTypeId": "spTargeting",
+    "timeUnit": "SUMMARY"
+  },
+  "endDate": "2022-06-04",
+  "name": "SponsoredProductsKeywordsSummaryReport",
+  "startDate": "2022-06-01"
+}

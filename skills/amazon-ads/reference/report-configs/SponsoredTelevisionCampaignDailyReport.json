@@ -1,0 +1,43 @@
+{
+  "configuration": {
+    "adProduct": "SPONSORED_TELEVISION",
+    "columns": [
+      "addToCart",
+      "addToCartClicks",
+      "addToCartViews",
+      "brandedSearches",
+      "brandedSearchesClicks",
+      "brandedSearchesViews",
+      "clickThroughRate",
+      "clicks",
+      "cost",
+      "costPerThousandImpressions",
+      "detailPageViews",
+      "detailPageViewsClicks",
+      "detailPageViewsViews",
+      "impressions",
+      "newToBrandDetailPageViewClicks",
+      "newToBrandDetailPageViewViews",
+      "newToBrandDetailPageViews",
+      "newToBrandPurchases",
+      "newToBrandPurchasesClicks",
+      "newToBrandPurchasesViews",
+      "newToBrandSales",
+      "newToBrandSalesClicks",
+      "newToBrandSalesViews",
+      "portfolioId",
+      "videoFirstQuartileViews",
+      "videoMidpointViews",
+      "videoThirdQuartileViews"
+    ],
+    "format": "GZIP_JSON",
+    "groupBy": [
+      "campaign"
+    ],
+    "reportTypeId": "stCampaigns",
+    "timeUnit": "DAILY"
+  },
+  "endDate": "2023-10-19",
+  "name": "[Preview Only] SponsoredTelevisionCampaignDailyReport",
+  "startDate": "2023-10-19"
+}
