@@ -2,18 +2,18 @@
   "configuration": {
     "adProduct": "SPONSORED_DISPLAY",
     "columns": [
+      "startDate",
+      "endDate",
       "campaignName",
       "campaignStatus",
-      "clicks",
-      "endDate",
-      "grossClickThroughs",
-      "grossImpressions",
       "impressions",
+      "grossImpressions",
+      "clicks",
+      "grossClickThroughs",
       "invalidClickThroughRate",
       "invalidClickThroughs",
       "invalidImpressionRate",
-      "invalidImpressions",
-      "startDate"
+      "invalidImpressions"
     ],
     "format": "GZIP_JSON",
     "groupBy": [

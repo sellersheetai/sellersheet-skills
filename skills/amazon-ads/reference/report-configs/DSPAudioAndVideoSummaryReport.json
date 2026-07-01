@@ -2,23 +2,23 @@
   "configuration": {
     "adProduct": "DEMAND_SIDE_PLATFORM",
     "columns": [
-      "advertiserId",
       "advertiserName",
+      "advertiserId",
+      "orderName",
+      "orderId",
+      "lineItemName",
+      "lineItemId",
+      "creativeName",
+      "creativeId",
+      "supplySource",
+      "supplySourceId",
+      "showTitle",
       "contentGenre",
       "contentRating",
-      "costPerThousandImpressions",
-      "creativeId",
-      "creativeName",
-      "grossImpressions",
       "impressions",
-      "invalidImpressions",
-      "lineItemId",
-      "lineItemName",
-      "orderId",
-      "orderName",
-      "showTitle",
-      "supplySource",
-      "supplySourceId"
+      "grossImpressions",
+      "costPerThousandImpressions",
+      "invalidImpressions"
     ],
     "filters": [
       {
