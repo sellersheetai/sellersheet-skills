@@ -2,13 +2,13 @@
   "configuration": {
     "adProduct": "SPONSORED_PRODUCTS",
     "columns": [
+      "date",
       "campaignName",
       "campaignStatus",
-      "clicks",
-      "date",
-      "grossClickThroughs",
-      "grossImpressions",
       "impressions",
+      "grossImpressions",
+      "clicks",
+      "grossClickThroughs",
       "invalidClickThroughRate",
       "invalidClickThroughs",
       "invalidImpressionRate",
