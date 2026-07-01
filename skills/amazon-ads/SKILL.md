@@ -1,7 +1,7 @@
 ---
 name: amazon-ads
 description: Guide for managing Amazon Advertising (SP, SB, SD) using SellerSheet MCP tools. Use when working with Amazon Ads campaigns, ad groups, keywords, targets, bids, budgets, bulk creation, negative keywords, ad performance data, bulk exports, change history, account management, invoices, or validation configs.
-version: 0.8.2
+version: 0.8.3
 ---
 
 # Amazon Ads — SellerSheet MCP Guide
@@ -318,6 +318,7 @@ No `ads_sb_portfolios` tool. Assign portfolios via `portfolioId` on create/updat
 | `ads_localization` | currency / currency_extended / products / keywords / targeting | `products`/`keywords`/`targeting` require source + target marketplaceId in body |
 | `ads_manager_accounts` | list / create / associate / disassociate | Most accounts return empty list — normal for non-agency accounts |
 | `ads_metadata` | — (single call) | Body: `{"asins": [...], "adType": ...}` or `{"skus": [...], "adType": ...}`. `adType` required; max **100** per request |
+| `ads_dsp_advertisers` | — (single call) | Lists DSP advertisers → `advertiserId` for DSP report filters. **Requires an AGENCY-type profile**; seller/vendor profiles return 400 "not agency" (no DSP seat) |
 | `ads_brand_home` | — (single call) | Returns `{brandId, brandEntityId, brandRegistryName}` for every brand under this profile |
 | `ads_stores` | — (asset library) | GET `/stores/assets`. Use the **ads-account entityId** from `ads_account.alternateIds` (not a per-brand ID from `ads_brand_home`). Assets at brand-level return empty; `mediaType` filter effectively accepts only `brandLogo` |
 | `ads_store_insights` | `type='asin_metrics'` (engagement) / `'insights'` (traffic & SQS) | Requires `brandEntityId` from `ads_brand_home`. Store-aggregate `asin_metrics` only accepts `TOTAL_VIEWS`/`TOTAL_CLICKS`; `insights` accepts exactly one non-SQS metric per call |
