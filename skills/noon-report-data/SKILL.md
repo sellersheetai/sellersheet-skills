@@ -1,7 +1,7 @@
 ---
 name: noon-report-data
 description: Use when working with noon.com (noon Partners) report data that SellerSheet ingests on a schedule — querying noon orders, finance/transactions, FBN inventory aging, or product-views & sales for a connected noon store. Covers the 4 rpt_noon_* warehouse tables, their schedules, grain, and the query nuances (project-scoped, marketplace semantics, snapshot vs incremental).
-version: 0.8.2
+version: 0.8.3
 ---
 
 # noon Report Data

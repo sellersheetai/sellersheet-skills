@@ -72,9 +72,15 @@ COMPLETES) is a list of row dicts keyed by the `columns` you requested.
 
 ## Amazon DSP (`adProduct: DEMAND_SIDE_PLATFORM`)
 
-DSP reports require an `advertiserId` filter and use a different (much wider) column set.
-These run through the DSP reporting surface, not the SP/SB/SD `createReport` flow — treat
-them as column references for what DSP exposes, and confirm DSP access before attempting.
+DSP reports require a **real `advertiserId`** filter (the sample configs carry a
+placeholder `12345678910`). Discover it with **`ads_dsp_advertisers`** (GET
+`/dsp/advertisers`) and put a returned id in the report's filter:
+`{"field": "advertiserId", "values": ["<advertiserId>"]}`.
+
+⚠️ **DSP needs an AGENCY-type ad profile.** `ads_dsp_advertisers` on a seller/vendor
+profile returns 400 *"Selected profile type is not agency"* (verified live on a seller
+store) — those accounts have no DSP advertiser seat, so DSP reports can't be run. Confirm
+the profile is agency + has DSP access before attempting DSP reports.
 
 | reportTypeId | groupBy | timeUnit | File |
 |---|---|---|---|
