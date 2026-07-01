@@ -12,6 +12,17 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.8.3] — 2026-07-01
+
+### Added
+
+- **`amazon-ads`** — DSP advertiser discovery: documented the new `ads_dsp_advertisers`
+  tool (GET `/dsp/advertisers`) for pulling the real `advertiserId` that DSP offline
+  reports require (the bundled DSP report-configs carry a placeholder). Notes the
+  hard requirement that DSP needs an **AGENCY-type ad profile** — seller/vendor profiles
+  return 400 "Selected profile type is not agency" (verified live). Added to the account
+  tool table + the report-configs DSP section.
+
 ## [0.8.2] — 2026-06-30
 
 ### Changed
