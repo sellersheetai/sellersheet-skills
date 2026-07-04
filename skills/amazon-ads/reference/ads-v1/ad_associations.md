@@ -1,11 +1,7 @@
-# v1 `ad_associations` - FULL field catalog (generated; do not hand-edit)
+# v1 `ad_associations` - FULL field catalog (generated from Amazon's official OpenAPI specification; do not hand-edit)
 
-Complete leaf-level request-body schema per ad product, extracted
-from the vendored Amazon OpenAPI specs. `*` after a field name =
-required within its object. Enums >15 values: V1-GA-ENUMS.md.
-
-Regenerate: `python3 docs/ads-api-v1/tools/gen_field_catalog.py`
-
+Complete leaf-level request-body schema per ad product. `*` after a
+field name = required within its object. Enums >15 values: ENUMS.md.
 
 ## ALL - QUERY
 
