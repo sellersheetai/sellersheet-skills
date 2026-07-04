@@ -1,7 +1,7 @@
 ---
 name: amazon-ads
 description: Guide for managing Amazon Advertising (SP, SB, SD) using SellerSheet MCP tools. Use when working with Amazon Ads campaigns, ad groups, keywords, targets, bids, budgets, bulk creation, negative keywords, ad performance data, bulk exports, change history, account management, invoices, or validation configs.
-version: 0.8.3
+version: 0.9.0
 ---
 
 # Amazon Ads — SellerSheet MCP Guide
@@ -13,6 +13,16 @@ already documented in each tool's docstring.
 **Bundled reference:** `reference/report-configs/` holds real Amazon Ads Reporting API v3
 `createReport` request bodies (one per report type, with the full authoritative `columns`
 list) for the offline-report path — see `reference/report-configs/README.md`.
+
+**Unified v1 tools (PREFERRED for campaign management):** `ads_campaigns`,
+`ads_ad_groups`, `ads_ads`, `ads_targets`, `ads_ad_associations` — one common-model
+surface for SP/SB/SD/ST/DSP over Amazon Ads API v1 (`/adsApi/v1/*`). Keywords,
+product targets, and ALL negatives are a single `targets` resource (`negative` flag).
+**Before composing any v1 create/update payload, read the FULL field catalog for the
+entity at `reference/ads-v1/<entity>.md`** — complete leaf-level schema per ad
+product × verb, plus live-verified gotchas in `reference/ads-v1/README.md`.
+The legacy per-product tools (`ads_sp_*`, `ads_sb_*`, `ads_sd_*`) remain for
+entities v1 doesn't cover (portfolios, recommendations, exports, history, reports).
 
 ---
 
