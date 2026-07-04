@@ -33,3 +33,12 @@ Verified behavior of the live API (from real calls, not just the spec):
 - Sponsored Products product-ad creative:
   `creative.productCreative.productCreativeSettings.advertisedProduct{productId, productIdType}`
   — `productIdType` is `SKU` for seller accounts, `ASIN` for vendors.
+- `productTarget.product` is an OBJECT: `{"productId": "<ASIN>"}` — a bare
+  string returns 400 "Expected null".
+- An SP ad group is SINGLE-targeting-type: keyword and product targets cannot
+  coexist in one ad group. Adding the second type fails with the misleading
+  `FIELD_VALUE_NOT_UNIQUE` "Duplicate object found" — use separate ad groups.
+- Campaign `stateFilter` also accepts `PROPOSED` (returned by the live enum
+  validator alongside ENABLED/PAUSED/ARCHIVED).
+- A schema-valid ad create can still fail per-index with `PRODUCT_INELIGIBLE`
+  when the product is not currently buyable.
