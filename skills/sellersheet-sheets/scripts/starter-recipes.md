@@ -99,8 +99,8 @@ write_sheet_formula(spreadsheet_id, "Inventory!B8",
 format_sheet_range(spreadsheet_id, "Inventory!A8:H8",
     background_color=[0.157, 0.2, 0.318], font_color=[1,1,1], bold=True)
 
-# 7. Row heights for thumbnails + image column width
-resize_sheet_rows(spreadsheet_id, "Inventory", start_row=8, end_row=300, height=38)
+# 7. Image column width (fixed 50 px). Do NOT set a row height — the thumbnail
+#    renders at the default ~21 px row, which is all a quick SKU reminder needs.
 resize_sheet_columns(spreadsheet_id, "Inventory", start_col=0, end_col=1, width=50)
 
 # 8. Overflow footer at row 209 (8 anchor + 200 LIMIT + 1 buffer)

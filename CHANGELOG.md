@@ -12,6 +12,27 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.8.4] — 2026-07-06
+
+### Changed
+
+- **`sellersheet-sheets`** — reconciled the row-height rule across `SKILL.md`,
+  `brand-standards.md`, `image-pattern.md`, `action-sheets.md`, and `starter-recipes.md`.
+  Previously the docs contradicted themselves (38 px thumbnail rows vs. "never set row
+  heights"). Now uniform: **keep Sheets' default (~21 px) on every row, including
+  image/thumbnail rows — a thumbnail is a quick "which SKU" reminder, not a detail view.
+  The only sanctioned custom row height is the emerald title banner (~34 px).**
+- **`sellersheet-sheets`** — rewrote the column-width guidance. Pixels are called out as
+  Google Sheets' *native* width unit (not a workaround). Deliberate **fixed widths are the
+  default** for operator tables (size to the header, not the data); `autofit_sheet_columns`
+  is demoted to a **narrow final polish** for short/structured columns with three hard rules:
+  run it **LAST — after `set_sheet_basic_filter`** (autofit doesn't reserve room for the
+  filter arrow, so autofit-before-filter clips every header — verified on a live build);
+  **never autofit column A or long free-text columns** (images, product titles, descriptions);
+  and accept its zero-padding hug (bump a few px if a header still clips). Documented the
+  live `autofit_sheet_columns` route (replacing the outdated "exists in some MCP builds" hedge
+  and the inferior `len × px` estimate).
+
 ## [0.8.3] — 2026-07-01
 
 ### Added
