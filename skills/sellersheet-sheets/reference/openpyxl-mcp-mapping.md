@@ -81,7 +81,7 @@ These don't have direct MCP endpoints yet — work around or check your MCP vers
 | Sparklines | exposed via `insert_sheet_sparkline` (varies by MCP version) | Use `=SPARKLINE(...)` via `write_sheet_formula` |
 | Cell borders | partial (depends on MCP version; `set_sheet_borders` may exist) | Use `format_sheet_range` with bg color as visual border surrogate |
 | Bulk paste with inline format | 2 calls | `write_sheet` then `format_sheet_range` — trivial overhead |
-| Auto-fit columns | `autofit_sheet_columns` exists in some MCP builds | If unavailable, estimate width = `max(len(value)) × 8 + 16` |
+| Auto-fit columns | `autofit_sheet_columns(spreadsheet_id, sheet, start_col, end_col)` — wraps Sheets' native `autoResizeDimensions` | Measures real rendered glyphs server-side (CJK/RTL/bold, any language), beating a `len × px` estimate. But it's a **final polish for short/structured columns only** — run it LAST, **after `set_sheet_basic_filter`** (it doesn't reserve room for the filter arrow, so autofit-before-filter clips headers), and **never on column A or long free-text columns** (keep those fixed). Fixed widths are the safer default. See `reference/brand-standards.md` |
 | Data validation (dropdowns) | `add_sheet_data_validation` / `add_sheet_dropdown` (where available) | Use those when present |
 | Protected ranges | `protect_sheet_range(spreadsheet_id, range_)` | Lock headers + config |
 | Group / collapse rows | `group_sheet_rows_cols` | Use for collapsible sections |
@@ -93,7 +93,7 @@ A few patterns differ enough between openpyxl and Sheets-via-MCP that they warra
 
 ### 1. Width units
 
-openpyxl uses character widths (`width = 20` means "20 chars wide"). The MCP uses pixels (`width = 140` means "140 px"). Rough conversion: `pixels = chars × 7 + 16`. So openpyxl `width=20` ≈ MCP `width=156`.
+openpyxl uses character widths (`width = 20` means "20 chars wide"). The MCP uses pixels (`width = 140` means "140 px") — and **pixels are Google Sheets' *native* width unit** (the API's `pixelSize`), so this is the correct, best-practice unit here, not a workaround. The char unit is the foreign one. You only need the conversion when porting an openpyxl width: `pixels = chars × 7 + 16`, so openpyxl `width=20` ≈ MCP `width=156`. When you don't have a legacy width to port, don't compute pixels at all — call `autofit_sheet_columns` and let Sheets size to the rendered text.
 
 ### 2. Colors
 

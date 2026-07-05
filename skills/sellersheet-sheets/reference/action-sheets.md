@@ -14,7 +14,8 @@
 >    white = optional input, slate `#8CA0B3` = button-filled.
 > 3. Title banners are **never merged** (merges break freeze panes) — format the band,
 >    write the title in the first cell only.
-> 4. **Never set row heights** (including image rows and title rows — Sheets defaults only).
+> 4. **Don't inflate rows** — keep Sheets' default height everywhere, including image/thumbnail
+>    rows. The only sanctioned custom row height is the emerald title banner (~34 px).
 > 5. The editable marker is the monochrome glyph **`✎`** (inherits font color), never the
 >    emoji `✏️`, and only on pure display rows — never on machine-parsed rows
 >    (row-1 keys, Publish Queue row 5).
@@ -239,7 +240,7 @@ The literal string `"Image"` is the first element of the array, so the formula c
 
 When you write data rows, pass `startCol=2` to `_upsertRows` (or whatever your write helper is) so col A is never touched.
 
-**Do not set a custom row height on image data rows.** Let Sheets keep its default (~21 px). The IMAGE thumbnail is a preview to confirm "is this the right ASIN", not a detail viewer — operators don't zoom in on a 70px-tall preview, they click out to the catalog or the Amazon page if they need details. Taller rows just push other line items off-screen and slow scrolling. If you need a bigger preview, expose it on a per-row hover or a side panel, not by globally inflating every row.
+**Do not set a row height on image data rows — leave the default (~21 px).** The IMAGE thumbnail is a preview to confirm "is this the right ASIN", not a detail viewer — operators don't zoom in on a preview, they click out to the catalog or the Amazon page if they need details. The default row height is all a quick SKU reminder needs; inflating rows just pushes other line items off-screen and slows scrolling. If you ever need a bigger preview, expose it on a per-row hover or a side panel, not by resizing every row.
 
 ## Dropdowns — Amazon enum cells get warning-mode validation
 

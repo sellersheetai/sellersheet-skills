@@ -1,7 +1,7 @@
 ---
 name: sellersheet-sheets
 description: Use whenever Google Sheets is the deliverable surface and SellerSheet MCP is the tool for sheet I/O. Reads, writes, formats, builds reports, dashboards, financial models, and live-data tables in Google Sheets via SellerSheet MCP endpoints (read_sheet, write_sheet, write_sheet_formula, format_sheet_range, set_sheet_number_format, add_sheet_chart, add_sheet_conditional_format, add_sheet_dropdown, etc.). Trigger when the user references a docs.google.com/spreadsheets URL, asks to publish output to a Google Sheet, builds anything in the SellerSheet workbook ecosystem, needs the live SQL() spill + image-thumbnail patterns, or builds an operator action surface (filter rows, Amazon enum dropdowns, status chips). Do NOT trigger for local .xlsx files — that's a different skill. This skill is self-contained — no need to load xlsx or any other sheet skill alongside; xlsx-style conventions (financial color coding, number formats, formula best practices) are adapted inline.
-version: 0.8.3
+version: 0.8.4
 ---
 
 # SellerSheet Google Sheets — via MCP
@@ -88,7 +88,7 @@ When asked to build a Google Sheet report:
 4. **Write data + formulas** — `write_sheet` for values (USER_ENTERED parses `=` as formula too), `write_sheet_formula` for explicit single-cell intent. Per `reference/formula-conventions.md`: cell references, not hardcoded numbers.
 5. **Format numbers + headers** — `set_sheet_number_format` for currency / percent / dates. `format_sheet_range` for header bands. See `reference/brand-standards.md`.
 6. **Visualize** — `add_sheet_chart`, `add_sheet_conditional_format` for gradients and value-based chips. See `reference/conditional-formatting.md`.
-7. **Polish** — `resize_sheet_columns`, `add_sheet_filter`, `protect_sheet_range`.
+7. **Polish** — `resize_sheet_columns` for deliberate fixed widths (the default; size to the header, not the data), `add_sheet_filter`, `protect_sheet_range`. Use `autofit_sheet_columns` only as a final touch on short/structured columns (codes, KPIs, statuses) and only **after** the filter — it doesn't reserve room for the filter arrow, so autofit-before-filter clips headers. Never autofit column A or long free-text columns (images, product titles, descriptions) — keep those fixed. See `reference/brand-standards.md` → Column widths.
 8. **Verify** — run the Final review gate below. Do not declare the build done until it passes.
 
 ## Final review gate — do NOT skip
@@ -143,7 +143,7 @@ input, white = optional input, slate `#8CA0B3` = button/sync-filled. Editable la
 carry a trailing **`✎`** (monochrome glyph, inherits color — never the emoji `✏️`), and only
 on display/label rows, never on the machine row.
 
-**Always:** never merge (breaks freeze panes); never set row heights (Sheets defaults);
+**Always:** never merge (breaks freeze panes); keep default row heights everywhere (including image/thumbnail rows — a thumbnail is just a quick SKU reminder, not a detail view), the only sanctioned custom row height is the emerald banner (~34 px);
 `setFrozenRows(<display row>)`; basic filter on the display row where useful (skip on audit
 logs); EN·CN cell notes on the display row so the operator knows each column's logic.
 

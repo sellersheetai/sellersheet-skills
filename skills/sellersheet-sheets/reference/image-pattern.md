@@ -98,10 +98,10 @@ Sheets prompts **"Allow access to external images"** once on first open — expe
 
 For SKU/ASIN tables with thumbnails:
 
-- **Row height: 38 px** (`resize_sheet_rows(..., start_row=8, end_row=300, height=38)`). Set out to row 300+ ahead of growth.
-- **Image column width: 50 px** (`resize_sheet_columns(..., start_col=0, end_col=1, width=50)`).
+- **Row height: leave the default (~21 px). Do NOT call `resize_sheet_rows`.** The thumbnail is a quick "which SKU is this" reminder, not a detail view — the default height is all it needs, and the only sanctioned custom row height anywhere is the ~34 px emerald banner.
+- **Image column width: 50 px, fixed** (`resize_sheet_columns(..., start_col=0, end_col=1, width=50)`). **Never autofit column A** (it collapses/distorts an image column) **or the Product/description column** (autofit blows it out to the full title width — keep it fixed ~240 px). Autofit is optional on the short/structured columns only (codes, KPIs, status), and only **after** `set_sheet_basic_filter` — autofit doesn't reserve room for the filter arrow, so autofit-before-filter clips the headers. See `reference/brand-standards.md` → Column widths.
 
-Thumbnails render clearly at this size and stay compact.
+Thumbnails render fine in a 50 px column at the default row height — the preview is there to confirm "is this the right ASIN", not to zoom into; operators click out to the catalog for detail.
 
 ## See also
 

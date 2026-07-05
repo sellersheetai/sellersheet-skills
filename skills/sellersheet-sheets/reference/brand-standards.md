@@ -69,7 +69,10 @@ band split below.
 - **Machine-parsed rows get formatting only** — row-1 key rows and any row code reads to build
   payloads (e.g. Publish Queue row 5): font color may classify, but the TEXT must never change
   (no `✎`, no `✱`, no suffixes).
-- **Never merge cells. Never set row heights.** Long content clips; users click to read.
+- **Never merge cells. Don't inflate rows** — keep Sheets' default height everywhere; long
+  content clips and users click to read. The **only** sanctioned custom row height is the emerald
+  title banner (~34 px). Image/thumbnail rows stay at the default too — the preview is a quick
+  "which SKU is this" reminder, not a detail view.
 - Filter-input / config-value rows keep the light gray-blue `#EDF1F5` input band, italic.
 - Cell notes are bilingual and tag-first (`REQUIRED · 必填` / `OPTIONAL · 可选` /
   `CONDITIONAL · 视情况必填` / `AUTO · 自动填写（勿改）`), matching the font-color class.
@@ -138,10 +141,40 @@ Apply consistently: don't mix `$#,##0` and `$#,##0.00` within the same column.
 
 ## Row heights + column widths
 
-- **KPI / data rows** (no thumbnails): default ~21 px.
-- **Data rows with thumbnails**: **38 px** (`resize_sheet_rows(..., start_row=8, end_row=300, height=38)`). Set out to row 300+ ahead of growth.
-- **Image column width**: **50 px** (`resize_sheet_columns(..., start_col=0, end_col=1, width=50)`).
-- **Standard data columns**: **140-180 px** for general columns; narrower for codes (Store ~80 px, SKU ~120 px).
+**Row heights — default everywhere, one sanctioned exception.** Don't inflate rows; a tall row
+just pushes other line items off-screen.
+
+- **Emerald title banner**: **~34 px** — the only custom row height allowed.
+- **Everything else** (KPI rows, plain data rows, navy header rows, **and image/thumbnail rows**):
+  leave Sheets' default (~21 px) — do **not** call `resize_sheet_rows`. A thumbnail at the default
+  height is a quick "which SKU is this" reminder; that's all it needs to be.
+
+**Column widths — pixels, deliberate fixed widths by default, autofit as a narrow final polish.**
+Pixels are Google Sheets' native width unit (the API's `pixelSize`), so there's no char-to-px
+guessing.
+
+- **Default to fixed pixel widths.** For a branded operator table, deliberate widths are more
+  predictable and leave padding: **140–180 px** general, codes narrower (Store ~80 px, SKU ~120 px),
+  long-text columns fixed (Product/description ~240 px). Size a column to its **header** length,
+  not its data — the header is usually the widest thing in an operator table.
+- **Column A + any long free-text column — never autofit.** Column A (image thumbnails → **50 px**,
+  `resize_sheet_columns(..., start_col=0, end_col=1, width=50)`) **and** any long free-text column
+  (Product titles, descriptions, notes) stay fixed. Autofit collapses an image column and blows a
+  description column across the screen.
+- **`autofit_sheet_columns` is a final polish for short/structured columns only** (codes, IDs,
+  KPIs, statuses) — it wraps Sheets' server-side `autoResizeDimensions`, which measures the actual
+  rendered glyphs (CJK/RTL/bold all correct, any language). Use it only when all three hold:
+  1. **It runs LAST** — after values, header text, bolding, number formats, **and
+     `set_sheet_basic_filter`.** Autofit does *not* reserve room for the filter dropdown arrow
+     (~20 px), so running it before the filter clips every header ("Fulfilla", "Days Co"). Run it
+     after the filter and the arrow sits beside the text. *(Verified on a live build: same tab,
+     headers clipped when autofit ran before the filter, clean when it ran after.)*
+  2. **You exclude column A and every long free-text column** (see above).
+  3. **You accept its zero-padding hug** — autofit fits the exact glyph box with no breathing room,
+     so a header ending in a wide glyph plus the arrow can still lose the last pixel. If one clips,
+     bump that column a few px or just set it fixed.
+
+  When in doubt, skip autofit and set fixed widths — it's the safer default.
 
 ## See also
 
