@@ -83,11 +83,12 @@ Campaign → Ad Group → Keywords / Targets → Product Ads
 Resolve IDs top-down before creating child entities. Use the parent tool with
 `action='list'` to get IDs.
 
-### 5. Campaign Naming Convention
+### 5. Campaign & Ad Group Naming Convention
 
-Every campaign you create — via `ads_sp_campaigns`, `ads_sb_campaigns`,
-`ads_sd_campaigns`, or `ads_sp_bulk_create` — must follow this format. Audit
-existing campaigns against it before any rollout; flag deviations to the user.
+Every campaign you create — via the unified `ads_campaigns` (preferred) or the
+legacy `ads_sp_campaigns` / `ads_sb_campaigns` / `ads_sd_campaigns` /
+`ads_sp_bulk_create` — must follow this format. Audit existing campaigns against
+it before any rollout; flag deviations to the user.
 
 ```
 <Country>_<ProductLine>_<AdType>_<Targeting>_<SKU>
@@ -129,8 +130,24 @@ UK_Luggage_SD_COMP_NS-LG-28
   multi-segment SKUs), slashes, or brackets.
 - One Targeting variant per campaign — split `Broad/Phrase` into two separate
   campaigns (`..._SP_BROAD_...` and `..._SP_PHRASE_...`), not one combined.
-- Ad group names are free-form but must indicate intent — e.g. `Top KW Broad`,
-  `Competitor Targeting`, `Exact Winners`. No naming rule there beyond clarity.
+- **Ad group names are derived, never free-form:** `<CampaignName>_<Role>` —
+  the full campaign name plus a short PascalCase role token. Single-ad-group
+  campaigns use `_Main`; multi-ad-group campaigns pick intent roles like
+  `_TopKW`, `_Winners`, `_Harvest`, `_Comp`, `_Cat`.
+  Examples: `AU_MattressProtector_SP_EXACT_SHBS001013_Main`,
+  `US_Towel_SB_BD_TJ-TOWEL-Q_TopKW`.
+  Because campaign names are unique, this makes every ad group name **globally
+  unique across the account** — Amazon does NOT enforce cross-campaign ad-group
+  name uniqueness, but sheet templates, Amazon bulksheets, and dedupe checks all
+  join by name, so a duplicate ad group name in another campaign silently corrupts
+  those joins. Keep one targeting type per ad group (an SP ad group cannot mix
+  keyword and product targets — see the ads-v1 reference gotchas).
+- **Collision check before every create:** query existing names first —
+  `ads_campaigns` action=query with `nameFilter {"include": ["<name>"],
+  "queryTermMatchType": "EXACT_MATCH"}` (plus the required adProductFilter) — and
+  stop if the name already exists. Never rely on Amazon to reject duplicates (it
+  accepts them), and never create a variant by appending `(2)`; fix the segments
+  instead.
 - When migrating an account to this convention: never rename live campaigns mid-
   flight (breaks history). Apply only to new campaigns; document the legacy ones
   in the audit sheet.
