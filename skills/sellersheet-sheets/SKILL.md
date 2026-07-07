@@ -53,9 +53,10 @@ These rules apply to every sheet this skill produces. Detailed explanations live
 1. **Professional font**: Arial 10pt default. Override only for headers and titles.
 2. **Zero formula errors**: scan the output for `#REF!`, `#VALUE!`, `#N/A`, `#ERROR!` — these are real bugs, fix them. `#DIV/0!` is tolerable *only if* wrapped in `IFERROR`/`IF(denom=0,…)`; an unwrapped one is a bug. `#NAME?` on `=SQL(` and `=IMAGE(` cells is the documented browser-pending state — not a bug. Full triage: `reference/error-semantics.md`.
 3. **Use formulas, never hardcoded values** for any calculated number — `=SUM(B2:B10)`, not `=23456`. See `reference/formula-conventions.md` for the WRONG/CORRECT pattern.
-4. **Open-range SQL spills** with `LIMIT N` per data scope — see `reference/sql-function.md`.
-5. **Emerald = where the operator acts; Navy = where the operator reads.** Never both on the same row. See `reference/brand-standards.md` for the action-vs-read rule.
-6. **Verify with a read-back** before declaring done — the mandatory **Final review gate** below; full routine in `scripts/verify-after-write.md`.
+4. **Apostrophe-escape literal text that starts with `=`** (or `+`). `write_sheet` is USER_ENTERED — any string beginning with `=` becomes a live formula, so documentation text like `= ordered − refunded` or `= date` lands as a broken formula (`#ERROR!` / `#NAME?`). Write `'= ordered − refunded` instead; the apostrophe doesn't render. **Scan every 2D values array for leading-`=` cells BEFORE writing** — notes/derivation columns in schema docs are the classic trap. Full gotcha + repair recipe: `reference/mcp-gotchas.md`.
+5. **Open-range SQL spills** with `LIMIT N` per data scope — see `reference/sql-function.md`.
+6. **Emerald = where the operator acts; Navy = where the operator reads.** Never both on the same row. See `reference/brand-standards.md` for the action-vs-read rule.
+7. **Verify with a read-back** before declaring done — the mandatory **Final review gate** below; full routine in `scripts/verify-after-write.md`.
 
 For action sheets (operator inputs into the data) the additional 9-rule checklist lives in `reference/action-sheets.md`.
 
@@ -85,7 +86,7 @@ When asked to build a Google Sheet report:
 1. **Inspect what's there** — `list_sheet_tabs`, `get_sheet_metadata`, `read_sheet` a sample range to discover existing conventions.
 2. **Provision tabs** — `add_sheet_tab` for each new tab. Hidden data tabs prefixed `_raw_*`; configuration on `_config`.
 3. **Setup tab structure** — `setup_sheet` for the standard 2-row header convention, or manually `write_sheet` + `format_sheet_range` + `freeze_sheet_panes`.
-4. **Write data + formulas** — `write_sheet` for values (USER_ENTERED parses `=` as formula too), `write_sheet_formula` for explicit single-cell intent. Per `reference/formula-conventions.md`: cell references, not hardcoded numbers.
+4. **Write data + formulas** — `write_sheet` for values (USER_ENTERED parses `=` as formula too), `write_sheet_formula` for explicit single-cell intent. Before every `write_sheet`, sweep the values array for literal text starting with `=`/`+` and prefix those cells with `'` (Quick-reference rule 4). Per `reference/formula-conventions.md`: cell references, not hardcoded numbers.
 5. **Format numbers + headers** — `set_sheet_number_format` for currency / percent / dates. `format_sheet_range` for header bands. See `reference/brand-standards.md`.
 6. **Visualize** — `add_sheet_chart`, `add_sheet_conditional_format` for gradients and value-based chips. See `reference/conditional-formatting.md`.
 7. **Polish** — `resize_sheet_columns` for deliberate fixed widths (the default; size to the header, not the data), `add_sheet_filter`, `protect_sheet_range`. Use `autofit_sheet_columns` only as a final touch on short/structured columns (codes, KPIs, statuses) and only **after** the filter — it doesn't reserve room for the filter arrow, so autofit-before-filter clips headers. Never autofit column A or long free-text columns (images, product titles, descriptions) — keep those fixed. See `reference/brand-standards.md` → Column widths.

@@ -10,7 +10,7 @@ read_sheet(spreadsheet_id, "Tab!A1:Z<last_row>")
 
 Look at the returned JSON for any cell value containing:
 - `#REF!` — real bug (spill collision or invalid reference)
-- `#ERROR!` — real bug (formula syntax or NOW-collision)
+- `#ERROR!` — real bug (formula syntax, NOW-collision, or a text cell written with a leading `=` and no apostrophe escape — top cause in documentation/notes columns; see `mcp-gotchas.md`)
 - `#VALUE!` — real bug (type mismatch / schema drift)
 - `#N/A` — usually real bug (failed VLOOKUP/MATCH)
 - `#DIV/0!` — tolerable, but should be wrapped in IFERROR for production
@@ -29,7 +29,7 @@ Triage per `reference/error-semantics.md`.
 
 `#NAME?` on `=SQL(...)` or `=IMAGE(...)` cells is **expected pending state** (server-side can't evaluate browser-side custom functions). Not a bug.
 
-`#NAME?` on any other formula type is **real bug** — typo or undefined named range.
+`#NAME?` on any other formula type is **real bug** — typo, undefined named range, or prose accidentally parsed as a formula (a text cell starting with `=`, e.g. `= date` — rewrite as `'= date`). When repairing such cells mid-table, rewrite the whole affected column range in one call; per-cell patches keyed to table row numbers land at the wrong sheet rows (header offset).
 
 For each `#NAME?` cell:
 
