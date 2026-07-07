@@ -16,7 +16,35 @@ These are SellerSheet MCP behaviors that bite during builds. Avoid by following 
 
 `write_sheet_formula` is appropriate when you want explicit per-cell intent or single-cell update. Both write formulas; equivalent in semantics, different in batching cost.
 
-**Side effect**: if you want a plain-text cell whose contents legitimately starts with `=` or `+` (e.g., showing a formula as documentation), prefix with an apostrophe: `"'=SUM(A:A) — used on cell B12"`. The apostrophe doesn't render; it just tells Sheets "treat as literal text."
+## Literal text starting with `=` MUST be apostrophe-escaped
+
+The flip side of USER_ENTERED, and a recurring real-world bug: **any string cell that
+begins with `=` (or `+`) is parsed as a live formula**, even when you obviously meant
+prose. Prefix with an apostrophe — it doesn't render; it tells Sheets "literal text":
+
+| You meant (documentation text) | What Sheets does unescaped | Write instead |
+|---|---|---|
+| `= ordered − refunded` (a Notes cell) | `#ERROR!` (parse failure) | `'= ordered − refunded` |
+| `= date` (a source-mapping cell) | `#NAME?` (unknown range `date`) | `'= date` |
+| `= amount − promo + tax` | `#ERROR!` | `'= amount − promo + tax` |
+| `=SUM(A:A) — used on B12` | live `=SUM` + trailing garbage | `'=SUM(A:A) — used on B12` |
+
+Where it bites (verified live, 2026-07-08 schema-review build — 6 cells across 2 tabs):
+**Notes / derivation / source-mapping columns** in schema docs, data dictionaries, and
+formula documentation — any table ABOUT formulas. The habit: after composing a
+`write_sheet` values array, sweep it for cells whose string starts with `=` or `+` and
+prefix those with `'`. One sweep costs seconds; the read-back-diagnose-repair loop costs
+many calls.
+
+**Repair trap:** when the read-back reveals these errors mid-table, do NOT patch
+individual cells by their table row numbers — table row *N* sits at sheet row *N + header
+offset*, and off-by-offset patches overwrite healthy neighbors (also verified live).
+Rewrite the whole affected column range in one `write_sheet` with correctly escaped
+values.
+
+**Related quirk:** the apostrophe escape consumes only ONE leading char. A cell that
+should *display* a leading quote (`'fee' or 'ad'`) needs a double apostrophe:
+`"''fee' or 'ad'"`.
 
 ## `format_sheet_range` over a merged cell can clear content
 
