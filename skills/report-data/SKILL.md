@@ -286,7 +286,7 @@ result = get_user_context()
 
 ```
 rows = read_sheet(spreadsheetId, 'Store Reports!A:Z')
-# Look for matching storeName + reportName with a sheetUrl already filled
+# Look for matching storeName + reportType with a sheetUrl already filled
 # If found and recent enough: inform user, skip to analysis
 ```
 
@@ -306,7 +306,8 @@ if result['data']['reports']:
 
 ```
 write_sheet(spreadsheetId, 'Store Reports!A{row}',
-    [[storeName, reportName, dataStartTime, dataEndTime, '', '', 'CREATING', '', '']])
+    [[storeName, reportType, dataStartTime, dataEndTime, reportPeriod, reportOptionsJson,
+      '', '', 'CREATING', '', '']])
 ```
 
 ### Step 5: Create the Report
@@ -386,16 +387,18 @@ elif preview:
 | Col | Header | Notes |
 |-----|--------|-------|
 | A | storeName | Store name (e.g. myStore-AE) |
-| B | reportName | Human-readable report name |
+| B | reportType | SP-API reportType constant (e.g. GET_MERCHANT_LISTINGS_ALL_DATA). Legacy sheets carry machine key `reportName` — code accepts both |
 | C | dataStartTime | ISO 8601, blank for snapshot reports |
 | D | dataEndTime | ISO 8601, blank for snapshot reports |
-| E | requestTime | Written by SP-API on createReport |
-| F | reportId | Write immediately after create |
-| G | processingStatus | Keep updated while polling |
-| H | sheetUrl | Write when DONE (use =HYPERLINK formula) |
-| I | folderUrl | Drive folder link (optional) |
+| E | reportPeriod | WEEK/MONTH/QUARTER for Brand Analytics types; blank otherwise |
+| F | reportOptions | Advanced reportOptions JSON (rare extra knobs) |
+| G | requestTime | Written on createReport |
+| H | reportId | Write immediately after create |
+| I | processingStatus | Keep updated while polling; FATAL rows append Amazon's errorDetails |
+| J | sheetUrl | Write when DONE (use =HYPERLINK formula) |
+| K | folderUrl | Drive folder link (optional) |
 
-Row 1: machine headers · Row 2: display labels · Data: row 3+
+Row 1: machine headers (hidden) · Row 2: title banner · Row 3: display labels · Data: row 4+
 
 ### Date Report Scheduler tab (GAS automated)
 
