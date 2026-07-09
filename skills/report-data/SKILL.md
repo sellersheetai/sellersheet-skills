@@ -400,12 +400,16 @@ elif preview:
 
 Row 1: machine headers (hidden) · Row 2: title banner · Row 3: display labels · Data: row 4+
 
-### Date Report Scheduler tab (GAS automated)
+### Retired: Date Report Scheduler tab
 
-Used by `autoSyncDateReportScheduler` for date-range reports — appends rows and auto-advances dates.
+The old GAS-automated scheduler tab (`autoSyncDateReportScheduler` appending
+date-range rows and auto-advancing windows) is RETIRED — recurring ingestion
+is owned by the server-side cron system (`list_report_syncs` +
+`query_report_data` against the `rpt_*` warehouse). The reports spreadsheet
+carries exactly three tabs: **Store Reports** (on-demand), **Report Lookup**
+(search existing Amazon reports), **Store Report Type** (reference catalog).
 
-| Col | Header | Notes |
-|-----|--------|-------|
+-----|--------|-------|
 | A | storeName | Store name |
 | B | reportName | Must be a date-range report type |
 | C | dataStartTime | Start of current window |
