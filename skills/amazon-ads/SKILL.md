@@ -71,6 +71,13 @@ historical ranges.
 takes 30 minutes to several hours — only use it when synced tables genuinely cannot
 serve the need.
 
+**The warehouse tables are DAILY PERFORMANCE rows — not a campaign inventory.** Only campaigns
+with delivery in the window appear in `rpt_sp_*` / `rpt_sb_*` / `rpt_sd_*` (live count 47
+ENABLED vs 21 in the warehouse, observed). For a complete campaign inventory or count, use the
+live `ads_sp_campaigns` / `ads_sb_campaigns` / `ads_sd_campaigns` API. And `report_date: "latest"`
+pins to the newest **single** day, often a zero-spend partial day — use `report_date: "all"` plus
+explicit date filters for any cost or performance analysis.
+
 ### 4. Ad Type Hierarchy
 
 ```
@@ -377,6 +384,11 @@ No `ads_sb_portfolios` tool. Assign portfolios via `portfolioId` on create/updat
 
 The negative-entity and placement tables let you audit current negatives and
 placement-level performance without an entity-list call.
+
+These are **daily performance rows** — a campaign with no delivery in the window has no row, so
+never derive "how many campaigns exist" from them; call `ads_sp_campaigns` (or the SB/SD
+equivalent) for that. Prefer `report_date: "all"` + date filters over `"latest"` when analysing
+cost or performance, since `"latest"` may land on a zero-spend partial day.
 
 Common SP column names (verify others in the reference json before filtering): `cost`,
 `clicks`, `impressions`, `purchases_14d`, `sales_14d`, `acos_clicks_14d`,
