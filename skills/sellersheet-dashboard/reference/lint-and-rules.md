@@ -46,6 +46,8 @@ suggested_ship_in = MAX(0, ROUND(units_shipped_t30 / 30 × target_cover_days) �
 
 — and **label it as computed, not Amazon's** (e.g. tag the cell `computed` in its provenance note, or suffix the header "(est.)"). Never present a computed reorder number as an Amazon recommendation.
 
+**`days_of_supply` NULL sorting.** `days_of_supply` is NULL for no-sale SKUs. The warehouse (Postgres) sorts NULLs LAST on ASC — safe. The in-sheet `SQL()`/alasql layer sorts blanks FIRST — that's where unsorted-looking "urgent" lists come from. Filter `days_of_supply > 0` in either layer (also excludes no-sale SKUs, usually the intent).
+
 ### 7. Per-store subtotal rows on Inventory
 
 Above the SQL spill, place two computed rows showing per-store SKU count and at-risk capital. SUMIFS or QUERY against `_raw_inventory`, scoped by Store. Operators budget removal orders per market, not in aggregate.
