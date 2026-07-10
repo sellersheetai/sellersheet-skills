@@ -1,6 +1,7 @@
 {
   "_meta": {
     "table": "rpt_seller_feedback",
+    "naming_note": "PII, frozen — the reporting server never writes it. Deliberately NOT renamed.",
     "report_type": "GET_SELLER_FEEDBACK_DATA",
     "is_snapshot": false,
     "description": "Seller feedback rows with encrypted rater email.",

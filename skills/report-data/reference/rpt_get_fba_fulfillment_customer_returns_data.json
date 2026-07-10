@@ -1,6 +1,7 @@
 {
   "_meta": {
-    "table": "rpt_fba_returns",
+    "table": "rpt_get_fba_fulfillment_customer_returns_data",
+    "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_fba_returns` still resolves as a read-only compat VIEW; prefer `rpt_get_fba_fulfillment_customer_returns_data` in new queries.",
     "report_type": "GET_FBA_FULFILLMENT_CUSTOMER_RETURNS_DATA",
     "is_snapshot": false,
     "description": "FBA customer return events by SKU and fulfillment center.",
@@ -91,17 +92,17 @@
   "example_query": {
     "store": "myStore-AE",
     "tables": [
-      "rpt_fba_returns"
+      "rpt_get_fba_fulfillment_customer_returns_data"
     ],
     "columns": [
-      "rpt_fba_returns.return_date",
-      "rpt_fba_returns.order_id",
-      "rpt_fba_returns.sku"
+      "rpt_get_fba_fulfillment_customer_returns_data.return_date",
+      "rpt_get_fba_fulfillment_customer_returns_data.order_id",
+      "rpt_get_fba_fulfillment_customer_returns_data.sku"
     ],
     "filters": [],
     "order_by": [
       {
-        "column": "rpt_fba_returns.return_date",
+        "column": "rpt_get_fba_fulfillment_customer_returns_data.return_date",
         "dir": "asc"
       }
     ],

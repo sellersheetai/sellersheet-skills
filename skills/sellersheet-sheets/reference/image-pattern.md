@@ -103,6 +103,14 @@ For SKU/ASIN tables with thumbnails:
 
 Thumbnails render fine in a 50 px column at the default row height — the preview is there to confirm "is this the right ASIN", not to zoom into; operators click out to the catalog for detail.
 
+## `#REF!` on service-account-written `IMAGE()` cells
+
+Under some conditions an `IMAGE()` cell written by the service account renders as `#REF!` with a
+"use desktop browser" message for the human, until they open the workbook in a **desktop browser**.
+This is a rendering state, not a broken formula. To read the cell back via MCP and confirm the
+formula you wrote is intact, pass `value_render_option='FORMULA'` — the default rendering returns
+the error string instead.
+
 ## See also
 
 - `reference/sql-function.md` — bracket-quote rule, JOIN syntax, LIMIT defaults

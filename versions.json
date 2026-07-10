@@ -2,7 +2,7 @@
   "$schema": "https://sellersheetai.com/schemas/skills-versions.json",
   "_comment_": "Public-skill version catalog. Source of truth: sellersheet-skills/.claude-plugin/plugin.json '.version'. The plugin ships as one bundle — every skill carries the same version as the plugin. Regenerated on every release (see .github/workflows/auto-tag.yml + .maintainers/promote.sh). Agents fetch this directly (https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/versions.json) OR receive it via get_user_context.skills_catalog, which the SellerSheet MCP server serves by fetching this same file (1-hour cache).",
   "marketplace": "sellersheet-skills",
-  "marketplace_version": "0.8.5",
+  "marketplace_version": "0.8.6",
   "updated_at": "2026-07-10",
   "repository": "https://github.com/sellersheetai/sellersheet-skills",
   "dashboard_url": "https://sellersheetai.com/dashboard",
@@ -12,49 +12,49 @@
   "skills": [
     {
       "name": "sellersheet-sheets",
-      "latest_version": "0.8.5",
+      "latest_version": "0.8.6",
       "path": "skills/sellersheet-sheets",
       "description": "Google Sheets I/O via SellerSheet MCP — reads, writes, formats, builds reports/dashboards/financial models with brand palette, live SQL() spill, image-thumbnail patterns. Self-contained — no xlsx skill required."
     },
     {
       "name": "sellersheet-dashboard",
-      "latest_version": "0.8.5",
+      "latest_version": "0.8.6",
       "path": "skills/sellersheet-dashboard",
       "description": "Multi-tab operator dashboards with freshness instrumentation, agent insights, status tabs. Covers inventory, PPC, account health, listings, profit/margin, returns, buy box, cash conversion. Builds on sellersheet-sheets."
     },
     {
       "name": "report-data",
-      "latest_version": "0.8.5",
+      "latest_version": "0.8.6",
       "path": "skills/report-data",
       "description": "Amazon SP-API + Ads-API report data — query 50+ rpt_* tables in the SellerSheet warehouse, monitor sync schedules, run on-demand reports with TSV-to-Drive download."
     },
     {
       "name": "image-gen",
-      "latest_version": "0.8.5",
+      "latest_version": "0.8.6",
       "path": "skills/image-gen",
       "description": "Amazon listing images + A+ Content via gpt-image-2 — learn competitor style, generate/recolor product-faithful images, enforce main-image compliance, build A+ modules, score, and record to the 'Images Generation' sheet."
     },
     {
       "name": "noon-report-data",
-      "latest_version": "0.8.5",
+      "latest_version": "0.8.6",
       "path": "skills/noon-report-data",
       "description": "noon.com (noon Partners) report data — query the 4 rpt_noon_* warehouse tables (orders, finance, FBN inventory aging, product-views & sales) for a connected noon store; twice-daily schedule, project-scoped, per-marketplace semantics."
     },
     {
       "name": "amazon-report",
-      "latest_version": "0.8.5",
+      "latest_version": "0.8.6",
       "path": "skills/amazon-report",
       "description": "Amazon SP-API on-demand report DOCUMENT schemas — exact reportType, required reportOptions enums, and the full JSON field tree for 22 report types (Brand Analytics, Sales & Traffic, Promotion/Coupon, Vendor, B2B, marketplace ASIN page-view, end-user, account health). Checks the report-data warehouse first; requests on-demand only when not synced."
     },
     {
       "name": "data-kiosk",
-      "latest_version": "0.8.5",
+      "latest_version": "0.8.6",
       "path": "skills/data-kiosk",
       "description": "Amazon SP-API Data Kiosk GraphQL schemas — versioned root query types, dataset fields, required args, enums (DateGranularity/AsinGranularity), and per-field @resultRetention for Sales & Traffic, Economics, and Vendor Analytics. Checks the report-data warehouse first; authors a query only when not synced."
     },
     {
       "name": "amazon-ads",
-      "latest_version": "0.8.5",
+      "latest_version": "0.8.6",
       "path": "skills/amazon-ads",
       "description": "Amazon Advertising (SP, SB, SD) operations via SellerSheet MCP — campaigns, ad groups, keywords/targets, bids, budgets, negatives, bulk create, bulk export, change history, recommendations, account/invoices/brand tools, and v3 offline report configs (bundled reference/report-configs)."
     }

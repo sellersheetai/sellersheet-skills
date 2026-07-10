@@ -38,13 +38,15 @@ For each store on HOME: `SUM(available × landed_<currency>)` over SKUs with `un
 
 `_raw_inventory.inbound` must surface in the visible Inventory table after `available`. EXCESS / restock decisions on `available` alone are dangerous when 200 units are already on the water. Decision logic should consider `available + inbound` as effective stock.
 
-**Restock-qty null fallback.** Amazon's replenishment columns on `rpt_restock_recommendations` are `recommended_order_quantity` + `recommended_order_date` (join on `sku` — the legacy `merchant_sku` was dropped 2026-07-10; `recommended_replenishment_qty` exists only for pre-migration historical rows). `recommended_order_quantity` is frequently NULL — Amazon didn't compute a recommendation for that SKU/marketplace, or a data gap. When it is NULL, do NOT show a blank reorder cell: compute your own suggestion from velocity —
+**Restock-qty null fallback.** Amazon's replenishment columns on `rpt_get_fba_inventory_planning_data` are `recommended_order_quantity` + `recommended_order_date` (join on `sku` — the legacy `merchant_sku` was dropped 2026-07-10; `recommended_replenishment_qty` exists only for pre-migration historical rows). `recommended_order_quantity` is frequently NULL — Amazon didn't compute a recommendation for that SKU/marketplace, or a data gap. When it is NULL, do NOT show a blank reorder cell: compute your own suggestion from velocity —
 
 ```
 suggested_ship_in = MAX(0, ROUND(units_shipped_t30 / 30 × target_cover_days) − available − inbound)
 ```
 
 — and **label it as computed, not Amazon's** (e.g. tag the cell `computed` in its provenance note, or suffix the header "(est.)"). Never present a computed reorder number as an Amazon recommendation.
+
+**`days_of_supply` NULL sorting.** `days_of_supply` is NULL for no-sale SKUs. The warehouse (Postgres) sorts NULLs LAST on ASC — safe. The in-sheet `SQL()`/alasql layer sorts blanks FIRST — that's where unsorted-looking "urgent" lists come from. Filter `days_of_supply > 0` in either layer (also excludes no-sale SKUs, usually the intent).
 
 ### 7. Per-store subtotal rows on Inventory
 

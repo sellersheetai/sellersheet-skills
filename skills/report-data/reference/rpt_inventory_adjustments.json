@@ -1,6 +1,7 @@
 {
   "_meta": {
     "table": "rpt_inventory_adjustments",
+    "naming_note": "RETIRED 2026-05-04. Deliberately keeps its legacy name — not renamed to an Amazon report-type name, since it exists only for legacy reads.",
     "report_type": "GET_FBA_FULFILLMENT_INVENTORY_ADJUSTMENTS_DATA",
     "is_snapshot": false,
     "description": "RETIRED 2026-05-04. Report type 2605 throttled by Amazon across every store. Table preserved for legacy reads only.",
