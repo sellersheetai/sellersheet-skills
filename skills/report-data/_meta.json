@@ -1,6 +1,17 @@
 {
   "_meta": {
     "description": "Index of SellerSheet SP report tables. Load this first, then load reference/<table>.json for column details.",
+    "naming_convention": "Table names ARE the Amazon report types: 'rpt_' + report_type lowercased. Renamed 2026-07-10 (migration d5f7a9c1e3b5). The old internal names (rpt_listings_snapshot, rpt_restock_recommendations, rpt_account_health, ...) still resolve as read-only compat VIEWs — prefer the canonical names below.",
+    "tables_deliberately_not_amazon_named": {
+      "rpt_orders": "Fed by TWO order report types (GET_FLAT_FILE_ALL_ORDERS_DATA_BY_ORDER_DATE_GENERAL for the one-shot 30-day backfill, ..._BY_LAST_UPDATE_GENERAL for the hourly incremental) — no single report type to name it after.",
+      "rpt_sp_purchased_products": "Fed by two report types; keeps its shorthand name.",
+      "rpt_sp_* / rpt_sb_* / rpt_sd_*": "Ads-API tables — already Amazon-derived names.",
+      "rpt_dk_*": "Data Kiosk GraphQL datasets, not SP-API report types.",
+      "rpt_noon_*": "noon.com, not Amazon.",
+      "listing_images": "Enrichment cache, not a report.",
+      "rpt_inventory_age / rpt_inventory_adjustments / rpt_sales_and_traffic": "Retired — left under their legacy names for legacy reads only.",
+      "rpt_fba_shipments / rpt_seller_feedback": "PII, frozen — no writes, no rename."
+    },
     "queryable_via": "query_report_data",
     "enable_via": "enable_report_sync",
     "trigger_via": "trigger_report_sync",
@@ -10,12 +21,12 @@
       "rpt_seller_feedback"
     ],
     "poll_only_tables": [
-      "rpt_settlements"
+      "rpt_get_v2_settlement_report_data_flat_file_v2"
     ]
   },
   "tables": [
     {
-      "table": "rpt_afn_inventory",
+      "table": "rpt_get_afn_inventory_data",
       "report_type": "GET_AFN_INVENTORY_DATA",
       "is_snapshot": true,
       "queryable": true,
@@ -29,10 +40,10 @@
         "asin",
         "snapshot_date"
       ],
-      "reference": "reference/rpt_afn_inventory.json"
+      "reference": "reference/rpt_get_afn_inventory_data.json"
     },
     {
-      "table": "rpt_fba_fee_preview",
+      "table": "rpt_get_fba_estimated_fba_fees_txt_data",
       "report_type": "GET_FBA_ESTIMATED_FBA_FEES_TXT_DATA",
       "is_snapshot": false,
       "queryable": true,
@@ -46,27 +57,27 @@
         "asin",
         "report_date"
       ],
-      "reference": "reference/rpt_fba_fee_preview.json"
+      "reference": "reference/rpt_get_fba_estimated_fba_fees_txt_data.json"
     },
     {
-      "table": "rpt_fba_inventory_health",
-      "report_type": "GET_FBA_INVENTORY_PLANNING_DATA",
+      "table": "rpt_get_fba_myi_all_inventory_data",
+      "report_type": "GET_FBA_MYI_ALL_INVENTORY_DATA",
       "is_snapshot": true,
       "queryable": true,
       "pii": false,
       "deprecated": false,
       "strategy": "request",
-      "description": "FBA inventory health and age-bucket snapshot.",
+      "description": "Full FBA inventory snapshot (Manage Your Inventory) — afn-* quantity buckets, listing-exists flags, per-unit volume. Age buckets live in rpt_get_fba_inventory_planning_data, not here.",
       "key_columns": [
         "sku",
         "fnsku",
         "asin",
         "snapshot_date"
       ],
-      "reference": "reference/rpt_fba_inventory_health.json"
+      "reference": "reference/rpt_get_fba_myi_all_inventory_data.json"
     },
     {
-      "table": "rpt_fba_reimbursements",
+      "table": "rpt_get_fba_reimbursements_data",
       "report_type": "GET_FBA_REIMBURSEMENTS_DATA",
       "is_snapshot": false,
       "queryable": true,
@@ -80,10 +91,10 @@
         "case_id",
         "report_date"
       ],
-      "reference": "reference/rpt_fba_reimbursements.json"
+      "reference": "reference/rpt_get_fba_reimbursements_data.json"
     },
     {
-      "table": "rpt_fba_returns",
+      "table": "rpt_get_fba_fulfillment_customer_returns_data",
       "report_type": "GET_FBA_FULFILLMENT_CUSTOMER_RETURNS_DATA",
       "is_snapshot": false,
       "queryable": true,
@@ -97,7 +108,7 @@
         "sku",
         "report_date"
       ],
-      "reference": "reference/rpt_fba_returns.json"
+      "reference": "reference/rpt_get_fba_fulfillment_customer_returns_data.json"
     },
     {
       "table": "rpt_fba_shipments",
@@ -145,7 +156,7 @@
       "reference": "reference/rpt_inventory_age.json"
     },
     {
-      "table": "rpt_inventory_ledger",
+      "table": "rpt_get_ledger_detail_view_data",
       "report_type": "GET_LEDGER_DETAIL_VIEW_DATA",
       "is_snapshot": false,
       "queryable": true,
@@ -159,10 +170,10 @@
         "asin",
         "report_date"
       ],
-      "reference": "reference/rpt_inventory_ledger.json"
+      "reference": "reference/rpt_get_ledger_detail_view_data.json"
     },
     {
-      "table": "rpt_listings_snapshot",
+      "table": "rpt_get_merchant_listings_all_data",
       "report_type": "GET_MERCHANT_LISTINGS_ALL_DATA",
       "is_snapshot": true,
       "queryable": true,
@@ -176,7 +187,7 @@
         "fulfillment_channel",
         "snapshot_date"
       ],
-      "reference": "reference/rpt_listings_snapshot.json"
+      "reference": "reference/rpt_get_merchant_listings_all_data.json"
     },
     {
       "table": "listing_images",
@@ -197,7 +208,7 @@
       "reference": "reference/listing_images.json"
     },
     {
-      "table": "rpt_ltsf_charges",
+      "table": "rpt_get_fba_fulfillment_longterm_storage_fee_charges_data",
       "report_type": "GET_FBA_FULFILLMENT_LONGTERM_STORAGE_FEE_CHARGES_DATA",
       "is_snapshot": false,
       "queryable": true,
@@ -211,27 +222,27 @@
         "fnsku",
         "report_date"
       ],
-      "reference": "reference/rpt_ltsf_charges.json"
+      "reference": "reference/rpt_get_fba_fulfillment_longterm_storage_fee_charges_data.json"
     },
     {
-      "table": "rpt_afn_inventory_by_country",
+      "table": "rpt_get_afn_inventory_data_by_country",
       "report_type": "GET_AFN_INVENTORY_DATA_BY_COUNTRY",
       "is_snapshot": true,
       "queryable": true,
       "pii": false,
       "deprecated": false,
       "strategy": "request",
-      "description": "Per-country FBA inventory split for NARF sellers (UK->DE/FR/IT/ES/SE; US->CA/MX). Pairs with rpt_afn_inventory pool total.",
+      "description": "Per-country FBA inventory split for NARF sellers (UK->DE/FR/IT/ES/SE; US->CA/MX). Pairs with rpt_get_afn_inventory_data pool total.",
       "key_columns": [
         "fnsku",
         "country",
         "condition_type",
         "snapshot_date"
       ],
-      "reference": "reference/rpt_afn_inventory_by_country.json"
+      "reference": "reference/rpt_get_afn_inventory_data_by_country.json"
     },
     {
-      "table": "rpt_account_health",
+      "table": "rpt_get_v2_seller_performance_report",
       "report_type": "GET_V2_SELLER_PERFORMANCE_REPORT",
       "is_snapshot": true,
       "queryable": true,
@@ -244,7 +255,7 @@
         "marketplace_id",
         "snapshot_date"
       ],
-      "reference": "reference/rpt_account_health.json"
+      "reference": "reference/rpt_get_v2_seller_performance_report.json"
     },
     {
       "table": "rpt_demographics",
@@ -300,7 +311,7 @@
       "reference": "reference/rpt_orders.json"
     },
     {
-      "table": "rpt_removal_orders",
+      "table": "rpt_get_fba_fulfillment_removal_order_detail_data",
       "report_type": "GET_FBA_FULFILLMENT_REMOVAL_ORDER_DETAIL_DATA",
       "is_snapshot": false,
       "queryable": true,
@@ -314,7 +325,7 @@
         "order_source",
         "report_date"
       ],
-      "reference": "reference/rpt_removal_orders.json"
+      "reference": "reference/rpt_get_fba_fulfillment_removal_order_detail_data.json"
     },
     {
       "table": "rpt_repeat_purchase",
@@ -334,7 +345,7 @@
       "reference": "reference/rpt_repeat_purchase.json"
     },
     {
-      "table": "rpt_restock_recommendations",
+      "table": "rpt_get_fba_inventory_planning_data",
       "report_type": "GET_FBA_INVENTORY_PLANNING_DATA",
       "is_snapshot": true,
       "queryable": true,
@@ -348,10 +359,10 @@
         "fnsku",
         "snapshot_date"
       ],
-      "reference": "reference/rpt_restock_recommendations.json"
+      "reference": "reference/rpt_get_fba_inventory_planning_data.json"
     },
     {
-      "table": "rpt_returns",
+      "table": "rpt_get_flat_file_returns_data_by_return_date",
       "report_type": "GET_FLAT_FILE_RETURNS_DATA_BY_RETURN_DATE",
       "is_snapshot": false,
       "queryable": true,
@@ -365,7 +376,7 @@
         "return_request_date",
         "report_date"
       ],
-      "reference": "reference/rpt_returns.json"
+      "reference": "reference/rpt_get_flat_file_returns_data_by_return_date.json"
     },
     {
       "table": "rpt_sales_and_traffic",
@@ -454,7 +465,7 @@
       "reference": "reference/rpt_seller_feedback.json"
     },
     {
-      "table": "rpt_settlements",
+      "table": "rpt_get_v2_settlement_report_data_flat_file_v2",
       "report_type": "GET_V2_SETTLEMENT_REPORT_DATA_FLAT_FILE_V2",
       "is_snapshot": false,
       "queryable": true,
@@ -468,10 +479,10 @@
         "settlement_end_date",
         "posted_date"
       ],
-      "reference": "reference/rpt_settlements.json"
+      "reference": "reference/rpt_get_v2_settlement_report_data_flat_file_v2.json"
     },
     {
-      "table": "rpt_storage_fees",
+      "table": "rpt_get_fba_storage_fee_charges_data",
       "report_type": "GET_FBA_STORAGE_FEE_CHARGES_DATA",
       "is_snapshot": false,
       "queryable": true,
@@ -485,10 +496,10 @@
         "product_name",
         "report_date"
       ],
-      "reference": "reference/rpt_storage_fees.json"
+      "reference": "reference/rpt_get_fba_storage_fee_charges_data.json"
     },
     {
-      "table": "rpt_stranded_inventory",
+      "table": "rpt_get_stranded_inventory_ui_data",
       "report_type": "GET_STRANDED_INVENTORY_UI_DATA",
       "is_snapshot": true,
       "queryable": true,
@@ -502,10 +513,10 @@
         "date_to_take_auto_removal",
         "snapshot_date"
       ],
-      "reference": "reference/rpt_stranded_inventory.json"
+      "reference": "reference/rpt_get_stranded_inventory_ui_data.json"
     },
     {
-      "table": "rpt_suppressed_listings",
+      "table": "rpt_get_merchants_listings_fyp_report",
       "report_type": "GET_MERCHANTS_LISTINGS_FYP_REPORT",
       "is_snapshot": true,
       "queryable": true,
@@ -519,7 +530,7 @@
         "sku",
         "snapshot_date"
       ],
-      "reference": "reference/rpt_suppressed_listings.json"
+      "reference": "reference/rpt_get_merchants_listings_fyp_report.json"
     },
     {
       "table": "rpt_sp_campaigns",

@@ -1,9 +1,10 @@
 {
   "_meta": {
-    "table": "rpt_afn_inventory_by_country",
+    "table": "rpt_get_afn_inventory_data_by_country",
+    "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_afn_inventory_by_country` still resolves as a read-only compat VIEW; prefer `rpt_get_afn_inventory_data_by_country` in new queries.",
     "report_type": "GET_AFN_INVENTORY_DATA_BY_COUNTRY",
     "is_snapshot": true,
-    "description": "Country-level FBA inventory for NARF-enrolled sellers. One row per (sku, country) showing quantity available for local fulfillment in that country. Pairs with rpt_afn_inventory: that table holds the pan-NA pool total; this one holds the per-country split.",
+    "description": "Country-level FBA inventory for NARF-enrolled sellers. One row per (sku, country) showing quantity available for local fulfillment in that country. Pairs with rpt_get_afn_inventory_data: that table holds the pan-NA pool total; this one holds the per-country split.",
     "pii": false,
     "queryable": true,
     "deprecated": false,
@@ -29,16 +30,16 @@
   ],
   "example_query": {
     "store": "novaStore-UK",
-    "tables": ["rpt_afn_inventory_by_country"],
+    "tables": ["rpt_get_afn_inventory_data_by_country"],
     "columns": [
-      "rpt_afn_inventory_by_country.seller_sku",
-      "rpt_afn_inventory_by_country.country",
-      "rpt_afn_inventory_by_country.quantity_for_local_fulfillment"
+      "rpt_get_afn_inventory_data_by_country.seller_sku",
+      "rpt_get_afn_inventory_data_by_country.country",
+      "rpt_get_afn_inventory_data_by_country.quantity_for_local_fulfillment"
     ],
     "filters": [
-      {"column": "rpt_afn_inventory_by_country.country", "op": "eq", "value": "GB"}
+      {"column": "rpt_get_afn_inventory_data_by_country.country", "op": "eq", "value": "GB"}
     ],
-    "order_by": [{"column": "rpt_afn_inventory_by_country.quantity_for_local_fulfillment", "dir": "desc"}],
+    "order_by": [{"column": "rpt_get_afn_inventory_data_by_country.quantity_for_local_fulfillment", "dir": "desc"}],
     "limit": 50,
     "report_date": "latest"
   }

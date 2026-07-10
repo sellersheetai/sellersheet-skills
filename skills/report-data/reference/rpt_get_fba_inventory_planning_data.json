@@ -1,6 +1,7 @@
 {
   "_meta": {
-    "table": "rpt_restock_recommendations",
+    "table": "rpt_get_fba_inventory_planning_data",
+    "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_restock_recommendations` still resolves as a read-only compat VIEW; prefer `rpt_get_fba_inventory_planning_data` in new queries.",
     "report_type": "GET_FBA_INVENTORY_PLANNING_DATA",
     "is_snapshot": true,
     "description": "Inventory Planning snapshot per (sku, marketplace, condition). New schema (60+ columns) replaced the legacy 28-col GET_RESTOCK_INVENTORY_RECOMMENDATIONS_REPORT in 2026-04. Per-marketplace fan-out — same SKU appears once per marketplace.",
@@ -19,7 +20,7 @@
     ],
     "cron": "5 */6 * * *",
     "gotchas": [
-      "JOIN KEY: use sku — it is canonical and matches Amazon's report header (GET_FBA_INVENTORY_PLANNING_DATA) exactly. The legacy `merchant_sku` alias was DROPPED from this table on 2026-07-10 (migration in flight); any older dashboard/SQL joining on merchant_sku must switch to sku. (rpt_returns keeps its own merchant_sku — scoped to restock only.)",
+      "JOIN KEY: use sku — it is canonical and matches Amazon's report header (GET_FBA_INVENTORY_PLANNING_DATA) exactly. The legacy `merchant_sku` alias was DROPPED from this table on 2026-07-10 (migration in flight); any older dashboard/SQL joining on merchant_sku must switch to sku. (rpt_get_flat_file_returns_data_by_return_date keeps its own merchant_sku — scoped to restock only.)",
       "days_of_supply is NULL for no-sale SKUs. The warehouse (Postgres) sorts NULLs LAST on ASC — safe. The in-sheet SQL()/alasql layer sorts blanks FIRST — that's where unsorted-looking 'urgent' lists come from. Filter `days_of_supply > 0` in either layer (also excludes no-sale SKUs, usually the intent).",
       "Amazon's replenishment columns are recommended_order_quantity + recommended_order_date. The legacy recommended_replenishment_qty is still a real column, but only pre-migration historical rows populate it — don't rely on it for current data.",
       "When recommended_order_quantity is NULL (Amazon didn't compute a recommendation), fall back to a computed suggestion (see sellersheet-dashboard restock fallback: MAX(0, ROUND(units_shipped_t30/30 × target_cover_days) − available − inbound)) and label it as computed, not Amazon's."
@@ -644,27 +645,27 @@
   "example_query": {
     "store": "novaStore-UK",
     "tables": [
-      "rpt_restock_recommendations"
+      "rpt_get_fba_inventory_planning_data"
     ],
     "columns": [
-      "rpt_restock_recommendations.sku",
-      "rpt_restock_recommendations.product_name",
-      "rpt_restock_recommendations.recommended_action",
-      "rpt_restock_recommendations.weeks_of_cover",
-      "rpt_restock_recommendations.estimated_excess_quantity",
-      "rpt_restock_recommendations.recommended_order_quantity",
-      "rpt_restock_recommendations.recommended_order_date"
+      "rpt_get_fba_inventory_planning_data.sku",
+      "rpt_get_fba_inventory_planning_data.product_name",
+      "rpt_get_fba_inventory_planning_data.recommended_action",
+      "rpt_get_fba_inventory_planning_data.weeks_of_cover",
+      "rpt_get_fba_inventory_planning_data.estimated_excess_quantity",
+      "rpt_get_fba_inventory_planning_data.recommended_order_quantity",
+      "rpt_get_fba_inventory_planning_data.recommended_order_date"
     ],
     "filters": [
       {
-        "column": "rpt_restock_recommendations.recommended_action",
+        "column": "rpt_get_fba_inventory_planning_data.recommended_action",
         "op": "neq",
         "value": "NoRestockExcessActionRequired"
       }
     ],
     "order_by": [
       {
-        "column": "rpt_restock_recommendations.estimated_excess_quantity",
+        "column": "rpt_get_fba_inventory_planning_data.estimated_excess_quantity",
         "dir": "desc"
       }
     ],
