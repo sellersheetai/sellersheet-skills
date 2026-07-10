@@ -1,7 +1,7 @@
 ---
 name: report-data
 description: Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules, requesting on-demand reports, polling for completion, downloading TSV data to Drive, or analyzing any report table. Covers inventory, listings, orders, financial, brand analytics, and ad report (SP/SB/SD) tables.
-version: 0.8.4
+version: 0.8.5
 ---
 
 # Report Data
@@ -220,6 +220,34 @@ The same join works for any consumer that wants thumbnails next to listing-keyed
 - `tables=['rpt_fba_inventory_health']` + join `listing_images on (store_id, country_code, sku→seller_sku)`
 - `tables=['rpt_orders']` + join `listing_images on (store_id, sku→seller_sku)` (orders is
   cross-marketplace; the LEFT JOIN naturally drops country_code on cross-mkt stores)
+
+### Best Practice: Restock gotchas (`rpt_restock_recommendations`)
+
+Three traps bite anyone querying restock data. All three are silent — the query "succeeds"
+and returns wrong or empty-looking results.
+
+1. **Join on `sku` — it is the canonical SKU key.** `sku` matches Amazon's report header
+   (`GET_FBA_INVENTORY_PLANNING_DATA`) exactly. The old `merchant_sku` column was a legacy
+   alias and was **dropped from `rpt_restock_recommendations` on 2026-07-10** (migration in
+   flight). Any older dashboard / SQL still joining or filtering on `merchant_sku` must switch
+   to `sku`. (Note: `rpt_returns` legitimately keeps its own `merchant_sku` column — this
+   change is scoped to the restock table only.)
+
+2. **`days_of_supply` is NULL for no-sale SKUs — NULLs sort FIRST in Postgres.** A SKU with no
+   recent sales has `days_of_supply = NULL`. `ORDER BY days_of_supply ASC` (the natural "most
+   urgent first" sort) puts those NULLs at the very top in Postgres — so the genuinely urgent,
+   low-cover SKUs get buried below a wall of no-sale rows. Fix either way:
+   - filter `days_of_supply > 0` before ordering, **or**
+   - `ORDER BY days_of_supply ASC NULLS LAST`.
+
+3. **Amazon's replenishment columns are `recommended_order_quantity` + `recommended_order_date`.**
+   These are what Amazon populates on the live report. The legacy `recommended_replenishment_qty`
+   exists only for pre-migration historical rows (it falls into the `extra` JSON on this
+   new-schema table) — don't rely on it for current data. When `recommended_order_quantity` is
+   NULL (Amazon didn't compute a recommendation for that SKU/marketplace), fall back to a
+   computed suggestion — see the `sellersheet-dashboard` restock fallback rule
+   (`suggested_ship_in = MAX(0, ROUND(units_shipped_t30/30 × target_cover_days) − available −
+   inbound)`) and **label it as computed, not Amazon's.**
 
 ### Wildcard Columns
 

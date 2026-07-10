@@ -1,7 +1,7 @@
 ---
 name: sellersheet-sheets
 description: Use whenever Google Sheets is the deliverable surface and SellerSheet MCP is the tool for sheet I/O. Reads, writes, formats, builds reports, dashboards, financial models, and live-data tables in Google Sheets via SellerSheet MCP endpoints (read_sheet, write_sheet, write_sheet_formula, format_sheet_range, set_sheet_number_format, add_sheet_chart, add_sheet_conditional_format, add_sheet_dropdown, etc.). Trigger when the user references a docs.google.com/spreadsheets URL, asks to publish output to a Google Sheet, builds anything in the SellerSheet workbook ecosystem, needs the live SQL() spill + image-thumbnail patterns, or builds an operator action surface (filter rows, Amazon enum dropdowns, status chips). Do NOT trigger for local .xlsx files — that's a different skill. This skill is self-contained — no need to load xlsx or any other sheet skill alongside; xlsx-style conventions (financial color coding, number formats, formula best practices) are adapted inline.
-version: 0.8.4
+version: 0.8.5
 ---
 
 # SellerSheet Google Sheets — via MCP
@@ -31,7 +31,7 @@ Only after all three pass: proceed with the skill body below.
 ---
 
 > **Author**: sellersheetai.com
-> **Requirements**: SellerSheet MCP tools (`mcp__claude_ai_sellersheet_mcp__*`). For live `SQL()` and `IMAGE()` to render, the operator opens the workbook in a browser with the SellerSheet GAS add-on enabled (Extensions → SellerSheet → Open).
+> **Requirements**: SellerSheet MCP tools (`mcp__claude_ai_sellersheet_<env>__*` — `<env>` is `prod` or `test` depending on which SellerSheet MCP connector is attached). For live `SQL()` and `IMAGE()` to render, the operator opens the workbook in a browser with the SellerSheet GAS add-on enabled (Extensions → SellerSheet → Open).
 > **Scope**: this skill is self-contained — production-quality conventions for color, number formats, formulas, and layout are codified across this file + `reference/` + `scripts/`. No external xlsx skill required.
 
 The SellerSheet MCP wraps Google's `spreadsheets.batchUpdate` server-side; everything you do is a tool call, not a Python edit, not a manual click. This skill covers:
