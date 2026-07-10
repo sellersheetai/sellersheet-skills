@@ -2,9 +2,11 @@
 
 Run this routine before declaring a dashboard build done. Every check is a specific MCP tool call against the freshly-built spreadsheet — no "looks right" allowed.
 
+> Tool prefix below is `mcp__claude_ai_sellersheet_<env>__` where `<env>` is `prod` or `test` depending on which SellerSheet MCP connector is attached.
+
 ## Pre-flight
 
-1. `mcp__claude_ai_sellersheet_mcp__list_sheet_tabs(spreadsheet_id)` — confirm the expected tab list:
+1. `mcp__claude_ai_sellersheet_<env>__list_sheet_tabs(spreadsheet_id)` — confirm the expected tab list:
    - **8 visible:** README, HOME, Inventory and Restock, PPC Command, Account Health, Listing Health, Profit and Cash, Returns and Refunds (+ Search & Share if BA enabled)
    - **12 hidden raw:** `_raw_inventory`, `_raw_listings`, `_raw_account_health`, `_raw_ppc`, `_raw_ppc_attribution`, `_raw_ppc_search_terms`, `_raw_ppc_skus`, `_raw_cogs`, `_raw_catalog`, `_raw_returns`, `_raw_buybox`, `_raw_finance`
    - **5 infrastructure:** `_config`, `_status`, `_agent_notes`, `_agent_log` (and optionally `_agent_log_archive`)
@@ -70,7 +72,7 @@ For 5+ high-value cells, verify `note` field starts with `agent | ` / `formula |
 
 - `get_sheet_cell(..., "HOME!A2")` — `note` should start with `formula | live freshness pill | depends=_status!I:I,F:F | ...`
 - `get_sheet_cell(..., "HOME!F<fire_narrative_row>")` — `note` should start with `agent | <timestamp> | source=... | confidence=0.X | "..."`
-- Etc. Run `mcp__claude_ai_sellersheet_mcp__get_sheet_notes` if available to batch-check.
+- Etc. Run `mcp__claude_ai_sellersheet_<env>__get_sheet_notes` if available to batch-check.
 
 ### 9. Header backgrounds on every spilled table
 

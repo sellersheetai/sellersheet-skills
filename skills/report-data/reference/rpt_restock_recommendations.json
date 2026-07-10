@@ -12,18 +12,25 @@
     "unique_key": [
       "store_id",
       "snapshot_date",
-      "merchant_sku",
+      "sku",
       "fnsku",
       "country_code",
       "condition"
     ],
-    "cron": "5 */6 * * *"
+    "cron": "5 */6 * * *",
+    "gotchas": [
+      "JOIN KEY: use sku — it is canonical and matches Amazon's report header (GET_FBA_INVENTORY_PLANNING_DATA) exactly. The legacy `merchant_sku` alias was DROPPED from this table on 2026-07-10 (migration in flight); any older dashboard/SQL joining on merchant_sku must switch to sku. (rpt_returns keeps its own merchant_sku — scoped to restock only.)",
+      "days_of_supply is NULL for SKUs with no recent sales. Postgres sorts NULLs FIRST, so `ORDER BY days_of_supply ASC` buries the genuinely urgent low-cover SKUs under no-sale rows. Filter `days_of_supply > 0` before ordering, or use `ORDER BY days_of_supply ASC NULLS LAST`.",
+      "Amazon's replenishment columns are recommended_order_quantity + recommended_order_date. The legacy recommended_replenishment_qty exists only for pre-migration historical rows (falls into `extra` JSON) — don't rely on it for current data.",
+      "When recommended_order_quantity is NULL (Amazon didn't compute a recommendation), fall back to a computed suggestion (see sellersheet-dashboard restock fallback: MAX(0, ROUND(units_shipped_t30/30 × target_cover_days) − available − inbound)) and label it as computed, not Amazon's."
+    ]
   },
   "columns": [
     {
-      "db_column": "merchant_sku",
-      "amazon_header": "sku (or legacy 'Merchant SKU')",
-      "type": "str"
+      "db_column": "sku",
+      "amazon_header": "sku",
+      "type": "str",
+      "note": "Canonical SKU join key — matches Amazon's report header exactly. Replaced the legacy `merchant_sku` column, which was dropped from this table 2026-07-10; older dashboards/SQL joining on merchant_sku must switch to sku."
     },
     {
       "db_column": "fnsku",
@@ -191,7 +198,9 @@
     {
       "db_column": "recommended_ship_in_quantity",
       "amazon_header": "Recommended ship-in quantity",
-      "type": "int"
+      "type": "int",
+      "nullable": true,
+      "note": "Not shipped on every marketplace (e.g. absent on AE). Amazon's primary replenishment column is recommended_order_quantity — see _meta.gotchas."
     },
     {
       "db_column": "recommended_ship_in_date",
@@ -201,7 +210,9 @@
     {
       "db_column": "recommended_order_quantity",
       "amazon_header": "recommended-order-quantity",
-      "type": "int"
+      "type": "int",
+      "nullable": true,
+      "note": "Amazon's canonical replenishment quantity (paired with recommended_order_date). NULL when Amazon didn't compute a recommendation for the SKU/marketplace — fall back to a computed suggestion, see _meta.gotchas. Legacy recommended_replenishment_qty exists only for pre-migration historical rows (in `extra`)."
     },
     {
       "db_column": "recommended_order_date",
@@ -236,7 +247,9 @@
     {
       "db_column": "days_of_supply",
       "amazon_header": "days-of-supply",
-      "type": "decimal"
+      "type": "decimal",
+      "nullable": true,
+      "note": "NULL for SKUs with no recent sales. Postgres sorts NULLs FIRST — `ORDER BY days_of_supply ASC` buries urgent low-cover SKUs. Filter `days_of_supply > 0` or use `NULLS LAST`. See _meta.gotchas."
     },
     {
       "db_column": "days_of_supply_at_amazon_fulfillment_network",
@@ -634,7 +647,7 @@
       "rpt_restock_recommendations"
     ],
     "columns": [
-      "rpt_restock_recommendations.merchant_sku",
+      "rpt_restock_recommendations.sku",
       "rpt_restock_recommendations.product_name",
       "rpt_restock_recommendations.recommended_action",
       "rpt_restock_recommendations.weeks_of_cover",
