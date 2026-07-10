@@ -1,6 +1,7 @@
 {
   "_meta": {
-    "table": "rpt_account_health",
+    "table": "rpt_get_v2_seller_performance_report",
+    "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_account_health` still resolves as a read-only compat VIEW; prefer `rpt_get_v2_seller_performance_report` in new queries.",
     "report_type": "GET_V2_SELLER_PERFORMANCE_REPORT",
     "is_snapshot": true,
     "description": "Per-marketplace daily snapshot of Amazon account health: AHR score+status, 9 performance rates with sub-counts, 12 policy-violation defects counts. One row per (store_id, marketplace_id, snapshot_date).",
@@ -279,22 +280,22 @@
   "example_query": {
     "store": "myStore-AE",
     "tables": [
-      "rpt_account_health"
+      "rpt_get_v2_seller_performance_report"
     ],
     "columns": [
-      "rpt_account_health.marketplace_id",
-      "rpt_account_health.account_status",
-      "rpt_account_health.ahr_score",
-      "rpt_account_health.ahr_status",
-      "rpt_account_health.invoice_defect_rate",
-      "rpt_account_health.missing_invoice_count",
-      "rpt_account_health.product_safety_complaints",
-      "rpt_account_health.suspected_ip_violations"
+      "rpt_get_v2_seller_performance_report.marketplace_id",
+      "rpt_get_v2_seller_performance_report.account_status",
+      "rpt_get_v2_seller_performance_report.ahr_score",
+      "rpt_get_v2_seller_performance_report.ahr_status",
+      "rpt_get_v2_seller_performance_report.invoice_defect_rate",
+      "rpt_get_v2_seller_performance_report.missing_invoice_count",
+      "rpt_get_v2_seller_performance_report.product_safety_complaints",
+      "rpt_get_v2_seller_performance_report.suspected_ip_violations"
     ],
     "filters": [],
     "order_by": [
       {
-        "column": "rpt_account_health.snapshot_date",
+        "column": "rpt_get_v2_seller_performance_report.snapshot_date",
         "dir": "desc"
       }
     ],

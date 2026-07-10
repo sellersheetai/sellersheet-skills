@@ -108,13 +108,13 @@ browser. Reading such a cell back via MCP requires `value_render_option='FORMULA
 | Tab | Business question | Refresh | Source rpt_* tables |
 |---|---|---|---|
 | **README** | What is this workbook and how do I read it? | Manual | (none) — live freshness table mirrors `_status` |
-| **HOME** | What blew up overnight, what do I touch today? | Daily | orders, account_health, restock_recommendations, sp_campaigns, suppressed_listings, fba_inventory_health |
-| **Inventory and Restock** | What do I reorder, what do I remove? | Every 6h | restock_recommendations + fba_inventory_health + listing_images |
-| **PPC Command** | Where is ad money leaking? What's winning? | Daily 03 UTC | sp_campaigns, sp_search_terms, sp_advertised_products, sp_ad_groups · **requires ad profile access** |
-| **Account Health** | AHR / ODR / VTR / OTDR / Invoice Defect — am I at risk? | Daily 07 UTC | account_health |
-| **Listing Health** | Suppressed / inactive / stranded + buy box | Daily | listings_snapshot + suppressed_listings + stranded_inventory + listing_images + competitive_pricing |
-| **Profit and Cash** | Margin after fees + ads + COGS + cash conversion pipeline | Weekly + manual COGS | orders, returns, sp_campaigns, storage_fees, financial_event_groups + user `_raw_cogs` · **net-of-ads requires ad profile access** |
-| **Returns and Refunds** | Return rate, top return SKUs, refund value | Daily | returns + fba_returns |
+| **HOME** | What blew up overnight, what do I touch today? | Daily | `rpt_orders`, `rpt_get_v2_seller_performance_report`, `rpt_get_fba_inventory_planning_data`, `rpt_sp_campaigns`, `rpt_get_merchants_listings_fyp_report`, `rpt_get_fba_myi_all_inventory_data` |
+| **Inventory and Restock** | What do I reorder, what do I remove? | Every 6h | `rpt_get_fba_inventory_planning_data` + `rpt_get_fba_myi_all_inventory_data` + `listing_images` |
+| **PPC Command** | Where is ad money leaking? What's winning? | Daily 03 UTC | `rpt_sp_campaigns`, `rpt_sp_search_terms`, `rpt_sp_advertised_products`, `rpt_sp_ad_groups` · **requires ad profile access** |
+| **Account Health** | AHR / ODR / VTR / OTDR / Invoice Defect — am I at risk? | Daily 07 UTC | `rpt_get_v2_seller_performance_report` |
+| **Listing Health** | Suppressed / inactive / stranded + buy box | Daily | `rpt_get_merchant_listings_all_data` + `rpt_get_merchants_listings_fyp_report` + `rpt_get_stranded_inventory_ui_data` + `listing_images` + competitive_pricing |
+| **Profit and Cash** | Margin after fees + ads + COGS + cash conversion pipeline | Weekly + manual COGS | `rpt_orders`, `rpt_get_flat_file_returns_data_by_return_date`, `rpt_sp_campaigns`, `rpt_get_fba_storage_fee_charges_data`, financial_event_groups + user `_raw_cogs` · **net-of-ads requires ad profile access** |
+| **Returns and Refunds** | Return rate, top return SKUs, refund value | Daily | `rpt_get_flat_file_returns_data_by_return_date` + `rpt_get_fba_fulfillment_customer_returns_data` |
 
 Plus **Search & Share** (Brand Analytics: search-term rank, market basket, repeat purchase) — placeholder if BA not enabled.
 
@@ -165,7 +165,7 @@ When asked to build a dashboard:
 3. **`list_sheet_tabs(spreadsheet_id)`** — check the target sheet's starting state.
 4. **Create tabs in order:** README, HOME, Inventory and Restock, PPC Command, Account Health, Listing Health, Profit and Cash, Returns and Refunds, (Search & Share if BA enabled), then hidden tabs `_raw_inventory`, `_raw_listings`, `_raw_account_health`, `_raw_ppc`, `_raw_ppc_attribution`, `_raw_ppc_search_terms`, `_raw_ppc_skus`, `_raw_cogs`, `_raw_catalog`, `_raw_returns`, `_raw_buybox`, `_raw_finance`, `_config`, `_status`, `_agent_notes`, `_agent_log`.
 5. **Build `_status` first** (it's referenced by every visible tab's row-2 pill). See `reference/freshness-system.md` for the schema + how to seed.
-6. **Probe each rpt_* table** with a small `query_report_data` aggregation to learn exact column names (`sku` vs `seller_sku` vs `advertised_sku` — they differ; `rpt_restock_recommendations` uses `sku`, the legacy `merchant_sku` was dropped 2026-07-10).
+6. **Probe each rpt_* table** with a small `query_report_data` aggregation to learn exact column names (`sku` vs `seller_sku` vs `advertised_sku` — they differ; `rpt_get_fba_inventory_planning_data` uses `sku`, the legacy `merchant_sku` was dropped 2026-07-10).
 7. **For each non-HOME visible tab:** create the `_raw_<topic>` tab with canonical left-five columns. Populate. Anchor SQL() at the end of the visible tab with the appropriate `LIMIT N` from `reference/sql-limits.md`. Apply navy bg to the spill's header row. Use the Image-at-A JOIN pattern. Apply provenance fills from `reference/provenance-colors.md`. Add the AGENT INSIGHTS section at the right row anchor (row 150 for bounded tabs, row 400 for catalog-scaling tabs). Add the overflow footer right below the max spill extent.
 8. **HOME tab:** hand-lay KPI tiles + TOP 3 FIRES section at rows 4-8. Add `=HYPERLINK("#gid=<sheet_id>", "→ Open X")` to drill tabs (pull real `sheetId` from `list_sheet_tabs`).
 9. **Seed `_agent_notes`** with 5-10 real insights based on the data you pulled. Three top fires get `scope_key = "fire-1"`, `"fire-2"`, `"fire-3"` so they spill into HOME's TOP 3 FIRES section.

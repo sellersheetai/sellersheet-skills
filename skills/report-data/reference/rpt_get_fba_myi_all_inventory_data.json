@@ -1,6 +1,7 @@
 {
   "_meta": {
-    "table": "rpt_fba_inventory_health",
+    "table": "rpt_get_fba_myi_all_inventory_data",
+    "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_fba_inventory_health` still resolves as a read-only compat VIEW; prefer `rpt_get_fba_myi_all_inventory_data` in new queries.",
     "report_type": "GET_FBA_MYI_ALL_INVENTORY_DATA",
     "is_snapshot": true,
     "description": "FBA MYI inventory snapshot per (sku, marketplace, condition). One row per Amazon-fulfilled SKU with afn-* quantity buckets, listing-exists flags, per-unit volume.",
@@ -48,18 +49,18 @@
   ],
   "example_query": {
     "store": "myStore-AE",
-    "tables": ["rpt_fba_inventory_health"],
+    "tables": ["rpt_get_fba_myi_all_inventory_data"],
     "columns": [
-      "rpt_fba_inventory_health.sku",
-      "rpt_fba_inventory_health.asin",
-      "rpt_fba_inventory_health.afn_fulfillable_quantity",
-      "rpt_fba_inventory_health.afn_unsellable_quantity",
-      "rpt_fba_inventory_health.per_unit_volume"
+      "rpt_get_fba_myi_all_inventory_data.sku",
+      "rpt_get_fba_myi_all_inventory_data.asin",
+      "rpt_get_fba_myi_all_inventory_data.afn_fulfillable_quantity",
+      "rpt_get_fba_myi_all_inventory_data.afn_unsellable_quantity",
+      "rpt_get_fba_myi_all_inventory_data.per_unit_volume"
     ],
     "filters": [
-      {"column": "rpt_fba_inventory_health.afn_fulfillable_quantity", "op": "gt", "value": 0}
+      {"column": "rpt_get_fba_myi_all_inventory_data.afn_fulfillable_quantity", "op": "gt", "value": 0}
     ],
-    "order_by": [{"column": "rpt_fba_inventory_health.afn_fulfillable_quantity", "dir": "desc"}],
+    "order_by": [{"column": "rpt_get_fba_myi_all_inventory_data.afn_fulfillable_quantity", "dir": "desc"}],
     "limit": 100,
     "report_date": "latest"
   }

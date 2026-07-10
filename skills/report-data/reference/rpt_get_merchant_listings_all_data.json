@@ -1,6 +1,7 @@
 {
   "_meta": {
-    "table": "rpt_listings_snapshot",
+    "table": "rpt_get_merchant_listings_all_data",
+    "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_listings_snapshot` still resolves as a read-only compat VIEW; prefer `rpt_get_merchant_listings_all_data` in new queries.",
     "report_type": "GET_MERCHANT_LISTINGS_ALL_DATA",
     "is_snapshot": true,
     "description": "Daily all-listings snapshot for merchant catalog state.",
@@ -201,27 +202,27 @@
   "example_query": {
     "store": "myStore-AE",
     "tables": [
-      "rpt_listings_snapshot"
+      "rpt_get_merchant_listings_all_data"
     ],
     "columns": [
-      "rpt_listings_snapshot.seller_sku",
-      "rpt_listings_snapshot.item_name",
-      "rpt_listings_snapshot.asin1",
-      "rpt_listings_snapshot.price",
-      "rpt_listings_snapshot.quantity",
-      "rpt_listings_snapshot.status",
-      "rpt_listings_snapshot.fulfillment_channel"
+      "rpt_get_merchant_listings_all_data.seller_sku",
+      "rpt_get_merchant_listings_all_data.item_name",
+      "rpt_get_merchant_listings_all_data.asin1",
+      "rpt_get_merchant_listings_all_data.price",
+      "rpt_get_merchant_listings_all_data.quantity",
+      "rpt_get_merchant_listings_all_data.status",
+      "rpt_get_merchant_listings_all_data.fulfillment_channel"
     ],
     "filters": [
       {
-        "column": "rpt_listings_snapshot.quantity",
+        "column": "rpt_get_merchant_listings_all_data.quantity",
         "op": "gt",
         "value": 0
       }
     ],
     "order_by": [
       {
-        "column": "rpt_listings_snapshot.seller_sku",
+        "column": "rpt_get_merchant_listings_all_data.seller_sku",
         "dir": "asc"
       }
     ],

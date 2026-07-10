@@ -1,6 +1,7 @@
 {
   "_meta": {
-    "table": "rpt_stranded_inventory",
+    "table": "rpt_get_stranded_inventory_ui_data",
+    "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_stranded_inventory` still resolves as a read-only compat VIEW; prefer `rpt_get_stranded_inventory_ui_data` in new queries.",
     "report_type": "GET_STRANDED_INVENTORY_UI_DATA",
     "is_snapshot": true,
     "description": "Stranded inventory snapshot with removal actions.",
@@ -119,17 +120,17 @@
   "example_query": {
     "store": "myStore-AE",
     "tables": [
-      "rpt_stranded_inventory"
+      "rpt_get_stranded_inventory_ui_data"
     ],
     "columns": [
-      "rpt_stranded_inventory.primary_action",
-      "rpt_stranded_inventory.date_stranded",
-      "rpt_stranded_inventory.date_to_take_auto_removal"
+      "rpt_get_stranded_inventory_ui_data.primary_action",
+      "rpt_get_stranded_inventory_ui_data.date_stranded",
+      "rpt_get_stranded_inventory_ui_data.date_to_take_auto_removal"
     ],
     "filters": [],
     "order_by": [
       {
-        "column": "rpt_stranded_inventory.primary_action",
+        "column": "rpt_get_stranded_inventory_ui_data.primary_action",
         "dir": "asc"
       }
     ],

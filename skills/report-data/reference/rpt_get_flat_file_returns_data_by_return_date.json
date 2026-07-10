@@ -1,6 +1,7 @@
 {
   "_meta": {
-    "table": "rpt_returns",
+    "table": "rpt_get_flat_file_returns_data_by_return_date",
+    "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_returns` still resolves as a read-only compat VIEW; prefer `rpt_get_flat_file_returns_data_by_return_date` in new queries.",
     "report_type": "GET_FLAT_FILE_RETURNS_DATA_BY_RETURN_DATE",
     "is_snapshot": false,
     "description": "Merchant returns flat file with request and resolution details.",
@@ -199,17 +200,17 @@
   "example_query": {
     "store": "myStore-AE",
     "tables": [
-      "rpt_returns"
+      "rpt_get_flat_file_returns_data_by_return_date"
     ],
     "columns": [
-      "rpt_returns.order_id",
-      "rpt_returns.order_date",
-      "rpt_returns.return_request_date"
+      "rpt_get_flat_file_returns_data_by_return_date.order_id",
+      "rpt_get_flat_file_returns_data_by_return_date.order_date",
+      "rpt_get_flat_file_returns_data_by_return_date.return_request_date"
     ],
     "filters": [],
     "order_by": [
       {
-        "column": "rpt_returns.order_id",
+        "column": "rpt_get_flat_file_returns_data_by_return_date.order_id",
         "dir": "asc"
       }
     ],

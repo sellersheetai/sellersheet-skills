@@ -43,9 +43,9 @@ instead of re-requesting:
 
 - **Synced → use `report-data` + `query_report_data`** (don't re-request):
   Sales & Traffic (`rpt_sales_and_traffic`, `rpt_dk_sales_traffic_*`), orders
-  (`rpt_orders`), inventory (`rpt_afn_inventory*`, `rpt_inventory_*`,
-  `rpt_fba_inventory_health`), returns/removals (`rpt_returns`, `rpt_fba_returns`,
-  `rpt_removal_orders`). Run `list_report_syncs` to confirm it's synced & fresh.
+  (`rpt_orders`), inventory (`rpt_get_afn_inventory_data*`, `rpt_inventory_*`,
+  `rpt_get_fba_myi_all_inventory_data`), returns/removals (`rpt_get_flat_file_returns_data_by_return_date`, `rpt_get_fba_fulfillment_customer_returns_data`,
+  `rpt_get_fba_fulfillment_removal_order_detail_data`). Run `list_report_syncs` to confirm it's synced & fresh.
 - **Not synced → request on-demand here** (this skill's purpose): Brand Analytics
   (Market Basket, Search Query/Catalog Performance, Search Terms, Repeat Purchase),
   Promotion/Coupon, all Vendor reports, marketplace ASIN page-view, end-user data.

@@ -1,6 +1,7 @@
 {
   "_meta": {
-    "table": "rpt_removal_orders",
+    "table": "rpt_get_fba_fulfillment_removal_order_detail_data",
+    "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_removal_orders` still resolves as a read-only compat VIEW; prefer `rpt_get_fba_fulfillment_removal_order_detail_data` in new queries.",
     "report_type": "GET_FBA_FULFILLMENT_REMOVAL_ORDER_DETAIL_DATA",
     "is_snapshot": false,
     "description": "FBA removal order events and quantity outcomes.",
@@ -107,17 +108,17 @@
   "example_query": {
     "store": "myStore-AE",
     "tables": [
-      "rpt_removal_orders"
+      "rpt_get_fba_fulfillment_removal_order_detail_data"
     ],
     "columns": [
-      "rpt_removal_orders.request_date",
-      "rpt_removal_orders.order_id",
-      "rpt_removal_orders.order_source"
+      "rpt_get_fba_fulfillment_removal_order_detail_data.request_date",
+      "rpt_get_fba_fulfillment_removal_order_detail_data.order_id",
+      "rpt_get_fba_fulfillment_removal_order_detail_data.order_source"
     ],
     "filters": [],
     "order_by": [
       {
-        "column": "rpt_removal_orders.request_date",
+        "column": "rpt_get_fba_fulfillment_removal_order_detail_data.request_date",
         "dir": "asc"
       }
     ],

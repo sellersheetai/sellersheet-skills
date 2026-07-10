@@ -55,6 +55,8 @@ Use this skill when the user asks for:
 
 Reports sync automatically on schedule and are stored in PostgreSQL `rpt_*` tables. AI queries without hitting Amazon.
 
+**Table names ARE the Amazon report types** (`rpt_` + `report_type` lowercased), so a table you meet in Amazon's docs is the table you query. Old names (`rpt_listings_snapshot`, `rpt_restock_recommendations`, `rpt_account_health`, …) still work as **read-only compat views** — prefer the canonical names. A handful of tables deliberately keep non-Amazon names; see [Deliberate naming exceptions](#deliberate-naming-exceptions).
+
 ### Workflow
 
 1. Read `.claude/skills/report-data/_meta.json`.
@@ -93,10 +95,10 @@ For per-mkt schedules, `disabled_marketplaces` is a `text[]` like `['MX', 'BR']`
 ```json
 {
   "store": "myStore-AE",
-  "tables": ["rpt_afn_inventory"],
-  "columns": ["rpt_afn_inventory.seller_sku", "rpt_afn_inventory.quantity_available"],
+  "tables": ["rpt_get_afn_inventory_data"],
+  "columns": ["rpt_get_afn_inventory_data.seller_sku", "rpt_get_afn_inventory_data.quantity_available"],
   "filters": [],
-  "order_by": [{"column": "rpt_afn_inventory.seller_sku", "dir": "asc"}],
+  "order_by": [{"column": "rpt_get_afn_inventory_data.seller_sku", "dir": "asc"}],
   "limit": 100,
   "report_date": "latest"
 }
@@ -112,8 +114,8 @@ The `store` argument follows the same `store_name + '-' + country_code` rule use
 query_report_data(store='myStore-US', tables=['rpt_orders'], ...)
 # auto-injects: rpt_orders.sales_channel = 'Amazon.com'
 
-query_report_data(store='myStore-US', tables=['rpt_listings_snapshot'], ...)
-# auto-injects: rpt_listings_snapshot.country_code = 'US'
+query_report_data(store='myStore-US', tables=['rpt_get_merchant_listings_all_data'], ...)
+# auto-injects: rpt_get_merchant_listings_all_data.country_code = 'US'
 
 query_report_data(store='myStore-US', tables=['rpt_sp_campaigns'], ...)
 # auto-injects: rpt_sp_campaigns.profile_id = <ads profile_id for US>
@@ -165,41 +167,58 @@ Allowed ops: `sum`, `count`, `avg`, `min`, `max`. Returns one row per distinct g
 - Always use fully-qualified column names: `table_name.column_name`.
 - Use the `db_column` values from the reference JSONs exactly as written.
 - `report_date` controls the date filter — three modes:
-    - `"latest"` (default) → match the most recent date for that table+store. Right for **snapshot tables** (afn_inventory, listings_snapshot, account_health, fba_inventory_health) where each day overwrites the previous.
-    - `"all"` → no date filter. Right for **ID-based lookups** on incremental tables (find a specific `amazon_order_id`, `settlement_id`, `asin`, etc.) where you don't know which date the row was last touched. Mandatory for `rpt_orders`, `rpt_settlements`, `rpt_returns`, `rpt_removal_orders`, `rpt_inventory_ledger`, `rpt_fba_reimbursements` lookups by primary key.
+    - `"latest"` (default) → match the most recent date for that table+store. Right for **snapshot tables** (`rpt_get_afn_inventory_data`, `rpt_get_merchant_listings_all_data`, `rpt_get_v2_seller_performance_report`, `rpt_get_fba_myi_all_inventory_data`) where each day overwrites the previous.
+    - `"all"` → no date filter. Right for **ID-based lookups** on incremental tables (find a specific `amazon_order_id`, `settlement_id`, `asin`, etc.) where you don't know which date the row was last touched. Mandatory for `rpt_orders`, `rpt_get_v2_settlement_report_data_flat_file_v2`, `rpt_get_flat_file_returns_data_by_return_date`, `rpt_get_fba_fulfillment_removal_order_detail_data`, `rpt_get_ledger_detail_view_data`, `rpt_get_fba_reimbursements_data` lookups by primary key.
     - `"YYYY-MM-DD"` → exact-date match. Right for **historical analysis** ("what was inventory on 2026-04-15?").
 - `listing_images` has no date partition — omit `report_date` entirely.
 - PII tables are not queryable: `rpt_fba_shipments`, `rpt_seller_feedback`.
-- Poll-only tables cannot be manually requested from Amazon: `rpt_settlements`.
-- **RETIRED 2026-05-04** (skill JSONs marked `_meta.deprecated=true, queryable=false`): `rpt_inventory_age` (data lives in `rpt_restock_recommendations.inv_age_*` and `rpt_fba_inventory_health.afn-warehouse-quantity`); `rpt_inventory_adjustments` (Amazon report type 2605 throttled — no replacement). Don't query these — they exist only for legacy reads.
+- Poll-only tables cannot be manually requested from Amazon: `rpt_get_v2_settlement_report_data_flat_file_v2`.
+- **RETIRED 2026-05-04** (skill JSONs marked `_meta.deprecated=true, queryable=false`): `rpt_inventory_age` (data lives in `rpt_get_fba_inventory_planning_data.inv_age_*` and `rpt_get_fba_myi_all_inventory_data.afn-warehouse-quantity`); `rpt_inventory_adjustments` (Amazon report type 2605 throttled — no replacement). Don't query these — they exist only for legacy reads.
 
 ### Available rpt_* tables (key ones)
 
 | Table | Report Type | Notes |
 |-------|-------------|-------|
-| `rpt_listings_snapshot` | GET_MERCHANT_LISTINGS_ALL_DATA | daily snapshot; auto-enriches listing_images |
-| `rpt_afn_inventory` | GET_AFN_INVENTORY_DATA | pan-region FBA pool total (lean 6-col schema only — afn-* buckets live in MYI, not here) |
-| `rpt_afn_inventory_by_country` | GET_AFN_INVENTORY_DATA_BY_COUNTRY | per-country FBA split (NARF sellers only) |
-| `rpt_fba_inventory_health` | GET_FBA_MYI_ALL_INVENTORY_DATA | full FBA inventory with afn-* quantity buckets, listing-exists flags, per-unit-volume |
-| `rpt_account_health` | GET_V2_SELLER_PERFORMANCE_REPORT | per-marketplace daily AHR score + 9 performance rates + 12 violation defects counts (rewritten 2026-05-04) |
-| `rpt_restock_recommendations` | GET_FBA_INVENTORY_PLANNING_DATA | 60+ cols incl. AIS bucket schema, restock-plus, season trio, LTSF (NOT the retired GET_RESTOCK_INVENTORY_RECOMMENDATIONS_REPORT) |
+| `rpt_get_merchant_listings_all_data` | GET_MERCHANT_LISTINGS_ALL_DATA | daily snapshot; auto-enriches listing_images |
+| `rpt_get_afn_inventory_data` | GET_AFN_INVENTORY_DATA | pan-region FBA pool total (lean 6-col schema only — afn-* buckets live in MYI, not here) |
+| `rpt_get_afn_inventory_data_by_country` | GET_AFN_INVENTORY_DATA_BY_COUNTRY | per-country FBA split (NARF sellers only) |
+| `rpt_get_fba_myi_all_inventory_data` | GET_FBA_MYI_ALL_INVENTORY_DATA | full FBA inventory with afn-* quantity buckets, listing-exists flags, per-unit-volume |
+| `rpt_get_v2_seller_performance_report` | GET_V2_SELLER_PERFORMANCE_REPORT | per-marketplace daily AHR score + 9 performance rates + 12 violation defects counts (rewritten 2026-05-04) |
+| `rpt_get_fba_inventory_planning_data` | GET_FBA_INVENTORY_PLANNING_DATA | 60+ cols incl. AIS bucket schema, restock-plus, season trio, LTSF (NOT the retired GET_RESTOCK_INVENTORY_RECOMMENDATIONS_REPORT) |
 | `rpt_orders` | GET_FLAT_FILE_ALL_ORDERS_DATA_BY_LAST_UPDATE_GENERAL | **full history retained — never pruned** (append/UPSERT on `amazon_order_id`+`sku`, no rolling deletion). Onboard does a one-shot **30-day backfill**, then an hourly `LAST_UPDATE` incremental appends new orders + folds in status changes forever. So the earliest `purchase_date` reaches back ≈30 days before the store's onboard date — *not* all-time history, and *not* capped at 30 days of retention. Includes `is_business_order` + 6 B2B/locale cols (added 2026-05-04) |
-| `rpt_storage_fees` | GET_FBA_STORAGE_FEE_CHARGES_DATA | monthly; `breakdown_incentive_fee_amount` is a colon-separated str — use derived `incentive_program` + `incentive_amount` |
-| `rpt_fba_returns` | GET_FBA_FULFILLMENT_CUSTOMER_RETURNS_DATA | EU samples populate `status` ('Unit returned to inventory', etc.) |
+| `rpt_get_fba_storage_fee_charges_data` | GET_FBA_STORAGE_FEE_CHARGES_DATA | monthly; `breakdown_incentive_fee_amount` is a colon-separated str — use derived `incentive_program` + `incentive_amount` |
+| `rpt_get_fba_fulfillment_customer_returns_data` | GET_FBA_FULFILLMENT_CUSTOMER_RETURNS_DATA | EU samples populate `status` ('Unit returned to inventory', etc.) |
 | `rpt_sales_and_traffic` | GET_SALES_AND_TRAFFIC_REPORT | legacy S&T flat file — page views, sessions, conversions (Brand Analytics permission required) |
 | `rpt_dk_sales_traffic_by_date` | Data Kiosk analytics_salesAndTraffic_2024_04_24 (byDate) | store-level daily KPIs; nested Amount objects unwrapped to numeric + shared `currency_code`; `unit_session_percentage` = conversion rate |
 | `rpt_dk_sales_traffic_by_asin` | Data Kiosk analytics_salesAndTraffic_2024_04_24 (byAsin) | ASIN-level daily KPIs; same unwrap + conversion-rate semantics as by_date |
 | `rpt_search_terms_analytics` | GET_BRAND_ANALYTICS_SEARCH_TERMS_REPORT | weekly, brand analytics |
-| `rpt_suppressed_listings` | GET_MERCHANTS_LISTINGS_FYP_REPORT | suppressed SKUs; parser handles English + FR + lowercase header variants |
-| `listing_images` | (enriched from rpt_listings_snapshot) | persistent image URL cache — see below |
+| `rpt_get_merchants_listings_fyp_report` | GET_MERCHANTS_LISTINGS_FYP_REPORT | suppressed SKUs; parser handles English + FR + lowercase header variants |
+| `listing_images` | (enriched from rpt_get_merchant_listings_all_data) | persistent image URL cache — see below |
 
 Full index: `.claude/skills/report-data/_meta.json` (45 entries; 2 marked deprecated). S&T now comes from Data Kiosk into `rpt_dk_sales_traffic_by_date` / `rpt_dk_sales_traffic_by_asin`; reference schemas for the Data Kiosk path live in `docs/sp-api-data-kiosk-schemas/` and `docs/sp-api-report-schemas/`.
 
 **Calibration verified 2026-05-04** end-to-end against real Amazon TSV/JSON across 5 stores. See `amz-reporting-server/docs/REPORT_CALIBRATION_STATUS.md` for per-report findings.
 
+### Deliberate naming exceptions
+
+Most `rpt_*` tables are named after the Amazon report type that feeds them. These are not, on purpose:
+
+| Table(s) | Why it keeps a non-Amazon name |
+|---|---|
+| `rpt_orders` | **Two** report types feed it — `GET_FLAT_FILE_ALL_ORDERS_DATA_BY_ORDER_DATE_GENERAL` (one-shot 30-day backfill at onboard) and `..._BY_LAST_UPDATE_GENERAL` (hourly incremental). No single report type to name it after. |
+| `rpt_sp_purchased_products` | Also fed by two report types. |
+| `rpt_sp_*`, `rpt_sb_*`, `rpt_sd_*` | Ads-API tables — the names are already Amazon-derived. |
+| `rpt_dk_*` | Data Kiosk GraphQL datasets, not SP-API report types. |
+| `rpt_noon_*` | noon.com, not Amazon. |
+| `listing_images` | Enrichment cache, not a report. |
+| `rpt_inventory_age`, `rpt_inventory_adjustments`, `rpt_sales_and_traffic` | Retired — kept under legacy names for legacy reads only. |
+| `rpt_fba_shipments`, `rpt_seller_feedback` | PII, frozen — no writes, not renamed. |
+
+Every **renamed** table's old name survives as a read-only compat `VIEW`, so pre-existing SQL keeps working. Write new queries against the canonical name.
+
 ### Best Practice: Listings + Images (single LEFT JOIN)
 
-`rpt_listings_snapshot` does **not** have `main_image_url` or `listing_status` — those live in
+`rpt_get_merchant_listings_all_data` does **not** have `main_image_url` or `listing_status` — those live in
 `listing_images`. Pull both in **one query** by LEFT-JOINing `listing_images` on
 `(store_id, country_code, seller_sku)`. The image table is a long-lived cache (no `snapshot_date`),
 so the join survives across daily snapshots.
@@ -207,13 +226,13 @@ so the join survives across daily snapshots.
 ```
 query_report_data(
     store='myStore-AE',
-    tables=['rpt_listings_snapshot'],
+    tables=['rpt_get_merchant_listings_all_data'],
     joins=[{'table': 'listing_images',
             'on': {'store_id':     'store_id',
                    'country_code': 'country_code',
                    'seller_sku':   'seller_sku'}}],
     columns=[
-        'rpt_listings_snapshot.*',                # wildcard: every snapshot col
+        'rpt_get_merchant_listings_all_data.*',                # wildcard: every snapshot col
         'listing_images.main_image_url',
         'listing_images.listing_status',
     ],
@@ -226,20 +245,20 @@ the next listings cron tick (04:10 marketplace-local) will enqueue enrichment. D
 NULL as "broken"; treat it as "not enriched yet".
 
 The same join works for any consumer that wants thumbnails next to listing-keyed data:
-- `tables=['rpt_fba_inventory_health']` + join `listing_images on (store_id, country_code, sku→seller_sku)`
+- `tables=['rpt_get_fba_myi_all_inventory_data']` + join `listing_images on (store_id, country_code, sku→seller_sku)`
 - `tables=['rpt_orders']` + join `listing_images on (store_id, sku→seller_sku)` (orders is
   cross-marketplace; the LEFT JOIN naturally drops country_code on cross-mkt stores)
 
-### Best Practice: Restock gotchas (`rpt_restock_recommendations`)
+### Best Practice: Restock gotchas (`rpt_get_fba_inventory_planning_data`)
 
 Three traps bite anyone querying restock data. All three are silent — the query "succeeds"
 and returns wrong or empty-looking results.
 
 1. **Join on `sku` — it is the canonical SKU key.** `sku` matches Amazon's report header
    (`GET_FBA_INVENTORY_PLANNING_DATA`) exactly. The old `merchant_sku` column was a legacy
-   alias and was **dropped from `rpt_restock_recommendations` on 2026-07-10** (migration in
+   alias and was **dropped from `rpt_get_fba_inventory_planning_data` on 2026-07-10** (migration in
    flight). Any older dashboard / SQL still joining or filtering on `merchant_sku` must switch
-   to `sku`. (Note: `rpt_returns` legitimately keeps its own `merchant_sku` column — this
+   to `sku`. (Note: `rpt_get_flat_file_returns_data_by_return_date` legitimately keeps its own `merchant_sku` column — this
    change is scoped to the restock table only.)
 
 2. **`days_of_supply` is NULL for no-sale SKUs — and the two query layers disagree on where
@@ -264,7 +283,7 @@ and returns wrong or empty-looking results.
 
 - `'*'`        — every column of the primary table (`tables[0]`)
 - `'tbl.*'`    — every column of `tbl` (must be in `tables` or `joins`)
-- Mix with explicit columns: `['rpt_listings_snapshot.*', 'listing_images.main_image_url']`
+- Mix with explicit columns: `['rpt_get_merchant_listings_all_data.*', 'listing_images.main_image_url']`
 
 Wildcards are ignored when `aggregations` is set — aggregated queries must name
 `group_by` columns and aggregation specs explicitly (the SQL `SELECT *, SUM(x)` shape
@@ -272,16 +291,16 @@ is rarely meaningful).
 
 ### Best Practice: NARF Country-Split FBA Inventory
 
-`rpt_afn_inventory_by_country` holds country-level FBA inventory for sellers enrolled
+`rpt_get_afn_inventory_data_by_country` holds country-level FBA inventory for sellers enrolled
 in Amazon's NARF (North America Remote Fulfillment) program. Same SKU appears once
 per country with the quantity available for local fulfillment.
 
-Pairs with `rpt_afn_inventory`:
-- `rpt_afn_inventory.afn_fulfillable_quantity` = the pan-NA pool total ("100 units in NA")
-- `rpt_afn_inventory_by_country.quantity_for_local_fulfillment` = how that pool splits
+Pairs with `rpt_get_afn_inventory_data`:
+- `rpt_get_afn_inventory_data.afn_fulfillable_quantity` = the pan-NA pool total ("100 units in NA")
+- `rpt_get_afn_inventory_data_by_country.quantity_for_local_fulfillment` = how that pool splits
   per country ("70 in US local FCs, 30 in CA local FCs")
 
-For non-NARF sellers, `rpt_afn_inventory_by_country` will simply be empty — the
+For non-NARF sellers, `rpt_get_afn_inventory_data_by_country` will simply be empty — the
 upstream Amazon report returns CANCELLED on those accounts and the system treats it
 as a successful zero-row result. Don't interpret an empty result as an error; first
 check whether the seller is enrolled in NARF.
@@ -290,14 +309,14 @@ Sample query — current US local-fulfillable inventory for a store:
 
 ```json
 {
-  "tables": ["rpt_afn_inventory_by_country"],
+  "tables": ["rpt_get_afn_inventory_data_by_country"],
   "columns": [
-    "rpt_afn_inventory_by_country.seller_sku",
-    "rpt_afn_inventory_by_country.asin",
-    "rpt_afn_inventory_by_country.quantity_for_local_fulfillment"
+    "rpt_get_afn_inventory_data_by_country.seller_sku",
+    "rpt_get_afn_inventory_data_by_country.asin",
+    "rpt_get_afn_inventory_data_by_country.quantity_for_local_fulfillment"
   ],
-  "filters": [{"column": "rpt_afn_inventory_by_country.country", "op": "eq", "value": "US"}],
-  "order_by": [{"column": "rpt_afn_inventory_by_country.quantity_for_local_fulfillment", "dir": "desc"}],
+  "filters": [{"column": "rpt_get_afn_inventory_data_by_country.country", "op": "eq", "value": "US"}],
+  "order_by": [{"column": "rpt_get_afn_inventory_data_by_country.quantity_for_local_fulfillment", "dir": "desc"}],
   "limit": 50,
   "report_date": "latest"
 }
@@ -490,4 +509,4 @@ Full list of 114 types: `flask/app/shared/report_types.py`, or call `sp_api_sear
 - Legacy/deprecated tables remain in `_meta.json` with `deprecated: true`.
 - `listing_images` is a persistent cache — one row per `(store_id, country_code, seller_sku)`,
   never reset by daily re-runs. Query without `report_date`.
-- `rpt_listings_snapshot` does not have `main_image_url` or `listing_status` — use `listing_images`.
+- `rpt_get_merchant_listings_all_data` does not have `main_image_url` or `listing_status` — use `listing_images`.
