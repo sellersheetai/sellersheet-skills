@@ -20,8 +20,8 @@
     "cron": "5 */6 * * *",
     "gotchas": [
       "JOIN KEY: use sku — it is canonical and matches Amazon's report header (GET_FBA_INVENTORY_PLANNING_DATA) exactly. The legacy `merchant_sku` alias was DROPPED from this table on 2026-07-10 (migration in flight); any older dashboard/SQL joining on merchant_sku must switch to sku. (rpt_returns keeps its own merchant_sku — scoped to restock only.)",
-      "days_of_supply is NULL for SKUs with no recent sales. Postgres sorts NULLs FIRST, so `ORDER BY days_of_supply ASC` buries the genuinely urgent low-cover SKUs under no-sale rows. Filter `days_of_supply > 0` before ordering, or use `ORDER BY days_of_supply ASC NULLS LAST`.",
-      "Amazon's replenishment columns are recommended_order_quantity + recommended_order_date. The legacy recommended_replenishment_qty exists only for pre-migration historical rows (falls into `extra` JSON) — don't rely on it for current data.",
+      "days_of_supply is NULL for no-sale SKUs. The warehouse (Postgres) sorts NULLs LAST on ASC — safe. The in-sheet SQL()/alasql layer sorts blanks FIRST — that's where unsorted-looking 'urgent' lists come from. Filter `days_of_supply > 0` in either layer (also excludes no-sale SKUs, usually the intent).",
+      "Amazon's replenishment columns are recommended_order_quantity + recommended_order_date. The legacy recommended_replenishment_qty is still a real column, but only pre-migration historical rows populate it — don't rely on it for current data.",
       "When recommended_order_quantity is NULL (Amazon didn't compute a recommendation), fall back to a computed suggestion (see sellersheet-dashboard restock fallback: MAX(0, ROUND(units_shipped_t30/30 × target_cover_days) − available − inbound)) and label it as computed, not Amazon's."
     ]
   },
@@ -212,7 +212,7 @@
       "amazon_header": "recommended-order-quantity",
       "type": "int",
       "nullable": true,
-      "note": "Amazon's canonical replenishment quantity (paired with recommended_order_date). NULL when Amazon didn't compute a recommendation for the SKU/marketplace — fall back to a computed suggestion, see _meta.gotchas. Legacy recommended_replenishment_qty exists only for pre-migration historical rows (in `extra`)."
+      "note": "Amazon's canonical replenishment quantity (paired with recommended_order_date). NULL when Amazon didn't compute a recommendation for the SKU/marketplace — fall back to a computed suggestion, see _meta.gotchas. Legacy recommended_replenishment_qty is a real column but only pre-migration historical rows populate it."
     },
     {
       "db_column": "recommended_order_date",
@@ -249,7 +249,7 @@
       "amazon_header": "days-of-supply",
       "type": "decimal",
       "nullable": true,
-      "note": "NULL for SKUs with no recent sales. Postgres sorts NULLs FIRST — `ORDER BY days_of_supply ASC` buries urgent low-cover SKUs. Filter `days_of_supply > 0` or use `NULLS LAST`. See _meta.gotchas."
+      "note": "NULL for no-sale SKUs. The warehouse (Postgres) sorts NULLs LAST on ASC — safe. The in-sheet SQL()/alasql layer sorts blanks FIRST — that's where unsorted-looking 'urgent' lists come from. Filter `days_of_supply > 0` in either layer (also excludes no-sale SKUs, usually the intent). See _meta.gotchas."
     },
     {
       "db_column": "days_of_supply_at_amazon_fulfillment_network",

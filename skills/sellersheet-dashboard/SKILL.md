@@ -90,6 +90,17 @@ visible tabs   (emerald + navy + chips + agent insights)
 operator reads & decides
 ```
 
+**`SQL()` only works in a provisioned workbook.** It is a SellerSheet add-on custom function — it
+only evaluates in workbooks where the add-on is enabled (a human opened **Extensions → SellerSheet
+→ Open** once in *that* workbook). Arbitrary MCP-created spreadsheets show `#NAME?` forever; for
+those, write pre-computed values or plain formulas instead. After writing a `SQL()` formula, a
+spill cell may read back empty for a few seconds while Sheets recalculates — re-read before
+concluding failure.
+
+**`IMAGE()` caveat.** Under some conditions an `IMAGE()` cell written by the service account
+renders as `#REF!` ("use desktop browser") for the human until they open the workbook in a desktop
+browser. Reading such a cell back via MCP requires `value_render_option='FORMULA'`.
+
 `_status`, `_agent_notes`, `_agent_log` tabs cross-cut the three layers — they record where every cell came from, when, and by whom. See `reference/freshness-system.md` and `reference/agent-insights.md`.
 
 ## The standard 8 visible tabs (in order)

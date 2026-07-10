@@ -124,6 +124,15 @@ and a denormalized `country_code` column (added 2026-05-20). `country_code` is
 populated on every row, so `country_code = 'US'` is an equivalent, simpler
 filter than reverse-mapping `profile_id`.
 
+#### Ads tables are daily performance rows, not a campaign inventory
+
+`rpt_sp_*` / `rpt_sb_*` / `rpt_sd_*` are **DAILY PERFORMANCE rows** — only campaigns with
+delivery in the window appear (live count 47 ENABLED vs 21 in the warehouse, observed). For a
+complete campaign inventory or count, use the live `ads_sp_campaigns` (`ads_sb_campaigns` /
+`ads_sd_campaigns`) API instead. Also: `report_date='latest'` pins to the newest **single** day,
+which is often a zero-spend partial day — use `report_date='all'` plus explicit date filters for
+any cost or performance analysis.
+
 **Just pass `store='myStore-US'`. Don't filter on the marketplace column directly** — the column name differs per table (`sales_channel` / `country_code` / `marketplace_id` / `profile_id` / `country` / `amazon_store`) and not every table exposes `country_code` (e.g. `rpt_orders` uses `sales_channel='Amazon.com'`, no `country_code` column).
 
 ### Aggregations — get totals, not raw rows
@@ -233,12 +242,12 @@ and returns wrong or empty-looking results.
    to `sku`. (Note: `rpt_returns` legitimately keeps its own `merchant_sku` column — this
    change is scoped to the restock table only.)
 
-2. **`days_of_supply` is NULL for no-sale SKUs — NULLs sort FIRST in Postgres.** A SKU with no
-   recent sales has `days_of_supply = NULL`. `ORDER BY days_of_supply ASC` (the natural "most
-   urgent first" sort) puts those NULLs at the very top in Postgres — so the genuinely urgent,
-   low-cover SKUs get buried below a wall of no-sale rows. Fix either way:
-   - filter `days_of_supply > 0` before ordering, **or**
-   - `ORDER BY days_of_supply ASC NULLS LAST`.
+2. **`days_of_supply` is NULL for no-sale SKUs — and the two query layers disagree on where
+   NULLs sort.** The warehouse (Postgres) sorts NULLs **LAST** on `ORDER BY days_of_supply ASC`
+   — that's safe, the urgent low-cover SKUs come first. The **in-sheet `SQL()` / alasql layer
+   sorts blanks FIRST** — that is where the unsorted-looking "urgent" lists come from: a wall of
+   no-sale rows above the SKUs that actually need attention. Filter `days_of_supply > 0` in
+   either layer (it also excludes the no-sale SKUs, which is usually the intent anyway).
 
 3. **Amazon's replenishment columns are `recommended_order_quantity` + `recommended_order_date`.**
    These are what Amazon populates on the live report. The legacy `recommended_replenishment_qty`

@@ -34,6 +34,21 @@ Only after all three pass: proceed with the skill body below.
 > **Requirements**: SellerSheet MCP tools (`mcp__claude_ai_sellersheet_<env>__*` — `<env>` is `prod` or `test` depending on which SellerSheet MCP connector is attached). For live `SQL()` and `IMAGE()` to render, the operator opens the workbook in a browser with the SellerSheet GAS add-on enabled (Extensions → SellerSheet → Open).
 > **Scope**: this skill is self-contained — production-quality conventions for color, number formats, formulas, and layout are codified across this file + `reference/` + `scripts/`. No external xlsx skill required.
 
+### `SQL()` needs the add-on provisioned in *that* workbook
+
+`SQL()` is a **SellerSheet add-on custom function** — it only evaluates in workbooks where the
+add-on is enabled (a human opened **Extensions → SellerSheet → Open** once in that workbook).
+Arbitrary MCP-created spreadsheets show `#NAME?` forever; for those, write **pre-computed values
+or plain formulas** instead. After writing a `SQL()` formula, a spill cell may read back empty for
+a few seconds while Sheets recalculates — **re-read before concluding failure**.
+
+### `IMAGE()` renders differently for the service account and the human
+
+Under some conditions an `IMAGE()` cell written by the service account renders as `#REF!` with a
+"use desktop browser" message for the human until they open the workbook in a **desktop browser**.
+Reading such a cell back via MCP requires `value_render_option='FORMULA'` — the default rendering
+returns the error, not the formula you wrote.
+
 The SellerSheet MCP wraps Google's `spreadsheets.batchUpdate` server-side; everything you do is a tool call, not a Python edit, not a manual click. This skill covers:
 
 1. **Brand visuals** — color palette, number formats, professional output standards (see `reference/brand-standards.md`)
