@@ -1,7 +1,7 @@
 ---
 name: sellersheet-dashboard
 description: Use when building or maintaining an Amazon operator dashboard on Google Sheets via SellerSheet MCP — multi-tab status views for inventory, PPC, account health, listings, profit/margin, returns, buy box, cash conversion. Triggers on phrases like "build a dashboard", "operator dashboard", "FBA dashboard", "PPC dashboard", "Amazon overview sheet", "seller dashboard", and on follow-ups like "refresh the dashboard", "add an insight", "the freshness is wrong". Composes the tab plan, applies SellerSheet brand visuals, wires `rpt_*` warehouse data → `_raw_*` tabs → `SQL()` spill → visible tabs with thumbnails, and instruments each cell with provenance + freshness so the dashboard self-explains. Builds on `sellersheet-sheets` (sheet primitives + brand palette + SQL() patterns) and `report-data` (rpt_* tables). NOT for one-off reports — use `sellersheet-sheets` directly for those.
-version: 0.8.4
+version: 0.8.5
 ---
 
 # SellerSheet Operator Dashboard
@@ -40,7 +40,7 @@ This skill assumes the operator has all of the following. If any is missing, sur
 
 ### 1. SellerSheet MCP installed
 
-The full set of `mcp__claude_ai_sellersheet_mcp__*` tools must be available — see [sellersheetai.com](https://sellersheetai.com) for setup. Confirm by attempting `get_user_context` — should return the user profile + store list.
+The full set of `mcp__claude_ai_sellersheet_<env>__*` tools must be available (`<env>` is `prod` or `test` depending on which SellerSheet MCP connector is attached) — see [sellersheetai.com](https://sellersheetai.com) for setup. Confirm by attempting `get_user_context` — should return the user profile + store list.
 
 ### 2. At least one Amazon store connected
 
@@ -154,7 +154,7 @@ When asked to build a dashboard:
 3. **`list_sheet_tabs(spreadsheet_id)`** — check the target sheet's starting state.
 4. **Create tabs in order:** README, HOME, Inventory and Restock, PPC Command, Account Health, Listing Health, Profit and Cash, Returns and Refunds, (Search & Share if BA enabled), then hidden tabs `_raw_inventory`, `_raw_listings`, `_raw_account_health`, `_raw_ppc`, `_raw_ppc_attribution`, `_raw_ppc_search_terms`, `_raw_ppc_skus`, `_raw_cogs`, `_raw_catalog`, `_raw_returns`, `_raw_buybox`, `_raw_finance`, `_config`, `_status`, `_agent_notes`, `_agent_log`.
 5. **Build `_status` first** (it's referenced by every visible tab's row-2 pill). See `reference/freshness-system.md` for the schema + how to seed.
-6. **Probe each rpt_* table** with a small `query_report_data` aggregation to learn exact column names (`merchant_sku` vs `seller_sku` vs `advertised_sku` — they differ).
+6. **Probe each rpt_* table** with a small `query_report_data` aggregation to learn exact column names (`sku` vs `seller_sku` vs `advertised_sku` — they differ; `rpt_restock_recommendations` uses `sku`, the legacy `merchant_sku` was dropped 2026-07-10).
 7. **For each non-HOME visible tab:** create the `_raw_<topic>` tab with canonical left-five columns. Populate. Anchor SQL() at the end of the visible tab with the appropriate `LIMIT N` from `reference/sql-limits.md`. Apply navy bg to the spill's header row. Use the Image-at-A JOIN pattern. Apply provenance fills from `reference/provenance-colors.md`. Add the AGENT INSIGHTS section at the right row anchor (row 150 for bounded tabs, row 400 for catalog-scaling tabs). Add the overflow footer right below the max spill extent.
 8. **HOME tab:** hand-lay KPI tiles + TOP 3 FIRES section at rows 4-8. Add `=HYPERLINK("#gid=<sheet_id>", "→ Open X")` to drill tabs (pull real `sheetId` from `list_sheet_tabs`).
 9. **Seed `_agent_notes`** with 5-10 real insights based on the data you pulled. Three top fires get `scope_key = "fire-1"`, `"fire-2"`, `"fire-3"` so they spill into HOME's TOP 3 FIRES section.

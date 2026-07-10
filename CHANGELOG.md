@@ -12,6 +12,31 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.8.5] — 2026-07-10
+
+### Fixed
+
+- **`report-data`** — added a **"Restock gotchas"** best-practice block for
+  `rpt_restock_recommendations` covering the three silent traps: (1) join on `sku` — the
+  canonical key matching Amazon's `GET_FBA_INVENTORY_PLANNING_DATA` header; the legacy
+  `merchant_sku` alias was **dropped from this table 2026-07-10**, so older dashboards/SQL
+  joining on it must switch to `sku`; (2) `days_of_supply` is NULL for no-sale SKUs and Postgres
+  sorts NULLs FIRST, so `ORDER BY days_of_supply ASC` buries urgent low-cover SKUs — filter
+  `days_of_supply > 0` or use `NULLS LAST`; (3) Amazon's replenishment columns are
+  `recommended_order_quantity` + `recommended_order_date` — the legacy
+  `recommended_replenishment_qty` exists only for pre-migration historical rows. Mirrored these
+  into `reference/rpt_restock_recommendations.json` (`_meta.gotchas`, `unique_key` and column
+  `merchant_sku`→`sku`, `nullable`/notes on `days_of_supply`, `recommended_order_quantity`,
+  `recommended_ship_in_quantity`).
+- **`sellersheet-dashboard`** — added a restock-qty null-fallback rule to
+  `reference/lint-and-rules.md`: when Amazon's recommended-qty columns are all NULL, compute
+  `suggested_ship_in = MAX(0, ROUND(units_shipped_t30/30 × target_cover_days) − available −
+  inbound)` and label it as **computed, not Amazon's**.
+- **`sellersheet-sheets`, `sellersheet-dashboard`** — corrected the stale MCP tool prefix
+  `mcp__claude_ai_sellersheet_mcp__*` to `mcp__claude_ai_sellersheet_<env>__*` (`<env>` is
+  `prod` or `test` depending on which SellerSheet MCP connector is attached) across `SKILL.md`
+  and `scripts/post-build-checklist.md`.
+
 ## [0.8.4] — 2026-07-06
 
 ### Changed
