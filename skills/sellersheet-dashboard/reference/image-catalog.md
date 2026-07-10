@@ -4,7 +4,7 @@
 
 ## `_raw_catalog` schema
 
-5 columns. One row per `(store, sku)` pair across the dashboard's stores. Populate from `listing_images` for image_url and `rpt_listings_snapshot` for product display name:
+5 columns. One row per `(store, sku)` pair across the dashboard's stores. Populate from `listing_images` for image_url and `rpt_get_merchant_listings_all_data` for product display name:
 
 | Col | Header | Notes |
 |---|---|---|

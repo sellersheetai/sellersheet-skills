@@ -1,11 +1,11 @@
 # Sparkline trend indicators (DEFERRED)
 
-> **Status: deferred until reporting-server retention improves.** The patterns below are codified for future reference. **Do not implement on a new dashboard yet** — most snapshot tables (`rpt_fba_inventory_health`, `rpt_restock_recommendations`, `rpt_account_health`) currently retain only 2-5 days of history per store, which makes 14d/30d sparklines render as flat lines or stubbed values that mislead more than they help.
+> **Status: deferred until reporting-server retention improves.** The patterns below are codified for future reference. **Do not implement on a new dashboard yet** — most snapshot tables (`rpt_get_fba_myi_all_inventory_data`, `rpt_get_fba_inventory_planning_data`, `rpt_get_v2_seller_performance_report`) currently retain only 2-5 days of history per store, which makes 14d/30d sparklines render as flat lines or stubbed values that mislead more than they help.
 
 ## Upstream data prerequisites for re-enabling sparklines
 
-1. `rpt_fba_inventory_health` must retain ≥14 daily rows per (store, sku) — today it shows the alternating-day gap pattern caused by MYI's `cancel_means_empty=True` swallowing Amazon regen-cooldown cancellations as empty completions.
-2. `rpt_account_health` must retain ≥30 daily rows per (store, marketplace) — today it's similarly sparse.
+1. `rpt_get_fba_myi_all_inventory_data` must retain ≥14 daily rows per (store, sku) — today it shows the alternating-day gap pattern caused by MYI's `cancel_means_empty=True` swallowing Amazon regen-cooldown cancellations as empty completions.
+2. `rpt_get_v2_seller_performance_report` must retain ≥30 daily rows per (store, marketplace) — today it's similarly sparse.
 3. A `rpt_fba_woc_daily` materialized view (or equivalent) would be the right target — purpose-built for trend queries instead of relying on snapshot accumulation.
 4. See investigation findings: MCP cron healthy + `consecutive_failures=0`, but data gaps real. Root cause is Amazon-side cancellation classification, not retention.
 
@@ -88,7 +88,7 @@ SPARKLINE has no native threshold-line option. Workaround: a sidecar text cell "
 
 ## Stub strategy when daily history is sparse
 
-`rpt_fba_inventory_health` and `rpt_restock_recommendations` retain only 2-5 days of snapshot history on most stores. Two paths:
+`rpt_get_fba_myi_all_inventory_data` and `rpt_get_fba_inventory_planning_data` retain only 2-5 days of snapshot history on most stores. Two paths:
 
 1. **Stub (honest):** populate the `_raw_*_daily` tab with the current value repeated N times. Sparkline renders as a flat horizontal line. Flag the limitation in README explicitly: "WoC sparklines pending — needs snapshot retention extended to 14d on the warehouse side."
 2. **Derive (more work):** reconstruct an approximate history from related deltas (e.g., compute implied WoC backwards from `units_sold_t1` running over `available_qty_today` + sold-since values).
