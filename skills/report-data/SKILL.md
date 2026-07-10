@@ -242,8 +242,8 @@ and returns wrong or empty-looking results.
 
 3. **Amazon's replenishment columns are `recommended_order_quantity` + `recommended_order_date`.**
    These are what Amazon populates on the live report. The legacy `recommended_replenishment_qty`
-   exists only for pre-migration historical rows (it falls into the `extra` JSON on this
-   new-schema table) — don't rely on it for current data. When `recommended_order_quantity` is
+   is still a real column, but only pre-migration historical rows populate it (Amazon's current
+   report no longer ships that field) — don't rely on it for current data. When `recommended_order_quantity` is
    NULL (Amazon didn't compute a recommendation for that SKU/marketplace), fall back to a
    computed suggestion — see the `sellersheet-dashboard` restock fallback rule
    (`suggested_ship_in = MAX(0, ROUND(units_shipped_t30/30 × target_cover_days) − available −
