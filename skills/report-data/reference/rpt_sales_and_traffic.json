@@ -1,6 +1,7 @@
 {
   "_meta": {
     "table": "rpt_sales_and_traffic",
+    "naming_note": "Superseded by the Data Kiosk tables (rpt_dk_sales_traffic_by_date / _by_asin). Deliberately keeps its legacy name — not renamed to an Amazon report-type name.",
     "report_type": "GET_SALES_AND_TRAFFIC_REPORT",
     "is_snapshot": false,
     "description": "Sales and Traffic by ASIN/SKU/marketplace/day. PENDING customer re-OAuth after Brand Analytics app re-submission — table will be empty until customers re-auth on the new app version. Sessions, page views, buy box %, units ordered, ordered product sales. Powers TACOS denominator (organic + paid total revenue) and conversion-rate analysis.",

@@ -1,6 +1,7 @@
 {
   "_meta": {
     "table": "rpt_sp_purchased_products",
+    "naming_note": "Deliberately NOT renamed: fed by two report types, and Ads-API table names are already Amazon-derived.",
     "report_type": "spPurchasedProduct",
     "is_snapshot": false,
     "description": "Sponsored Products purchased products report — what customers bought after clicking an SP ad.",

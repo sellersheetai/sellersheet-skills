@@ -1,6 +1,7 @@
 {
   "_meta": {
-    "table": "rpt_afn_inventory",
+    "table": "rpt_get_afn_inventory_data",
+    "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_afn_inventory` still resolves as a read-only compat VIEW; prefer `rpt_get_afn_inventory_data` in new queries.",
     "report_type": "GET_AFN_INVENTORY_DATA",
     "is_snapshot": true,
     "description": "AFN sellable inventory snapshot per SKU/FNSKU.",
@@ -53,17 +54,17 @@
   "example_query": {
     "store": "myStore-AE",
     "tables": [
-      "rpt_afn_inventory"
+      "rpt_get_afn_inventory_data"
     ],
     "columns": [
-      "rpt_afn_inventory.seller_sku",
-      "rpt_afn_inventory.fnsku",
-      "rpt_afn_inventory.asin"
+      "rpt_get_afn_inventory_data.seller_sku",
+      "rpt_get_afn_inventory_data.fnsku",
+      "rpt_get_afn_inventory_data.asin"
     ],
     "filters": [],
     "order_by": [
       {
-        "column": "rpt_afn_inventory.seller_sku",
+        "column": "rpt_get_afn_inventory_data.seller_sku",
         "dir": "asc"
       }
     ],

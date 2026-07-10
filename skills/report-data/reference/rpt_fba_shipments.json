@@ -1,6 +1,7 @@
 {
   "_meta": {
     "table": "rpt_fba_shipments",
+    "naming_note": "PII, frozen — the reporting server never writes it. Deliberately NOT renamed.",
     "report_type": "GET_AMAZON_FULFILLED_SHIPMENTS_DATA_GENERAL",
     "is_snapshot": false,
     "description": "Amazon-fulfilled shipment rows including encrypted buyer PII.",

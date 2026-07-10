@@ -1,6 +1,7 @@
 {
   "_meta": {
     "table": "rpt_inventory_age",
+    "naming_note": "RETIRED 2026-05-04. Deliberately keeps its legacy name — not renamed to an Amazon report-type name, since it exists only for legacy reads.",
     "report_type": "GET_FBA_INVENTORY_AGED_DATA",
     "is_snapshot": true,
     "description": "RETIRED 2026-05-04. Aged inventory data lives in GET_FBA_INVENTORY_PLANNING_DATA's inv_age_* buckets and GET_FBA_MYI_ALL_INVENTORY_DATA's afn-warehouse columns. Table preserved for legacy reads only.",
