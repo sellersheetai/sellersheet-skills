@@ -1,6 +1,7 @@
 {
   "_meta": {
-    "table": "rpt_suppressed_listings",
+    "table": "rpt_get_merchants_listings_fyp_report",
+    "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_suppressed_listings` still resolves as a read-only compat VIEW; prefer `rpt_get_merchants_listings_fyp_report` in new queries.",
     "report_type": "GET_MERCHANTS_LISTINGS_FYP_REPORT",
     "is_snapshot": true,
     "description": "Suppressed listings snapshot with issue reasons.",
@@ -75,17 +76,17 @@
   "example_query": {
     "store": "myStore-AE",
     "tables": [
-      "rpt_suppressed_listings"
+      "rpt_get_merchants_listings_fyp_report"
     ],
     "columns": [
-      "rpt_suppressed_listings.status",
-      "rpt_suppressed_listings.reason",
-      "rpt_suppressed_listings.sku"
+      "rpt_get_merchants_listings_fyp_report.status",
+      "rpt_get_merchants_listings_fyp_report.reason",
+      "rpt_get_merchants_listings_fyp_report.sku"
     ],
     "filters": [],
     "order_by": [
       {
-        "column": "rpt_suppressed_listings.status",
+        "column": "rpt_get_merchants_listings_fyp_report.status",
         "dir": "asc"
       }
     ],

@@ -51,7 +51,7 @@ The dashboard isn't complete without these for each store's marketplace:
 | Marketplace | Required tiles |
 |---|---|
 | AE / SA / KW / BH / OM | Ramadan + Eid calendar (next-peak countdown), GCC `ship_to_country` split from `rpt_orders`, VAT settings link if invoice-defect > 0% |
-| AU / NZ | LTSF aging buckets (181 / 271 / 365 d) from `rpt_fba_inventory_health`, GST registration threshold tracker (AUD 75k), Boxing Day / Click Frenzy / EOFY calendar |
+| AU / NZ | LTSF aging buckets (181 / 271 / 365 d) from `rpt_get_fba_myi_all_inventory_data`, GST registration threshold tracker (AUD 75k), Boxing Day / Click Frenzy / EOFY calendar |
 | US / CA / MX / BR | Prime Day / Black Friday / Cyber Monday calendar, state-level demand (US) |
 | UK / DE / FR / IT / ES / NL / PL / SE / BE / IE | Prime Day / Black Friday / Christmas calendar, VAT-OSS reconciliation row if EU operator |
 | JP | Rakuten Super Sale / Amazon Tokimeki / Golden Week calendar, JCT registration tracker |

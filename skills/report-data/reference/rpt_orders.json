@@ -1,6 +1,7 @@
 {
   "_meta": {
     "table": "rpt_orders",
+    "naming_note": "Deliberately NOT renamed to an Amazon report-type name: TWO report types feed this table — GET_FLAT_FILE_ALL_ORDERS_DATA_BY_ORDER_DATE_GENERAL (one-shot 30-day backfill at onboard) and GET_FLAT_FILE_ALL_ORDERS_DATA_BY_LAST_UPDATE_GENERAL (hourly incremental).",
     "report_type": "GET_FLAT_FILE_ALL_ORDERS_DATA_BY_ORDER_DATE_GENERAL",
     "is_snapshot": false,
     "description": "Order-level flat file report with item pricing and fulfillment details.",

@@ -12,6 +12,59 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.8.6] — 2026-07-10
+
+### Changed
+
+- **`report-data`** — **`rpt_*` table names are now the Amazon report types.** 17 physical
+  tables were renamed server-side (migration `d5f7a9c1e3b5`) so the table name is `rpt_` +
+  the `report_type` that feeds it, lowercased — an agent reading Amazon's docs recognises the
+  table without a lookup. Highlights: `rpt_listings_snapshot` → `rpt_get_merchant_listings_all_data`,
+  `rpt_restock_recommendations` → `rpt_get_fba_inventory_planning_data`, `rpt_account_health` →
+  `rpt_get_v2_seller_performance_report`, `rpt_fba_inventory_health` →
+  `rpt_get_fba_myi_all_inventory_data`, `rpt_settlements` →
+  `rpt_get_v2_settlement_report_data_flat_file_v2`. **Every old name still resolves as a
+  read-only compat `VIEW`,** so existing SQL keeps working — but new queries should use the
+  canonical name. The 17 reference JSONs were renamed to match, and each carries a
+  `_meta.naming_note`. A new **Deliberate naming exceptions** section documents the tables that
+  keep non-Amazon names on purpose: `rpt_orders` (fed by **two** order report types),
+  `rpt_sp_purchased_products`, all ads `rpt_sp_*`/`rpt_sb_*`/`rpt_sd_*`, `rpt_dk_*`,
+  `rpt_noon_*`, retired tables, PII tables, and `listing_images`.
+  Swept across `report-data`, `sellersheet-dashboard`, and `amazon-report`.
+
+### Fixed
+
+- **`report-data`, `sellersheet-dashboard`** — the `days_of_supply` NULL-sorting gotcha was
+  **misattributed to Postgres**. Postgres sorts NULLs **LAST** on `ORDER BY ... ASC` — the
+  warehouse layer is safe. It is the **in-sheet `SQL()`/alasql layer that sorts blanks FIRST**,
+  which is where the unsorted-looking "urgent" restock lists actually come from. Corrected in
+  `report-data/SKILL.md`, `reference/rpt_get_fba_inventory_planning_data.json` (`_meta.gotchas`
+  + the `days_of_supply` column note), and `sellersheet-dashboard/reference/lint-and-rules.md`.
+  Guidance unchanged in effect: filter `days_of_supply > 0` in either layer.
+- **`report-data`, `amazon-ads`** — documented that `rpt_sp_*` / `rpt_sb_*` / `rpt_sd_*` are
+  **daily performance rows, not a campaign inventory**. Only campaigns with delivery in the
+  window get a row (live count 47 ENABLED vs 21 present in the warehouse, observed), so never
+  derive a campaign count from them — call the live `ads_sp_campaigns` / `ads_sb_campaigns` /
+  `ads_sd_campaigns` API. Also: `report_date='latest'` pins to the newest **single** day, often
+  a zero-spend partial day — use `report_date='all'` + date filters for cost/perf analysis.
+- **`sellersheet-sheets`, `sellersheet-dashboard`** — added the **`SQL()` provisioning caveat**:
+  `SQL()` is a SellerSheet add-on custom function and only evaluates in workbooks where a human
+  has opened Extensions → SellerSheet → Open at least once. Arbitrary MCP-created spreadsheets
+  show `#NAME?` permanently — write pre-computed values or plain formulas there instead. Also
+  noted that a freshly written `SQL()` spill cell can read back empty for a few seconds during
+  recalc; re-read before concluding failure.
+- **`sellersheet-sheets`, `sellersheet-dashboard`** — added the **`IMAGE()` caveat**: under some
+  conditions a service-account-written `IMAGE()` cell renders as `#REF!` ("use desktop browser")
+  for the human until the workbook is opened in a desktop browser, and reading it back via MCP
+  requires `value_render_option='FORMULA'`.
+- **`report-data`** — `_meta.json` listed `rpt_fba_inventory_health` with report type
+  `GET_FBA_INVENTORY_PLANNING_DATA`, copied from the restock entry. It is
+  `GET_FBA_MYI_ALL_INVENTORY_DATA`; the two reports ship different column sets and must never be
+  cross-pollinated. Exposed by the rename sweep.
+- **`report-data`** — dropped the stale "`recommended_replenishment_qty` falls into `extra` JSON"
+  wording left in `reference/rpt_get_fba_inventory_planning_data.json` after 0.8.5 established
+  that it is a real column.
+
 ## [0.8.5] — 2026-07-10
 
 ### Fixed

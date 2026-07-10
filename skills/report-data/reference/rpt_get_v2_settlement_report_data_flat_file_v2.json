@@ -1,6 +1,7 @@
 {
   "_meta": {
-    "table": "rpt_settlements",
+    "table": "rpt_get_v2_settlement_report_data_flat_file_v2",
+    "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_settlements` still resolves as a read-only compat VIEW; prefer `rpt_get_v2_settlement_report_data_flat_file_v2` in new queries.",
     "report_type": "GET_V2_SETTLEMENT_REPORT_DATA_FLAT_FILE_V2",
     "is_snapshot": false,
     "description": "Settlement flat file rows from Amazon poll-only delivery.",
@@ -189,17 +190,17 @@
   "example_query": {
     "store": "myStore-AE",
     "tables": [
-      "rpt_settlements"
+      "rpt_get_v2_settlement_report_data_flat_file_v2"
     ],
     "columns": [
-      "rpt_settlements.settlement_id",
-      "rpt_settlements.settlement_start_date",
-      "rpt_settlements.settlement_end_date"
+      "rpt_get_v2_settlement_report_data_flat_file_v2.settlement_id",
+      "rpt_get_v2_settlement_report_data_flat_file_v2.settlement_start_date",
+      "rpt_get_v2_settlement_report_data_flat_file_v2.settlement_end_date"
     ],
     "filters": [],
     "order_by": [
       {
-        "column": "rpt_settlements.settlement_id",
+        "column": "rpt_get_v2_settlement_report_data_flat_file_v2.settlement_id",
         "dir": "asc"
       }
     ],

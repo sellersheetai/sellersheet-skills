@@ -1,6 +1,7 @@
 {
   "_meta": {
-    "table": "rpt_fba_reimbursements",
+    "table": "rpt_get_fba_reimbursements_data",
+    "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_fba_reimbursements` still resolves as a read-only compat VIEW; prefer `rpt_get_fba_reimbursements_data` in new queries.",
     "report_type": "GET_FBA_REIMBURSEMENTS_DATA",
     "is_snapshot": false,
     "description": "FBA reimbursement events and amounts.",
@@ -113,17 +114,17 @@
   "example_query": {
     "store": "myStore-AE",
     "tables": [
-      "rpt_fba_reimbursements"
+      "rpt_get_fba_reimbursements_data"
     ],
     "columns": [
-      "rpt_fba_reimbursements.approval_date",
-      "rpt_fba_reimbursements.reimbursement_id",
-      "rpt_fba_reimbursements.case_id"
+      "rpt_get_fba_reimbursements_data.approval_date",
+      "rpt_get_fba_reimbursements_data.reimbursement_id",
+      "rpt_get_fba_reimbursements_data.case_id"
     ],
     "filters": [],
     "order_by": [
       {
-        "column": "rpt_fba_reimbursements.approval_date",
+        "column": "rpt_get_fba_reimbursements_data.approval_date",
         "dir": "asc"
       }
     ],
