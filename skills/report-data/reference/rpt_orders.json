@@ -1,316 +1,386 @@
 {
-  "_meta": {
-    "table": "rpt_orders",
-    "naming_note": "Deliberately NOT renamed to an Amazon report-type name: TWO report types feed this table — GET_FLAT_FILE_ALL_ORDERS_DATA_BY_ORDER_DATE_GENERAL (one-shot 30-day backfill at onboard) and GET_FLAT_FILE_ALL_ORDERS_DATA_BY_LAST_UPDATE_GENERAL (hourly incremental).",
-    "report_type": "GET_FLAT_FILE_ALL_ORDERS_DATA_BY_ORDER_DATE_GENERAL",
-    "is_snapshot": false,
-    "description": "Order-level flat file report with item pricing and fulfillment details.",
-    "pii": false,
-    "queryable": true,
-    "deprecated": false,
-    "strategy": "request",
-    "date_column": "report_date",
-    "unique_key": [
-      "store_id",
-      "amazon_order_id",
-      "sku"
-    ],
-    "cron": "0 * * * *"
-  },
-  "columns": [
-    {
-      "db_column": "amazon_order_id",
-      "amazon_header": "amazon-order-id",
-      "type": "str"
-    },
-    {
-      "db_column": "merchant_order_id",
-      "amazon_header": "merchant-order-id",
-      "type": "str"
-    },
-    {
-      "db_column": "purchase_date",
-      "amazon_header": "purchase-date",
-      "type": "datetime"
-    },
-    {
-      "db_column": "last_updated_date",
-      "amazon_header": "last-updated-date",
-      "type": "datetime"
-    },
-    {
-      "db_column": "order_status",
-      "amazon_header": "order-status",
-      "type": "str"
-    },
-    {
-      "db_column": "fulfillment_channel",
-      "amazon_header": "fulfillment-channel",
-      "type": "str"
-    },
-    {
-      "db_column": "sales_channel",
-      "amazon_header": "sales-channel",
-      "type": "str"
-    },
-    {
-      "db_column": "order_channel",
-      "amazon_header": "order-channel",
-      "type": "str"
-    },
-    {
-      "db_column": "ship_service_level",
-      "amazon_header": "ship-service-level",
-      "type": "str"
-    },
-    {
-      "db_column": "product_name",
-      "amazon_header": "product-name",
-      "type": "str"
-    },
-    {
-      "db_column": "sku",
-      "amazon_header": "sku",
-      "type": "str"
-    },
-    {
-      "db_column": "asin",
-      "amazon_header": "asin",
-      "type": "str"
-    },
-    {
-      "db_column": "item_status",
-      "amazon_header": "item-status",
-      "type": "str"
-    },
-    {
-      "db_column": "quantity",
-      "amazon_header": "quantity",
-      "type": "int"
-    },
-    {
-      "db_column": "currency",
-      "amazon_header": "currency",
-      "type": "str"
-    },
-    {
-      "db_column": "item_price",
-      "amazon_header": "item-price",
-      "type": "decimal"
-    },
-    {
-      "db_column": "item_tax",
-      "amazon_header": "item-tax",
-      "type": "decimal"
-    },
-    {
-      "db_column": "shipping_price",
-      "amazon_header": "shipping-price",
-      "type": "decimal"
-    },
-    {
-      "db_column": "shipping_tax",
-      "amazon_header": "shipping-tax",
-      "type": "decimal"
-    },
-    {
-      "db_column": "gift_wrap_price",
-      "amazon_header": "gift-wrap-price",
-      "type": "decimal"
-    },
-    {
-      "db_column": "gift_wrap_tax",
-      "amazon_header": "gift-wrap-tax",
-      "type": "decimal"
-    },
-    {
-      "db_column": "item_promotion_discount",
-      "amazon_header": "item-promotion-discount",
-      "type": "decimal"
-    },
-    {
-      "db_column": "ship_promotion_discount",
-      "amazon_header": "ship-promotion-discount",
-      "type": "decimal"
-    },
-    {
-      "db_column": "ship_city",
-      "amazon_header": "ship-city",
-      "type": "str"
-    },
-    {
-      "db_column": "ship_state",
-      "amazon_header": "ship-state",
-      "type": "str"
-    },
-    {
-      "db_column": "ship_postal_code",
-      "amazon_header": "ship-postal-code",
-      "type": "str"
-    },
-    {
-      "db_column": "ship_country",
-      "amazon_header": "ship-country",
-      "type": "str"
-    },
-    {
-      "db_column": "promotion_ids",
-      "amazon_header": "promotion-ids",
-      "type": "str"
-    },
-    {
-      "db_column": "is_business_order",
-      "amazon_header": "is-business-order",
-      "type": "str",
-      "values": ["true", "false"],
-      "note": "Use to filter B2B vs B2C orders"
-    },
-    {
-      "db_column": "number_of_items",
-      "amazon_header": "number-of-items",
-      "type": "int",
-      "note": "Populated on US and CA marketplaces (verified 2026-05-20). NULL on most EU/AE/IN marketplaces — Amazon ships the column but leaves it empty there."
-    },
-    {
-      "db_column": "price_designation",
-      "amazon_header": "price-designation",
-      "type": "str",
-      "note": "EU/US — 'BusinessPrice' on B2B-specific pricing"
-    },
-    {
-      "db_column": "buyer_company_name",
-      "amazon_header": "buyer-company-name",
-      "type": "str",
-      "note": "EU/AE B2B"
-    },
-    {
-      "db_column": "purchase_order_number",
-      "amazon_header": "purchase-order-number",
-      "type": "str",
-      "note": "US B2B"
-    },
-    {
-      "db_column": "buyer_tax_registration_country",
-      "amazon_header": "buyer-tax-registration-country",
-      "type": "str",
-      "note": "AE"
-    },
-    {
-      "db_column": "buyer_tax_registration_type",
-      "amazon_header": "buyer-tax-registration-type",
-      "type": "str",
-      "note": "AE"
-    },
-    {
-      "db_column": "tax_collection_model",
-      "amazon_header": "tax-collection-model",
-      "type": "str",
-      "note": "Tax-remittance model, e.g. 'MarketplaceFacilitator'. US/UK/IE/ES. Promoted 2026-05-20."
-    },
-    {
-      "db_column": "tax_collection_responsible_party",
-      "amazon_header": "tax-collection-responsible-party",
-      "type": "str",
-      "note": "Who remits tax, e.g. 'Amazon Services, Inc.'. US/UK/IE/ES. Promoted 2026-05-20."
-    },
-    {
-      "db_column": "is_exchange_order",
-      "amazon_header": "is-exchange-order",
-      "type": "str",
-      "values": ["true", "false"],
-      "note": "US. Promoted 2026-05-20."
-    },
-    {
-      "db_column": "is_replacement_order",
-      "amazon_header": "is-replacement-order",
-      "type": "str",
-      "values": ["true", "false"],
-      "note": "US. Promoted 2026-05-20."
-    },
-    {
-      "db_column": "is_transparency",
-      "amazon_header": "is-transparency",
-      "type": "str",
-      "values": ["true", "false"],
-      "note": "Amazon Transparency program. US. Promoted 2026-05-20."
-    },
-    {
-      "db_column": "payment_method_details",
-      "amazon_header": "payment-method-details",
-      "type": "str",
-      "note": "Payment method detail (e.g. 'Standard'). US. Promoted 2026-05-20."
-    },
-    {
-      "db_column": "item_amazon_funded_promotion",
-      "amazon_header": "item-amazon-funded-promotion",
-      "type": "str",
-      "values": ["true", "false"],
-      "note": "MX. Promoted 2026-05-20."
-    },
-    {
-      "db_column": "amazon_programs",
-      "amazon_header": "amazon-programs",
-      "type": "str",
-      "note": "Amazon program enrollment tags for the order item. UK. Promoted 2026-05-20."
-    },
-    {
-      "db_column": "fulfilled_by",
-      "amazon_header": "fulfilled-by",
-      "type": "str",
-      "note": "India-specific fulfilment attribution. IN. Promoted 2026-05-20."
-    },
-    {
-      "db_column": "is_iba",
-      "amazon_header": "is-iba",
-      "type": "str",
-      "values": ["true", "false"],
-      "note": "Invoice-by-Amazon flag. All marketplaces. Promoted 2026-05-20 (was in extra)."
-    },
-    {
-      "db_column": "is_buyer_requested_cancellation",
-      "amazon_header": "is-buyer-requested-cancellation",
-      "type": "str",
-      "values": ["true", "false"],
-      "note": "Promoted 2026-05-20 (was in extra)."
-    },
-    {
-      "db_column": "buyer_requested_cancel_reason",
-      "amazon_header": "buyer-requested-cancel-reason",
-      "type": "str",
-      "note": "Promoted 2026-05-20 (was in extra)."
-    },
-    {
-      "db_column": "signature_confirmation_recommended",
-      "amazon_header": "signature-confirmation-recommended",
-      "type": "str",
-      "values": ["true", "false"],
-      "note": "US. Promoted 2026-05-20 (was in extra)."
-    },
-    {
-      "db_column": "extra",
-      "amazon_header": "(unrecognized columns + intentional opt-outs)",
-      "type": "json",
-      "note": "Calibrated 2026-05-20: 13 columns promoted to first-class columns. Still kept in extra: `cpf` (Brazilian buyer tax ID — deliberately NOT promoted, buyer PII), `item-extensions-data` (always empty), `order-invoice-type` (not observed on any marketplace). Read via SQL JSON operators if needed: `extra ->> 'cpf'`."
-    }
+ "_meta": {
+  "table": "rpt_orders",
+  "naming_note": "Deliberately NOT renamed to an Amazon report-type name: TWO report types feed this table — GET_FLAT_FILE_ALL_ORDERS_DATA_BY_ORDER_DATE_GENERAL (one-shot 30-day backfill at onboard) and GET_FLAT_FILE_ALL_ORDERS_DATA_BY_LAST_UPDATE_GENERAL (hourly incremental).",
+  "report_type": "GET_FLAT_FILE_ALL_ORDERS_DATA_BY_ORDER_DATE_GENERAL",
+  "is_snapshot": false,
+  "description": "Order-level flat file report with item pricing and fulfillment details.",
+  "pii": false,
+  "queryable": true,
+  "deprecated": false,
+  "strategy": "request",
+  "date_column": "report_date",
+  "unique_key": [
+   "store_id",
+   "amazon_order_id",
+   "sku",
+   "order_item_id"
   ],
-  "example_query": {
-    "store": "myStore-AE",
-    "tables": [
-      "rpt_orders"
-    ],
-    "columns": [
-      "rpt_orders.amazon_order_id",
-      "rpt_orders.merchant_order_id",
-      "rpt_orders.purchase_date"
-    ],
-    "filters": [],
-    "order_by": [
-      {
-        "column": "rpt_orders.amazon_order_id",
-        "dir": "asc"
-      }
-    ],
-    "limit": 100,
-    "report_date": "latest"
+  "cron": "0 * * * *"
+ },
+ "columns": [
+  {
+   "db_column": "amazon_order_id",
+   "amazon_header": "amazon-order-id",
+   "type": "str"
+  },
+  {
+   "db_column": "merchant_order_id",
+   "amazon_header": "merchant-order-id",
+   "type": "str"
+  },
+  {
+   "db_column": "purchase_date",
+   "amazon_header": "purchase-date",
+   "type": "datetime"
+  },
+  {
+   "db_column": "last_updated_date",
+   "amazon_header": "last-updated-date",
+   "type": "datetime"
+  },
+  {
+   "db_column": "order_status",
+   "amazon_header": "order-status",
+   "type": "str"
+  },
+  {
+   "db_column": "fulfillment_channel",
+   "amazon_header": "fulfillment-channel",
+   "type": "str"
+  },
+  {
+   "db_column": "sales_channel",
+   "amazon_header": "sales-channel",
+   "type": "str"
+  },
+  {
+   "db_column": "order_channel",
+   "amazon_header": "order-channel",
+   "type": "str"
+  },
+  {
+   "db_column": "ship_service_level",
+   "amazon_header": "ship-service-level",
+   "type": "str"
+  },
+  {
+   "db_column": "product_name",
+   "amazon_header": "product-name",
+   "type": "str"
+  },
+  {
+   "db_column": "sku",
+   "amazon_header": "sku",
+   "type": "str"
+  },
+  {
+   "db_column": "asin",
+   "amazon_header": "asin",
+   "type": "str"
+  },
+  {
+   "db_column": "item_status",
+   "amazon_header": "item-status",
+   "type": "str"
+  },
+  {
+   "db_column": "quantity",
+   "amazon_header": "quantity",
+   "type": "int"
+  },
+  {
+   "db_column": "currency",
+   "amazon_header": "currency",
+   "type": "str"
+  },
+  {
+   "db_column": "item_price",
+   "amazon_header": "item-price",
+   "type": "decimal"
+  },
+  {
+   "db_column": "item_tax",
+   "amazon_header": "item-tax",
+   "type": "decimal"
+  },
+  {
+   "db_column": "shipping_price",
+   "amazon_header": "shipping-price",
+   "type": "decimal"
+  },
+  {
+   "db_column": "shipping_tax",
+   "amazon_header": "shipping-tax",
+   "type": "decimal"
+  },
+  {
+   "db_column": "gift_wrap_price",
+   "amazon_header": "gift-wrap-price",
+   "type": "decimal"
+  },
+  {
+   "db_column": "gift_wrap_tax",
+   "amazon_header": "gift-wrap-tax",
+   "type": "decimal"
+  },
+  {
+   "db_column": "item_promotion_discount",
+   "amazon_header": "item-promotion-discount",
+   "type": "decimal"
+  },
+  {
+   "db_column": "ship_promotion_discount",
+   "amazon_header": "ship-promotion-discount",
+   "type": "decimal"
+  },
+  {
+   "db_column": "ship_city",
+   "amazon_header": "ship-city",
+   "type": "str"
+  },
+  {
+   "db_column": "ship_state",
+   "amazon_header": "ship-state",
+   "type": "str"
+  },
+  {
+   "db_column": "ship_postal_code",
+   "amazon_header": "ship-postal-code",
+   "type": "str"
+  },
+  {
+   "db_column": "ship_country",
+   "amazon_header": "ship-country",
+   "type": "str"
+  },
+  {
+   "db_column": "promotion_ids",
+   "amazon_header": "promotion-ids",
+   "type": "str"
+  },
+  {
+   "db_column": "is_business_order",
+   "amazon_header": "is-business-order",
+   "type": "str",
+   "values": [
+    "true",
+    "false"
+   ],
+   "note": "Use to filter B2B vs B2C orders"
+  },
+  {
+   "db_column": "number_of_items",
+   "amazon_header": "number-of-items",
+   "type": "int",
+   "note": "Populated on US and CA marketplaces (verified 2026-05-20). NULL on most EU/AE/IN marketplaces — Amazon ships the column but leaves it empty there."
+  },
+  {
+   "db_column": "price_designation",
+   "amazon_header": "price-designation",
+   "type": "str",
+   "note": "EU/US — 'BusinessPrice' on B2B-specific pricing"
+  },
+  {
+   "db_column": "buyer_company_name",
+   "amazon_header": "buyer-company-name",
+   "type": "str",
+   "note": "EU/AE B2B"
+  },
+  {
+   "db_column": "purchase_order_number",
+   "amazon_header": "purchase-order-number",
+   "type": "str",
+   "note": "US B2B"
+  },
+  {
+   "db_column": "buyer_tax_registration_country",
+   "amazon_header": "buyer-tax-registration-country",
+   "type": "str",
+   "note": "AE"
+  },
+  {
+   "db_column": "buyer_tax_registration_type",
+   "amazon_header": "buyer-tax-registration-type",
+   "type": "str",
+   "note": "AE"
+  },
+  {
+   "db_column": "tax_collection_model",
+   "amazon_header": "tax-collection-model",
+   "type": "str",
+   "note": "Tax-remittance model, e.g. 'MarketplaceFacilitator'. US/UK/IE/ES. Promoted 2026-05-20."
+  },
+  {
+   "db_column": "tax_collection_responsible_party",
+   "amazon_header": "tax-collection-responsible-party",
+   "type": "str",
+   "note": "Who remits tax, e.g. 'Amazon Services, Inc.'. US/UK/IE/ES. Promoted 2026-05-20."
+  },
+  {
+   "db_column": "is_exchange_order",
+   "amazon_header": "is-exchange-order",
+   "type": "str",
+   "values": [
+    "true",
+    "false"
+   ],
+   "note": "US. Promoted 2026-05-20."
+  },
+  {
+   "db_column": "is_replacement_order",
+   "amazon_header": "is-replacement-order",
+   "type": "str",
+   "values": [
+    "true",
+    "false"
+   ],
+   "note": "US. Promoted 2026-05-20."
+  },
+  {
+   "db_column": "is_transparency",
+   "amazon_header": "is-transparency",
+   "type": "str",
+   "values": [
+    "true",
+    "false"
+   ],
+   "note": "Amazon Transparency program. US. Promoted 2026-05-20."
+  },
+  {
+   "db_column": "payment_method_details",
+   "amazon_header": "payment-method-details",
+   "type": "str",
+   "note": "Payment method detail (e.g. 'Standard'). US. Promoted 2026-05-20."
+  },
+  {
+   "db_column": "item_amazon_funded_promotion",
+   "amazon_header": "item-amazon-funded-promotion",
+   "type": "str",
+   "values": [
+    "true",
+    "false"
+   ],
+   "note": "MX. Promoted 2026-05-20."
+  },
+  {
+   "db_column": "amazon_programs",
+   "amazon_header": "amazon-programs",
+   "type": "str",
+   "note": "Amazon program enrollment tags for the order item. UK. Promoted 2026-05-20."
+  },
+  {
+   "db_column": "fulfilled_by",
+   "amazon_header": "fulfilled-by",
+   "type": "str",
+   "note": "India-specific fulfilment attribution. IN. Promoted 2026-05-20."
+  },
+  {
+   "db_column": "is_iba",
+   "amazon_header": "is-iba",
+   "type": "str",
+   "values": [
+    "true",
+    "false"
+   ],
+   "note": "Invoice-by-Amazon flag. All marketplaces. Promoted 2026-05-20 (was in extra)."
+  },
+  {
+   "db_column": "is_buyer_requested_cancellation",
+   "amazon_header": "is-buyer-requested-cancellation",
+   "type": "str",
+   "values": [
+    "true",
+    "false"
+   ],
+   "note": "Promoted 2026-05-20 (was in extra)."
+  },
+  {
+   "db_column": "buyer_requested_cancel_reason",
+   "amazon_header": "buyer-requested-cancel-reason",
+   "type": "str",
+   "note": "Promoted 2026-05-20 (was in extra)."
+  },
+  {
+   "db_column": "signature_confirmation_recommended",
+   "amazon_header": "signature-confirmation-recommended",
+   "type": "str",
+   "values": [
+    "true",
+    "false"
+   ],
+   "note": "US. Promoted 2026-05-20 (was in extra)."
+  },
+  {
+   "db_column": "extra",
+   "amazon_header": "(unrecognized columns + intentional opt-outs)",
+   "type": "json",
+   "note": "Documented opt-outs (2026-07-11): item-extensions-data (always empty), order-invoice-type (never observed). cpf (Brazilian buyer tax ID) is SUPPRESSED at the parser — never stored, not even here."
+  },
+  {
+   "db_column": "order_item_id",
+   "amazon_header": "order-item-id",
+   "type": "str"
+  },
+  {
+   "db_column": "is_prime",
+   "amazon_header": "is-prime",
+   "type": "str"
+  },
+  {
+   "db_column": "is_amazon_invoiced",
+   "amazon_header": "is-amazon-invoiced",
+   "type": "str"
+  },
+  {
+   "db_column": "vat_exclusive_item_price",
+   "amazon_header": "vat-exclusive-item-price",
+   "type": "decimal"
+  },
+  {
+   "db_column": "vat_exclusive_shipping_price",
+   "amazon_header": "vat-exclusive-shipping-price",
+   "type": "decimal"
+  },
+  {
+   "db_column": "vat_exclusive_giftwrap_price",
+   "amazon_header": "vat-exclusive-giftwrap-price",
+   "type": "decimal"
+  },
+  {
+   "db_column": "item_total",
+   "amazon_header": "item-total",
+   "type": "decimal"
+  },
+  {
+   "db_column": "amount_paid_by_buyer",
+   "amazon_header": "amount-paid-by-buyer",
+   "type": "decimal"
+  },
+  {
+   "db_column": "original_order_id",
+   "amazon_header": "original-order-id",
+   "type": "str"
   }
+ ],
+ "example_query": {
+  "store": "myStore-AE",
+  "tables": [
+   "rpt_orders"
+  ],
+  "columns": [
+   "rpt_orders.amazon_order_id",
+   "rpt_orders.merchant_order_id",
+   "rpt_orders.purchase_date"
+  ],
+  "filters": [],
+  "order_by": [
+   {
+    "column": "rpt_orders.amazon_order_id",
+    "dir": "asc"
+   }
+  ],
+  "limit": 100,
+  "report_date": "latest"
+ }
 }

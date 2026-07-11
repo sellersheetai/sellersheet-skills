@@ -1,67 +1,203 @@
 {
-  "_meta": {
-    "table": "rpt_get_fba_myi_all_inventory_data",
-    "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_fba_inventory_health` still resolves as a read-only compat VIEW; prefer `rpt_get_fba_myi_all_inventory_data` in new queries.",
-    "report_type": "GET_FBA_MYI_ALL_INVENTORY_DATA",
-    "is_snapshot": true,
-    "description": "FBA MYI inventory snapshot per (sku, marketplace, condition). One row per Amazon-fulfilled SKU with afn-* quantity buckets, listing-exists flags, per-unit volume.",
-    "pii": false,
-    "queryable": true,
-    "deprecated": false,
-    "strategy": "request",
-    "date_column": "snapshot_date",
-    "unique_key": [
-      "store_id",
-      "snapshot_date",
-      "sku",
-      "condition",
-      "country_code"
-    ],
-    "cron": "15 */6 * * *"
-  },
-  "columns": [
-    {"db_column": "sku",                              "amazon_header": "sku",                              "type": "str"},
-    {"db_column": "fnsku",                            "amazon_header": "fnsku",                            "type": "str"},
-    {"db_column": "asin",                             "amazon_header": "asin",                            "type": "str"},
-    {"db_column": "product_name",                     "amazon_header": "product-name",                     "type": "str"},
-    {"db_column": "condition",                        "amazon_header": "condition",                        "type": "str"},
-    {"db_column": "country_code",                     "amazon_header": "(injected by per_mkt fan-out)",    "type": "str"},
-    {"db_column": "snapshot_date",                    "amazon_header": "(injected by ingest worker)",      "type": "date"},
-    {"db_column": "your_price",                       "amazon_header": "your-price",                       "type": "decimal"},
-    {"db_column": "mfn_listing_exists",               "amazon_header": "mfn-listing-exists",               "type": "str", "values": ["Yes", "No"]},
-    {"db_column": "afn_listing_exists",               "amazon_header": "afn-listing-exists",               "type": "str", "values": ["Yes", "No"]},
-    {"db_column": "per_unit_volume",                  "amazon_header": "per-unit-volume",                  "type": "decimal"},
-    {"db_column": "mfn_fulfillable_quantity",         "amazon_header": "mfn-fulfillable-quantity",         "type": "int"},
-    {"db_column": "afn_fulfillable_quantity",         "amazon_header": "afn-fulfillable-quantity",         "type": "int"},
-    {"db_column": "afn_unsellable_quantity",          "amazon_header": "afn-unsellable-quantity",          "type": "int"},
-    {"db_column": "afn_reserved_quantity",            "amazon_header": "afn-reserved-quantity",            "type": "int"},
-    {"db_column": "afn_researching_quantity",         "amazon_header": "afn-researching-quantity",         "type": "int"},
-    {"db_column": "total_units",                      "amazon_header": "afn-total-quantity",               "type": "int"},
-    {"db_column": "afn_warehouse_quantity",           "amazon_header": "afn-warehouse-quantity",           "type": "int"},
-    {"db_column": "inbound_working",                  "amazon_header": "afn-inbound-working-quantity",     "type": "int"},
-    {"db_column": "inbound_shipped",                  "amazon_header": "afn-inbound-shipped-quantity",     "type": "int"},
-    {"db_column": "inbound_receiving",                "amazon_header": "afn-inbound-receiving-quantity",   "type": "int"},
-    {"db_column": "afn_reserved_future_supply",       "amazon_header": "afn-reserved-future-supply",       "type": "int"},
-    {"db_column": "afn_future_supply_buyable",        "amazon_header": "afn-future-supply-buyable",        "type": "int"},
-    {"db_column": "afn_fulfillable_quantity_local",   "amazon_header": "afn-fulfillable-quantity-local",   "type": "int", "note": "EU 24-col variant only"},
-    {"db_column": "afn_fulfillable_quantity_remote",  "amazon_header": "afn-fulfillable-quantity-remote",  "type": "int", "note": "EU 24-col variant only"},
-    {"db_column": "extra",                            "amazon_header": "(unrecognized columns and 'store' which is always blank)", "type": "json"}
+ "_meta": {
+  "table": "rpt_get_fba_myi_all_inventory_data",
+  "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_fba_inventory_health` still resolves as a read-only compat VIEW; prefer `rpt_get_fba_myi_all_inventory_data` in new queries.",
+  "report_type": "GET_FBA_MYI_ALL_INVENTORY_DATA",
+  "is_snapshot": true,
+  "description": "FBA MYI inventory snapshot per (sku, marketplace, condition). One row per Amazon-fulfilled SKU with afn-* quantity buckets, listing-exists flags, per-unit volume.",
+  "pii": false,
+  "queryable": true,
+  "deprecated": false,
+  "strategy": "request",
+  "date_column": "snapshot_date",
+  "unique_key": [
+   "store_id",
+   "snapshot_date",
+   "sku",
+   "condition",
+   "country_code"
   ],
-  "example_query": {
-    "store": "myStore-AE",
-    "tables": ["rpt_get_fba_myi_all_inventory_data"],
-    "columns": [
-      "rpt_get_fba_myi_all_inventory_data.sku",
-      "rpt_get_fba_myi_all_inventory_data.asin",
-      "rpt_get_fba_myi_all_inventory_data.afn_fulfillable_quantity",
-      "rpt_get_fba_myi_all_inventory_data.afn_unsellable_quantity",
-      "rpt_get_fba_myi_all_inventory_data.per_unit_volume"
-    ],
-    "filters": [
-      {"column": "rpt_get_fba_myi_all_inventory_data.afn_fulfillable_quantity", "op": "gt", "value": 0}
-    ],
-    "order_by": [{"column": "rpt_get_fba_myi_all_inventory_data.afn_fulfillable_quantity", "dir": "desc"}],
-    "limit": 100,
-    "report_date": "latest"
+  "cron": "15 */6 * * *"
+ },
+ "columns": [
+  {
+   "db_column": "sku",
+   "amazon_header": "sku",
+   "type": "str"
+  },
+  {
+   "db_column": "fnsku",
+   "amazon_header": "fnsku",
+   "type": "str"
+  },
+  {
+   "db_column": "asin",
+   "amazon_header": "asin",
+   "type": "str"
+  },
+  {
+   "db_column": "product_name",
+   "amazon_header": "product-name",
+   "type": "str"
+  },
+  {
+   "db_column": "condition",
+   "amazon_header": "condition",
+   "type": "str"
+  },
+  {
+   "db_column": "country_code",
+   "amazon_header": "(injected by per_mkt fan-out)",
+   "type": "str"
+  },
+  {
+   "db_column": "snapshot_date",
+   "amazon_header": "(injected by ingest worker)",
+   "type": "date"
+  },
+  {
+   "db_column": "your_price",
+   "amazon_header": "your-price",
+   "type": "decimal"
+  },
+  {
+   "db_column": "mfn_listing_exists",
+   "amazon_header": "mfn-listing-exists",
+   "type": "str",
+   "values": [
+    "Yes",
+    "No"
+   ]
+  },
+  {
+   "db_column": "afn_listing_exists",
+   "amazon_header": "afn-listing-exists",
+   "type": "str",
+   "values": [
+    "Yes",
+    "No"
+   ]
+  },
+  {
+   "db_column": "per_unit_volume",
+   "amazon_header": "per-unit-volume",
+   "type": "decimal"
+  },
+  {
+   "db_column": "mfn_fulfillable_quantity",
+   "amazon_header": "mfn-fulfillable-quantity",
+   "type": "int"
+  },
+  {
+   "db_column": "afn_fulfillable_quantity",
+   "amazon_header": "afn-fulfillable-quantity",
+   "type": "int"
+  },
+  {
+   "db_column": "afn_unsellable_quantity",
+   "amazon_header": "afn-unsellable-quantity",
+   "type": "int"
+  },
+  {
+   "db_column": "afn_reserved_quantity",
+   "amazon_header": "afn-reserved-quantity",
+   "type": "int"
+  },
+  {
+   "db_column": "afn_researching_quantity",
+   "amazon_header": "afn-researching-quantity",
+   "type": "int"
+  },
+  {
+   "db_column": "total_units",
+   "amazon_header": "afn-total-quantity",
+   "type": "int"
+  },
+  {
+   "db_column": "afn_warehouse_quantity",
+   "amazon_header": "afn-warehouse-quantity",
+   "type": "int"
+  },
+  {
+   "db_column": "inbound_working",
+   "amazon_header": "afn-inbound-working-quantity",
+   "type": "int"
+  },
+  {
+   "db_column": "inbound_shipped",
+   "amazon_header": "afn-inbound-shipped-quantity",
+   "type": "int"
+  },
+  {
+   "db_column": "inbound_receiving",
+   "amazon_header": "afn-inbound-receiving-quantity",
+   "type": "int"
+  },
+  {
+   "db_column": "afn_reserved_future_supply",
+   "amazon_header": "afn-reserved-future-supply",
+   "type": "int"
+  },
+  {
+   "db_column": "afn_future_supply_buyable",
+   "amazon_header": "afn-future-supply-buyable",
+   "type": "int"
+  },
+  {
+   "db_column": "afn_fulfillable_quantity_local",
+   "amazon_header": "afn-fulfillable-quantity-local",
+   "type": "int",
+   "note": "EU 24-col variant only"
+  },
+  {
+   "db_column": "afn_fulfillable_quantity_remote",
+   "amazon_header": "afn-fulfillable-quantity-remote",
+   "type": "int",
+   "note": "EU 24-col variant only"
+  },
+  {
+   "db_column": "extra",
+   "amazon_header": "(unrecognized columns and 'store' which is always blank)",
+   "type": "json",
+   "note": "Rows from 2026-07-04..07-07 may carry an 18-key expanded schema Amazon briefly shipped then reverted (lowest-price, sell-through, inv-age buckets, Reserved trio...) — historical residue, not drift."
+  },
+  {
+   "db_column": "afn_fc_transfer_quantity",
+   "amazon_header": "afn-fc-transfer-quantity",
+   "type": "int"
+  },
+  {
+   "db_column": "afn_onhand_buyable_quantity",
+   "amazon_header": "afn-onhand-buyable-quantity",
+   "type": "int"
   }
+ ],
+ "example_query": {
+  "store": "myStore-AE",
+  "tables": [
+   "rpt_get_fba_myi_all_inventory_data"
+  ],
+  "columns": [
+   "rpt_get_fba_myi_all_inventory_data.sku",
+   "rpt_get_fba_myi_all_inventory_data.asin",
+   "rpt_get_fba_myi_all_inventory_data.afn_fulfillable_quantity",
+   "rpt_get_fba_myi_all_inventory_data.afn_unsellable_quantity",
+   "rpt_get_fba_myi_all_inventory_data.per_unit_volume"
+  ],
+  "filters": [
+   {
+    "column": "rpt_get_fba_myi_all_inventory_data.afn_fulfillable_quantity",
+    "op": "gt",
+    "value": 0
+   }
+  ],
+  "order_by": [
+   {
+    "column": "rpt_get_fba_myi_all_inventory_data.afn_fulfillable_quantity",
+    "dir": "desc"
+   }
+  ],
+  "limit": 100,
+  "report_date": "latest"
+ }
 }
