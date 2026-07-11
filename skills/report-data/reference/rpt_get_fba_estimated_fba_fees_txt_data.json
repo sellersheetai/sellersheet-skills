@@ -1,268 +1,269 @@
 {
-  "_meta": {
-    "table": "rpt_get_fba_estimated_fba_fees_txt_data",
-    "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_fba_fee_preview` still resolves as a read-only compat VIEW; prefer `rpt_get_fba_estimated_fba_fees_txt_data` in new queries.",
-    "report_type": "GET_FBA_ESTIMATED_FBA_FEES_TXT_DATA",
-    "is_snapshot": true,
-    "description": "Estimated FBA fee preview snapshots. Amazon ships one row per (sku, marketplace); multi-marketplace stores produce N×M rows. MENA TSVs (AE/SA) omit product-size-weight-band, has-local-inventory, and all EU EFN fee columns.",
-    "pii": false,
-    "queryable": true,
-    "deprecated": false,
-    "strategy": "request",
-    "date_column": "snapshot_date",
-    "unique_key": [
-      "store_id",
-      "snapshot_date",
-      "sku",
-      "asin",
-      "amazon_store"
-    ],
-    "cron": "0 6 * * *"
-  },
-  "columns": [
-    {
-      "db_column": "sku",
-      "amazon_header": "sku",
-      "type": "str"
-    },
-    {
-      "db_column": "fnsku",
-      "amazon_header": "fnsku",
-      "type": "str"
-    },
-    {
-      "db_column": "asin",
-      "amazon_header": "asin",
-      "type": "str"
-    },
-    {
-      "db_column": "amazon_store",
-      "amazon_header": "amazon-store",
-      "type": "str"
-    },
-    {
-      "db_column": "product_name",
-      "amazon_header": "product-name",
-      "type": "str"
-    },
-    {
-      "db_column": "product_group",
-      "amazon_header": "product-group",
-      "type": "str"
-    },
-    {
-      "db_column": "brand",
-      "amazon_header": "brand",
-      "type": "str"
-    },
-    {
-      "db_column": "fulfilled_by",
-      "amazon_header": "fulfilled-by",
-      "type": "str"
-    },
-    {
-      "db_column": "your_price",
-      "amazon_header": "your-price",
-      "type": "decimal"
-    },
-    {
-      "db_column": "sales_price",
-      "amazon_header": "sales-price",
-      "type": "decimal"
-    },
-    {
-      "db_column": "longest_side",
-      "amazon_header": "longest-side",
-      "type": "decimal"
-    },
-    {
-      "db_column": "median_side",
-      "amazon_header": "median-side",
-      "type": "decimal"
-    },
-    {
-      "db_column": "shortest_side",
-      "amazon_header": "shortest-side",
-      "type": "decimal"
-    },
-    {
-      "db_column": "length_and_girth",
-      "amazon_header": "length-and-girth",
-      "type": "decimal"
-    },
-    {
-      "db_column": "unit_of_dimension",
-      "amazon_header": "unit-of-dimension",
-      "type": "str"
-    },
-    {
-      "db_column": "item_package_weight",
-      "amazon_header": "item-package-weight",
-      "type": "decimal"
-    },
-    {
-      "db_column": "unit_of_weight",
-      "amazon_header": "unit-of-weight",
-      "type": "str"
-    },
-    {
-      "db_column": "currency",
-      "amazon_header": "currency",
-      "type": "str"
-    },
-    {
-      "db_column": "estimated_fee_total",
-      "amazon_header": "estimated-fee-total",
-      "type": "decimal"
-    },
-    {
-      "db_column": "estimated_referral_fee_per_unit",
-      "amazon_header": "estimated-referral-fee-per-unit",
-      "type": "decimal"
-    },
-    {
-      "db_column": "estimated_fixed_closing_fee",
-      "amazon_header": "estimated-fixed-closing-fee",
-      "type": "decimal"
-    },
-    {
-      "db_column": "estimated_pick_pack_fee_per_unit",
-      "amazon_header": "estimated-pick-pack-fee-per-unit",
-      "type": "decimal"
-    },
-    {
-      "db_column": "estimated_weight_handling_fee_per_unit",
-      "amazon_header": "estimated-weight-handling-fee-per-unit",
-      "type": "decimal"
-    },
-    {
-      "db_column": "estimated_variable_closing_fee",
-      "amazon_header": "estimated-variable-closing-fee",
-      "type": "decimal"
-    },
-    {
-      "db_column": "estimated_order_handling_fee_per_order",
-      "amazon_header": "estimated-order-handling-fee-per-order",
-      "type": "decimal"
-    },
-    {
-      "db_column": "expected_domestic_fulfilment_fee_per_unit",
-      "amazon_header": "expected-domestic-fulfilment-fee-per-unit",
-      "type": "decimal",
-      "note": "EU only"
-    },
-    {
-      "db_column": "expected_efn_fulfilment_fee_per_unit_uk",
-      "amazon_header": "expected-efn-fulfilment-fee-per-unit-uk",
-      "type": "decimal",
-      "note": "EU only — fulfil from origin into UK"
-    },
-    {
-      "db_column": "expected_efn_fulfilment_fee_per_unit_de",
-      "amazon_header": "expected-efn-fulfilment-fee-per-unit-de",
-      "type": "decimal",
-      "note": "EU only"
-    },
-    {
-      "db_column": "expected_efn_fulfilment_fee_per_unit_fr",
-      "amazon_header": "expected-efn-fulfilment-fee-per-unit-fr",
-      "type": "decimal",
-      "note": "EU only"
-    },
-    {
-      "db_column": "expected_efn_fulfilment_fee_per_unit_it",
-      "amazon_header": "expected-efn-fulfilment-fee-per-unit-it",
-      "type": "decimal",
-      "note": "EU only"
-    },
-    {
-      "db_column": "expected_efn_fulfilment_fee_per_unit_es",
-      "amazon_header": "expected-efn-fulfilment-fee-per-unit-es",
-      "type": "decimal",
-      "note": "EU only"
-    },
-    {
-      "db_column": "expected_efn_fulfilment_fee_per_unit_se",
-      "amazon_header": "expected-efn-fulfilment-fee-per-unit-se",
-      "type": "decimal",
-      "note": "EU only"
-    },
-    {
-      "db_column": "has_local_inventory",
-      "amazon_header": "has-local-inventory",
-      "type": "str"
-    },
-    {
-      "db_column": "product_size_weight_band",
-      "amazon_header": "product-size-weight-band (EU/UK) or product-size-tier (AU)",
-      "type": "str",
-      "note": "AU ships product-size-tier as alias; parser maps both to same column"
-    },
-    {
-      "db_column": "snapshot_date",
-      "amazon_header": "(injected by ingest worker)",
-      "type": "date",
-      "note": "Authoritative date column. report_date column was dropped 2026-05-19 — it was never populated by the parser and broke get_date_col() priority probing."
-    },
-    {
-      "db_column": "estimated_delivery_services_fee_per_unit",
-      "amazon_header": "estimated-delivery-services-fee-per-unit",
-      "type": "decimal"
-    },
-    {
-      "db_column": "estimated_future_fee",
-      "amazon_header": "estimated-future-fee (Current Selling on Amazon + Future Fulfillment fees)",
-      "type": "decimal"
-    },
-    {
-      "db_column": "estimated_future_pick_pack_fee_per_unit",
-      "amazon_header": "estimated-future-pick-pack-fee-per-unit",
-      "type": "decimal"
-    },
-    {
-      "db_column": "estimated_future_weight_handling_fee_per_unit",
-      "amazon_header": "estimated-future-weight-handling-fee-per-unit",
-      "type": "decimal"
-    },
-    {
-      "db_column": "estimated_future_order_handling_fee_per_order",
-      "amazon_header": "estimated-future-order-handling-fee-per-order",
-      "type": "decimal"
-    },
-    {
-      "db_column": "expected_fulfillment_fee_per_unit",
-      "amazon_header": "expected-fulfillment-fee-per-unit",
-      "type": "decimal"
-    },
-    {
-      "db_column": "expected_future_fulfillment_fee_per_unit",
-      "amazon_header": "expected-future-fulfillment-fee-per-unit",
-      "type": "decimal"
-    },
-    {
-      "db_column": "extra",
-      "amazon_header": "(unrecognized columns fall back here)",
-      "type": "json"
-    }
+ "_meta": {
+  "table": "rpt_get_fba_estimated_fba_fees_txt_data",
+  "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_fba_fee_preview` still resolves as a read-only compat VIEW; prefer `rpt_get_fba_estimated_fba_fees_txt_data` in new queries.",
+  "report_type": "GET_FBA_ESTIMATED_FBA_FEES_TXT_DATA",
+  "is_snapshot": true,
+  "description": "Estimated FBA fee preview snapshots. Amazon ships one row per (sku, marketplace); multi-marketplace stores produce N×M rows. MENA TSVs (AE/SA) omit product-size-weight-band, has-local-inventory, and all EU EFN fee columns.",
+  "pii": false,
+  "queryable": true,
+  "deprecated": false,
+  "strategy": "request",
+  "date_column": "snapshot_date",
+  "unique_key": [
+   "store_id",
+   "snapshot_date",
+   "sku",
+   "asin",
+   "amazon_store"
   ],
-  "example_query": {
-    "store": "myStore-AE",
-    "tables": [
-      "rpt_get_fba_estimated_fba_fees_txt_data"
-    ],
-    "columns": [
-      "rpt_get_fba_estimated_fba_fees_txt_data.sku",
-      "rpt_get_fba_estimated_fba_fees_txt_data.fnsku",
-      "rpt_get_fba_estimated_fba_fees_txt_data.asin"
-    ],
-    "filters": [],
-    "order_by": [
-      {
-        "column": "rpt_get_fba_estimated_fba_fees_txt_data.sku",
-        "dir": "asc"
-      }
-    ],
-    "limit": 100,
-    "report_date": "latest"
+  "cron": "0 6 * * *",
+  "calibration_note": "2026-07-11 triage: 7 columns are 0% populated everywhere (estimated_order_handling_fee_per_order, estimated_delivery_services_fee_per_unit, estimated_future_fee, estimated_future_pick_pack_fee_per_unit, estimated_future_weight_handling_fee_per_unit, estimated_future_order_handling_fee_per_order, expected_future_fulfillment_fee_per_unit) — Amazon dropped the future-fee preview columns; kept for legacy reads, do not rely on them."
+ },
+ "columns": [
+  {
+   "db_column": "sku",
+   "amazon_header": "sku",
+   "type": "str"
+  },
+  {
+   "db_column": "fnsku",
+   "amazon_header": "fnsku",
+   "type": "str"
+  },
+  {
+   "db_column": "asin",
+   "amazon_header": "asin",
+   "type": "str"
+  },
+  {
+   "db_column": "amazon_store",
+   "amazon_header": "amazon-store",
+   "type": "str"
+  },
+  {
+   "db_column": "product_name",
+   "amazon_header": "product-name",
+   "type": "str"
+  },
+  {
+   "db_column": "product_group",
+   "amazon_header": "product-group",
+   "type": "str"
+  },
+  {
+   "db_column": "brand",
+   "amazon_header": "brand",
+   "type": "str"
+  },
+  {
+   "db_column": "fulfilled_by",
+   "amazon_header": "fulfilled-by",
+   "type": "str"
+  },
+  {
+   "db_column": "your_price",
+   "amazon_header": "your-price",
+   "type": "decimal"
+  },
+  {
+   "db_column": "sales_price",
+   "amazon_header": "sales-price",
+   "type": "decimal"
+  },
+  {
+   "db_column": "longest_side",
+   "amazon_header": "longest-side",
+   "type": "decimal"
+  },
+  {
+   "db_column": "median_side",
+   "amazon_header": "median-side",
+   "type": "decimal"
+  },
+  {
+   "db_column": "shortest_side",
+   "amazon_header": "shortest-side",
+   "type": "decimal"
+  },
+  {
+   "db_column": "length_and_girth",
+   "amazon_header": "length-and-girth",
+   "type": "decimal"
+  },
+  {
+   "db_column": "unit_of_dimension",
+   "amazon_header": "unit-of-dimension",
+   "type": "str"
+  },
+  {
+   "db_column": "item_package_weight",
+   "amazon_header": "item-package-weight",
+   "type": "decimal"
+  },
+  {
+   "db_column": "unit_of_weight",
+   "amazon_header": "unit-of-weight",
+   "type": "str"
+  },
+  {
+   "db_column": "currency",
+   "amazon_header": "currency",
+   "type": "str"
+  },
+  {
+   "db_column": "estimated_fee_total",
+   "amazon_header": "estimated-fee-total",
+   "type": "decimal"
+  },
+  {
+   "db_column": "estimated_referral_fee_per_unit",
+   "amazon_header": "estimated-referral-fee-per-unit",
+   "type": "decimal"
+  },
+  {
+   "db_column": "estimated_fixed_closing_fee",
+   "amazon_header": "estimated-fixed-closing-fee",
+   "type": "decimal"
+  },
+  {
+   "db_column": "estimated_pick_pack_fee_per_unit",
+   "amazon_header": "estimated-pick-pack-fee-per-unit",
+   "type": "decimal"
+  },
+  {
+   "db_column": "estimated_weight_handling_fee_per_unit",
+   "amazon_header": "estimated-weight-handling-fee-per-unit",
+   "type": "decimal"
+  },
+  {
+   "db_column": "estimated_variable_closing_fee",
+   "amazon_header": "estimated-variable-closing-fee",
+   "type": "decimal"
+  },
+  {
+   "db_column": "estimated_order_handling_fee_per_order",
+   "amazon_header": "estimated-order-handling-fee-per-order",
+   "type": "decimal"
+  },
+  {
+   "db_column": "expected_domestic_fulfilment_fee_per_unit",
+   "amazon_header": "expected-domestic-fulfilment-fee-per-unit",
+   "type": "decimal",
+   "note": "EU only"
+  },
+  {
+   "db_column": "expected_efn_fulfilment_fee_per_unit_uk",
+   "amazon_header": "expected-efn-fulfilment-fee-per-unit-uk",
+   "type": "decimal",
+   "note": "EU only — fulfil from origin into UK"
+  },
+  {
+   "db_column": "expected_efn_fulfilment_fee_per_unit_de",
+   "amazon_header": "expected-efn-fulfilment-fee-per-unit-de",
+   "type": "decimal",
+   "note": "EU only"
+  },
+  {
+   "db_column": "expected_efn_fulfilment_fee_per_unit_fr",
+   "amazon_header": "expected-efn-fulfilment-fee-per-unit-fr",
+   "type": "decimal",
+   "note": "EU only"
+  },
+  {
+   "db_column": "expected_efn_fulfilment_fee_per_unit_it",
+   "amazon_header": "expected-efn-fulfilment-fee-per-unit-it",
+   "type": "decimal",
+   "note": "EU only"
+  },
+  {
+   "db_column": "expected_efn_fulfilment_fee_per_unit_es",
+   "amazon_header": "expected-efn-fulfilment-fee-per-unit-es",
+   "type": "decimal",
+   "note": "EU only"
+  },
+  {
+   "db_column": "expected_efn_fulfilment_fee_per_unit_se",
+   "amazon_header": "expected-efn-fulfilment-fee-per-unit-se",
+   "type": "decimal",
+   "note": "EU only"
+  },
+  {
+   "db_column": "has_local_inventory",
+   "amazon_header": "has-local-inventory",
+   "type": "str"
+  },
+  {
+   "db_column": "product_size_weight_band",
+   "amazon_header": "product-size-weight-band (EU/UK) or product-size-tier (AU)",
+   "type": "str",
+   "note": "AU ships product-size-tier as alias; parser maps both to same column"
+  },
+  {
+   "db_column": "snapshot_date",
+   "amazon_header": "(injected by ingest worker)",
+   "type": "date",
+   "note": "Authoritative date column. report_date column was dropped 2026-05-19 — it was never populated by the parser and broke get_date_col() priority probing."
+  },
+  {
+   "db_column": "estimated_delivery_services_fee_per_unit",
+   "amazon_header": "estimated-delivery-services-fee-per-unit",
+   "type": "decimal"
+  },
+  {
+   "db_column": "estimated_future_fee",
+   "amazon_header": "estimated-future-fee (Current Selling on Amazon + Future Fulfillment fees)",
+   "type": "decimal"
+  },
+  {
+   "db_column": "estimated_future_pick_pack_fee_per_unit",
+   "amazon_header": "estimated-future-pick-pack-fee-per-unit",
+   "type": "decimal"
+  },
+  {
+   "db_column": "estimated_future_weight_handling_fee_per_unit",
+   "amazon_header": "estimated-future-weight-handling-fee-per-unit",
+   "type": "decimal"
+  },
+  {
+   "db_column": "estimated_future_order_handling_fee_per_order",
+   "amazon_header": "estimated-future-order-handling-fee-per-order",
+   "type": "decimal"
+  },
+  {
+   "db_column": "expected_fulfillment_fee_per_unit",
+   "amazon_header": "expected-fulfillment-fee-per-unit",
+   "type": "decimal"
+  },
+  {
+   "db_column": "expected_future_fulfillment_fee_per_unit",
+   "amazon_header": "expected-future-fulfillment-fee-per-unit",
+   "type": "decimal"
+  },
+  {
+   "db_column": "extra",
+   "amazon_header": "(unrecognized columns fall back here)",
+   "type": "json"
   }
+ ],
+ "example_query": {
+  "store": "myStore-AE",
+  "tables": [
+   "rpt_get_fba_estimated_fba_fees_txt_data"
+  ],
+  "columns": [
+   "rpt_get_fba_estimated_fba_fees_txt_data.sku",
+   "rpt_get_fba_estimated_fba_fees_txt_data.fnsku",
+   "rpt_get_fba_estimated_fba_fees_txt_data.asin"
+  ],
+  "filters": [],
+  "order_by": [
+   {
+    "column": "rpt_get_fba_estimated_fba_fees_txt_data.sku",
+    "dir": "asc"
+   }
+  ],
+  "limit": 100,
+  "report_date": "latest"
+ }
 }

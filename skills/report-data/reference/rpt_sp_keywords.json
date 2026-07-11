@@ -1,280 +1,286 @@
 {
-  "_meta": {
-    "table": "rpt_sp_keywords",
-    "report_type": "spKeywords",
-    "is_snapshot": false,
-    "description": "Sponsored Products keyword-level daily performance.",
-    "pii": false,
-    "queryable": true,
-    "deprecated": false,
-    "strategy": "ad_cron",
-    "date_column": "report_date",
-    "unique_key": [
-      "store_id",
-      "profile_id",
-      "report_date",
-      "campaign_id",
-      "ad_group_id",
-      "keyword_id",
-      "match_type"
-    ],
-    "cron": "0 3 * * *"
-  },
-  "columns": [
-    {
-      "db_column": "country_code",
-      "amazon_header": "(derived from profile_id — denormalized 2026-05-20)",
-      "type": "str",
-      "note": "Marketplace this ads row belongs to. Query ads data per (store, country_code) directly — no need to reverse-map profile_id."
-    },
-    {
-      "db_column": "report_date",
-      "type": "date"
-    },
-    {
-      "db_column": "start_date",
-      "type": "date"
-    },
-    {
-      "db_column": "end_date",
-      "type": "date"
-    },
-    {
-      "db_column": "currency_code",
-      "type": "str"
-    },
-    {
-      "db_column": "portfolio_id",
-      "type": "str"
-    },
-    {
-      "db_column": "campaign_id",
-      "type": "str"
-    },
-    {
-      "db_column": "campaign_name",
-      "type": "str"
-    },
-    {
-      "db_column": "campaign_budget_type",
-      "type": "str"
-    },
-    {
-      "db_column": "campaign_budget_amount",
-      "type": "decimal"
-    },
-    {
-      "db_column": "campaign_status",
-      "type": "str"
-    },
-    {
-      "db_column": "ad_group_id",
-      "type": "str"
-    },
-    {
-      "db_column": "ad_group_name",
-      "type": "str"
-    },
-    {
-      "db_column": "keyword_id",
-      "type": "str"
-    },
-    {
-      "db_column": "keyword",
-      "type": "str"
-    },
-    {
-      "db_column": "ad_keyword_status",
-      "type": "str"
-    },
-    {
-      "db_column": "keyword_bid",
-      "type": "decimal"
-    },
-    {
-      "db_column": "keyword_type",
-      "type": "str"
-    },
-    {
-      "db_column": "match_type",
-      "type": "str"
-    },
-    {
-      "db_column": "targeting",
-      "type": "str"
-    },
-    {
-      "db_column": "impressions",
-      "type": "int"
-    },
-    {
-      "db_column": "clicks",
-      "type": "int"
-    },
-    {
-      "db_column": "cost_per_click",
-      "type": "decimal"
-    },
-    {
-      "db_column": "click_through_rate",
-      "type": "decimal"
-    },
-    {
-      "db_column": "cost",
-      "type": "decimal"
-    },
-    {
-      "db_column": "purchases_1d",
-      "type": "int"
-    },
-    {
-      "db_column": "purchases_7d",
-      "type": "int"
-    },
-    {
-      "db_column": "purchases_14d",
-      "type": "int"
-    },
-    {
-      "db_column": "purchases_30d",
-      "type": "int"
-    },
-    {
-      "db_column": "purchases_same_sku_1d",
-      "type": "int"
-    },
-    {
-      "db_column": "purchases_same_sku_7d",
-      "type": "int"
-    },
-    {
-      "db_column": "purchases_same_sku_14d",
-      "type": "int"
-    },
-    {
-      "db_column": "purchases_same_sku_30d",
-      "type": "int"
-    },
-    {
-      "db_column": "sales_1d",
-      "type": "decimal"
-    },
-    {
-      "db_column": "sales_7d",
-      "type": "decimal"
-    },
-    {
-      "db_column": "sales_14d",
-      "type": "decimal"
-    },
-    {
-      "db_column": "sales_30d",
-      "type": "decimal"
-    },
-    {
-      "db_column": "sales_other_sku_7d",
-      "type": "decimal"
-    },
-    {
-      "db_column": "attributed_sales_same_sku_1d",
-      "type": "decimal"
-    },
-    {
-      "db_column": "attributed_sales_same_sku_7d",
-      "type": "decimal"
-    },
-    {
-      "db_column": "attributed_sales_same_sku_14d",
-      "type": "decimal"
-    },
-    {
-      "db_column": "attributed_sales_same_sku_30d",
-      "type": "decimal"
-    },
-    {
-      "db_column": "units_sold_clicks_1d",
-      "type": "int"
-    },
-    {
-      "db_column": "units_sold_clicks_7d",
-      "type": "int"
-    },
-    {
-      "db_column": "units_sold_clicks_14d",
-      "type": "int"
-    },
-    {
-      "db_column": "units_sold_clicks_30d",
-      "type": "int"
-    },
-    {
-      "db_column": "units_sold_same_sku_1d",
-      "type": "int"
-    },
-    {
-      "db_column": "units_sold_same_sku_7d",
-      "type": "int"
-    },
-    {
-      "db_column": "units_sold_same_sku_14d",
-      "type": "int"
-    },
-    {
-      "db_column": "units_sold_same_sku_30d",
-      "type": "int"
-    },
-    {
-      "db_column": "units_sold_other_sku_7d",
-      "type": "int"
-    },
-    {
-      "db_column": "acos_clicks_14d",
-      "type": "decimal"
-    },
-    {
-      "db_column": "acos_clicks_7d",
-      "type": "decimal"
-    },
-    {
-      "db_column": "roas_clicks_14d",
-      "type": "decimal"
-    },
-    {
-      "db_column": "roas_clicks_7d",
-      "type": "decimal"
-    },
-    {
-      "db_column": "top_of_search_impression_share",
-      "type": "decimal"
-    },
-    {
-      "db_column": "search_impression_share",
-      "type": "decimal"
-    }
+ "_meta": {
+  "table": "rpt_sp_keywords",
+  "report_type": "spKeywords",
+  "is_snapshot": false,
+  "description": "Sponsored Products keyword-level daily performance.",
+  "pii": false,
+  "queryable": true,
+  "deprecated": false,
+  "strategy": "ad_cron",
+  "date_column": "report_date",
+  "unique_key": [
+   "store_id",
+   "profile_id",
+   "report_date",
+   "campaign_id",
+   "ad_group_id",
+   "keyword_id",
+   "match_type"
   ],
-  "example_query": {
-    "store": "myStore-AE",
-    "tables": [
-      "rpt_sp_keywords"
-    ],
-    "columns": [
-      "rpt_sp_keywords.keyword",
-      "rpt_sp_keywords.match_type",
-      "rpt_sp_keywords.impressions",
-      "rpt_sp_keywords.clicks",
-      "rpt_sp_keywords.cost",
-      "rpt_sp_keywords.sales_14d",
-      "rpt_sp_keywords.acos_clicks_14d",
-      "rpt_sp_keywords.roas_clicks_14d"
-    ],
-    "filters": [],
-    "order_by": [
-      {
-        "column": "rpt_sp_keywords.cost",
-        "dir": "desc"
-      }
-    ],
-    "limit": 50,
-    "report_date": "latest"
+  "cron": "0 3 * * *"
+ },
+ "columns": [
+  {
+   "db_column": "country_code",
+   "amazon_header": "(derived from profile_id — denormalized 2026-05-20)",
+   "type": "str",
+   "note": "Marketplace this ads row belongs to. Query ads data per (store, country_code) directly — no need to reverse-map profile_id."
+  },
+  {
+   "db_column": "report_date",
+   "type": "date"
+  },
+  {
+   "db_column": "start_date",
+   "type": "date"
+  },
+  {
+   "db_column": "end_date",
+   "type": "date"
+  },
+  {
+   "db_column": "currency_code",
+   "type": "str"
+  },
+  {
+   "db_column": "portfolio_id",
+   "type": "str"
+  },
+  {
+   "db_column": "campaign_id",
+   "type": "str"
+  },
+  {
+   "db_column": "campaign_name",
+   "type": "str"
+  },
+  {
+   "db_column": "campaign_budget_type",
+   "type": "str"
+  },
+  {
+   "db_column": "campaign_budget_amount",
+   "type": "decimal"
+  },
+  {
+   "db_column": "campaign_status",
+   "type": "str"
+  },
+  {
+   "db_column": "ad_group_id",
+   "type": "str"
+  },
+  {
+   "db_column": "ad_group_name",
+   "type": "str"
+  },
+  {
+   "db_column": "keyword_id",
+   "type": "str"
+  },
+  {
+   "db_column": "keyword",
+   "type": "str"
+  },
+  {
+   "db_column": "ad_keyword_status",
+   "type": "str"
+  },
+  {
+   "db_column": "keyword_bid",
+   "type": "decimal"
+  },
+  {
+   "db_column": "keyword_type",
+   "type": "str"
+  },
+  {
+   "db_column": "match_type",
+   "type": "str"
+  },
+  {
+   "db_column": "targeting",
+   "type": "str"
+  },
+  {
+   "db_column": "impressions",
+   "type": "int"
+  },
+  {
+   "db_column": "clicks",
+   "type": "int"
+  },
+  {
+   "db_column": "cost_per_click",
+   "type": "decimal"
+  },
+  {
+   "db_column": "click_through_rate",
+   "type": "decimal"
+  },
+  {
+   "db_column": "cost",
+   "type": "decimal"
+  },
+  {
+   "db_column": "purchases_1d",
+   "type": "int"
+  },
+  {
+   "db_column": "purchases_7d",
+   "type": "int"
+  },
+  {
+   "db_column": "purchases_14d",
+   "type": "int"
+  },
+  {
+   "db_column": "purchases_30d",
+   "type": "int"
+  },
+  {
+   "db_column": "purchases_same_sku_1d",
+   "type": "int"
+  },
+  {
+   "db_column": "purchases_same_sku_7d",
+   "type": "int"
+  },
+  {
+   "db_column": "purchases_same_sku_14d",
+   "type": "int"
+  },
+  {
+   "db_column": "purchases_same_sku_30d",
+   "type": "int"
+  },
+  {
+   "db_column": "sales_1d",
+   "type": "decimal"
+  },
+  {
+   "db_column": "sales_7d",
+   "type": "decimal"
+  },
+  {
+   "db_column": "sales_14d",
+   "type": "decimal"
+  },
+  {
+   "db_column": "sales_30d",
+   "type": "decimal"
+  },
+  {
+   "db_column": "sales_other_sku_7d",
+   "type": "decimal"
+  },
+  {
+   "db_column": "attributed_sales_same_sku_1d",
+   "type": "decimal"
+  },
+  {
+   "db_column": "attributed_sales_same_sku_7d",
+   "type": "decimal"
+  },
+  {
+   "db_column": "attributed_sales_same_sku_14d",
+   "type": "decimal"
+  },
+  {
+   "db_column": "attributed_sales_same_sku_30d",
+   "type": "decimal"
+  },
+  {
+   "db_column": "units_sold_clicks_1d",
+   "type": "int"
+  },
+  {
+   "db_column": "units_sold_clicks_7d",
+   "type": "int"
+  },
+  {
+   "db_column": "units_sold_clicks_14d",
+   "type": "int"
+  },
+  {
+   "db_column": "units_sold_clicks_30d",
+   "type": "int"
+  },
+  {
+   "db_column": "units_sold_same_sku_1d",
+   "type": "int"
+  },
+  {
+   "db_column": "units_sold_same_sku_7d",
+   "type": "int"
+  },
+  {
+   "db_column": "units_sold_same_sku_14d",
+   "type": "int"
+  },
+  {
+   "db_column": "units_sold_same_sku_30d",
+   "type": "int"
+  },
+  {
+   "db_column": "units_sold_other_sku_7d",
+   "type": "int"
+  },
+  {
+   "db_column": "acos_clicks_14d",
+   "type": "decimal"
+  },
+  {
+   "db_column": "acos_clicks_7d",
+   "type": "decimal"
+  },
+  {
+   "db_column": "roas_clicks_14d",
+   "type": "decimal"
+  },
+  {
+   "db_column": "roas_clicks_7d",
+   "type": "decimal"
+  },
+  {
+   "db_column": "top_of_search_impression_share",
+   "type": "decimal"
+  },
+  {
+   "db_column": "search_impression_share",
+   "type": "decimal"
+  },
+  {
+   "db_column": "extra",
+   "amazon_header": "(unrecognized columns fall back here)",
+   "type": "json",
+   "note": "Documented opt-outs (2026-07-11): kindleEditionNormalizedPagesRead14d / kindleEditionNormalizedPagesRoyalties14d — KDP-book metrics Amazon ships on every row; no SellerSheet store sells Kindle content, deliberately not promoted."
   }
+ ],
+ "example_query": {
+  "store": "myStore-AE",
+  "tables": [
+   "rpt_sp_keywords"
+  ],
+  "columns": [
+   "rpt_sp_keywords.keyword",
+   "rpt_sp_keywords.match_type",
+   "rpt_sp_keywords.impressions",
+   "rpt_sp_keywords.clicks",
+   "rpt_sp_keywords.cost",
+   "rpt_sp_keywords.sales_14d",
+   "rpt_sp_keywords.acos_clicks_14d",
+   "rpt_sp_keywords.roas_clicks_14d"
+  ],
+  "filters": [],
+  "order_by": [
+   {
+    "column": "rpt_sp_keywords.cost",
+    "dir": "desc"
+   }
+  ],
+  "limit": 50,
+  "report_date": "latest"
+ }
 }
