@@ -1,232 +1,238 @@
 {
-  "_meta": {
-    "table": "rpt_get_merchant_listings_all_data",
-    "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_listings_snapshot` still resolves as a read-only compat VIEW; prefer `rpt_get_merchant_listings_all_data` in new queries.",
-    "report_type": "GET_MERCHANT_LISTINGS_ALL_DATA",
-    "is_snapshot": true,
-    "description": "Daily all-listings snapshot for merchant catalog state.",
-    "pii": false,
-    "queryable": true,
-    "deprecated": false,
-    "strategy": "request",
-    "date_column": "snapshot_date",
-    "unique_key": [
-      "store_id",
-      "snapshot_date",
-      "seller_sku",
-      "country_code",
-      "item_condition"
-    ],
-    "cron": "10 4 * * *"
+ "_meta": {
+  "table": "rpt_get_merchant_listings_all_data",
+  "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_listings_snapshot` still resolves as a read-only compat VIEW; prefer `rpt_get_merchant_listings_all_data` in new queries.",
+  "report_type": "GET_MERCHANT_LISTINGS_ALL_DATA",
+  "is_snapshot": true,
+  "description": "Daily all-listings snapshot for merchant catalog state.",
+  "pii": false,
+  "queryable": true,
+  "deprecated": false,
+  "strategy": "request",
+  "date_column": "snapshot_date",
+  "unique_key": [
+   "store_id",
+   "snapshot_date",
+   "seller_sku",
+   "country_code",
+   "item_condition"
+  ],
+  "cron": "10 4 * * *"
+ },
+ "columns": [
+  {
+   "db_column": "item_name",
+   "amazon_header": "item-name",
+   "type": "str"
   },
-  "columns": [
-    {
-      "db_column": "item_name",
-      "amazon_header": "item-name",
-      "type": "str"
-    },
-    {
-      "db_column": "item_description",
-      "amazon_header": "item-description",
-      "type": "str"
-    },
-    {
-      "db_column": "listing_id",
-      "amazon_header": "listing-id",
-      "type": "str"
-    },
-    {
-      "db_column": "seller_sku",
-      "amazon_header": "seller-sku",
-      "type": "str"
-    },
-    {
-      "db_column": "price",
-      "amazon_header": "price",
-      "type": "decimal"
-    },
-    {
-      "db_column": "quantity",
-      "amazon_header": "quantity",
-      "type": "int"
-    },
-    {
-      "db_column": "open_date",
-      "amazon_header": "open-date",
-      "type": "datetime"
-    },
-    {
-      "db_column": "image_url",
-      "amazon_header": "image-url",
-      "type": "str"
-    },
-    {
-      "db_column": "item_is_marketplace",
-      "amazon_header": "item-is-marketplace",
-      "type": "str"
-    },
-    {
-      "db_column": "product_id_type",
-      "amazon_header": "product-id-type",
-      "type": "str"
-    },
-    {
-      "db_column": "zshop_shipping_fee",
-      "amazon_header": "zshop-shipping-fee",
-      "type": "decimal"
-    },
-    {
-      "db_column": "item_note",
-      "amazon_header": "item-note",
-      "type": "str"
-    },
-    {
-      "db_column": "item_condition",
-      "amazon_header": "item-condition",
-      "type": "str"
-    },
-    {
-      "db_column": "zshop_category1",
-      "amazon_header": "zshop-category1",
-      "type": "str"
-    },
-    {
-      "db_column": "zshop_browse_path",
-      "amazon_header": "zshop-browse-path",
-      "type": "str"
-    },
-    {
-      "db_column": "zshop_storefront_feature",
-      "amazon_header": "zshop-storefront-feature",
-      "type": "str"
-    },
-    {
-      "db_column": "asin1",
-      "amazon_header": "asin1",
-      "type": "str"
-    },
-    {
-      "db_column": "asin2",
-      "amazon_header": "asin2",
-      "type": "str"
-    },
-    {
-      "db_column": "asin3",
-      "amazon_header": "asin3",
-      "type": "str"
-    },
-    {
-      "db_column": "will_ship_internationally",
-      "amazon_header": "will-ship-internationally",
-      "type": "str"
-    },
-    {
-      "db_column": "expedited_shipping",
-      "amazon_header": "expedited-shipping",
-      "type": "str"
-    },
-    {
-      "db_column": "zshop_boldface",
-      "amazon_header": "zshop-boldface",
-      "type": "str"
-    },
-    {
-      "db_column": "product_id",
-      "amazon_header": "product-id",
-      "type": "str"
-    },
-    {
-      "db_column": "bid_for_featured_placement",
-      "amazon_header": "bid-for-featured-placement",
-      "type": "decimal"
-    },
-    {
-      "db_column": "add_delete",
-      "amazon_header": "add-delete",
-      "type": "str"
-    },
-    {
-      "db_column": "pending_quantity",
-      "amazon_header": "pending-quantity",
-      "type": "int"
-    },
-    {
-      "db_column": "fulfillment_channel",
-      "amazon_header": "fulfillment-channel",
-      "type": "str"
-    },
-    {
-      "db_column": "optional_payment_type_exclusion",
-      "amazon_header": "optional-payment-type-exclusion",
-      "type": "str"
-    },
-    {
-      "db_column": "merchant_shipping_group",
-      "amazon_header": "merchant-shipping-group",
-      "type": "str"
-    },
-    {
-      "db_column": "status",
-      "amazon_header": "status",
-      "type": "str"
-    },
-    {
-      "db_column": "points",
-      "amazon_header": "ポイント",
-      "type": "int",
-      "note": "Amazon Japan reward Points awarded on purchase (JP marketplace)"
-    },
-    {
-      "db_column": "maximum_retail_price",
-      "amazon_header": "maximum-retail-price",
-      "type": "decimal",
-      "note": "India MRP — maximum retail price (IN marketplace)"
-    },
-    {
-      "db_column": "sell_remainder",
-      "amazon_header": "Sell remainder",
-      "type": "str",
-      "note": "Flag: sell remaining inventory after order (UK/EU)"
-    },
-    {
-      "db_column": "minimum_order_quantity",
-      "amazon_header": "Minimum order quantity",
-      "type": "int",
-      "note": "Minimum order quantity (UK/EU)"
-    }
-  ],
-  "notes": [
-    "main_image_url and listing_status are NOT in this table. They live in listing_images (persistent cache).",
-    "To get images alongside snapshot data, query listing_images separately by seller_sku."
-  ],
-  "example_query": {
-    "store": "myStore-AE",
-    "tables": [
-      "rpt_get_merchant_listings_all_data"
-    ],
-    "columns": [
-      "rpt_get_merchant_listings_all_data.seller_sku",
-      "rpt_get_merchant_listings_all_data.item_name",
-      "rpt_get_merchant_listings_all_data.asin1",
-      "rpt_get_merchant_listings_all_data.price",
-      "rpt_get_merchant_listings_all_data.quantity",
-      "rpt_get_merchant_listings_all_data.status",
-      "rpt_get_merchant_listings_all_data.fulfillment_channel"
-    ],
-    "filters": [
-      {
-        "column": "rpt_get_merchant_listings_all_data.quantity",
-        "op": "gt",
-        "value": 0
-      }
-    ],
-    "order_by": [
-      {
-        "column": "rpt_get_merchant_listings_all_data.seller_sku",
-        "dir": "asc"
-      }
-    ],
-    "limit": 100,
-    "report_date": "latest"
+  {
+   "db_column": "item_description",
+   "amazon_header": "item-description",
+   "type": "str"
+  },
+  {
+   "db_column": "listing_id",
+   "amazon_header": "listing-id",
+   "type": "str"
+  },
+  {
+   "db_column": "seller_sku",
+   "amazon_header": "seller-sku",
+   "type": "str"
+  },
+  {
+   "db_column": "price",
+   "amazon_header": "price",
+   "type": "decimal"
+  },
+  {
+   "db_column": "quantity",
+   "amazon_header": "quantity",
+   "type": "int"
+  },
+  {
+   "db_column": "open_date",
+   "amazon_header": "open-date",
+   "type": "datetime"
+  },
+  {
+   "db_column": "image_url",
+   "amazon_header": "image-url",
+   "type": "str"
+  },
+  {
+   "db_column": "item_is_marketplace",
+   "amazon_header": "item-is-marketplace",
+   "type": "str"
+  },
+  {
+   "db_column": "product_id_type",
+   "amazon_header": "product-id-type",
+   "type": "str"
+  },
+  {
+   "db_column": "zshop_shipping_fee",
+   "amazon_header": "zshop-shipping-fee",
+   "type": "decimal"
+  },
+  {
+   "db_column": "item_note",
+   "amazon_header": "item-note",
+   "type": "str"
+  },
+  {
+   "db_column": "item_condition",
+   "amazon_header": "item-condition",
+   "type": "str"
+  },
+  {
+   "db_column": "zshop_category1",
+   "amazon_header": "zshop-category1",
+   "type": "str"
+  },
+  {
+   "db_column": "zshop_browse_path",
+   "amazon_header": "zshop-browse-path",
+   "type": "str"
+  },
+  {
+   "db_column": "zshop_storefront_feature",
+   "amazon_header": "zshop-storefront-feature",
+   "type": "str"
+  },
+  {
+   "db_column": "asin1",
+   "amazon_header": "asin1",
+   "type": "str"
+  },
+  {
+   "db_column": "asin2",
+   "amazon_header": "asin2",
+   "type": "str"
+  },
+  {
+   "db_column": "asin3",
+   "amazon_header": "asin3",
+   "type": "str"
+  },
+  {
+   "db_column": "will_ship_internationally",
+   "amazon_header": "will-ship-internationally",
+   "type": "str"
+  },
+  {
+   "db_column": "expedited_shipping",
+   "amazon_header": "expedited-shipping",
+   "type": "str"
+  },
+  {
+   "db_column": "zshop_boldface",
+   "amazon_header": "zshop-boldface",
+   "type": "str"
+  },
+  {
+   "db_column": "product_id",
+   "amazon_header": "product-id",
+   "type": "str"
+  },
+  {
+   "db_column": "bid_for_featured_placement",
+   "amazon_header": "bid-for-featured-placement",
+   "type": "decimal"
+  },
+  {
+   "db_column": "add_delete",
+   "amazon_header": "add-delete",
+   "type": "str"
+  },
+  {
+   "db_column": "pending_quantity",
+   "amazon_header": "pending-quantity",
+   "type": "int"
+  },
+  {
+   "db_column": "fulfillment_channel",
+   "amazon_header": "fulfillment-channel",
+   "type": "str"
+  },
+  {
+   "db_column": "optional_payment_type_exclusion",
+   "amazon_header": "optional-payment-type-exclusion",
+   "type": "str"
+  },
+  {
+   "db_column": "merchant_shipping_group",
+   "amazon_header": "merchant-shipping-group",
+   "type": "str"
+  },
+  {
+   "db_column": "status",
+   "amazon_header": "status",
+   "type": "str"
+  },
+  {
+   "db_column": "points",
+   "amazon_header": "ポイント",
+   "type": "int",
+   "note": "Amazon Japan reward Points awarded on purchase (JP marketplace)"
+  },
+  {
+   "db_column": "maximum_retail_price",
+   "amazon_header": "maximum-retail-price",
+   "type": "decimal",
+   "note": "India MRP — maximum retail price (IN marketplace)"
+  },
+  {
+   "db_column": "sell_remainder",
+   "amazon_header": "Sell remainder",
+   "type": "str",
+   "note": "Flag: sell remaining inventory after order (UK/EU)"
+  },
+  {
+   "db_column": "minimum_order_quantity",
+   "amazon_header": "Minimum order quantity",
+   "type": "int",
+   "note": "Minimum order quantity (UK/EU)"
+  },
+  {
+   "db_column": "extra",
+   "amazon_header": "(unrecognized columns fall back here)",
+   "type": "json",
+   "note": "Documented opt-outs (2026-07-11): 'Estado del producto' and 'Producto para vender' remain on ~216 historical UK Spanish-locale rows — item_condition is a unique-key member (never backfilled in place); the parser maps both for all future ingests."
   }
+ ],
+ "notes": [
+  "main_image_url and listing_status are NOT in this table. They live in listing_images (persistent cache).",
+  "To get images alongside snapshot data, query listing_images separately by seller_sku."
+ ],
+ "example_query": {
+  "store": "myStore-AE",
+  "tables": [
+   "rpt_get_merchant_listings_all_data"
+  ],
+  "columns": [
+   "rpt_get_merchant_listings_all_data.seller_sku",
+   "rpt_get_merchant_listings_all_data.item_name",
+   "rpt_get_merchant_listings_all_data.asin1",
+   "rpt_get_merchant_listings_all_data.price",
+   "rpt_get_merchant_listings_all_data.quantity",
+   "rpt_get_merchant_listings_all_data.status",
+   "rpt_get_merchant_listings_all_data.fulfillment_channel"
+  ],
+  "filters": [
+   {
+    "column": "rpt_get_merchant_listings_all_data.quantity",
+    "op": "gt",
+    "value": 0
+   }
+  ],
+  "order_by": [
+   {
+    "column": "rpt_get_merchant_listings_all_data.seller_sku",
+    "dir": "asc"
+   }
+  ],
+  "limit": 100,
+  "report_date": "latest"
+ }
 }
