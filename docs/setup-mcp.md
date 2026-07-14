@@ -43,7 +43,7 @@ Skills are a separate artifact from the MCP server. Pick the path that fits your
 
 | Agent | Install command |
 |---|---|
-| **Claude Code** | `/plugin marketplace add sellersheetai/sellersheet-skills` then `/plugin install sellersheet-skills@sellersheet-marketplace` (one bundle, all three skills) |
+| **Claude Code** | `/plugin marketplace add sellersheetai/sellersheet-skills` then `/plugin install sellersheet-skills@sellersheet-marketplace` (one bundle, all skills) |
 | **Other agents** | `npx skills add sellersheetai/sellersheet-skills` — recommended; see [install-npx-skills.md](./install-npx-skills.md). No-Node fallback: `bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --target <agent>` |
 
 After both MCP and skills are installed, restart your agent.
