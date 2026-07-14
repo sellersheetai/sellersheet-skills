@@ -45,12 +45,6 @@ Try a real test:
 
 Claude should call `get_user_context`, then `query_report_data` via the `report-data` skill.
 
-## Selective install
-
-```bash
-bash <(curl -fsSL ...install.sh) --target claude-desktop --skills "sellersheet-dashboard report-data"
-```
-
 ## Update
 
 ```bash

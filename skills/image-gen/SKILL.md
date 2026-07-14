@@ -42,8 +42,9 @@ Branch on optimize-existing vs new product:
 - **New product** → ask for **sample product images + planned SKU name + store.**
 
 Pull the variation family early (`search_listings_items(variation_parent_sku=…)`, union across
-marketplaces) so you know every child SKU and which children lack a real color photo. Confirm
-image-gen is alive first: `get_user_context` (canUseMcp, imagesFolderId).
+marketplaces) so you know every child SKU and which children lack a real color photo. Run the
+standard preflight ([`sellersheet-shared`](../sellersheet-shared/SKILL.md)) first — for this
+skill also confirm `imagesFolderId` is present in `get_user_context`.
 
 ## Phase 1 — Learn the style (GATE: show direction before generating)
 Competitor discovery (only if no operator-supplied ref): **prefer a US store** — find **≥3 mature

@@ -30,16 +30,13 @@ entities v1 doesn't cover (portfolios, recommendations, exports, history, report
 
 ### 1. Getting Started
 
-Call `get_user_context` first — always. It returns:
-- Valid `store` names (e.g. `myStore-AE`, `myStore-US`)
-- Valid `countryCode` values per store
-- Workspace config: spreadsheet ID and Drive folder ID
-
-Both `store` and `countryCode` are required by every ads tool. **Always pass `store`
-in `<name>-<countryCode>` format** (e.g. `store="myStore-US"`, `countryCode="US"`) — a
-bare name is ambiguous when you own the same brand in multiple marketplaces (e.g.
-`myStore-US` vs `myStore-DE` are different stores / ad profiles) and is rejected with
-"Store name '…' is ambiguous". The cc-qualified `store` is what disambiguates.
+Run the standard preflight + store-reference rules in
+[`sellersheet-shared`](../sellersheet-shared/SKILL.md) first. Ads-specific delta:
+**every ads tool requires BOTH `store` (in `<name>-<countryCode>` format) and
+`countryCode`** (e.g. `store="myStore-US"`, `countryCode="US"`) — a bare store name
+is rejected with "Store name '…' is ambiguous" because each marketplace is a
+different ad profile. `get_user_context` also returns the workspace config
+(spreadsheet ID + Drive folder ID) the recipes below write to.
 
 **Workspace not configured?**
 If `get_user_context` returns no spreadsheet ID / folder ID, or `read_sheet` /

@@ -4,6 +4,24 @@ All notable changes to SellerSheet Skills are documented here. Format follows [K
 
 ## [Unreleased]
 
+### Added
+
+- **`sellersheet-shared`** — a companion skill that is the single source of truth for what
+  every skill used to copy: the MCP preflight protocol (`get_user_context` → `skills_catalog`
+  version check → `canUseMcp`), store-reference rules (`name-country`, multi-marketplace
+  suffix), the MCP response contract (always relay `notification.message` + `human_action`),
+  and a troubleshooting table. All 8 skills now open with a 2–4 line pointer to it instead of
+  a ~1.4 KB copied block — the copies had already drifted (3 skills still told users the
+  API key lived at "Settings → API", a page that doesn't exist).
+
+### Changed
+
+- **The bundle now always installs as a whole set.** Skills cross-reference
+  `sellersheet-shared`, so partial installs are no longer supported or documented:
+  `install.sh` drops the `--skills` flag (always installs everything under `skills/`), and
+  the "Selective install" / single-skill `npx skills -s` examples are removed from README
+  and the per-agent guides.
+
 ### Fixed
 
 - **`image-gen`** — SKILL.md frontmatter `description` was an unquoted YAML scalar containing

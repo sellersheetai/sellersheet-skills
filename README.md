@@ -21,6 +21,8 @@ Eight production-ready skills for working with the SellerSheet MCP. More skills 
 | **amazon-report** | Amazon SP-API on-demand report documents — the exact `reportType`, required `reportOptions` enums, and full JSON field tree for 22 reports (Brand Analytics, Sales & Traffic, Promotion/Coupon, Vendor, account health), so agents request the right report and parse fields by their real names. NOT for the synced `rpt_*` warehouse — that's `report-data`. |
 | **data-kiosk** | Amazon SP-API Data Kiosk GraphQL authoring — versioned root query types, dataset fields, required arguments, enums, and per-field `@resultRetention` for Sales & Traffic, Economics, and Vendor Analytics, so agents write a valid `createQuery` instead of guessing. |
 
+Plus **`sellersheet-shared`**, a small companion skill every other skill references — the MCP preflight protocol, store-reference rules, response contract, and troubleshooting live there once instead of being copied into each skill. It installs automatically with the bundle.
+
 ### Coming soon (under review)
 
 - `sellersheet` — Amazon business operations orchestrator
@@ -51,7 +53,7 @@ For the dashboard skill specifically, if you want PPC tabs to populate with real
 /plugin install sellersheet-skills@sellersheet-marketplace
 ```
 
-This installs the full skill bundle (all eight skills in the table above) as one plugin. Then register the MCP server (separate step):
+This installs the full skill bundle (the eight skills in the table above plus `sellersheet-shared`) as one plugin. Then register the MCP server (separate step):
 
 ```bash
 claude mcp add-json sellersheet '{"type":"http","url":"https://sellersheetai.com/mcp","headers":{"Authorization":"Bearer YOUR_API_KEY"}}'
@@ -87,12 +89,13 @@ bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-sk
 [`npx skills`](https://github.com/vercel-labs/skills) is the open cross-agent skill installer — one command, works across Cursor, Gemini CLI, Antigravity, Codex, and 50+ other coding agents.
 
 ```bash
-npx skills add sellersheetai/sellersheet-skills                  # install the full skill bundle
-npx skills add sellersheetai/sellersheet-skills --list           # preview first
-npx skills add sellersheetai/sellersheet-skills -s report-data   # install a single skill
-npx skills add sellersheetai/sellersheet-skills -a codex         # target a specific agent
-npx skills add sellersheetai/sellersheet-skills -g               # user-level (global) instead of per-project
+npx skills add sellersheetai/sellersheet-skills            # install the full skill bundle
+npx skills add sellersheetai/sellersheet-skills --list     # preview first
+npx skills add sellersheetai/sellersheet-skills -a codex   # target a specific agent
+npx skills add sellersheetai/sellersheet-skills -g         # user-level (global) instead of per-project
 ```
+
+The skills ship as **one bundle, always installed together** — they cross-reference [`sellersheet-shared`](./skills/sellersheet-shared/SKILL.md) (common preflight, store-reference rules, response contract), so partial installs aren't supported.
 
 Skills are a separate artifact from the MCP server — you still register the SellerSheet MCP server for your agent (see [docs/setup-mcp.md](./docs/setup-mcp.md)). Full guide: [docs/install-npx-skills.md](./docs/install-npx-skills.md).
 
@@ -112,12 +115,6 @@ bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-sk
 ```
 
 For any agent that scans a directory for skill folders (each containing a `SKILL.md`), point `--path` at that directory.
-
-### Selective install — only one skill
-
-```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --skills "sellersheet-sheets"
-```
 
 ### Manual install (any platform)
 
