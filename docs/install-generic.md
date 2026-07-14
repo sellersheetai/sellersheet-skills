@@ -11,21 +11,19 @@ Openclaw, Hermes, and most newer agent platforms fit this pattern.
 
 - Your agent's skill-scan directory (e.g., `/opt/openclaw/skills/`, `/srv/hermes/skills/`)
 - Your agent's MCP config file
-- SellerSheet API key from [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard)
+- SellerSheet API key from [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → **MCP & API keys** → **Create Key**
 
 ## Step 1: Add the MCP server
 
-Add this to your agent's MCP config:
+SellerSheet MCP is a hosted remote server (streamable HTTP) — nothing to install locally. Add this to your agent's MCP config:
 
 ```json
 {
   "mcpServers": {
     "sellersheet": {
-      "command": "npx",
-      "args": ["-y", "@sellersheet/mcp-server"],
-      "env": {
-        "SELLERSHEET_API_KEY": "YOUR_API_KEY"
-      }
+      "type": "http",
+      "url": "https://sellersheetai.com/mcp",
+      "headers": { "Authorization": "Bearer YOUR_API_KEY" }
     }
   }
 }

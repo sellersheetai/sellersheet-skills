@@ -1,67 +1,67 @@
-# Install on Codex CLI
+# Install on Codex CLI / ChatGPT desktop
 
-> **Recommended:** the quickest install is [`npx skills`](./install-npx-skills.md) — `npx skills add sellersheetai/sellersheet-skills -a codex`, one command across 50+ agents. The `install.sh` steps below are the no-Node fallback.
+Codex reads the same plugin marketplace format as Claude Code (`.claude-plugin/marketplace.json`), so the native plugin install is the recommended path — one repo serves both agents.
 
 ## Prerequisites
 
-- Codex CLI installed
-- SellerSheet API key from [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard)
+- Codex CLI (standalone, or the one bundled in the ChatGPT desktop app)
+- A SellerSheet account with at least one Amazon store connected — no API key needed for the OAuth path below
 
-## Step 1: Add the MCP server
-
-Open or create `~/.codex/mcp.json` and add:
-
-```json
-{
-  "mcpServers": {
-    "sellersheet": {
-      "command": "npx",
-      "args": ["-y", "@sellersheet/mcp-server"],
-      "env": {
-        "SELLERSHEET_API_KEY": "YOUR_API_KEY"
-      }
-    }
-  }
-}
-```
-
-## Step 2: Install the skills
+## Step 1: Install the skills (plugin)
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --target codex
+codex plugin marketplace add sellersheetai/sellersheet-skills
+codex plugin add sellersheet-skills@sellersheet-marketplace
 ```
 
-This copies skills to `~/.codex/skills/`.
+Verify with `codex plugin list` — you should see `sellersheet-skills@sellersheet-marketplace  installed, enabled`.
 
-If your Codex install uses a different path, override:
+## Step 2: Add the MCP server
+
+One command — no API key, no config editing:
 
 ```bash
-bash <(curl -fsSL ...install.sh) --target codex --path /your/path
+codex mcp add sellersheet --url https://sellersheetai.com/mcp
 ```
+
+A browser window opens — sign in to SellerSheet and approve. `codex mcp list` should then show `sellersheet | enabled | Auth: OAuth`.
+
+<details>
+<summary>Alternative: Bearer key instead of OAuth</summary>
+
+If you prefer a static API key (from [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → **MCP & API keys** → **Create Key**), edit `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.sellersheet]
+url = "https://sellersheetai.com/mcp"
+http_headers = { "Authorization" = "Bearer YOUR_API_KEY" }
+```
+
+Note the field is **`http_headers`** — `headers` is silently ignored. Or keep the key out of the file entirely: `codex mcp add sellersheet --url https://sellersheetai.com/mcp --bearer-token-env-var SELLERSHEET_API_KEY`.
+
+</details>
 
 ## Step 3: Restart Codex
 
-```bash
-codex restart
-```
-
-(Or close and reopen if running interactively.)
+Start a new session (or restart the ChatGPT desktop app) so the plugin's skills load.
 
 ## Verify
 
-```
-codex run "list available skills"
-```
-
-Should include the sellersheet-* skills.
+Ask Codex: *"Show me my SellerSheet user context."* It should call `get_user_context` and return your stores and plan.
 
 ## Update
 
 ```bash
-bash <(curl -fsSL ...install.sh) --target codex --update
+codex plugin marketplace upgrade sellersheet-marketplace
 ```
+
+## Alternative installs (skills only, no plugin system)
+
+- [`npx skills`](./install-npx-skills.md): `npx skills add sellersheetai/sellersheet-skills -a codex`
+- No-Node fallback: `bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --target codex`
 
 ## Troubleshooting
 
-- **Codex doesn't see the skills**: check Codex's documented skill discovery path; pass it via `--path`.
-- **MCP server fails to start**: confirm Node.js 18+ is installed and `npx @sellersheet/mcp-server` runs from a normal terminal.
+- **`get_user_context` not found**: the MCP server isn't registered — re-run Step 2, then start a new session.
+- **Manual `config.toml` entry not picked up**: check you used `http_headers`, not `headers`.
+- **Plugin installed but skills don't trigger**: start a fresh session; plugins load at session start.

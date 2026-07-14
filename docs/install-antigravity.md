@@ -5,21 +5,18 @@
 ## Prerequisites
 
 - Antigravity agent runtime installed
-- SellerSheet API key from [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard)
+- SellerSheet API key from [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → **MCP & API keys** → **Create Key**
 
 ## Step 1: Add the MCP server
 
-Open or create `~/.antigravity/mcp.json` (or wherever your Antigravity install reads MCP servers from):
+SellerSheet MCP is a hosted remote server — nothing to install locally. Antigravity (IDE + CLI) shares one config at `~/.gemini/antigravity/mcp_config.json` — paste via "… menu → MCP Servers → Manage MCP Servers → View raw config". Note Antigravity uses `serverUrl`, not `url`:
 
 ```json
 {
   "mcpServers": {
     "sellersheet": {
-      "command": "npx",
-      "args": ["-y", "@sellersheet/mcp-server"],
-      "env": {
-        "SELLERSHEET_API_KEY": "YOUR_API_KEY"
-      }
+      "serverUrl": "https://sellersheetai.com/mcp",
+      "headers": { "Authorization": "Bearer YOUR_API_KEY" }
     }
   }
 }
