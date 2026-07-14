@@ -1,39 +1,28 @@
 {
-  "_comment_": "SellerSheet MCP server config — paste this into your agent's MCP config file. See https://sellersheetai.com/dashboard for your API key.",
+  "_comment_": "SellerSheet MCP is a HOSTED remote server (streamable HTTP) — there is nothing to install locally. Paste this into your agent's MCP config file, or use your agent's one-command add (see _per_agent_ below). Get an API key at https://sellersheetai.com/dashboard → MCP & API keys → Create Key.",
   "mcpServers": {
     "sellersheet": {
-      "command": "npx",
-      "args": ["-y", "@sellersheet/mcp-server"],
-      "env": {
-        "SELLERSHEET_API_KEY": "YOUR_API_KEY_FROM_sellersheetai.com/dashboard"
+      "type": "http",
+      "url": "https://sellersheetai.com/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_API_KEY"
       }
     }
   },
-  "_per_agent_paths_": {
-    "claude-desktop": {
-      "macos": "~/Library/Application Support/Claude/claude_desktop_config.json",
-      "linux": "~/.config/Claude/claude_desktop_config.json",
-      "windows": "%APPDATA%/Claude/claude_desktop_config.json"
-    },
-    "claude-code": {
-      "_": "Use /mcp add or ~/.claude/mcp.json"
-    },
-    "codex": {
-      "_": "~/.codex/mcp.json or codex CLI flag --mcp"
-    },
-    "gemini-cli": {
-      "_": "~/.gemini/mcp.json"
-    },
-    "antigravity": {
-      "_": "~/.antigravity/mcp.json"
-    }
+  "_per_agent_": {
+    "claude-desktop": "Settings → Connectors → Add custom connector → URL https://sellersheetai.com/mcp (OAuth, no key needed)",
+    "claude-code": "claude mcp add-json sellersheet '{\"type\":\"http\",\"url\":\"https://sellersheetai.com/mcp\",\"headers\":{\"Authorization\":\"Bearer YOUR_API_KEY\"}}'",
+    "codex": "codex mcp add sellersheet --url https://sellersheetai.com/mcp   (browser OAuth on first use — no key needed; config.toml uses http_headers, NOT headers, if you set a Bearer manually)",
+    "cursor": "~/.cursor/mcp.json — mcpServers block above without the \"type\" field",
+    "windsurf-antigravity": "use \"serverUrl\" instead of \"url\" in the block above",
+    "gemini-cli": "~/.gemini/settings.json — httpUrl + headers",
+    "generic": "any MCP client that supports streamable HTTP: url + Authorization Bearer header"
   },
   "_setup_steps_": [
     "1. Sign in at https://sellersheetai.com",
-    "2. Visit /dashboard and copy your API key",
-    "3. Replace YOUR_API_KEY_FROM_sellersheetai.com/dashboard above with your key",
-    "4. Merge the mcpServers block into your agent's MCP config file (see _per_agent_paths_)",
-    "5. Restart your agent",
-    "6. Run a test tool call (e.g. get_user_context) to confirm the connection"
+    "2. Dashboard → MCP & API keys → Create Key (skip for OAuth clients like Claude Desktop / codex mcp add)",
+    "3. Register the server per _per_agent_ above",
+    "4. Restart your agent",
+    "5. Ask the agent to run get_user_context to confirm the connection"
   ]
 }

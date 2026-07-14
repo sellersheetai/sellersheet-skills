@@ -5,10 +5,10 @@ skill installer. It installs SellerSheet skills into Codex, Cursor, Gemini CLI,
 Antigravity, and 50+ other coding agents from one command — no per-agent setup
 script needed.
 
-For **Claude Code**, the plugin marketplace is still the best path because it
-also auto-registers the MCP server — see [install-claude-code.md](./install-claude-code.md).
-For every other agent, `npx skills` is the recommended installer; the repo's
-`install.sh` is the no-Node fallback.
+For **Claude Code** and **Codex**, the plugin marketplace is the best path —
+one bundle with built-in update flow; see [install-claude-code.md](./install-claude-code.md)
+and [install-codex.md](./install-codex.md). For every other agent, `npx skills`
+is the recommended installer; the repo's `install.sh` is the no-Node fallback.
 
 ## Prerequisites
 
@@ -43,8 +43,8 @@ skill *instructions*, not the SellerSheet MCP *connection* — and every skill
 needs that connection. Follow [setup-mcp.md](./setup-mcp.md) for the per-agent
 `mcpServers` config.
 
-(Claude Code is the exception: installing the plugin auto-registers the MCP
-server. See [install-claude-code.md](./install-claude-code.md).)
+(This applies to every agent — the Claude Code plugin also installs skills
+only. See [install-claude-code.md](./install-claude-code.md).)
 
 ## Update
 
