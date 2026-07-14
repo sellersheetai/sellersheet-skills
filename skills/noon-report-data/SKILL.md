@@ -13,12 +13,11 @@ store and a `rpt_noon_*` table.
 
 ## Prerequisites
 
-1. **`get_user_context`** must work (SellerSheet MCP connected). If not, surface
-   the setup steps and stop.
-2. **A connected noon account.** noon data is keyed to a noon *project*, not an
-   Amazon store. The user must have connected a noon account on the dashboard
-   (noon section → Connect noon). If `query_report_data` on a `rpt_noon_*` table
-   returns *"No connected noon account found"*, tell them to connect one first.
+Run the standard preflight in [`sellersheet-shared`](../sellersheet-shared/SKILL.md).
+**Extra auth for this skill:** a connected noon account — noon data is keyed to a noon
+*project*, not an Amazon store (dashboard → noon section → Connect noon). If
+`query_report_data` on a `rpt_noon_*` table returns *"No connected noon account
+found"*, tell the user to connect one first.
 
 ## How noon querying differs from Amazon
 
