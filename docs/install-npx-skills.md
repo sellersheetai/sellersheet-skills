@@ -18,7 +18,7 @@ For every other agent, `npx skills` is the recommended installer; the repo's
 ## Install the skills
 
 ```bash
-# Install all three skills, auto-detecting your agent
+# Install the full skill bundle, auto-detecting your agent
 npx skills add sellersheetai/sellersheet-skills
 
 # Preview what would be installed, without installing
@@ -31,9 +31,10 @@ npx skills add sellersheetai/sellersheet-skills --skill report-data
 npx skills add sellersheetai/sellersheet-skills -a codex
 ```
 
-`npx skills` discovers the three skills — `sellersheet-sheets`,
-`sellersheet-dashboard`, `report-data` — from the repo's `skills/` directory
-and installs each as a `SKILL.md` skill folder into your agent's skill path.
+`npx skills` discovers every skill in the repo's `skills/` directory —
+`sellersheet-sheets`, `sellersheet-dashboard`, `report-data`, `image-gen`,
+`noon-report-data`, `amazon-ads`, `amazon-report`, `data-kiosk` — and installs
+each as a `SKILL.md` skill folder into your agent's skill path.
 
 ## Register the MCP server
 
@@ -53,16 +54,15 @@ Re-run `add` to pull the latest published version:
 npx skills add sellersheetai/sellersheet-skills
 ```
 
-`npx skills` reads each skill's `SKILL.md` `version:` (currently `0.3.0`,
-mirrored from the plugin's canonical version). See [auto-update.md](./auto-update.md)
+`npx skills` reads each skill's `SKILL.md` `version:` (mirrored from the
+plugin's canonical version). See [auto-update.md](./auto-update.md)
 for how versioning works across all install channels.
 
 ## Remove
 
 ```bash
-npx skills remove sellersheet-sheets -g
-npx skills remove sellersheet-dashboard -g
-npx skills remove report-data -g
+npx skills remove --all        # remove every installed skill
+npx skills remove report-data  # or remove one at a time
 ```
 
 ## When to use `install.sh` instead

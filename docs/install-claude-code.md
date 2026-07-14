@@ -13,7 +13,7 @@
 /plugin install sellersheet-skills@sellersheet-marketplace
 ```
 
-`sellersheet-skills` is a single plugin that bundles all three skills — `sellersheet-sheets`, `sellersheet-dashboard`, and `report-data`. There is no per-skill install; one `/plugin install` gets the whole bundle.
+`sellersheet-skills` is a single plugin that bundles every skill in the repo (see the [README skill table](../README.md#whats-in-here)). There is no per-skill install; one `/plugin install` gets the whole bundle.
 
 The plugin also ships a `.mcp.json`, so installing it **auto-registers the SellerSheet MCP server**. You only need to expose your API key to Claude Code's environment:
 
