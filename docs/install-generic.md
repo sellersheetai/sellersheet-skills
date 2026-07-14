@@ -11,21 +11,19 @@ Openclaw, Hermes, and most newer agent platforms fit this pattern.
 
 - Your agent's skill-scan directory (e.g., `/opt/openclaw/skills/`, `/srv/hermes/skills/`)
 - Your agent's MCP config file
-- SellerSheet API key from [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard)
+- SellerSheet API key from [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → **MCP & API keys** → **Create Key**
 
 ## Step 1: Add the MCP server
 
-Add this to your agent's MCP config:
+SellerSheet MCP is a hosted remote server (streamable HTTP) — nothing to install locally. Add this to your agent's MCP config:
 
 ```json
 {
   "mcpServers": {
     "sellersheet": {
-      "command": "npx",
-      "args": ["-y", "@sellersheet/mcp-server"],
-      "env": {
-        "SELLERSHEET_API_KEY": "YOUR_API_KEY"
-      }
+      "type": "http",
+      "url": "https://sellersheetai.com/mcp",
+      "headers": { "Authorization": "Bearer YOUR_API_KEY" }
     }
   }
 }
@@ -58,17 +56,6 @@ This copies all skills in the bundle to the specified directory. Each lands as i
 
 Restart so it scans the skill directory and registers the new skills.
 
-## Selective install
-
-Install only specific skills:
-
-```bash
-bash <(curl -fsSL ...install.sh) \
-  --target openclaw \
-  --path /opt/openclaw/skills \
-  --skills "sellersheet-sheets report-data"
-```
-
 ## Update
 
 ```bash
@@ -94,4 +81,4 @@ If your agent expects a different layout (e.g., a single `skill.yaml` file, or s
 
 ## Notes for multi-agent project repos (e.g., Openclaw)
 
-If you're running an internal multi-agent project (sub-agents like fba-agent, ppc-agent, etc.), point each sub-agent's skill-scan path at the same `/your/path/` directory so they all benefit from the same skill base. Sub-agents can use selective `--skills` install if they only need a subset.
+If you're running an internal multi-agent project (sub-agents like fba-agent, ppc-agent, etc.), point each sub-agent's skill-scan path at the same `/your/path/` directory so they all benefit from the same skill base. The bundle installs as one set — skills cross-reference `sellersheet-shared`, so don't hand-prune the directory.

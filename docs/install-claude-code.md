@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - Claude Code 1.0+
-- A SellerSheet API key from [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → Settings → API
+- A SellerSheet API key from [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → **MCP & API keys** → **Create Key**
 - At least one Amazon store connected at [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard)
 
 ## Option A — Plugin marketplace (recommended)
@@ -13,16 +13,15 @@
 /plugin install sellersheet-skills@sellersheet-marketplace
 ```
 
-`sellersheet-skills` is a single plugin that bundles all three skills — `sellersheet-sheets`, `sellersheet-dashboard`, and `report-data`. There is no per-skill install; one `/plugin install` gets the whole bundle.
+`sellersheet-skills` is a single plugin that bundles every skill in the repo (see the [README skill table](../README.md#whats-in-here)). There is no per-skill install; one `/plugin install` gets the whole bundle.
 
-The plugin also ships a `.mcp.json`, so installing it **auto-registers the SellerSheet MCP server**. You only need to expose your API key to Claude Code's environment:
+The plugin installs **skills only** — it does **not** register the MCP server (versions ≤0.5.0 bundled a broken `.mcp.json`; it was removed in 0.5.1). Register the MCP server as a separate step:
 
 ```bash
-# add to ~/.zshrc / ~/.bashrc, then restart your shell + Claude Code
-export SELLERSHEET_API_KEY="your-key-from-sellersheetai.com/dashboard"
+claude mcp add-json sellersheet '{"type":"http","url":"https://sellersheetai.com/mcp","headers":{"Authorization":"Bearer YOUR_API_KEY"}}'
 ```
 
-If you previously added a `sellersheet` MCP server to `~/.claude/mcp.json` by hand, you can remove that entry — the plugin now provides it.
+SellerSheet MCP is a hosted remote server — nothing runs locally. The dashboard's **Use key** dialog renders this command with your key filled in.
 
 ### Keep it current
 
@@ -72,6 +71,6 @@ Claude Code should invoke `sellersheet-dashboard` via the `Skill` tool.
 ## Troubleshooting
 
 - **Skill not appearing**: restart Claude Code or run `/reload-plugins`. The skill index is built on startup.
-- **`sellersheet` MCP not connected**: confirm `SELLERSHEET_API_KEY` is exported in the environment Claude Code launched from (`echo $SELLERSHEET_API_KEY`). Restart Claude Code after setting it.
+- **`sellersheet` MCP not connected**: the plugin doesn't register it — run the `claude mcp add-json` command above, then restart Claude Code.
 - **`get_user_context` returns "no stores"**: connect a store at [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard).
-- **PPC tabs are empty**: authorize Amazon Advertising profile access at [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → Stores → Connect Advertising.
+- **PPC tabs are empty**: authorize Amazon Advertising profile access at [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → My Stores → the **Authorize Ads** button on the store's row.

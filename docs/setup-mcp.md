@@ -5,37 +5,36 @@ The SellerSheet skills (`sellersheet-sheets`, `sellersheet-dashboard`, `report-d
 ## Three things you need
 
 1. **A SellerSheet account.** Free trial at [sellersheetai.com](https://sellersheetai.com).
-2. **An API key.** From [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → Settings → API → "Create new key". Copy it. Treat it like a password — anyone with this key can call SP-API on your stores.
-3. **MCP server registered in your agent.** Configuration shape (same across all agents):
+2. **A connection credential.** OAuth clients (Claude Desktop connectors, `codex mcp add`) need **no key** — a browser sign-in scopes access to your stores. Every other client needs an **API key** from [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → **MCP & API keys** → **Create Key**. Treat it like a password — anyone with this key can call SP-API on your stores.
+3. **MCP server registered in your agent.** SellerSheet MCP is a **hosted remote server** (streamable HTTP) at `https://sellersheetai.com/mcp` — there is nothing to install locally. Generic configuration shape:
 
 ```json
 {
   "mcpServers": {
     "sellersheet": {
-      "command": "npx",
-      "args": ["-y", "@sellersheet/mcp-server"],
-      "env": {
-        "SELLERSHEET_API_KEY": "PASTE_YOUR_KEY_HERE"
-      }
+      "type": "http",
+      "url": "https://sellersheetai.com/mcp",
+      "headers": { "Authorization": "Bearer YOUR_API_KEY" }
     }
   }
 }
 ```
 
-The location of this config differs per agent:
+Per-agent registration:
 
-| Agent | Config file path |
+| Agent | How to register |
 |---|---|
-| Claude Desktop (macOS) | `~/Library/Application Support/Claude/claude_desktop_config.json` |
-| Claude Desktop (Linux) | `~/.config/Claude/claude_desktop_config.json` |
-| Claude Desktop (Windows) | `%APPDATA%/Claude/claude_desktop_config.json` |
-| Claude Code | `~/.claude/mcp.json` or `/mcp add` interactive command |
-| Codex CLI | `~/.codex/mcp.json` |
-| Gemini CLI | `~/.gemini/mcp.json` |
-| Antigravity | `~/.antigravity/mcp.json` |
-| Openclaw / Hermes / generic | per the agent's docs — the `mcpServers` block is universal |
+| Claude Desktop | Settings → Connectors → **Add custom connector** → URL `https://sellersheetai.com/mcp` (OAuth — no key needed) |
+| Claude Code | `claude mcp add-json sellersheet '{"type":"http","url":"https://sellersheetai.com/mcp","headers":{"Authorization":"Bearer YOUR_API_KEY"}}'` |
+| Codex CLI / ChatGPT desktop | `codex mcp add sellersheet --url https://sellersheetai.com/mcp` — a browser window opens for OAuth on first use; **no key needed**. (Manual `config.toml`: the header field is `http_headers`, not `headers`.) |
+| Cursor | `~/.cursor/mcp.json` — the JSON block above without the `"type"` field |
+| Windsurf / Antigravity | Same block but with `"serverUrl"` instead of `"url"` |
+| Gemini CLI | `~/.gemini/settings.json` — `httpUrl` + `headers` |
+| Openclaw / Hermes / generic | Any MCP client with streamable-HTTP support: URL + `Authorization: Bearer` header |
 
-> **Claude Code shortcut:** if you install `sellersheet-skills` as a plugin (`/plugin install sellersheet-skills@sellersheet-marketplace`), the plugin ships its own `.mcp.json` and registers the `sellersheet` server for you — you skip the manual config above. Just expose your key as an environment variable instead of pasting it into JSON: `export SELLERSHEET_API_KEY="your-key"`. See [install-claude-code.md](./install-claude-code.md).
+The dashboard's **Use key** dialog ([sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → MCP & API keys) renders a ready-to-paste snippet for each of these clients with your key filled in.
+
+> **Note:** installing the `sellersheet-skills` plugin does **not** register the MCP server — MCP and skills are two independent steps, in every agent. (Versions ≤0.5.0 bundled a broken `.mcp.json`; it was removed in 0.5.1.)
 
 ## After installing MCP — install the skills
 
@@ -43,7 +42,8 @@ Skills are a separate artifact from the MCP server. Pick the path that fits your
 
 | Agent | Install command |
 |---|---|
-| **Claude Code** | `/plugin marketplace add sellersheetai/sellersheet-skills` then `/plugin install sellersheet-skills@sellersheet-marketplace` (one bundle, all three skills) |
+| **Claude Code** | `/plugin marketplace add sellersheetai/sellersheet-skills` then `/plugin install sellersheet-skills@sellersheet-marketplace` (one bundle, all skills) |
+| **Codex CLI / ChatGPT desktop** | `codex plugin marketplace add sellersheetai/sellersheet-skills` then `codex plugin add sellersheet-skills@sellersheet-marketplace` — Codex reads the same marketplace format, so one repo serves both |
 | **Other agents** | `npx skills add sellersheetai/sellersheet-skills` — recommended; see [install-npx-skills.md](./install-npx-skills.md). No-Node fallback: `bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --target <agent>` |
 
 After both MCP and skills are installed, restart your agent.
@@ -80,11 +80,11 @@ The full mechanism — version resolution, the `extraKnownMarketplaces` snippet,
 | Symptom | Fix |
 |---|---|
 | Agent says "SellerSheet MCP isn't connected" right after restart | Re-check the config file is in the right path for your agent (table above). Some Claude Desktop installs use a different path on Windows than expected. |
-| `get_user_context` returns "unauthorized" | API key is wrong or has been revoked. Generate a new one at [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → Settings → API. |
-| `get_user_context` returns "tool not found" | The MCP server didn't start. Check `npx @sellersheet/mcp-server` runs from your terminal; install Node.js 18+ if missing. |
-| `get_user_context` succeeds but says "no stores" | Connect at least one Amazon store at [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → Stores → Connect Amazon. |
+| `get_user_context` returns "unauthorized" | API key is wrong or has been revoked. Generate a new one at [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → **MCP & API keys** → **Create Key**. |
+| `get_user_context` returns "tool not found" | The server wasn't registered (wrong config path or field name — e.g. Codex `config.toml` needs `http_headers`, not `headers`), or the agent wasn't restarted after the config change. |
+| `get_user_context` succeeds but says "no stores" | Connect at least one Amazon store at [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → My Stores → Connect Amazon. |
 | Agent says skill is outdated every session even after updating | Some agents cache the skill index. Run `/skills refresh` (Claude Code) or fully restart the agent. |
-| PPC sections show as scaffolds (empty) | Authorize Amazon Advertising profile access at [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → Stores → Connect Advertising. |
+| PPC sections show as scaffolds (empty) | Authorize Amazon Advertising profile access at [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → My Stores → the **Authorize Ads** button on the store's row. |
 
 ## Support
 

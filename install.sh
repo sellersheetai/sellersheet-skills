@@ -6,7 +6,6 @@
 #   bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh)
 #   bash <(curl -fsSL ...) --target claude-code
 #   bash <(curl -fsSL ...) --target openclaw --path /your/openclaw/skills
-#   bash <(curl -fsSL ...) --skills "sellersheet sellersheet-sheets"
 #   bash <(curl -fsSL ...) --update
 
 set -euo pipefail
@@ -18,7 +17,6 @@ VERSION="0.8.4"
 # ---------- args ----------
 TARGET=""
 PATH_OVERRIDE=""
-SKILLS=""
 UPDATE=0
 DRY_RUN=0
 CHECK=0
@@ -27,7 +25,6 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --target)    TARGET="$2"; shift 2 ;;
     --path)      PATH_OVERRIDE="$2"; shift 2 ;;
-    --skills)    SKILLS="$2"; shift 2 ;;
     --update)    UPDATE=1; shift ;;
     --check)     CHECK=1; shift ;;
     --dry-run)   DRY_RUN=1; shift ;;
@@ -43,9 +40,6 @@ OPTIONS:
                        if omitted.
   --path <dir>         Override the default skills directory for the target.
                        Required for openclaw, hermes, generic.
-  --skills "<list>"    Space-separated skill names to install. Default: all.
-                       Available skills:
-                         sellersheet-sheets sellersheet-dashboard report-data image-gen
   --update             Pull the latest version and re-install.
   --check              Compare installed skill versions vs the latest available;
                        print a status table and exit (no install/update).
@@ -58,7 +52,6 @@ EXAMPLES:
   install.sh --target claude-code             # global ~/.claude/skills
   install.sh --target codex                   # ~/.codex/skills
   install.sh --target openclaw --path /opt/openclaw/skills
-  install.sh --skills "sellersheet-sheets report-data"
 EOF
                 exit 0 ;;
     *)           echo "Unknown arg: $1"; exit 1 ;;
@@ -199,13 +192,9 @@ else
   run "git clone --quiet '$REPO_URL' '$CACHE_DIR'"
 fi
 
-# ---------- determine skills to install ----------
-if [[ -z "$SKILLS" ]]; then
-  SKILLS=$(cd "$CACHE_DIR/skills" && ls -d */ 2>/dev/null | sed 's:/::g' | tr '\n' ' ')
-  log "Installing all skills: $SKILLS"
-else
-  log "Installing selected skills: $SKILLS"
-fi
+# ---------- determine skills to install (always the full bundle) ----------
+SKILLS=$(cd "$CACHE_DIR/skills" && ls -d */ 2>/dev/null | sed 's:/::g' | tr '\n' ' ')
+log "Installing all skills: $SKILLS"
 
 # ---------- install ----------
 run "mkdir -p '$SKILLS_DIR'"

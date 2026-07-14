@@ -1,6 +1,7 @@
 ---
 name: image-gen
-description: Use when creating or optimizing Amazon product listing images or A+ Content for a store SKU or a whole variation family — learns mature competitors' image style, generates/recolors product-faithful images with gpt-image-2 via the connected image MCP tools, enforces Amazon main-image compliance, builds A+ modules, scores them, builds review previews, and records into the operator's 'Images Generation' Google Sheet. Triggers: "make/optimize listing images", "main/hero image", "A+ content", "A+模块/品牌故事", "competitor image style", "出主图/副图/套图", "recolor variants", "image-gen on the row", "学竞品风格生成产品图". Default provider openai; gated phases (operator approves before spend). NOT for non-Amazon image edits — for that call the MCP image tools directly.
+description: >-
+  Use when creating or optimizing Amazon product listing images or A+ Content for a store SKU or a whole variation family — learns mature competitors' image style, generates/recolors product-faithful images with gpt-image-2 via the connected image MCP tools, enforces Amazon main-image compliance, builds A+ modules, scores them, builds review previews, and records into the operator's 'Images Generation' Google Sheet. Triggers: "make/optimize listing images", "main/hero image", "A+ content", "A+模块/品牌故事", "competitor image style", "出主图/副图/套图", "recolor variants", "image-gen on the row", "学竞品风格生成产品图". Default provider openai; gated phases (operator approves before spend). NOT for non-Amazon image edits — for that call the MCP image tools directly.
 version: 0.8.6
 ---
 
@@ -41,8 +42,9 @@ Branch on optimize-existing vs new product:
 - **New product** → ask for **sample product images + planned SKU name + store.**
 
 Pull the variation family early (`search_listings_items(variation_parent_sku=…)`, union across
-marketplaces) so you know every child SKU and which children lack a real color photo. Confirm
-image-gen is alive first: `get_user_context` (canUseMcp, imagesFolderId).
+marketplaces) so you know every child SKU and which children lack a real color photo. Run the
+standard preflight ([`sellersheet-shared`](../sellersheet-shared/SKILL.md)) first — for this
+skill also confirm `imagesFolderId` is present in `get_user_context`.
 
 ## Phase 1 — Learn the style (GATE: show direction before generating)
 Competitor discovery (only if no operator-supplied ref): **prefer a US store** — find **≥3 mature

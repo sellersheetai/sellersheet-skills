@@ -4,6 +4,52 @@ All notable changes to SellerSheet Skills are documented here. Format follows [K
 
 ## [Unreleased]
 
+### Added
+
+- **`sellersheet-shared`** — a companion skill that is the single source of truth for what
+  every skill used to copy: the MCP preflight protocol (`get_user_context` → `skills_catalog`
+  version check → `canUseMcp`), store-reference rules (`name-country`, multi-marketplace
+  suffix), the MCP response contract (always relay `notification.message` + `human_action`),
+  and a troubleshooting table. All 8 skills now open with a 2–4 line pointer to it instead of
+  a ~1.4 KB copied block — the copies had already drifted (3 skills still told users the
+  API key lived at "Settings → API", a page that doesn't exist).
+
+### Changed
+
+- **The bundle now always installs as a whole set.** Skills cross-reference
+  `sellersheet-shared`, so partial installs are no longer supported or documented:
+  `install.sh` drops the `--skills` flag (always installs everything under `skills/`), and
+  the "Selective install" / single-skill `npx skills -s` examples are removed from README
+  and the per-agent guides.
+
+### Fixed
+
+- **`image-gen`** — SKILL.md frontmatter `description` was an unquoted YAML scalar containing
+  `Triggers: "…"`; the embedded `: ` breaks strict YAML parsers (js-yaml, used by `npx skills`),
+  which silently skipped the skill — `npx skills add` installed only 7 of 8 skills. The
+  description is now a `>-` folded block scalar, so all install channels see the full bundle.
+
+### Documentation
+
+- README + install docs caught up to the 8-skill bundle: `amazon-ads`, `amazon-report`, and
+  `data-kiosk` added to the skill table (they shipped in 0.8.x but the README still said
+  "five skills" / "three skills"); latest-release badge bumped to v0.8.6; `npx skills`
+  examples now cover single-skill (`-s`) and global (`-g`) installs.
+- **MCP setup docs rewritten for the hosted remote server.** Every reference to the retired
+  `npx @sellersheet/mcp-server` stdio package (npm 404 — removed in 0.5.1) is gone from
+  README, `mcp/sellersheet.json`, `setup-mcp.md`, and the per-agent install guides; they now
+  point at `https://sellersheetai.com/mcp` with OAuth (Claude Desktop connectors,
+  `codex mcp add`) or Bearer-key configs. The stale "plugin auto-registers MCP via
+  `.mcp.json`" claim (false since 0.5.1) is corrected everywhere: **MCP and skills are two
+  independent install steps.** API-key path fixed to Dashboard → MCP & API keys → Create
+  Key; ads authorization fixed to My Stores → Authorize Ads.
+- **Codex plugin install documented** (live-verified on codex-cli 0.144.2): Codex reads
+  `.claude-plugin/marketplace.json` directly, so `codex plugin marketplace add
+  sellersheetai/sellersheet-skills` + `codex plugin add sellersheet-skills@sellersheet-marketplace`
+  installs the same bundle — one repo serves Claude Code and Codex. `install-codex.md`
+  rewritten around this path, including the `config.toml` gotcha (`http_headers`, not
+  `headers`, for manual Bearer setups).
+
 Planned for upcoming releases (under review):
 - `sellersheet` — Amazon business operations orchestrator
 - `amazon-api` — Amazon SP-API guide

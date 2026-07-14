@@ -5,21 +5,18 @@
 ## Prerequisites
 
 - Gemini CLI 0.5+
-- SellerSheet API key from [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard)
+- SellerSheet API key from [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → **MCP & API keys** → **Create Key**
 
 ## Step 1: Add the MCP server
 
-Open or create `~/.gemini/mcp.json`:
+SellerSheet MCP is a hosted remote server — nothing to install locally. Add to `~/.gemini/settings.json` under `mcpServers`:
 
 ```json
 {
   "mcpServers": {
     "sellersheet": {
-      "command": "npx",
-      "args": ["-y", "@sellersheet/mcp-server"],
-      "env": {
-        "SELLERSHEET_API_KEY": "YOUR_API_KEY"
-      }
+      "httpUrl": "https://sellersheetai.com/mcp",
+      "headers": { "Authorization": "Bearer YOUR_API_KEY" }
     }
   }
 }
