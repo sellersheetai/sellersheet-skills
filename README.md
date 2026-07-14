@@ -38,9 +38,9 @@ Before installing, confirm:
 
 1. **A SellerSheet account** at [sellersheetai.com](https://sellersheetai.com).
 2. **At least one Amazon store connected** in your SellerSheet workspace.
-3. **A SellerSheet API key** from [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard). On Claude Code the plugin ships a `.mcp.json` and auto-registers the SellerSheet MCP server — you only expose your key as the `SELLERSHEET_API_KEY` environment variable. On other agents, register the MCP server manually using `mcp/sellersheet.json`. See [docs/setup-mcp.md](./docs/setup-mcp.md).
+3. **The SellerSheet MCP server registered in your agent.** It's a hosted remote server at `https://sellersheetai.com/mcp` — nothing to install locally. OAuth clients (Claude Desktop connectors, `codex mcp add`) need no key; other clients use an API key from [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → **MCP & API keys** → **Create Key**. Installing this plugin does **not** register the MCP server — skills and MCP are two independent steps. See [docs/setup-mcp.md](./docs/setup-mcp.md).
 
-For the dashboard skill specifically, if you want PPC tabs to populate with real data, the connected store needs **Amazon Advertising profile access** authorized in SellerSheet at [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → Stores → Connect Advertising. Without it, ad-related sections render as scaffolds.
+For the dashboard skill specifically, if you want PPC tabs to populate with real data, the connected store needs **Amazon Advertising profile access** — [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → My Stores → **Authorize Ads** on the store's row. Without it, ad-related sections render as scaffolds.
 
 ## Install
 
@@ -51,32 +51,40 @@ For the dashboard skill specifically, if you want PPC tabs to populate with real
 /plugin install sellersheet-skills@sellersheet-marketplace
 ```
 
-This installs the full skill bundle (all eight skills in the table above) as one plugin.
+This installs the full skill bundle (all eight skills in the table above) as one plugin. Then register the MCP server (separate step):
+
+```bash
+claude mcp add-json sellersheet '{"type":"http","url":"https://sellersheetai.com/mcp","headers":{"Authorization":"Bearer YOUR_API_KEY"}}'
+```
+
+### Codex CLI / ChatGPT desktop
+
+Codex reads the same plugin marketplace format — one repo serves both:
+
+```bash
+codex plugin marketplace add sellersheetai/sellersheet-skills
+codex plugin add sellersheet-skills@sellersheet-marketplace
+```
+
+Then register the MCP server — one command, no API key (a browser window opens for OAuth):
+
+```bash
+codex mcp add sellersheet --url https://sellersheetai.com/mcp
+```
 
 ### Claude Desktop
 
-1. Add the SellerSheet MCP server to your config:
+1. Register the MCP server: **Settings → Connectors → Add custom connector** → URL `https://sellersheetai.com/mcp`. Sign in via the OAuth prompt — no API key needed.
 
-```bash
-# macOS
-cat mcp/sellersheet.json >> ~/Library/Application\ Support/Claude/claude_desktop_config.json
-# Linux
-cat mcp/sellersheet.json >> ~/.config/Claude/claude_desktop_config.json
-# Windows (PowerShell)
-Get-Content mcp\sellersheet.json >> "$env:APPDATA\Claude\claude_desktop_config.json"
-```
-
-2. Restart Claude Desktop.
-
-3. Install skills:
+2. Install skills:
 
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --target claude-desktop
 ```
 
-### Codex, Cursor, Gemini & 50+ other agents — `npx skills` (recommended)
+### Cursor, Gemini & 50+ other agents — `npx skills` (recommended)
 
-[`npx skills`](https://github.com/vercel-labs/skills) is the open cross-agent skill installer — one command, works across Codex, Cursor, Gemini CLI, Antigravity, and 50+ other coding agents.
+[`npx skills`](https://github.com/vercel-labs/skills) is the open cross-agent skill installer — one command, works across Cursor, Gemini CLI, Antigravity, Codex, and 50+ other coding agents.
 
 ```bash
 npx skills add sellersheetai/sellersheet-skills                  # install the full skill bundle
