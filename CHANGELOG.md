@@ -4,6 +4,16 @@ All notable changes to SellerSheet Skills are documented here. Format follows [K
 
 ## [Unreleased]
 
+Planned for upcoming releases (under review):
+- `sellersheet` — Amazon business operations orchestrator
+- `amazon-api` — Amazon SP-API guide
+- `fba-inbound` — FBA inbound shipment workflow
+- `listing-optimizer` — Full agent-orchestrated listing optimization
+- `listing-refurbish` — FBA ASIN migration
+- `amazon-listing-optimizer` — Multi-market listing optimization
+
+## [0.9.0] — 2026-07-15
+
 ### Added
 
 - **`sellersheet-shared`** — a companion skill that is the single source of truth for what
@@ -33,8 +43,7 @@ All notable changes to SellerSheet Skills are documented here. Format follows [K
 
 - README + install docs caught up to the 8-skill bundle: `amazon-ads`, `amazon-report`, and
   `data-kiosk` added to the skill table (they shipped in 0.8.x but the README still said
-  "five skills" / "three skills"); latest-release badge bumped to v0.8.6; `npx skills`
-  examples now cover single-skill (`-s`) and global (`-g`) installs.
+  "five skills" / "three skills"); `npx skills` examples now cover global (`-g`) installs.
 - **MCP setup docs rewritten for the hosted remote server.** Every reference to the retired
   `npx @sellersheet/mcp-server` stdio package (npm 404 — removed in 0.5.1) is gone from
   README, `mcp/sellersheet.json`, `setup-mcp.md`, and the per-agent install guides; they now
@@ -49,14 +58,6 @@ All notable changes to SellerSheet Skills are documented here. Format follows [K
   installs the same bundle — one repo serves Claude Code and Codex. `install-codex.md`
   rewritten around this path, including the `config.toml` gotcha (`http_headers`, not
   `headers`, for manual Bearer setups).
-
-Planned for upcoming releases (under review):
-- `sellersheet` — Amazon business operations orchestrator
-- `amazon-api` — Amazon SP-API guide
-- `fba-inbound` — FBA inbound shipment workflow
-- `listing-optimizer` — Full agent-orchestrated listing optimization
-- `listing-refurbish` — FBA ASIN migration
-- `amazon-listing-optimizer` — Multi-market listing optimization
 
 ## [0.8.6] — 2026-07-10
 
