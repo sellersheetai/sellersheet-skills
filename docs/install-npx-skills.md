@@ -24,17 +24,16 @@ npx skills add sellersheetai/sellersheet-skills
 # Preview what would be installed, without installing
 npx skills add sellersheetai/sellersheet-skills --list
 
-# Install a single skill
-npx skills add sellersheetai/sellersheet-skills --skill report-data
-
 # Target a specific agent (codex, cursor, gemini, claude-code, …)
 npx skills add sellersheetai/sellersheet-skills -a codex
 ```
 
 `npx skills` discovers every skill in the repo's `skills/` directory —
 `sellersheet-sheets`, `sellersheet-dashboard`, `report-data`, `image-gen`,
-`noon-report-data`, `amazon-ads`, `amazon-report`, `data-kiosk` — and installs
-each as a `SKILL.md` skill folder into your agent's skill path.
+`noon-report-data`, `amazon-ads`, `amazon-report`, `data-kiosk`, plus the
+`sellersheet-shared` companion — and installs each as a `SKILL.md` skill folder
+into your agent's skill path. **Install the whole bundle, not a subset** — the
+skills reference `sellersheet-shared` for the common preflight and conventions.
 
 ## Register the MCP server
 

@@ -56,17 +56,6 @@ This copies all skills in the bundle to the specified directory. Each lands as i
 
 Restart so it scans the skill directory and registers the new skills.
 
-## Selective install
-
-Install only specific skills:
-
-```bash
-bash <(curl -fsSL ...install.sh) \
-  --target openclaw \
-  --path /opt/openclaw/skills \
-  --skills "sellersheet-sheets report-data"
-```
-
 ## Update
 
 ```bash
@@ -92,4 +81,4 @@ If your agent expects a different layout (e.g., a single `skill.yaml` file, or s
 
 ## Notes for multi-agent project repos (e.g., Openclaw)
 
-If you're running an internal multi-agent project (sub-agents like fba-agent, ppc-agent, etc.), point each sub-agent's skill-scan path at the same `/your/path/` directory so they all benefit from the same skill base. Sub-agents can use selective `--skills` install if they only need a subset.
+If you're running an internal multi-agent project (sub-agents like fba-agent, ppc-agent, etc.), point each sub-agent's skill-scan path at the same `/your/path/` directory so they all benefit from the same skill base. The bundle installs as one set — skills cross-reference `sellersheet-shared`, so don't hand-prune the directory.

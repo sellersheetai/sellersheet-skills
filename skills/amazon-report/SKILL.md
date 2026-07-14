@@ -16,14 +16,11 @@ This skill is **reference** material. `report-data` owns the synced `rpt_*`
 warehouse and the generic create→poll→download workflow; this skill owns the
 on-demand analytics/Brand-Analytics/Vendor report **content schemas**.
 
-## Prerequisites — confirm SellerSheet MCP is connected
+## Prerequisites
 
-1. Call `get_user_context`. If it's not in your tool catalog or returns an auth
-   error, SellerSheet MCP isn't set up — tell the user to connect it at
-   [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) and stop.
-2. `data.canUseMcp` must be true. Brand Analytics reports (`GET_BRAND_ANALYTICS_*`)
-   need **Brand Registry**; Vendor reports (`GET_VENDOR_*`) need a **vendor**
-   account. Surface `data.message` if blocked.
+Run the standard preflight in [`sellersheet-shared`](../sellersheet-shared/SKILL.md).
+**Extra auth for this skill:** Brand Analytics reports (`GET_BRAND_ANALYTICS_*`) need
+**Brand Registry**; Vendor reports (`GET_VENDOR_*`) need a **vendor** account.
 
 ## When to use
 
