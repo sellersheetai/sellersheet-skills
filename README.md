@@ -4,11 +4,11 @@
 
 **Author**: [sellersheetai.com](https://sellersheetai.com)
 **License**: Apache-2.0
-**Latest release**: v0.8.4 ([changelog](./CHANGELOG.md))
+**Latest release**: v0.8.6 ([changelog](./CHANGELOG.md))
 
 ## What's in here
 
-Five production-ready skills for working with the SellerSheet MCP. More skills coming after their reviews complete.
+Eight production-ready skills for working with the SellerSheet MCP. More skills coming after their reviews complete.
 
 | Skill | What it does |
 |---|---|
@@ -17,12 +17,14 @@ Five production-ready skills for working with the SellerSheet MCP. More skills c
 | **report-data** | Amazon SP-API + Ads-API report querying — 50+ `rpt_*` tables in the SellerSheet warehouse (inventory, listings, orders, returns, financial, brand analytics, ads SP/SB/SD), sync-schedule monitoring, on-demand report flow (create → poll → download to Drive). Use for inventory levels, restock needs, search terms, settlements, listing status, and any synced-report question. |
 | **image-gen** | Amazon listing images + A+ Content via gpt-image-2 — learn mature competitors' image style, generate/recolor product-faithful images, enforce main-image compliance, build A+ modules, score, and record to the 'Images Generation' sheet. Covers the s0–s8 slot model, OpenAI prompting fundamentals, and the Basic A+ module spec. |
 | **noon-report-data** | noon.com (noon Partners) report querying — the 4 `rpt_noon_*` warehouse tables (orders, finance/transactions, FBN inventory aging, product-views & sales) for a connected noon store. Covers the twice-daily schedule, project-scoped access, per-marketplace semantics, and the snapshot-vs-incremental query nuances. |
+| **amazon-ads** | Amazon Advertising (SP, SB, SD) operations — campaigns, ad groups, keywords/targets, bids, budgets, bulk creation, negatives, exports, change history, recommendations. Bundles 35 real Ads Reporting API v3 `createReport` request bodies with authoritative column sets. |
+| **amazon-report** | Amazon SP-API on-demand report documents — the exact `reportType`, required `reportOptions` enums, and full JSON field tree for 22 reports (Brand Analytics, Sales & Traffic, Promotion/Coupon, Vendor, account health), so agents request the right report and parse fields by their real names. NOT for the synced `rpt_*` warehouse — that's `report-data`. |
+| **data-kiosk** | Amazon SP-API Data Kiosk GraphQL authoring — versioned root query types, dataset fields, required arguments, enums, and per-field `@resultRetention` for Sales & Traffic, Economics, and Vendor Analytics, so agents write a valid `createQuery` instead of guessing. |
 
 ### Coming soon (under review)
 
 - `sellersheet` — Amazon business operations orchestrator
 - `amazon-api` — Amazon SP-API guide
-- `amazon-ads` — Amazon Advertising operations
 - `fba-inbound` — FBA inbound shipment workflow
 - `listing-optimizer` — Full listing optimization
 - `listing-refurbish` — FBA ASIN migration
@@ -49,7 +51,7 @@ For the dashboard skill specifically, if you want PPC tabs to populate with real
 /plugin install sellersheet-skills@sellersheet-marketplace
 ```
 
-This installs all five skills (`sellersheet-sheets`, `sellersheet-dashboard`, `report-data`, `image-gen`, `noon-report-data`) as one bundle.
+This installs the full skill bundle (all eight skills in the table above) as one plugin.
 
 ### Claude Desktop
 
@@ -77,9 +79,11 @@ bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-sk
 [`npx skills`](https://github.com/vercel-labs/skills) is the open cross-agent skill installer — one command, works across Codex, Cursor, Gemini CLI, Antigravity, and 50+ other coding agents.
 
 ```bash
-npx skills add sellersheetai/sellersheet-skills            # install all three skills
-npx skills add sellersheetai/sellersheet-skills --list     # preview first
-npx skills add sellersheetai/sellersheet-skills -a codex   # target a specific agent
+npx skills add sellersheetai/sellersheet-skills                  # install the full skill bundle
+npx skills add sellersheetai/sellersheet-skills --list           # preview first
+npx skills add sellersheetai/sellersheet-skills -s report-data   # install a single skill
+npx skills add sellersheetai/sellersheet-skills -a codex         # target a specific agent
+npx skills add sellersheetai/sellersheet-skills -g               # user-level (global) instead of per-project
 ```
 
 Skills are a separate artifact from the MCP server — you still register the SellerSheet MCP server for your agent (see [docs/setup-mcp.md](./docs/setup-mcp.md)). Full guide: [docs/install-npx-skills.md](./docs/install-npx-skills.md).
@@ -163,7 +167,7 @@ Full mechanism: [docs/auto-update.md](./docs/auto-update.md).
 |---|---|---|
 | v0.8.x | 2025-Q4 build | Claude Code 1.0+, Claude Desktop 0.10+, Codex CLI any, Gemini CLI 0.5+, Antigravity any |
 
-The plugin ships as one bundle — all three skills release together at the plugin version. Each `SKILL.md` frontmatter `version:` mirrors `.claude-plugin/plugin.json`.
+The plugin ships as one bundle — all skills release together at the plugin version. Each `SKILL.md` frontmatter `version:` mirrors `.claude-plugin/plugin.json`.
 
 ## Documentation
 

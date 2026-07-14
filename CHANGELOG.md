@@ -4,6 +4,20 @@ All notable changes to SellerSheet Skills are documented here. Format follows [K
 
 ## [Unreleased]
 
+### Fixed
+
+- **`image-gen`** — SKILL.md frontmatter `description` was an unquoted YAML scalar containing
+  `Triggers: "…"`; the embedded `: ` breaks strict YAML parsers (js-yaml, used by `npx skills`),
+  which silently skipped the skill — `npx skills add` installed only 7 of 8 skills. The
+  description is now a `>-` folded block scalar, so all install channels see the full bundle.
+
+### Documentation
+
+- README + install docs caught up to the 8-skill bundle: `amazon-ads`, `amazon-report`, and
+  `data-kiosk` added to the skill table (they shipped in 0.8.x but the README still said
+  "five skills" / "three skills"); latest-release badge bumped to v0.8.6; `npx skills`
+  examples now cover single-skill (`-s`) and global (`-g`) installs.
+
 Planned for upcoming releases (under review):
 - `sellersheet` — Amazon business operations orchestrator
 - `amazon-api` — Amazon SP-API guide
