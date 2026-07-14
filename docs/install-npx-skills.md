@@ -5,10 +5,10 @@ skill installer. It installs SellerSheet skills into Codex, Cursor, Gemini CLI,
 Antigravity, and 50+ other coding agents from one command — no per-agent setup
 script needed.
 
-For **Claude Code**, the plugin marketplace is still the best path because it
-also auto-registers the MCP server — see [install-claude-code.md](./install-claude-code.md).
-For every other agent, `npx skills` is the recommended installer; the repo's
-`install.sh` is the no-Node fallback.
+For **Claude Code** and **Codex**, the plugin marketplace is the best path —
+one bundle with built-in update flow; see [install-claude-code.md](./install-claude-code.md)
+and [install-codex.md](./install-codex.md). For every other agent, `npx skills`
+is the recommended installer; the repo's `install.sh` is the no-Node fallback.
 
 ## Prerequisites
 
@@ -18,22 +18,22 @@ For every other agent, `npx skills` is the recommended installer; the repo's
 ## Install the skills
 
 ```bash
-# Install all three skills, auto-detecting your agent
+# Install the full skill bundle, auto-detecting your agent
 npx skills add sellersheetai/sellersheet-skills
 
 # Preview what would be installed, without installing
 npx skills add sellersheetai/sellersheet-skills --list
 
-# Install a single skill
-npx skills add sellersheetai/sellersheet-skills --skill report-data
-
 # Target a specific agent (codex, cursor, gemini, claude-code, …)
 npx skills add sellersheetai/sellersheet-skills -a codex
 ```
 
-`npx skills` discovers the three skills — `sellersheet-sheets`,
-`sellersheet-dashboard`, `report-data` — from the repo's `skills/` directory
-and installs each as a `SKILL.md` skill folder into your agent's skill path.
+`npx skills` discovers every skill in the repo's `skills/` directory —
+`sellersheet-sheets`, `sellersheet-dashboard`, `report-data`, `image-gen`,
+`noon-report-data`, `amazon-ads`, `amazon-report`, `data-kiosk`, plus the
+`sellersheet-shared` companion — and installs each as a `SKILL.md` skill folder
+into your agent's skill path. **Install the whole bundle, not a subset** — the
+skills reference `sellersheet-shared` for the common preflight and conventions.
 
 ## Register the MCP server
 
@@ -42,8 +42,8 @@ skill *instructions*, not the SellerSheet MCP *connection* — and every skill
 needs that connection. Follow [setup-mcp.md](./setup-mcp.md) for the per-agent
 `mcpServers` config.
 
-(Claude Code is the exception: installing the plugin auto-registers the MCP
-server. See [install-claude-code.md](./install-claude-code.md).)
+(This applies to every agent — the Claude Code plugin also installs skills
+only. See [install-claude-code.md](./install-claude-code.md).)
 
 ## Update
 
@@ -53,16 +53,15 @@ Re-run `add` to pull the latest published version:
 npx skills add sellersheetai/sellersheet-skills
 ```
 
-`npx skills` reads each skill's `SKILL.md` `version:` (currently `0.3.0`,
-mirrored from the plugin's canonical version). See [auto-update.md](./auto-update.md)
+`npx skills` reads each skill's `SKILL.md` `version:` (mirrored from the
+plugin's canonical version). See [auto-update.md](./auto-update.md)
 for how versioning works across all install channels.
 
 ## Remove
 
 ```bash
-npx skills remove sellersheet-sheets -g
-npx skills remove sellersheet-dashboard -g
-npx skills remove report-data -g
+npx skills remove --all        # remove every installed skill
+npx skills remove report-data  # or remove one at a time
 ```
 
 ## When to use `install.sh` instead

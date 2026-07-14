@@ -15,13 +15,11 @@ This skill is **reference** material. `report-data` owns the synced
 `rpt_dk_sales_traffic_*` warehouse; this skill owns authoring the raw GraphQL query
 against the live Data Kiosk endpoints.
 
-## Prerequisites — confirm SellerSheet MCP is connected
+## Prerequisites
 
-1. Call `get_user_context`. If it's missing or returns an auth error, SellerSheet
-   MCP isn't connected — tell the user to set it up at
-   [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) and stop.
-2. `data.canUseMcp` must be true. Vendor Analytics needs a **vendor** account.
-   `create_data_kiosk_query` / `cancel_data_kiosk_query` require **SP write** access.
+Run the standard preflight in [`sellersheet-shared`](../sellersheet-shared/SKILL.md).
+**Extra auth for this skill:** Vendor Analytics needs a **vendor** account;
+`create_data_kiosk_query` / `cancel_data_kiosk_query` require **SP write** access.
 
 ## When to use
 
