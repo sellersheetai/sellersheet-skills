@@ -18,7 +18,9 @@
       "event_type",
       "fulfillment_center"
     ],
-    "cron": "30 2 * * *"
+    "cron": "30 2 * * *",
+    "retention_days": 90,
+    "retention_note": "rows older than 90 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note"
   },
   "columns": [
     {

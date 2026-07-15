@@ -1,7 +1,7 @@
 ---
 name: report-data
 description: Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules, requesting on-demand reports, polling for completion, downloading TSV data to Drive, or analyzing any report table. Covers inventory, listings, orders, financial, brand analytics, and ad report (SP/SB/SD) tables.
-version: 0.9.0
+version: 0.10.0
 ---
 
 # Report Data
@@ -86,7 +86,12 @@ For per-mkt schedules, `disabled_marketplaces` is a `text[]` like `['MX', 'BR']`
 }
 ```
 
-Filter operators: `eq` `neq` `gt` `lt` `gte` `lte` `contains` `in` `not_null`
+Filter operators: `eq` `neq` `gt` `lt` `gte` `lte` `contains` `in` `not_null` `is_null`
+
+Spec keys are strict: an unknown key in a filter / order_by / aggregation entry
+returns a 400 naming the bad key — nothing is silently dropped. `order_by`
+accepts `dir` or `direction` (`asc`|`desc`); `desc` sorts NULLs **last**, so
+rankings never lead with NULL rows.
 
 ### Multi-marketplace stores — pick a marketplace via `store_name-country_code`
 
@@ -113,9 +118,11 @@ filter than reverse-mapping `profile_id`.
 `rpt_sp_*` / `rpt_sb_*` / `rpt_sd_*` are **DAILY PERFORMANCE rows** — only campaigns with
 delivery in the window appear (live count 47 ENABLED vs 21 in the warehouse, observed). For a
 complete campaign inventory or count, use the live `ads_sp_campaigns` (`ads_sb_campaigns` /
-`ads_sd_campaigns`) API instead. Also: `report_date='latest'` pins to the newest **single** day,
-which is often a zero-spend partial day — use `report_date='all'` plus explicit date filters for
-any cost or performance analysis.
+`ads_sd_campaigns`) API instead. Also: `report_date='latest'` pins to the newest **single**
+probed-date value, which is often a zero-spend partial day — for any cost or performance
+analysis just add a date filter (which auto-switches 'latest' to 'all' — see Query Rules) or
+pass `report_date='all'` explicitly. The same daily-grain semantics apply to the Data Kiosk
+tables `rpt_dk_sales_traffic_by_date` / `rpt_dk_sales_traffic_by_asin`.
 
 **Just pass `store='myStore-US'`. Don't filter on the marketplace column directly** — the column name differs per table (`sales_channel` / `country_code` / `marketplace_id` / `profile_id` / `country` / `amazon_store`) and not every table exposes `country_code` (e.g. `rpt_orders` uses `sales_channel='Amazon.com'`, no `country_code` column).
 
@@ -142,16 +149,24 @@ For "total revenue by currency", "top 10 SKUs by units", or any grouped summary,
 }
 ```
 
-Allowed ops: `sum`, `count`, `avg`, `min`, `max`. Returns one row per distinct group_by tuple. **Always prefer aggregations over pulling raw rows** for any summary question — a query that would otherwise return 4,000+ rows collapses to a handful.
+Allowed ops: `sum`, `count`, `avg`, `min`, `max` — the key is **`op`** (not `func`). Returns one row per distinct group_by tuple. **Always prefer aggregations over pulling raw rows** for any summary question — a query that would otherwise return 4,000+ rows collapses to a handful.
+
+- **Sort groups by an aggregation alias**: `order_by: [{"column": "revenue", "dir": "desc"}]` (bare alias, no `table.` prefix). An unknown alias is a 400 listing the known ones.
+- **`having`** filters on aggregation results (SQL HAVING): `having: [{"column": "revenue", "op": "gt", "value": 1000}]` — `column` must be an aggregation alias.
+- **Date bucketing** in `group_by`: append `:day|week|month|quarter|year` to a temporal ref — `"rpt_orders.purchase_date:month"`.
+- Numeric results arrive as clean fixed-point strings (max 6 decimal places, no scientific notation) — `AVG()` returns `"60.896256"`, not `"60.8962557077625571"`.
 
 ### Query Rules
 
 - Always use fully-qualified column names: `table_name.column_name`.
 - Use the `db_column` values from the reference JSONs exactly as written.
-- `report_date` controls the date filter — three modes:
+- `report_date` controls the date filter. **When omitted, the default is registry-derived**: snapshot/roster tables → `"latest"`, daily-fact and ledger tables → `"all"` (the response notes the defaulting) — so the naive query does the right thing on every table class. Explicit values always win. Three modes plus one auto-override:
     - `"latest"` (default) → match the most recent date for that table+store. Right for **snapshot tables** (`rpt_get_afn_inventory_data`, `rpt_get_merchant_listings_all_data`, `rpt_get_v2_seller_performance_report`, `rpt_get_fba_myi_all_inventory_data`) where each day overwrites the previous.
-    - `"all"` → no date filter. Right for **ID-based lookups** on incremental tables (find a specific `amazon_order_id`, `settlement_id`, `asin`, etc.) where you don't know which date the row was last touched. Mandatory for `rpt_orders`, `rpt_get_v2_settlement_report_data_flat_file_v2`, `rpt_get_flat_file_returns_data_by_return_date`, `rpt_get_fba_fulfillment_removal_order_detail_data`, `rpt_get_ledger_detail_view_data`, `rpt_get_fba_reimbursements_data` lookups by primary key.
+    - `"all"` → no date filter. Right for **ID-based lookups** on incremental tables (find a specific `amazon_order_id`, `settlement_id`, `asin`, etc.) where you don't know which date the row was last touched — mandatory for `rpt_orders`, `rpt_get_v2_settlement_report_data_flat_file_v2`, `rpt_get_flat_file_returns_data_by_return_date`, `rpt_get_fba_fulfillment_removal_order_detail_data`, `rpt_get_ledger_detail_view_data`, `rpt_get_fba_reimbursements_data` lookups by primary key — **and for every date-range pull on a date-grain table** (ads dailies, `rpt_dk_*`).
     - `"YYYY-MM-DD"` → exact-date match. Right for **historical analysis** ("what was inventory on 2026-04-15?").
+    - **AUTO-OVERRIDE**: when any filter targets a Date/DateTime column of the primary table, `"latest"` automatically behaves as `"all"` — your explicit temporal filter wins over the implicit newest-day pin. The response flags this in `data.report_date_note`. So a natural range query (`date >= '2026-06-10'`) just works without remembering to set `report_date`; pass an explicit `"YYYY-MM-DD"` to pin a specific day regardless.
+- **Date-grain tables** — anything with a business `date` column (`rpt_sp_*`/`rpt_sb_*`/`rpt_sd_*` dailies, `rpt_dk_sales_traffic_by_date`/`_by_asin`): one row per entity per day. `"latest"` pins to the newest **probed-date value** (often a partial day or one ingest batch), so rankings and totals off it are meaningless — always query these with a date filter (auto-override kicks in) or `report_date='all'`. `get_table_schema` flags these tables in its `notes` field.
+- **Efficiency shape** (`(store_id, date)` composite indexes exist on all the big tables): `'all'` + a date-range filter is index-served and cheap; an **unbounded** `'all'` (no date filter, no eq/in filter) scans the store's full history and the response nudges you via `data.report_date_note` — allowed, but prefer a date range, or `aggregations` for summaries (one indexed scan beats paging raw rows). When paging, the exact count runs on **page 1 only** — later pages return `total_count: null` automatically (you already have the total); pass `count='exact'` explicitly if you need a recount.
 - `listing_images` has no date partition — omit `report_date` entirely.
 - PII tables are not queryable: `rpt_fba_shipments`, `rpt_seller_feedback`.
 - Poll-only tables cannot be manually requested from Amazon: `rpt_get_v2_settlement_report_data_flat_file_v2`.

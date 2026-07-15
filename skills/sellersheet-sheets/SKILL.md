@@ -1,7 +1,7 @@
 ---
 name: sellersheet-sheets
 description: Use whenever Google Sheets is the deliverable surface and SellerSheet MCP is the tool for sheet I/O. Reads, writes, formats, builds reports, dashboards, financial models, and live-data tables in Google Sheets via SellerSheet MCP endpoints (read_sheet, write_sheet, write_sheet_formula, format_sheet_range, set_sheet_number_format, add_sheet_chart, add_sheet_conditional_format, add_sheet_dropdown, etc.). Trigger when the user references a docs.google.com/spreadsheets URL, asks to publish output to a Google Sheet, builds anything in the SellerSheet workbook ecosystem, needs the live SQL() spill + image-thumbnail patterns, or builds an operator action surface (filter rows, Amazon enum dropdowns, status chips). Do NOT trigger for local .xlsx files — that's a different skill. This skill is self-contained — no need to load xlsx or any other sheet skill alongside; xlsx-style conventions (financial color coding, number formats, formula best practices) are adapted inline.
-version: 0.9.0
+version: 0.10.0
 ---
 
 # SellerSheet Google Sheets — via MCP
@@ -51,9 +51,10 @@ These rules apply to every sheet this skill produces. Detailed explanations live
 2. **Zero formula errors**: scan the output for `#REF!`, `#VALUE!`, `#N/A`, `#ERROR!` — these are real bugs, fix them. `#DIV/0!` is tolerable *only if* wrapped in `IFERROR`/`IF(denom=0,…)`; an unwrapped one is a bug. `#NAME?` on `=SQL(` and `=IMAGE(` cells is the documented browser-pending state — not a bug. Full triage: `reference/error-semantics.md`.
 3. **Use formulas, never hardcoded values** for any calculated number — `=SUM(B2:B10)`, not `=23456`. See `reference/formula-conventions.md` for the WRONG/CORRECT pattern.
 4. **Apostrophe-escape literal text that starts with `=`** (or `+`). `write_sheet` is USER_ENTERED — any string beginning with `=` becomes a live formula, so documentation text like `= ordered − refunded` or `= date` lands as a broken formula (`#ERROR!` / `#NAME?`). Write `'= ordered − refunded` instead; the apostrophe doesn't render. **Scan every 2D values array for leading-`=` cells BEFORE writing** — notes/derivation columns in schema docs are the classic trap. Full gotcha + repair recipe: `reference/mcp-gotchas.md`.
-5. **Open-range SQL spills** with `LIMIT N` per data scope — see `reference/sql-function.md`.
-6. **Emerald = where the operator acts; Navy = where the operator reads.** Never both on the same row. See `reference/brand-standards.md` for the action-vs-read rule.
-7. **Verify with a read-back** before declaring done — the mandatory **Final review gate** below; full routine in `scripts/verify-after-write.md`.
+5. **Identifiers stay text.** USER_ENTERED auto-parses SKUs/UPCs/postal codes into numbers and dates (`"0012345678905"` loses its zeros; SKU `"10-1"` becomes a date). Apostrophe-prefix identifier cells, or set the column to `@` text format before the first write. Full table: `reference/mcp-gotchas.md`.
+6. **Open-range SQL spills** with `LIMIT N` per data scope — see `reference/sql-function.md`.
+7. **Emerald = where the operator acts; Navy = where the operator reads.** Never both on the same row. See `reference/brand-standards.md` for the action-vs-read rule.
+8. **Verify with a read-back** before declaring done — the mandatory **Final review gate** below; full routine in `scripts/verify-after-write.md`.
 
 For action sheets (operator inputs into the data) the additional 9-rule checklist lives in `reference/action-sheets.md`.
 
@@ -76,6 +77,24 @@ The MCP color format is `[r, g, b]` floats in `[0.0, 1.0]`. Not the openpyxl-sty
 
 For the financial-model color coding (blue inputs / black formulas / green internal links / red external / yellow assumptions) + number-format patterns + currency / percent / multiples standards — see `reference/brand-standards.md`.
 
+## Three request modes — answer, edit, or build
+
+Classify the request before touching the sheet; each mode has a different contract.
+
+**Answer (read-only question).** "What does this column mean?", "why is B12 negative?" →
+`read_sheet` the relevant range (add `value_render_option='FORMULA'` to see formulas), trace
+the formula back to its labeled inputs instead of stopping at an intermediate total, and
+answer in the reply. **No writes.** Don't "fix" things the user only asked about.
+
+**Edit (existing sheet).** The sheet already has a layout the user lives in — your change
+must land invisibly inside its conventions:
+1. Inspect first: `read_sheet` + `read_sheet_format` the target area; note fonts, band colors, number formats, existing dropdowns/conditional formats.
+2. Make the **smallest change that satisfies the request** — match the tab's existing style even where it differs from this skill's brand defaults.
+3. Appending rows/columns to a table? Extend what the table already carries: fill the new cells' formulas from the neighboring pattern, and re-anchor conditional formats, dropdowns, and the basic filter to cover the added range.
+4. Never restyle beyond the requested range; leave unrelated pre-existing errors in place unless they break your change or the user asked for an audit (note them in the reply instead).
+
+**Build (new tab / new workbook).** The workflow below + Final review gate. Brand defaults apply in full.
+
 ## Build workflow
 
 When asked to build a Google Sheet report:
@@ -85,7 +104,7 @@ When asked to build a Google Sheet report:
 3. **Setup tab structure** — `setup_sheet` for the standard 2-row header convention, or manually `write_sheet` + `format_sheet_range` + `freeze_sheet_panes`.
 4. **Write data + formulas** — `write_sheet` for values (USER_ENTERED parses `=` as formula too), `write_sheet_formula` for explicit single-cell intent. Before every `write_sheet`, sweep the values array for literal text starting with `=`/`+` and prefix those cells with `'` (Quick-reference rule 4). Per `reference/formula-conventions.md`: cell references, not hardcoded numbers.
 5. **Format numbers + headers** — `set_sheet_number_format` for currency / percent / dates. `format_sheet_range` for header bands. See `reference/brand-standards.md`.
-6. **Visualize** — `add_sheet_chart`, `add_sheet_conditional_format` for gradients and value-based chips. See `reference/conditional-formatting.md`.
+6. **Visualize** — `add_sheet_chart` (design rules, type selection, anchor placement: `reference/charts.md`), `add_sheet_conditional_format` for gradients and value-based chips (`reference/conditional-formatting.md`).
 7. **Polish** — `resize_sheet_columns` for deliberate fixed widths (the default; size to the header, not the data), `add_sheet_filter`, `protect_sheet_range`. Use `autofit_sheet_columns` only as a final touch on short/structured columns (codes, KPIs, statuses) and only **after** the filter — it doesn't reserve room for the filter arrow, so autofit-before-filter clips headers. Never autofit column A or long free-text columns (images, product titles, descriptions) — keep those fixed. See `reference/brand-standards.md` → Column widths.
 8. **Verify** — run the Final review gate below. Do not declare the build done until it passes.
 
@@ -180,6 +199,7 @@ Detailed specs live in `reference/`. Load the relevant file before implementing 
 | `reference/growable-tables.md` | The four rules, layout shape, store column as multi-store identifier, when NOT to use this pattern |
 | `reference/sql-function.md` | SQL() signature, bracket-quote-every-column-and-alias rule, multi-table JOINs, default LIMITs per data scope, overflow footer pattern |
 | `reference/image-pattern.md` | Image-at-A canonical formula, MAP+LAMBDA header detection, JOIN with `_raw_catalog`, alignment constraints (same WHERE/ORDER BY/LIMIT) |
+| `reference/charts.md` | `add_sheet_chart` contract (column→series mapping, explicit anchor, no axis-format param), chart type selection table, formula-backed helper ranges, placement/sizing, server-side verification limits |
 | `reference/conditional-formatting.md` | Open-range conditional formatting, **soft-vs-bold chip palette** decision, gradient rules, value-based chips, **Amazon SP-API enum chip reference table**, number-format application strategies |
 | `reference/error-semantics.md` | `#NAME?` (pending) vs `#REF!` (real bug) vs `#ERROR!` (NOW collision) vs `#VALUE!` (schema drift) vs `#DIV/0!` (tolerable), diagnostic recipe |
 | `reference/mcp-gotchas.md` | `&` in tab names, USER_ENTERED parses `=` as formula, merged-cell side effects, NULL vs empty-string in numeric `_raw_*`, chunked write recipe for large payloads |

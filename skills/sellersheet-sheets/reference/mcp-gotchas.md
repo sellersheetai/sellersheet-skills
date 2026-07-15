@@ -46,6 +46,36 @@ values.
 should *display* a leading quote (`'fee' or 'ad'`) needs a double apostrophe:
 `"''fee' or 'ad'"`.
 
+## USER_ENTERED coerces identifier strings into numbers and dates
+
+The other face of USER_ENTERED: every value lands as if a human typed it into the cell,
+so Sheets applies its full auto-parse — and Amazon identifiers are full of strings that
+parse as something else:
+
+| Identifier written as string | What Sheets stores | Damage |
+|---|---|---|
+| UPC `"0012345678905"` | number `12345678905` | leading zeros gone — barcode invalid |
+| 16+ digit numeric (FNSKU-adjacent, GTIN-14 padded) | float | precision lost past 15 digits |
+| SKU `"10-1"`, `"2024-01"`, `"MAY-25"` | a **date** | joins/VLOOKUPs silently miss |
+| SKU `"5E10"` | scientific notation `50000000000` | same |
+| `"TRUE"` / `"FALSE"` labels | boolean | string comparisons fail |
+
+Order IDs (`123-4567890-1234567`) and ASINs starting with `B0…` happen to survive, which
+is why this trap stays invisible until a UPC or date-shaped SKU shows up.
+
+**Rules:**
+- One-shot writes: apostrophe-prefix each identifier cell (`"'0012345678905"`) — same
+  sweep as the leading-`=` escape above; do both in one pass.
+- Growable `_raw_*` identifier columns (SKU, UPC/EAN, postal code): set the column's
+  number format to text (`set_sheet_number_format` pattern `@`) **before** the first
+  write — appended rows then stay text without per-cell apostrophes.
+- After writing, spot-read one known-risky cell (a leading-zero UPC or hyphenated SKU)
+  and confirm the value round-trips unchanged.
+
+`SQL()` joins compare literal cell contents — a date-ified SKU in `_raw_catalog` fails to
+join against the text SKU in the report tab with **no error cell anywhere**. If a JOIN
+drops rows unpredictably, check identifier typing before suspecting the JOIN syntax.
+
 ## `format_sheet_range` over a merged cell can clear content
 
 Applying `format_sheet_range` to a merged region sometimes clears the underlying text. Order of operations matters:

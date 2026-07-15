@@ -15,7 +15,8 @@
       "store_id",
       "snapshot_date",
       "sku",
-      "condition"
+      "condition",
+      "country_code"
     ],
     "cron": "0 7 * * *"
   },
