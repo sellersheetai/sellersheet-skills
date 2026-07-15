@@ -19,7 +19,7 @@
       "target_id",
       "search_term"
     ],
-    "cron": "0 3 * * *",
+    "cron": "0 1 * * *",
     "notes": [
       "Amazon field 'targeting' maps to db column 'targeting' (renamed from targeting_text).",
       "spend is always null — Amazon does not include it in spSearchTerm reports."

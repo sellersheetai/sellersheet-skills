@@ -16,7 +16,7 @@
       "campaign_id",
       "placement_classification"
     ],
-    "cron": "0 3 * * *",
+    "cron": "0 1 * * *",
     "retention_days": 400,
     "retention_note": "rows older than 400 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note"
   },

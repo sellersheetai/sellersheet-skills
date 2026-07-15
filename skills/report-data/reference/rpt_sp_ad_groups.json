@@ -16,7 +16,7 @@
       "campaign_id",
       "ad_group_id"
     ],
-    "cron": "0 3 * * *",
+    "cron": "0 1 * * *",
     "notes": [
       "Uses reportTypeId=spCampaigns with groupBy=[adGroup, campaign] — includes campaign dimensions.",
       "campaign_id and campaign_name are populated via the campaign groupBy dimension.",

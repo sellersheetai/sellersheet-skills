@@ -14,7 +14,7 @@
       "date",
       "country_code"
     ],
-    "cron": "0 8 * * *",
+    "cron": "18 1 * * *",
     "retention_days": 730,
     "retention_note": "rows older than 730 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note"
   },

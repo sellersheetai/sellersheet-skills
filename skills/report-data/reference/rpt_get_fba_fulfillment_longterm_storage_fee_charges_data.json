@@ -18,7 +18,7 @@
       "country",
       "condition"
     ],
-    "cron": "15 5 * * *"
+    "cron": "7 1 * * *"
   },
   "columns": [
     {
