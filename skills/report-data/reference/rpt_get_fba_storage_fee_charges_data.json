@@ -20,7 +20,9 @@
     ],
     "cron": "6 1 * * *",
     "retention_days": 400,
-    "retention_note": "rows older than 400 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note"
+    "retention_note": "rows older than 400 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note",
+    "date_column_nullable": true,
+    "date_column_note": "0 NULL rows live today; column stays nullable in schema for legacy compat only."
   },
   "columns": [
     {

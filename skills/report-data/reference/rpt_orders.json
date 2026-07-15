@@ -16,7 +16,9 @@
       "sku",
       "order_item_id"
     ],
-    "cron": "0 1 * * *"
+    "cron": "0 * * * *",
+    "date_column_nullable": true,
+    "date_column_note": "14,679 of 171k rows (pre-watermark legacy) have NULL report_date; 244 of those also lack purchase_date/last_updated_date. Every post-2026-05 ingest writes report_date = pull-window end. For strict temporal work add {'op':'not_null'} on your date column."
   },
   "columns": [
     {

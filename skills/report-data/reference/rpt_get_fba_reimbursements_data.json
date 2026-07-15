@@ -16,7 +16,9 @@
       "reimbursement_id",
       "case_id"
     ],
-    "cron": "4 1 * * *"
+    "cron": "4 1 * * *",
+    "date_column_nullable": true,
+    "date_column_note": "612 legacy rows have NULL report_date and NULL approval_date (pre-watermark). Current ingests always write report_date."
   },
   "columns": [
     {

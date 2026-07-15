@@ -17,7 +17,9 @@
       "merchant_sku",
       "amazon_rma_id"
     ],
-    "cron": "1 1 * * *"
+    "cron": "1 1 * * *",
+    "date_column_nullable": true,
+    "date_column_note": "0 NULL rows live today; column stays nullable in schema for legacy compat only."
   },
   "columns": [
     {
