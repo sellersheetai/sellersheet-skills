@@ -17,7 +17,7 @@
       "ad_group_id",
       "ad_id"
     ],
-    "cron": "0 3 * * *",
+    "cron": "0 1 * * *",
     "notes": [
       "Uses reportTypeId=spAdvertisedProduct with groupBy=[advertiser]."
     ],

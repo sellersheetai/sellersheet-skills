@@ -17,7 +17,7 @@
       "sku",
       "fulfillment_center_id"
     ],
-    "cron": "15 3 * * *"
+    "cron": "2 1 * * *"
   },
   "columns": [
     {
@@ -85,7 +85,11 @@
       "db_column": "status",
       "amazon_header": "status",
       "type": "str",
-      "values": ["Unit returned to inventory", "Repackaged Successfully", "..."],
+      "values": [
+        "Unit returned to inventory",
+        "Repackaged Successfully",
+        "..."
+      ],
       "note": "EU only — promoted from extra 2026-05-04"
     }
   ],
