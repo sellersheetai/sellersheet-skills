@@ -1,250 +1,252 @@
 {
- "_meta": {
-  "table": "rpt_sp_ad_groups",
-  "report_type": "spAdGroups",
-  "is_snapshot": false,
-  "description": "Sponsored Products ad group daily performance with campaign dimensions.",
-  "pii": false,
-  "queryable": true,
-  "deprecated": false,
-  "strategy": "ad_cron",
-  "date_column": "report_date",
-  "unique_key": [
-   "store_id",
-   "profile_id",
-   "report_date",
-   "campaign_id",
-   "ad_group_id"
-  ],
-  "cron": "0 3 * * *",
-  "notes": [
-   "Uses reportTypeId=spCampaigns with groupBy=[adGroup, campaign] — includes campaign dimensions.",
-   "campaign_id and campaign_name are populated via the campaign groupBy dimension.",
-   "Amazon field 'adStatus' (and legacy 'adGroupStatus') maps to db column 'ad_status'."
-  ]
- },
- "columns": [
-  {
-   "db_column": "country_code",
-   "amazon_header": "(derived from profile_id — denormalized 2026-05-20)",
-   "type": "str",
-   "note": "Marketplace this ads row belongs to. Query ads data per (store, country_code) directly — no need to reverse-map profile_id."
+  "_meta": {
+    "table": "rpt_sp_ad_groups",
+    "report_type": "spAdGroups",
+    "is_snapshot": false,
+    "description": "Sponsored Products ad group daily performance with campaign dimensions.",
+    "pii": false,
+    "queryable": true,
+    "deprecated": false,
+    "strategy": "ad_cron",
+    "date_column": "report_date",
+    "unique_key": [
+      "store_id",
+      "profile_id",
+      "report_date",
+      "campaign_id",
+      "ad_group_id"
+    ],
+    "cron": "0 3 * * *",
+    "notes": [
+      "Uses reportTypeId=spCampaigns with groupBy=[adGroup, campaign] — includes campaign dimensions.",
+      "campaign_id and campaign_name are populated via the campaign groupBy dimension.",
+      "Amazon field 'adStatus' (and legacy 'adGroupStatus') maps to db column 'ad_status'."
+    ],
+    "retention_days": 730,
+    "retention_note": "rows older than 730 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note"
   },
-  {
-   "db_column": "report_date",
-   "type": "date"
-  },
-  {
-   "db_column": "currency_code",
-   "type": "str"
-  },
-  {
-   "db_column": "campaign_id",
-   "type": "str"
-  },
-  {
-   "db_column": "campaign_name",
-   "type": "str"
-  },
-  {
-   "db_column": "campaign_bidding_strategy",
-   "type": "str"
-  },
-  {
-   "db_column": "campaign_budget_type",
-   "type": "str"
-  },
-  {
-   "db_column": "campaign_budget_amount",
-   "type": "decimal"
-  },
-  {
-   "db_column": "campaign_status",
-   "type": "str"
-  },
-  {
-   "db_column": "campaign_rule_based_budget_amount",
-   "type": "decimal"
-  },
-  {
-   "db_column": "campaign_applicable_budget_rule_id",
-   "type": "str"
-  },
-  {
-   "db_column": "campaign_applicable_budget_rule_name",
-   "type": "str"
-  },
-  {
-   "db_column": "ad_group_id",
-   "type": "str"
-  },
-  {
-   "db_column": "ad_group_name",
-   "type": "str"
-  },
-  {
-   "db_column": "ad_status",
-   "type": "str"
-  },
-  {
-   "db_column": "impressions",
-   "type": "int"
-  },
-  {
-   "db_column": "clicks",
-   "type": "int"
-  },
-  {
-   "db_column": "cost_per_click",
-   "type": "decimal"
-  },
-  {
-   "db_column": "click_through_rate",
-   "type": "decimal"
-  },
-  {
-   "db_column": "cost",
-   "type": "decimal"
-  },
-  {
-   "db_column": "spend",
-   "type": "decimal"
-  },
-  {
-   "db_column": "purchases_14d",
-   "type": "int"
-  },
-  {
-   "db_column": "purchases_1d",
-   "type": "int"
-  },
-  {
-   "db_column": "purchases_7d",
-   "type": "int"
-  },
-  {
-   "db_column": "purchases_30d",
-   "type": "int"
-  },
-  {
-   "db_column": "purchases_same_sku_14d",
-   "type": "int"
-  },
-  {
-   "db_column": "purchases_same_sku_1d",
-   "type": "int"
-  },
-  {
-   "db_column": "purchases_same_sku_7d",
-   "type": "int"
-  },
-  {
-   "db_column": "purchases_same_sku_30d",
-   "type": "int"
-  },
-  {
-   "db_column": "sales_14d",
-   "type": "decimal"
-  },
-  {
-   "db_column": "sales_1d",
-   "type": "decimal"
-  },
-  {
-   "db_column": "sales_7d",
-   "type": "decimal"
-  },
-  {
-   "db_column": "sales_30d",
-   "type": "decimal"
-  },
-  {
-   "db_column": "attributed_sales_same_sku_14d",
-   "type": "decimal"
-  },
-  {
-   "db_column": "attributed_sales_same_sku_1d",
-   "type": "decimal"
-  },
-  {
-   "db_column": "attributed_sales_same_sku_7d",
-   "type": "decimal"
-  },
-  {
-   "db_column": "attributed_sales_same_sku_30d",
-   "type": "decimal"
-  },
-  {
-   "db_column": "units_sold_clicks_14d",
-   "type": "int"
-  },
-  {
-   "db_column": "units_sold_clicks_1d",
-   "type": "int"
-  },
-  {
-   "db_column": "units_sold_clicks_7d",
-   "type": "int"
-  },
-  {
-   "db_column": "units_sold_clicks_30d",
-   "type": "int"
-  },
-  {
-   "db_column": "units_sold_same_sku_14d",
-   "type": "int"
-  },
-  {
-   "db_column": "units_sold_same_sku_1d",
-   "type": "int"
-  },
-  {
-   "db_column": "units_sold_same_sku_7d",
-   "type": "int"
-  },
-  {
-   "db_column": "units_sold_same_sku_30d",
-   "type": "int"
-  },
-  {
-   "db_column": "start_date",
-   "amazon_header": "startDate",
-   "type": "date"
-  },
-  {
-   "db_column": "end_date",
-   "amazon_header": "endDate",
-   "type": "date"
-  },
-  {
-   "db_column": "extra",
-   "amazon_header": "(unrecognized columns fall back here)",
-   "type": "json",
-   "note": "Documented opt-outs (2026-07-11): kindleEditionNormalizedPagesRead14d / kindleEditionNormalizedPagesRoyalties14d — KDP-book metrics Amazon ships on every row; no SellerSheet store sells Kindle content, deliberately not promoted."
-  }
- ],
- "example_query": {
-  "store": "myStore-AE",
-  "tables": [
-   "rpt_sp_ad_groups"
-  ],
   "columns": [
-   "rpt_sp_ad_groups.campaign_name",
-   "rpt_sp_ad_groups.ad_group_name",
-   "rpt_sp_ad_groups.ad_status",
-   "rpt_sp_ad_groups.impressions",
-   "rpt_sp_ad_groups.spend",
-   "rpt_sp_ad_groups.purchases_14d",
-   "rpt_sp_ad_groups.sales_14d"
+    {
+      "db_column": "country_code",
+      "amazon_header": "(derived from profile_id — denormalized 2026-05-20)",
+      "type": "str",
+      "note": "Marketplace this ads row belongs to. Query ads data per (store, country_code) directly — no need to reverse-map profile_id."
+    },
+    {
+      "db_column": "report_date",
+      "type": "date"
+    },
+    {
+      "db_column": "currency_code",
+      "type": "str"
+    },
+    {
+      "db_column": "campaign_id",
+      "type": "str"
+    },
+    {
+      "db_column": "campaign_name",
+      "type": "str"
+    },
+    {
+      "db_column": "campaign_bidding_strategy",
+      "type": "str"
+    },
+    {
+      "db_column": "campaign_budget_type",
+      "type": "str"
+    },
+    {
+      "db_column": "campaign_budget_amount",
+      "type": "decimal"
+    },
+    {
+      "db_column": "campaign_status",
+      "type": "str"
+    },
+    {
+      "db_column": "campaign_rule_based_budget_amount",
+      "type": "decimal"
+    },
+    {
+      "db_column": "campaign_applicable_budget_rule_id",
+      "type": "str"
+    },
+    {
+      "db_column": "campaign_applicable_budget_rule_name",
+      "type": "str"
+    },
+    {
+      "db_column": "ad_group_id",
+      "type": "str"
+    },
+    {
+      "db_column": "ad_group_name",
+      "type": "str"
+    },
+    {
+      "db_column": "ad_status",
+      "type": "str"
+    },
+    {
+      "db_column": "impressions",
+      "type": "int"
+    },
+    {
+      "db_column": "clicks",
+      "type": "int"
+    },
+    {
+      "db_column": "cost_per_click",
+      "type": "decimal"
+    },
+    {
+      "db_column": "click_through_rate",
+      "type": "decimal"
+    },
+    {
+      "db_column": "cost",
+      "type": "decimal"
+    },
+    {
+      "db_column": "spend",
+      "type": "decimal"
+    },
+    {
+      "db_column": "purchases_14d",
+      "type": "int"
+    },
+    {
+      "db_column": "purchases_1d",
+      "type": "int"
+    },
+    {
+      "db_column": "purchases_7d",
+      "type": "int"
+    },
+    {
+      "db_column": "purchases_30d",
+      "type": "int"
+    },
+    {
+      "db_column": "purchases_same_sku_14d",
+      "type": "int"
+    },
+    {
+      "db_column": "purchases_same_sku_1d",
+      "type": "int"
+    },
+    {
+      "db_column": "purchases_same_sku_7d",
+      "type": "int"
+    },
+    {
+      "db_column": "purchases_same_sku_30d",
+      "type": "int"
+    },
+    {
+      "db_column": "sales_14d",
+      "type": "decimal"
+    },
+    {
+      "db_column": "sales_1d",
+      "type": "decimal"
+    },
+    {
+      "db_column": "sales_7d",
+      "type": "decimal"
+    },
+    {
+      "db_column": "sales_30d",
+      "type": "decimal"
+    },
+    {
+      "db_column": "attributed_sales_same_sku_14d",
+      "type": "decimal"
+    },
+    {
+      "db_column": "attributed_sales_same_sku_1d",
+      "type": "decimal"
+    },
+    {
+      "db_column": "attributed_sales_same_sku_7d",
+      "type": "decimal"
+    },
+    {
+      "db_column": "attributed_sales_same_sku_30d",
+      "type": "decimal"
+    },
+    {
+      "db_column": "units_sold_clicks_14d",
+      "type": "int"
+    },
+    {
+      "db_column": "units_sold_clicks_1d",
+      "type": "int"
+    },
+    {
+      "db_column": "units_sold_clicks_7d",
+      "type": "int"
+    },
+    {
+      "db_column": "units_sold_clicks_30d",
+      "type": "int"
+    },
+    {
+      "db_column": "units_sold_same_sku_14d",
+      "type": "int"
+    },
+    {
+      "db_column": "units_sold_same_sku_1d",
+      "type": "int"
+    },
+    {
+      "db_column": "units_sold_same_sku_7d",
+      "type": "int"
+    },
+    {
+      "db_column": "units_sold_same_sku_30d",
+      "type": "int"
+    },
+    {
+      "db_column": "start_date",
+      "amazon_header": "startDate",
+      "type": "date"
+    },
+    {
+      "db_column": "end_date",
+      "amazon_header": "endDate",
+      "type": "date"
+    },
+    {
+      "db_column": "extra",
+      "amazon_header": "(unrecognized columns fall back here)",
+      "type": "json",
+      "note": "Documented opt-outs (2026-07-11): kindleEditionNormalizedPagesRead14d / kindleEditionNormalizedPagesRoyalties14d — KDP-book metrics Amazon ships on every row; no SellerSheet store sells Kindle content, deliberately not promoted."
+    }
   ],
-  "filters": [],
-  "order_by": [
-   {
-    "column": "rpt_sp_ad_groups.spend",
-    "dir": "desc"
-   }
-  ],
-  "limit": 50,
-  "report_date": "latest"
- }
+  "example_query": {
+    "store": "myStore-AE",
+    "tables": [
+      "rpt_sp_ad_groups"
+    ],
+    "columns": [
+      "rpt_sp_ad_groups.campaign_name",
+      "rpt_sp_ad_groups.ad_group_name",
+      "rpt_sp_ad_groups.ad_status",
+      "rpt_sp_ad_groups.impressions",
+      "rpt_sp_ad_groups.spend",
+      "rpt_sp_ad_groups.purchases_14d",
+      "rpt_sp_ad_groups.sales_14d"
+    ],
+    "filters": [],
+    "order_by": [
+      {
+        "column": "rpt_sp_ad_groups.spend",
+        "dir": "desc"
+      }
+    ],
+    "limit": 50,
+    "report_date": "latest"
+  }
 }

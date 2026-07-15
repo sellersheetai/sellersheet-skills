@@ -897,6 +897,15 @@
         "snapshot_date"
       ],
       "reference": "reference/rpt_sd_negative_targets.json"
+    },
+    {
+      "table": "rpt_myi_daily_rollup",
+      "report_type": null,
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "summary": "Slim daily inventory series (derived rollup) — inventory history lives here; raw MYI keeps 7 days"
     }
   ]
 }
