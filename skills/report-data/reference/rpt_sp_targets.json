@@ -21,7 +21,8 @@
     ],
     "cron": "0 1 * * *",
     "retention_days": 21,
-    "retention_note": "rows older than 21 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note"
+    "retention_note": "rows older than 21 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note",
+    "dedup_note": "2026-07-15 calibration: unique constraint rebuilt as NULLS NOT DISTINCT (target_id is NULL on every v3 row) and historical duplicates removed — SUM aggregates before this date were inflated; data is now clean."
   },
   "columns": [
     {
@@ -107,24 +108,8 @@
       "type": "str"
     },
     {
-      "db_column": "targeting_expression",
-      "type": "str"
-    },
-    {
-      "db_column": "targeting_type",
-      "type": "str"
-    },
-    {
-      "db_column": "resolved_targeting_expression",
-      "type": "str"
-    },
-    {
       "db_column": "ad_keyword_status",
       "type": "str"
-    },
-    {
-      "db_column": "target_bid",
-      "type": "decimal"
     },
     {
       "db_column": "impressions",
@@ -264,14 +249,6 @@
     },
     {
       "db_column": "roas_clicks_7d",
-      "type": "decimal"
-    },
-    {
-      "db_column": "top_of_search_impression_share",
-      "type": "decimal"
-    },
-    {
-      "db_column": "search_impression_share",
       "type": "decimal"
     },
     {

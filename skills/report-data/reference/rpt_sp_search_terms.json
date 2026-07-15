@@ -26,7 +26,8 @@
     ],
     "calibration_note": "2026-07-11 triage: ~30 registry-requested columns are all-NULL for every current account (Amazon returns null for metrics our campaign types never populate). Widest doc-vs-data gap in the ads fleet; treat NULL as 'not applicable', not missing data.",
     "retention_days": 400,
-    "retention_note": "rows older than 400 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note"
+    "retention_note": "rows older than 400 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note",
+    "dedup_note": "2026-07-15 calibration: 56-64% of rows were duplicates (NULL target_id in a NULLS-DISTINCT unique key defeated upsert dedup). Constraint rebuilt NULLS NOT DISTINCT + history deduped keeping the latest ingest per key. SUM aggregates computed before this date were inflated."
   },
   "columns": [
     {
