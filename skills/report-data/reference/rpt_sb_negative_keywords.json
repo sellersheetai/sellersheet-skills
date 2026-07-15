@@ -1,105 +1,107 @@
 {
- "_meta": {
-  "table": "rpt_sb_negative_keywords",
-  "report_type": "sbNegativeKeywords",
-  "is_snapshot": true,
-  "description": "Sponsored Brands negative keywords (ad-group-level). Daily snapshot — every fire upserts the full current set. Sourced via Ads-API v3.1 paginated POST /sb/negativeKeywords/list. Separate from SP — different keyword_id namespace, different Amazon endpoint family. SB has no separate campaign-level negative keywords endpoint as of v3.1.",
-  "pii": false,
-  "queryable": true,
-  "deprecated": false,
-  "strategy": "ads_list",
-  "date_column": "snapshot_date",
-  "unique_key": [
-   "store_id",
-   "profile_id",
-   "snapshot_date",
-   "keyword_id"
-  ],
-  "cron": "38 4 * * *"
- },
- "columns": [
-  {
-   "db_column": "store_id",
-   "type": "str",
-   "comment": "Owning store (FK amazon_stores.store_id)."
+  "_meta": {
+    "table": "rpt_sb_negative_keywords",
+    "report_type": "sbNegativeKeywords",
+    "is_snapshot": true,
+    "description": "Sponsored Brands negative keywords (ad-group-level). Daily snapshot — every fire upserts the full current set. Sourced via Ads-API v3.1 paginated POST /sb/negativeKeywords/list. Separate from SP — different keyword_id namespace, different Amazon endpoint family. SB has no separate campaign-level negative keywords endpoint as of v3.1.",
+    "pii": false,
+    "queryable": true,
+    "deprecated": false,
+    "strategy": "ads_list",
+    "date_column": "snapshot_date",
+    "unique_key": [
+      "store_id",
+      "profile_id",
+      "snapshot_date",
+      "keyword_id"
+    ],
+    "cron": "38 4 * * *",
+    "retention_days": 2,
+    "retention_note": "rows older than 2 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note"
   },
-  {
-   "db_column": "profile_id",
-   "type": "str",
-   "comment": "Amazon Ads profile id."
-  },
-  {
-   "db_column": "country_code",
-   "amazon_header": "(derived from profile_id — denormalized 2026-05-20)",
-   "type": "str",
-   "note": "Marketplace this ads row belongs to. Query ads data per (store, country_code) directly — no need to reverse-map profile_id."
-  },
-  {
-   "db_column": "snapshot_date",
-   "type": "date",
-   "comment": "Marketplace-local date the snapshot was captured."
-  },
-  {
-   "db_column": "ingested_at",
-   "type": "datetime",
-   "comment": "Server-side timestamp the row was UPSERTed."
-  },
-  {
-   "db_column": "keyword_id",
-   "type": "str",
-   "comment": "Amazon's SB keyword identifier — distinct namespace from SP."
-  },
-  {
-   "db_column": "campaign_id",
-   "type": "str",
-   "comment": "Campaign id this negative scopes to."
-  },
-  {
-   "db_column": "ad_group_id",
-   "type": "str",
-   "comment": "Ad group id this negative scopes to."
-  },
-  {
-   "db_column": "keyword_text",
-   "type": "str",
-   "comment": "The negated term verbatim."
-  },
-  {
-   "db_column": "match_type",
-   "type": "str",
-   "comment": "'NEGATIVE_EXACT' | 'NEGATIVE_PHRASE'."
-  },
-  {
-   "db_column": "state",
-   "type": "str",
-   "comment": "'ENABLED' | 'PAUSED' | 'ARCHIVED' | 'USER_DELETED'."
-  },
-  {
-   "db_column": "extra",
-   "type": "json",
-   "comment": "Any Amazon response fields not promoted to a typed column.",
-   "note": "Documented opt-outs (2026-07-11): nativeLanguageKeyword / nativeLanguageLocale — localization metadata on a handful of rows, deliberately not promoted."
-  }
- ],
- "example_query": {
-  "store": "myStore-AE",
-  "tables": [
-   "rpt_sb_negative_keywords"
-  ],
   "columns": [
-   "rpt_sb_negative_keywords.keyword_text",
-   "rpt_sb_negative_keywords.match_type",
-   "rpt_sb_negative_keywords.campaign_id",
-   "rpt_sb_negative_keywords.ad_group_id"
+    {
+      "db_column": "store_id",
+      "type": "str",
+      "comment": "Owning store (FK amazon_stores.store_id)."
+    },
+    {
+      "db_column": "profile_id",
+      "type": "str",
+      "comment": "Amazon Ads profile id."
+    },
+    {
+      "db_column": "country_code",
+      "amazon_header": "(derived from profile_id — denormalized 2026-05-20)",
+      "type": "str",
+      "note": "Marketplace this ads row belongs to. Query ads data per (store, country_code) directly — no need to reverse-map profile_id."
+    },
+    {
+      "db_column": "snapshot_date",
+      "type": "date",
+      "comment": "Marketplace-local date the snapshot was captured."
+    },
+    {
+      "db_column": "ingested_at",
+      "type": "datetime",
+      "comment": "Server-side timestamp the row was UPSERTed."
+    },
+    {
+      "db_column": "keyword_id",
+      "type": "str",
+      "comment": "Amazon's SB keyword identifier — distinct namespace from SP."
+    },
+    {
+      "db_column": "campaign_id",
+      "type": "str",
+      "comment": "Campaign id this negative scopes to."
+    },
+    {
+      "db_column": "ad_group_id",
+      "type": "str",
+      "comment": "Ad group id this negative scopes to."
+    },
+    {
+      "db_column": "keyword_text",
+      "type": "str",
+      "comment": "The negated term verbatim."
+    },
+    {
+      "db_column": "match_type",
+      "type": "str",
+      "comment": "'NEGATIVE_EXACT' | 'NEGATIVE_PHRASE'."
+    },
+    {
+      "db_column": "state",
+      "type": "str",
+      "comment": "'ENABLED' | 'PAUSED' | 'ARCHIVED' | 'USER_DELETED'."
+    },
+    {
+      "db_column": "extra",
+      "type": "json",
+      "comment": "Any Amazon response fields not promoted to a typed column.",
+      "note": "Documented opt-outs (2026-07-11): nativeLanguageKeyword / nativeLanguageLocale — localization metadata on a handful of rows, deliberately not promoted."
+    }
   ],
-  "filters": [
-   {
-    "column": "rpt_sb_negative_keywords.state",
-    "op": "=",
-    "value": "ENABLED"
-   }
-  ],
-  "snapshot_date": "latest",
-  "limit": 100
- }
+  "example_query": {
+    "store": "myStore-AE",
+    "tables": [
+      "rpt_sb_negative_keywords"
+    ],
+    "columns": [
+      "rpt_sb_negative_keywords.keyword_text",
+      "rpt_sb_negative_keywords.match_type",
+      "rpt_sb_negative_keywords.campaign_id",
+      "rpt_sb_negative_keywords.ad_group_id"
+    ],
+    "filters": [
+      {
+        "column": "rpt_sb_negative_keywords.state",
+        "op": "=",
+        "value": "ENABLED"
+      }
+    ],
+    "snapshot_date": "latest",
+    "limit": 100
+  }
 }

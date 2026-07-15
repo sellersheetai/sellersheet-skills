@@ -1,0 +1,112 @@
+{
+  "_meta": {
+    "table": "rpt_myi_daily_rollup",
+    "report_type": null,
+    "is_snapshot": false,
+    "description": "Slim daily FBA inventory series distilled from MYI snapshots by the nightly retention worker (data lifecycle 2026-07-15) — one row per store/snapshot_date/country/sku with the afn_* quantity buckets, inbound trio, total_units and your_price. This is WHERE INVENTORY HISTORY LIVES: raw rpt_get_fba_myi_all_inventory_data keeps only 7 days; query THIS table for stockout timing, drain rate, or any inventory-level trend. Written exclusively by the retention worker's rollup (never a parser). SUM quantities across condition variants is already done at write time.",
+    "pii": false,
+    "queryable": true,
+    "deprecated": false,
+    "strategy": "derived_rollup",
+    "date_column": "snapshot_date",
+    "unique_key": [
+      "store_id",
+      "snapshot_date",
+      "country_code",
+      "sku"
+    ],
+    "cron": "derived nightly at 02:37 UTC (retention_tick)",
+    "retention_days": 400,
+    "retention_note": "rows older than 400 days are pruned nightly (newest snapshot per store never pruned); query beyond the window returns a report_date_note"
+  },
+  "columns": [
+    {
+      "db_column": "snapshot_date",
+      "type": "date"
+    },
+    {
+      "db_column": "sku",
+      "type": "str"
+    },
+    {
+      "db_column": "fnsku",
+      "type": "str"
+    },
+    {
+      "db_column": "asin",
+      "type": "str"
+    },
+    {
+      "db_column": "afn_fulfillable_quantity",
+      "type": "int"
+    },
+    {
+      "db_column": "afn_reserved_quantity",
+      "type": "int"
+    },
+    {
+      "db_column": "afn_unsellable_quantity",
+      "type": "int"
+    },
+    {
+      "db_column": "afn_researching_quantity",
+      "type": "int"
+    },
+    {
+      "db_column": "afn_warehouse_quantity",
+      "type": "int"
+    },
+    {
+      "db_column": "inbound_working",
+      "type": "int"
+    },
+    {
+      "db_column": "inbound_shipped",
+      "type": "int"
+    },
+    {
+      "db_column": "inbound_receiving",
+      "type": "int"
+    },
+    {
+      "db_column": "total_units",
+      "type": "int"
+    },
+    {
+      "db_column": "your_price",
+      "type": "decimal"
+    }
+  ],
+  "example_query": {
+    "store": "myStore-AE",
+    "tables": [
+      "rpt_myi_daily_rollup"
+    ],
+    "columns": [
+      "rpt_myi_daily_rollup.snapshot_date",
+      "rpt_myi_daily_rollup.sku",
+      "rpt_myi_daily_rollup.afn_fulfillable_quantity",
+      "rpt_myi_daily_rollup.total_units"
+    ],
+    "filters": [
+      {
+        "column": "rpt_myi_daily_rollup.sku",
+        "op": "eq",
+        "value": "MY-SKU-1"
+      },
+      {
+        "column": "rpt_myi_daily_rollup.snapshot_date",
+        "op": "gte",
+        "value": "2026-06-01"
+      }
+    ],
+    "order_by": [
+      {
+        "column": "rpt_myi_daily_rollup.snapshot_date",
+        "dir": "asc"
+      }
+    ],
+    "limit": 100,
+    "report_date": "all"
+  }
+}

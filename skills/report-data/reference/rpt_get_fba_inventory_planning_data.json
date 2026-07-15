@@ -1,766 +1,768 @@
 {
- "_meta": {
-  "table": "rpt_get_fba_inventory_planning_data",
-  "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_restock_recommendations` still resolves as a read-only compat VIEW; prefer `rpt_get_fba_inventory_planning_data` in new queries.",
-  "report_type": "GET_FBA_INVENTORY_PLANNING_DATA",
-  "is_snapshot": true,
-  "description": "Inventory Planning snapshot per (sku, marketplace, condition). New schema (60+ columns) replaced the legacy 28-col GET_RESTOCK_INVENTORY_RECOMMENDATIONS_REPORT in 2026-04. Per-marketplace fan-out — same SKU appears once per marketplace.",
-  "pii": false,
-  "queryable": true,
-  "deprecated": false,
-  "strategy": "request",
-  "date_column": "snapshot_date",
-  "unique_key": [
-   "store_id",
-   "snapshot_date",
-   "sku",
-   "fnsku",
-   "country_code",
-   "condition"
-  ],
-  "cron": "5 */6 * * *",
-  "gotchas": [
-   "JOIN KEY: use sku — it is canonical and matches Amazon's report header (GET_FBA_INVENTORY_PLANNING_DATA) exactly. The legacy `merchant_sku` alias was DROPPED from this table on 2026-07-10 (migration in flight); any older dashboard/SQL joining on merchant_sku must switch to sku. (rpt_get_flat_file_returns_data_by_return_date keeps its own merchant_sku — scoped to restock only.)",
-   "days_of_supply is NULL for no-sale SKUs. The warehouse (Postgres) sorts NULLs LAST on ASC — safe. The in-sheet SQL()/alasql layer sorts blanks FIRST — that's where unsorted-looking 'urgent' lists come from. Filter `days_of_supply > 0` in either layer (also excludes no-sale SKUs, usually the intent).",
-   "Amazon's replenishment columns are recommended_order_quantity + recommended_order_date. The legacy recommended_replenishment_qty is still a real column, but only pre-migration historical rows populate it — don't rely on it for current data.",
-   "When recommended_order_quantity is NULL (Amazon didn't compute a recommendation), fall back to a computed suggestion (see sellersheet-dashboard restock fallback: MAX(0, ROUND(units_shipped_t30/30 × target_cover_days) − available − inbound)) and label it as computed, not Amazon's."
-  ]
- },
- "columns": [
-  {
-   "db_column": "sku",
-   "amazon_header": "sku",
-   "type": "str",
-   "note": "Canonical SKU join key — matches Amazon's report header exactly. Replaced the legacy `merchant_sku` column, which was dropped from this table 2026-07-10; older dashboards/SQL joining on merchant_sku must switch to sku."
+  "_meta": {
+    "table": "rpt_get_fba_inventory_planning_data",
+    "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_restock_recommendations` still resolves as a read-only compat VIEW; prefer `rpt_get_fba_inventory_planning_data` in new queries.",
+    "report_type": "GET_FBA_INVENTORY_PLANNING_DATA",
+    "is_snapshot": true,
+    "description": "Inventory Planning snapshot per (sku, marketplace, condition). New schema (60+ columns) replaced the legacy 28-col GET_RESTOCK_INVENTORY_RECOMMENDATIONS_REPORT in 2026-04. Per-marketplace fan-out — same SKU appears once per marketplace.",
+    "pii": false,
+    "queryable": true,
+    "deprecated": false,
+    "strategy": "request",
+    "date_column": "snapshot_date",
+    "unique_key": [
+      "store_id",
+      "snapshot_date",
+      "sku",
+      "fnsku",
+      "country_code",
+      "condition"
+    ],
+    "cron": "5 */6 * * *",
+    "gotchas": [
+      "JOIN KEY: use sku — it is canonical and matches Amazon's report header (GET_FBA_INVENTORY_PLANNING_DATA) exactly. The legacy `merchant_sku` alias was DROPPED from this table on 2026-07-10 (migration in flight); any older dashboard/SQL joining on merchant_sku must switch to sku. (rpt_get_flat_file_returns_data_by_return_date keeps its own merchant_sku — scoped to restock only.)",
+      "days_of_supply is NULL for no-sale SKUs. The warehouse (Postgres) sorts NULLs LAST on ASC — safe. The in-sheet SQL()/alasql layer sorts blanks FIRST — that's where unsorted-looking 'urgent' lists come from. Filter `days_of_supply > 0` in either layer (also excludes no-sale SKUs, usually the intent).",
+      "Amazon's replenishment columns are recommended_order_quantity + recommended_order_date. The legacy recommended_replenishment_qty is still a real column, but only pre-migration historical rows populate it — don't rely on it for current data.",
+      "When recommended_order_quantity is NULL (Amazon didn't compute a recommendation), fall back to a computed suggestion (see sellersheet-dashboard restock fallback: MAX(0, ROUND(units_shipped_t30/30 × target_cover_days) − available − inbound)) and label it as computed, not Amazon's."
+    ],
+    "retention_days": 7,
+    "retention_note": "rows older than 7 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note"
   },
-  {
-   "db_column": "fnsku",
-   "amazon_header": "fnsku (or 'FNSKU')",
-   "type": "str"
-  },
-  {
-   "db_column": "asin",
-   "amazon_header": "asin (or 'ASIN')",
-   "type": "str"
-  },
-  {
-   "db_column": "product_name",
-   "amazon_header": "product-name (or 'Product Name')",
-   "type": "str"
-  },
-  {
-   "db_column": "condition",
-   "amazon_header": "condition (or 'Condition')",
-   "type": "str"
-  },
-  {
-   "db_column": "country_code",
-   "amazon_header": "(injected by per_mkt fan-out)",
-   "type": "str"
-  },
-  {
-   "db_column": "snapshot_date",
-   "amazon_header": "snapshot-date",
-   "type": "date"
-  },
-  {
-   "db_column": "currency_code",
-   "amazon_header": "currency (or 'Currency code')",
-   "type": "str"
-  },
-  {
-   "db_column": "your_price",
-   "amazon_header": "your-price",
-   "type": "decimal"
-  },
-  {
-   "db_column": "sales_price",
-   "amazon_header": "sales-price",
-   "type": "decimal"
-  },
-  {
-   "db_column": "lowest_price_new_plus_shipping",
-   "amazon_header": "lowest-price-new-plus-shipping",
-   "type": "decimal"
-  },
-  {
-   "db_column": "lowest_price_used",
-   "amazon_header": "lowest-price-used",
-   "type": "decimal"
-  },
-  {
-   "db_column": "featuredoffer_price",
-   "amazon_header": "featuredoffer-price",
-   "type": "decimal"
-  },
-  {
-   "db_column": "available",
-   "amazon_header": "available (or 'Available')",
-   "type": "int"
-  },
-  {
-   "db_column": "pending_removal_quantity",
-   "amazon_header": "pending-removal-quantity",
-   "type": "int"
-  },
-  {
-   "db_column": "unfulfillable_quantity",
-   "amazon_header": "unfulfillable-quantity",
-   "type": "int"
-  },
-  {
-   "db_column": "total_reserved_quantity",
-   "amazon_header": "Total Reserved Quantity",
-   "type": "int"
-  },
-  {
-   "db_column": "reserved_fc_transfer",
-   "amazon_header": "Reserved FC Transfer",
-   "type": "int"
-  },
-  {
-   "db_column": "reserved_fc_processing",
-   "amazon_header": "Reserved FC Processing",
-   "type": "int"
-  },
-  {
-   "db_column": "reserved_customer_order",
-   "amazon_header": "Reserved Customer Order",
-   "type": "int"
-  },
-  {
-   "db_column": "inbound_quantity",
-   "amazon_header": "inbound-quantity",
-   "type": "int"
-  },
-  {
-   "db_column": "inbound_working",
-   "amazon_header": "inbound-working",
-   "type": "int"
-  },
-  {
-   "db_column": "inbound_shipped",
-   "amazon_header": "inbound-shipped",
-   "type": "int"
-  },
-  {
-   "db_column": "inbound_received",
-   "amazon_header": "inbound-received",
-   "type": "int"
-  },
-  {
-   "db_column": "inventory_supply_at_fba",
-   "amazon_header": "Inventory Supply at FBA",
-   "type": "int"
-  },
-  {
-   "db_column": "total_days_of_supply_including_units_from_open_shipments",
-   "amazon_header": "Total Days of Supply (including units from open shipments)",
-   "type": "decimal"
-  },
-  {
-   "db_column": "recommended_action",
-   "amazon_header": "recommended-action",
-   "type": "str",
-   "values": [
-    "Create Outlet deal",
-    "Lower price",
-    "Advertise listing",
-    "Create removal order",
-    "NoRestockExcessActionRequired",
-    "GoToStranded"
-   ]
-  },
-  {
-   "db_column": "healthy_inventory_level",
-   "amazon_header": "healthy-inventory-level",
-   "type": "int"
-  },
-  {
-   "db_column": "recommended_sales_price",
-   "amazon_header": "recommended-sales-price",
-   "type": "decimal"
-  },
-  {
-   "db_column": "recommended_sale_duration_days",
-   "amazon_header": "recommended-sale-duration-days",
-   "type": "int"
-  },
-  {
-   "db_column": "recommended_removal_quantity",
-   "amazon_header": "recommended-removal-quantity",
-   "type": "int"
-  },
-  {
-   "db_column": "estimated_cost_savings_of_recommended_actions",
-   "amazon_header": "estimated-cost-savings-of-recommended-actions",
-   "type": "decimal"
-  },
-  {
-   "db_column": "recommended_ship_in_quantity",
-   "amazon_header": "Recommended ship-in quantity",
-   "type": "int",
-   "nullable": true,
-   "note": "Not shipped on every marketplace (e.g. absent on AE). Amazon's primary replenishment column is recommended_order_quantity — see _meta.gotchas."
-  },
-  {
-   "db_column": "recommended_ship_in_date",
-   "amazon_header": "Recommended ship-in date",
-   "type": "date"
-  },
-  {
-   "db_column": "recommended_order_quantity",
-   "amazon_header": "recommended-order-quantity",
-   "type": "int",
-   "nullable": true,
-   "note": "Amazon's canonical replenishment quantity (paired with recommended_order_date). NULL when Amazon didn't compute a recommendation for the SKU/marketplace — fall back to a computed suggestion, see _meta.gotchas. Legacy recommended_replenishment_qty is a real column but only pre-migration historical rows populate it."
-  },
-  {
-   "db_column": "recommended_order_date",
-   "amazon_header": "recommended-order-date",
-   "type": "date"
-  },
-  {
-   "db_column": "sell_through",
-   "amazon_header": "sell-through",
-   "type": "decimal"
-  },
-  {
-   "db_column": "weeks_of_cover",
-   "amazon_header": "weeks-of-cover",
-   "type": "decimal"
-  },
-  {
-   "db_column": "weeks_of_cover_t30",
-   "amazon_header": "weeks-of-cover-t30",
-   "type": "decimal"
-  },
-  {
-   "db_column": "weeks_of_cover_t90",
-   "amazon_header": "weeks-of-cover-t90",
-   "type": "decimal"
-  },
-  {
-   "db_column": "weeks_of_cover_estimated_excess_quantity",
-   "amazon_header": "weeks-of-cover-estimated-excess-quantity",
-   "type": "int"
-  },
-  {
-   "db_column": "days_of_supply",
-   "amazon_header": "days-of-supply",
-   "type": "decimal",
-   "nullable": true,
-   "note": "NULL for no-sale SKUs. The warehouse (Postgres) sorts NULLs LAST on ASC — safe. The in-sheet SQL()/alasql layer sorts blanks FIRST — that's where unsorted-looking 'urgent' lists come from. Filter `days_of_supply > 0` in either layer (also excludes no-sale SKUs, usually the intent). See _meta.gotchas."
-  },
-  {
-   "db_column": "days_of_supply_at_amazon_fulfillment_network",
-   "amazon_header": "Days of Supply at Amazon Fulfillment Network",
-   "type": "decimal"
-  },
-  {
-   "db_column": "estimated_excess_quantity",
-   "amazon_header": "estimated-excess-quantity",
-   "type": "int"
-  },
-  {
-   "db_column": "estimated_storage_cost_next_month",
-   "amazon_header": "estimated-storage-cost-next-month",
-   "type": "decimal"
-  },
-  {
-   "db_column": "is_seasonal_in_next_3_months",
-   "amazon_header": "is-seasonal-in-next-3-months",
-   "type": "str"
-  },
-  {
-   "db_column": "season_name",
-   "amazon_header": "season-name",
-   "type": "str"
-  },
-  {
-   "db_column": "units_shipped_t7",
-   "amazon_header": "units-shipped-t7",
-   "type": "int"
-  },
-  {
-   "db_column": "units_shipped_t30",
-   "amazon_header": "units-shipped-t30",
-   "type": "int"
-  },
-  {
-   "db_column": "units_shipped_t60",
-   "amazon_header": "units-shipped-t60",
-   "type": "int"
-  },
-  {
-   "db_column": "units_shipped_t90",
-   "amazon_header": "units-shipped-t90",
-   "type": "int"
-  },
-  {
-   "db_column": "sales_shipped_last_7_days",
-   "amazon_header": "sales-shipped-last-7-days",
-   "type": "decimal"
-  },
-  {
-   "db_column": "sales_shipped_last_30_days",
-   "amazon_header": "sales-shipped-last-30-days",
-   "type": "decimal"
-  },
-  {
-   "db_column": "sales_shipped_last_60_days",
-   "amazon_header": "sales-shipped-last-60-days",
-   "type": "decimal"
-  },
-  {
-   "db_column": "sales_shipped_last_90_days",
-   "amazon_header": "sales-shipped-last-90-days",
-   "type": "decimal"
-  },
-  {
-   "db_column": "inv_age_0_to_90_days",
-   "amazon_header": "inv-age-0-to-90-days",
-   "type": "int"
-  },
-  {
-   "db_column": "inv_age_91_to_180_days",
-   "amazon_header": "inv-age-91-to-180-days",
-   "type": "int"
-  },
-  {
-   "db_column": "inv_age_181_to_270_days",
-   "amazon_header": "inv-age-181-to-270-days",
-   "type": "int"
-  },
-  {
-   "db_column": "inv_age_271_to_365_days",
-   "amazon_header": "inv-age-271-to-365-days",
-   "type": "int"
-  },
-  {
-   "db_column": "inv_age_366_to_455_days",
-   "amazon_header": "inv-age-366-to-455-days",
-   "type": "int",
-   "note": "EU/UK only"
-  },
-  {
-   "db_column": "inv_age_456_plus_days",
-   "amazon_header": "inv-age-456-plus-days",
-   "type": "int",
-   "note": "EU/UK only"
-  },
-  {
-   "db_column": "inv_age_0_to_30_days",
-   "amazon_header": "inv-age-0-to-30-days",
-   "type": "int"
-  },
-  {
-   "db_column": "inv_age_31_to_60_days",
-   "amazon_header": "inv-age-31-to-60-days",
-   "type": "int"
-  },
-  {
-   "db_column": "inv_age_61_to_90_days",
-   "amazon_header": "inv-age-61-to-90-days",
-   "type": "int"
-  },
-  {
-   "db_column": "inv_age_181_to_330_days",
-   "amazon_header": "inv-age-181-to-330-days",
-   "type": "int"
-  },
-  {
-   "db_column": "inv_age_331_to_365_days",
-   "amazon_header": "inv-age-331-to-365-days",
-   "type": "int"
-  },
-  {
-   "db_column": "inventory_age_snapshot_date",
-   "amazon_header": "Inventory age snapshot date",
-   "type": "date"
-  },
-  {
-   "db_column": "qty_to_be_charged_ais_241_270_days",
-   "amazon_header": "quantity-to-be-charged-ais-241-270-days",
-   "type": "int",
-   "note": "EU/UK only"
-  },
-  {
-   "db_column": "estimated_ais_241_270_days",
-   "amazon_header": "estimated-ais-241-270-days",
-   "type": "decimal",
-   "note": "EU/UK only"
-  },
-  {
-   "db_column": "qty_to_be_charged_ais_271_300_days",
-   "amazon_header": "quantity-to-be-charged-ais-271-300-days",
-   "type": "int"
-  },
-  {
-   "db_column": "estimated_ais_271_300_days",
-   "amazon_header": "estimated-ais-271-300-days",
-   "type": "decimal"
-  },
-  {
-   "db_column": "qty_to_be_charged_ais_301_330_days",
-   "amazon_header": "quantity-to-be-charged-ais-301-330-days",
-   "type": "int"
-  },
-  {
-   "db_column": "estimated_ais_301_330_days",
-   "amazon_header": "estimated-ais-301-330-days",
-   "type": "decimal"
-  },
-  {
-   "db_column": "qty_to_be_charged_ais_331_365_days",
-   "amazon_header": "quantity-to-be-charged-ais-331-365-days",
-   "type": "int"
-  },
-  {
-   "db_column": "estimated_ais_331_365_days",
-   "amazon_header": "estimated-ais-331-365-days",
-   "type": "decimal"
-  },
-  {
-   "db_column": "qty_to_be_charged_ais_366_455_days",
-   "amazon_header": "quantity-to-be-charged-ais-366-455-days",
-   "type": "int"
-  },
-  {
-   "db_column": "estimated_ais_366_455_days",
-   "amazon_header": "estimated-ais-366-455-days",
-   "type": "decimal"
-  },
-  {
-   "db_column": "qty_to_be_charged_ais_456_plus_days",
-   "amazon_header": "quantity-to-be-charged-ais-456-plus-days",
-   "type": "int"
-  },
-  {
-   "db_column": "estimated_ais_456_plus_days",
-   "amazon_header": "estimated-ais-456-plus-days",
-   "type": "decimal"
-  },
-  {
-   "db_column": "qty_to_be_charged_ltsf_6_mo",
-   "amazon_header": "qty-to-be-charged-ltsf-6-mo",
-   "type": "int",
-   "note": "myStore-AE seen"
-  },
-  {
-   "db_column": "projected_ltsf_6_mo",
-   "amazon_header": "projected-ltsf-6-mo",
-   "type": "decimal",
-   "note": "myStore-AE seen"
-  },
-  {
-   "db_column": "qty_to_be_charged_ltsf_12_mo",
-   "amazon_header": "qty-to-be-charged-ltsf-12-mo",
-   "type": "int",
-   "note": "myStore-AE seen"
-  },
-  {
-   "db_column": "estimated_ltsf_next_charge",
-   "amazon_header": "estimated-ltsf-next-charge",
-   "type": "decimal",
-   "note": "myStore-AE seen"
-  },
-  {
-   "db_column": "restock_plus_seller_eligible",
-   "amazon_header": "restock-plus-seller-eligible",
-   "type": "str",
-   "note": "myStore-AE seen"
-  },
-  {
-   "db_column": "restock_plus_seller_opted",
-   "amazon_header": "restock-plus-seller-opted",
-   "type": "str"
-  },
-  {
-   "db_column": "restock_plus_suggested_weeks_of_cover",
-   "amazon_header": "restock-plus-suggested-weeks-of-cover",
-   "type": "decimal"
-  },
-  {
-   "db_column": "restock_plus_storage_incentives",
-   "amazon_header": "restock-plus-storage-incentives",
-   "type": "decimal"
-  },
-  {
-   "db_column": "restock_plus_total_incentives",
-   "amazon_header": "restock-plus-total-incentives",
-   "type": "decimal"
-  },
-  {
-   "db_column": "marketplace",
-   "amazon_header": "marketplace",
-   "type": "str"
-  },
-  {
-   "db_column": "product_group",
-   "amazon_header": "product-group",
-   "type": "str"
-  },
-  {
-   "db_column": "sales_rank",
-   "amazon_header": "sales-rank",
-   "type": "int"
-  },
-  {
-   "db_column": "item_volume",
-   "amazon_header": "item-volume",
-   "type": "decimal"
-  },
-  {
-   "db_column": "volume_unit_measurement",
-   "amazon_header": "volume-unit-measurement",
-   "type": "str",
-   "values": [
-    "cubic feet",
-    "cubic meter"
-   ]
-  },
-  {
-   "db_column": "storage_type",
-   "amazon_header": "storage-type",
-   "type": "str"
-  },
-  {
-   "db_column": "storage_volume",
-   "amazon_header": "storage-volume",
-   "type": "decimal"
-  },
-  {
-   "db_column": "historical_days_of_supply",
-   "amazon_header": "historical-days-of-supply",
-   "type": "decimal",
-   "note": "EU/UK seen"
-  },
-  {
-   "db_column": "last_updated_for_historical_days_of_supply",
-   "amazon_header": "Last updated date for Historical Days of Supply",
-   "type": "date"
-  },
-  {
-   "db_column": "short_term_historical_days_of_supply",
-   "amazon_header": "Short term historical days of supply",
-   "type": "decimal"
-  },
-  {
-   "db_column": "long_term_historical_days_of_supply",
-   "amazon_header": "Long term historical days of supply",
-   "type": "decimal"
-  },
-  {
-   "db_column": "inv_age_365_plus_days",
-   "amazon_header": "inv-age-365-plus-days",
-   "type": "int"
-  },
-  {
-   "db_column": "inv_age_91_to_150_days",
-   "amazon_header": "inv-age-91-to-150-days",
-   "type": "int"
-  },
-  {
-   "db_column": "inv_age_151_to_180_days",
-   "amazon_header": "inv-age-151-to-180-days",
-   "type": "int"
-  },
-  {
-   "db_column": "qty_to_be_charged_ais_181_210_days",
-   "amazon_header": "quantity-to-be-charged-ais-181-210-days",
-   "type": "int"
-  },
-  {
-   "db_column": "estimated_ais_181_210_days",
-   "amazon_header": "estimated-ais-181-210-days",
-   "type": "decimal"
-  },
-  {
-   "db_column": "qty_to_be_charged_ais_211_240_days",
-   "amazon_header": "quantity-to-be-charged-ais-211-240-days",
-   "type": "int"
-  },
-  {
-   "db_column": "estimated_ais_211_240_days",
-   "amazon_header": "estimated-ais-211-240-days",
-   "type": "decimal"
-  },
-  {
-   "db_column": "qty_to_be_charged_ais_365_plus_days",
-   "amazon_header": "quantity-to-be-charged-ais-365-plus-days",
-   "type": "int"
-  },
-  {
-   "db_column": "estimated_ais_365_plus_days",
-   "amazon_header": "estimated-ais-365-plus-days",
-   "type": "decimal"
-  },
-  {
-   "db_column": "projected_ltsf_5_mo",
-   "amazon_header": "projected-ltsf-5-mo",
-   "type": "decimal"
-  },
-  {
-   "db_column": "qty_to_be_charged_ltsf_5_mo",
-   "amazon_header": "qty-to-be-charged-ltsf-5-mo",
-   "type": "int"
-  },
-  {
-   "db_column": "low_inventory_level_fee_exempted",
-   "amazon_header": "Exempted from Low-Inventory-Level fee?",
-   "type": "str"
-  },
-  {
-   "db_column": "low_inventory_level_fee_applied",
-   "amazon_header": "Low-Inventory-Level fee applied in current week?",
-   "type": "str"
-  },
-  {
-   "db_column": "reserved_staging",
-   "amazon_header": "Reserved Staging",
-   "type": "int"
-  },
-  {
-   "db_column": "fba_inventory_level_health_status",
-   "amazon_header": "fba-inventory-level-health-status",
-   "type": "str"
-  },
-  {
-   "db_column": "fba_minimum_inventory_level",
-   "amazon_header": "fba-minimum-inventory-level",
-   "type": "int"
-  },
-  {
-   "db_column": "no_sale_last_6_months",
-   "amazon_header": "no-sale-last-6-months",
-   "type": "str"
-  },
-  {
-   "db_column": "extra",
-   "amazon_header": "(unrecognized columns and legacy 28-col schema fall back here)",
-   "type": "json",
-   "note": "Documented opt-outs (2026-07-11): season-start-date / season-end-date — dropped by Amazon 2026-05-09, reappeared on a handful of US/UK rows 2026-07; deliberately left in extra until they ship consistently."
-  },
-  {
-   "db_column": "alert",
-   "amazon_header": "Alert | alert",
-   "type": "str"
-  },
-  {
-   "db_column": "country",
-   "amazon_header": "Country",
-   "type": "str"
-  },
-  {
-   "db_column": "customer_order",
-   "amazon_header": "Customer Order",
-   "type": "int"
-  },
-  {
-   "db_column": "fc_processing",
-   "amazon_header": "FC Processing",
-   "type": "int"
-  },
-  {
-   "db_column": "fc_transfer",
-   "amazon_header": "FC transfer | fc-transfer",
-   "type": "int"
-  },
-  {
-   "db_column": "fulfilled_by",
-   "amazon_header": "Fulfilled by",
-   "type": "str"
-  },
-  {
-   "db_column": "inbound",
-   "amazon_header": "Inbound",
-   "type": "int"
-  },
-  {
-   "db_column": "price",
-   "amazon_header": "Price",
-   "type": "decimal"
-  },
-  {
-   "db_column": "receiving",
-   "amazon_header": "Receiving",
-   "type": "int"
-  },
-  {
-   "db_column": "recommended_replenishment_qty",
-   "amazon_header": "Recommended replenishment qty",
-   "type": "int"
-  },
-  {
-   "db_column": "sales_last_30_days",
-   "amazon_header": "Sales last 30 days",
-   "type": "decimal"
-  },
-  {
-   "db_column": "shipped",
-   "amazon_header": "Shipped",
-   "type": "int"
-  },
-  {
-   "db_column": "supplier",
-   "amazon_header": "Supplier | supplier",
-   "type": "str"
-  },
-  {
-   "db_column": "total_units",
-   "amazon_header": "Total Units",
-   "type": "int"
-  },
-  {
-   "db_column": "unfulfillable",
-   "amazon_header": "Unfulfillable",
-   "type": "int"
-  },
-  {
-   "db_column": "unit_storage_size",
-   "amazon_header": "Unit storage size",
-   "type": "str"
-  },
-  {
-   "db_column": "units_sold_last_30_days",
-   "amazon_header": "Units Sold Last 30 Days",
-   "type": "int"
-  },
-  {
-   "db_column": "working",
-   "amazon_header": "Working",
-   "type": "int"
-  }
- ],
- "example_query": {
-  "store": "novaStore-UK",
-  "tables": [
-   "rpt_get_fba_inventory_planning_data"
-  ],
   "columns": [
-   "rpt_get_fba_inventory_planning_data.sku",
-   "rpt_get_fba_inventory_planning_data.product_name",
-   "rpt_get_fba_inventory_planning_data.recommended_action",
-   "rpt_get_fba_inventory_planning_data.weeks_of_cover",
-   "rpt_get_fba_inventory_planning_data.estimated_excess_quantity",
-   "rpt_get_fba_inventory_planning_data.recommended_order_quantity",
-   "rpt_get_fba_inventory_planning_data.recommended_order_date"
+    {
+      "db_column": "sku",
+      "amazon_header": "sku",
+      "type": "str",
+      "note": "Canonical SKU join key — matches Amazon's report header exactly. Replaced the legacy `merchant_sku` column, which was dropped from this table 2026-07-10; older dashboards/SQL joining on merchant_sku must switch to sku."
+    },
+    {
+      "db_column": "fnsku",
+      "amazon_header": "fnsku (or 'FNSKU')",
+      "type": "str"
+    },
+    {
+      "db_column": "asin",
+      "amazon_header": "asin (or 'ASIN')",
+      "type": "str"
+    },
+    {
+      "db_column": "product_name",
+      "amazon_header": "product-name (or 'Product Name')",
+      "type": "str"
+    },
+    {
+      "db_column": "condition",
+      "amazon_header": "condition (or 'Condition')",
+      "type": "str"
+    },
+    {
+      "db_column": "country_code",
+      "amazon_header": "(injected by per_mkt fan-out)",
+      "type": "str"
+    },
+    {
+      "db_column": "snapshot_date",
+      "amazon_header": "snapshot-date",
+      "type": "date"
+    },
+    {
+      "db_column": "currency_code",
+      "amazon_header": "currency (or 'Currency code')",
+      "type": "str"
+    },
+    {
+      "db_column": "your_price",
+      "amazon_header": "your-price",
+      "type": "decimal"
+    },
+    {
+      "db_column": "sales_price",
+      "amazon_header": "sales-price",
+      "type": "decimal"
+    },
+    {
+      "db_column": "lowest_price_new_plus_shipping",
+      "amazon_header": "lowest-price-new-plus-shipping",
+      "type": "decimal"
+    },
+    {
+      "db_column": "lowest_price_used",
+      "amazon_header": "lowest-price-used",
+      "type": "decimal"
+    },
+    {
+      "db_column": "featuredoffer_price",
+      "amazon_header": "featuredoffer-price",
+      "type": "decimal"
+    },
+    {
+      "db_column": "available",
+      "amazon_header": "available (or 'Available')",
+      "type": "int"
+    },
+    {
+      "db_column": "pending_removal_quantity",
+      "amazon_header": "pending-removal-quantity",
+      "type": "int"
+    },
+    {
+      "db_column": "unfulfillable_quantity",
+      "amazon_header": "unfulfillable-quantity",
+      "type": "int"
+    },
+    {
+      "db_column": "total_reserved_quantity",
+      "amazon_header": "Total Reserved Quantity",
+      "type": "int"
+    },
+    {
+      "db_column": "reserved_fc_transfer",
+      "amazon_header": "Reserved FC Transfer",
+      "type": "int"
+    },
+    {
+      "db_column": "reserved_fc_processing",
+      "amazon_header": "Reserved FC Processing",
+      "type": "int"
+    },
+    {
+      "db_column": "reserved_customer_order",
+      "amazon_header": "Reserved Customer Order",
+      "type": "int"
+    },
+    {
+      "db_column": "inbound_quantity",
+      "amazon_header": "inbound-quantity",
+      "type": "int"
+    },
+    {
+      "db_column": "inbound_working",
+      "amazon_header": "inbound-working",
+      "type": "int"
+    },
+    {
+      "db_column": "inbound_shipped",
+      "amazon_header": "inbound-shipped",
+      "type": "int"
+    },
+    {
+      "db_column": "inbound_received",
+      "amazon_header": "inbound-received",
+      "type": "int"
+    },
+    {
+      "db_column": "inventory_supply_at_fba",
+      "amazon_header": "Inventory Supply at FBA",
+      "type": "int"
+    },
+    {
+      "db_column": "total_days_of_supply_including_units_from_open_shipments",
+      "amazon_header": "Total Days of Supply (including units from open shipments)",
+      "type": "decimal"
+    },
+    {
+      "db_column": "recommended_action",
+      "amazon_header": "recommended-action",
+      "type": "str",
+      "values": [
+        "Create Outlet deal",
+        "Lower price",
+        "Advertise listing",
+        "Create removal order",
+        "NoRestockExcessActionRequired",
+        "GoToStranded"
+      ]
+    },
+    {
+      "db_column": "healthy_inventory_level",
+      "amazon_header": "healthy-inventory-level",
+      "type": "int"
+    },
+    {
+      "db_column": "recommended_sales_price",
+      "amazon_header": "recommended-sales-price",
+      "type": "decimal"
+    },
+    {
+      "db_column": "recommended_sale_duration_days",
+      "amazon_header": "recommended-sale-duration-days",
+      "type": "int"
+    },
+    {
+      "db_column": "recommended_removal_quantity",
+      "amazon_header": "recommended-removal-quantity",
+      "type": "int"
+    },
+    {
+      "db_column": "estimated_cost_savings_of_recommended_actions",
+      "amazon_header": "estimated-cost-savings-of-recommended-actions",
+      "type": "decimal"
+    },
+    {
+      "db_column": "recommended_ship_in_quantity",
+      "amazon_header": "Recommended ship-in quantity",
+      "type": "int",
+      "nullable": true,
+      "note": "Not shipped on every marketplace (e.g. absent on AE). Amazon's primary replenishment column is recommended_order_quantity — see _meta.gotchas."
+    },
+    {
+      "db_column": "recommended_ship_in_date",
+      "amazon_header": "Recommended ship-in date",
+      "type": "date"
+    },
+    {
+      "db_column": "recommended_order_quantity",
+      "amazon_header": "recommended-order-quantity",
+      "type": "int",
+      "nullable": true,
+      "note": "Amazon's canonical replenishment quantity (paired with recommended_order_date). NULL when Amazon didn't compute a recommendation for the SKU/marketplace — fall back to a computed suggestion, see _meta.gotchas. Legacy recommended_replenishment_qty is a real column but only pre-migration historical rows populate it."
+    },
+    {
+      "db_column": "recommended_order_date",
+      "amazon_header": "recommended-order-date",
+      "type": "date"
+    },
+    {
+      "db_column": "sell_through",
+      "amazon_header": "sell-through",
+      "type": "decimal"
+    },
+    {
+      "db_column": "weeks_of_cover",
+      "amazon_header": "weeks-of-cover",
+      "type": "decimal"
+    },
+    {
+      "db_column": "weeks_of_cover_t30",
+      "amazon_header": "weeks-of-cover-t30",
+      "type": "decimal"
+    },
+    {
+      "db_column": "weeks_of_cover_t90",
+      "amazon_header": "weeks-of-cover-t90",
+      "type": "decimal"
+    },
+    {
+      "db_column": "weeks_of_cover_estimated_excess_quantity",
+      "amazon_header": "weeks-of-cover-estimated-excess-quantity",
+      "type": "int"
+    },
+    {
+      "db_column": "days_of_supply",
+      "amazon_header": "days-of-supply",
+      "type": "decimal",
+      "nullable": true,
+      "note": "NULL for no-sale SKUs. The warehouse (Postgres) sorts NULLs LAST on ASC — safe. The in-sheet SQL()/alasql layer sorts blanks FIRST — that's where unsorted-looking 'urgent' lists come from. Filter `days_of_supply > 0` in either layer (also excludes no-sale SKUs, usually the intent). See _meta.gotchas."
+    },
+    {
+      "db_column": "days_of_supply_at_amazon_fulfillment_network",
+      "amazon_header": "Days of Supply at Amazon Fulfillment Network",
+      "type": "decimal"
+    },
+    {
+      "db_column": "estimated_excess_quantity",
+      "amazon_header": "estimated-excess-quantity",
+      "type": "int"
+    },
+    {
+      "db_column": "estimated_storage_cost_next_month",
+      "amazon_header": "estimated-storage-cost-next-month",
+      "type": "decimal"
+    },
+    {
+      "db_column": "is_seasonal_in_next_3_months",
+      "amazon_header": "is-seasonal-in-next-3-months",
+      "type": "str"
+    },
+    {
+      "db_column": "season_name",
+      "amazon_header": "season-name",
+      "type": "str"
+    },
+    {
+      "db_column": "units_shipped_t7",
+      "amazon_header": "units-shipped-t7",
+      "type": "int"
+    },
+    {
+      "db_column": "units_shipped_t30",
+      "amazon_header": "units-shipped-t30",
+      "type": "int"
+    },
+    {
+      "db_column": "units_shipped_t60",
+      "amazon_header": "units-shipped-t60",
+      "type": "int"
+    },
+    {
+      "db_column": "units_shipped_t90",
+      "amazon_header": "units-shipped-t90",
+      "type": "int"
+    },
+    {
+      "db_column": "sales_shipped_last_7_days",
+      "amazon_header": "sales-shipped-last-7-days",
+      "type": "decimal"
+    },
+    {
+      "db_column": "sales_shipped_last_30_days",
+      "amazon_header": "sales-shipped-last-30-days",
+      "type": "decimal"
+    },
+    {
+      "db_column": "sales_shipped_last_60_days",
+      "amazon_header": "sales-shipped-last-60-days",
+      "type": "decimal"
+    },
+    {
+      "db_column": "sales_shipped_last_90_days",
+      "amazon_header": "sales-shipped-last-90-days",
+      "type": "decimal"
+    },
+    {
+      "db_column": "inv_age_0_to_90_days",
+      "amazon_header": "inv-age-0-to-90-days",
+      "type": "int"
+    },
+    {
+      "db_column": "inv_age_91_to_180_days",
+      "amazon_header": "inv-age-91-to-180-days",
+      "type": "int"
+    },
+    {
+      "db_column": "inv_age_181_to_270_days",
+      "amazon_header": "inv-age-181-to-270-days",
+      "type": "int"
+    },
+    {
+      "db_column": "inv_age_271_to_365_days",
+      "amazon_header": "inv-age-271-to-365-days",
+      "type": "int"
+    },
+    {
+      "db_column": "inv_age_366_to_455_days",
+      "amazon_header": "inv-age-366-to-455-days",
+      "type": "int",
+      "note": "EU/UK only"
+    },
+    {
+      "db_column": "inv_age_456_plus_days",
+      "amazon_header": "inv-age-456-plus-days",
+      "type": "int",
+      "note": "EU/UK only"
+    },
+    {
+      "db_column": "inv_age_0_to_30_days",
+      "amazon_header": "inv-age-0-to-30-days",
+      "type": "int"
+    },
+    {
+      "db_column": "inv_age_31_to_60_days",
+      "amazon_header": "inv-age-31-to-60-days",
+      "type": "int"
+    },
+    {
+      "db_column": "inv_age_61_to_90_days",
+      "amazon_header": "inv-age-61-to-90-days",
+      "type": "int"
+    },
+    {
+      "db_column": "inv_age_181_to_330_days",
+      "amazon_header": "inv-age-181-to-330-days",
+      "type": "int"
+    },
+    {
+      "db_column": "inv_age_331_to_365_days",
+      "amazon_header": "inv-age-331-to-365-days",
+      "type": "int"
+    },
+    {
+      "db_column": "inventory_age_snapshot_date",
+      "amazon_header": "Inventory age snapshot date",
+      "type": "date"
+    },
+    {
+      "db_column": "qty_to_be_charged_ais_241_270_days",
+      "amazon_header": "quantity-to-be-charged-ais-241-270-days",
+      "type": "int",
+      "note": "EU/UK only"
+    },
+    {
+      "db_column": "estimated_ais_241_270_days",
+      "amazon_header": "estimated-ais-241-270-days",
+      "type": "decimal",
+      "note": "EU/UK only"
+    },
+    {
+      "db_column": "qty_to_be_charged_ais_271_300_days",
+      "amazon_header": "quantity-to-be-charged-ais-271-300-days",
+      "type": "int"
+    },
+    {
+      "db_column": "estimated_ais_271_300_days",
+      "amazon_header": "estimated-ais-271-300-days",
+      "type": "decimal"
+    },
+    {
+      "db_column": "qty_to_be_charged_ais_301_330_days",
+      "amazon_header": "quantity-to-be-charged-ais-301-330-days",
+      "type": "int"
+    },
+    {
+      "db_column": "estimated_ais_301_330_days",
+      "amazon_header": "estimated-ais-301-330-days",
+      "type": "decimal"
+    },
+    {
+      "db_column": "qty_to_be_charged_ais_331_365_days",
+      "amazon_header": "quantity-to-be-charged-ais-331-365-days",
+      "type": "int"
+    },
+    {
+      "db_column": "estimated_ais_331_365_days",
+      "amazon_header": "estimated-ais-331-365-days",
+      "type": "decimal"
+    },
+    {
+      "db_column": "qty_to_be_charged_ais_366_455_days",
+      "amazon_header": "quantity-to-be-charged-ais-366-455-days",
+      "type": "int"
+    },
+    {
+      "db_column": "estimated_ais_366_455_days",
+      "amazon_header": "estimated-ais-366-455-days",
+      "type": "decimal"
+    },
+    {
+      "db_column": "qty_to_be_charged_ais_456_plus_days",
+      "amazon_header": "quantity-to-be-charged-ais-456-plus-days",
+      "type": "int"
+    },
+    {
+      "db_column": "estimated_ais_456_plus_days",
+      "amazon_header": "estimated-ais-456-plus-days",
+      "type": "decimal"
+    },
+    {
+      "db_column": "qty_to_be_charged_ltsf_6_mo",
+      "amazon_header": "qty-to-be-charged-ltsf-6-mo",
+      "type": "int",
+      "note": "myStore-AE seen"
+    },
+    {
+      "db_column": "projected_ltsf_6_mo",
+      "amazon_header": "projected-ltsf-6-mo",
+      "type": "decimal",
+      "note": "myStore-AE seen"
+    },
+    {
+      "db_column": "qty_to_be_charged_ltsf_12_mo",
+      "amazon_header": "qty-to-be-charged-ltsf-12-mo",
+      "type": "int",
+      "note": "myStore-AE seen"
+    },
+    {
+      "db_column": "estimated_ltsf_next_charge",
+      "amazon_header": "estimated-ltsf-next-charge",
+      "type": "decimal",
+      "note": "myStore-AE seen"
+    },
+    {
+      "db_column": "restock_plus_seller_eligible",
+      "amazon_header": "restock-plus-seller-eligible",
+      "type": "str",
+      "note": "myStore-AE seen"
+    },
+    {
+      "db_column": "restock_plus_seller_opted",
+      "amazon_header": "restock-plus-seller-opted",
+      "type": "str"
+    },
+    {
+      "db_column": "restock_plus_suggested_weeks_of_cover",
+      "amazon_header": "restock-plus-suggested-weeks-of-cover",
+      "type": "decimal"
+    },
+    {
+      "db_column": "restock_plus_storage_incentives",
+      "amazon_header": "restock-plus-storage-incentives",
+      "type": "decimal"
+    },
+    {
+      "db_column": "restock_plus_total_incentives",
+      "amazon_header": "restock-plus-total-incentives",
+      "type": "decimal"
+    },
+    {
+      "db_column": "marketplace",
+      "amazon_header": "marketplace",
+      "type": "str"
+    },
+    {
+      "db_column": "product_group",
+      "amazon_header": "product-group",
+      "type": "str"
+    },
+    {
+      "db_column": "sales_rank",
+      "amazon_header": "sales-rank",
+      "type": "int"
+    },
+    {
+      "db_column": "item_volume",
+      "amazon_header": "item-volume",
+      "type": "decimal"
+    },
+    {
+      "db_column": "volume_unit_measurement",
+      "amazon_header": "volume-unit-measurement",
+      "type": "str",
+      "values": [
+        "cubic feet",
+        "cubic meter"
+      ]
+    },
+    {
+      "db_column": "storage_type",
+      "amazon_header": "storage-type",
+      "type": "str"
+    },
+    {
+      "db_column": "storage_volume",
+      "amazon_header": "storage-volume",
+      "type": "decimal"
+    },
+    {
+      "db_column": "historical_days_of_supply",
+      "amazon_header": "historical-days-of-supply",
+      "type": "decimal",
+      "note": "EU/UK seen"
+    },
+    {
+      "db_column": "last_updated_for_historical_days_of_supply",
+      "amazon_header": "Last updated date for Historical Days of Supply",
+      "type": "date"
+    },
+    {
+      "db_column": "short_term_historical_days_of_supply",
+      "amazon_header": "Short term historical days of supply",
+      "type": "decimal"
+    },
+    {
+      "db_column": "long_term_historical_days_of_supply",
+      "amazon_header": "Long term historical days of supply",
+      "type": "decimal"
+    },
+    {
+      "db_column": "inv_age_365_plus_days",
+      "amazon_header": "inv-age-365-plus-days",
+      "type": "int"
+    },
+    {
+      "db_column": "inv_age_91_to_150_days",
+      "amazon_header": "inv-age-91-to-150-days",
+      "type": "int"
+    },
+    {
+      "db_column": "inv_age_151_to_180_days",
+      "amazon_header": "inv-age-151-to-180-days",
+      "type": "int"
+    },
+    {
+      "db_column": "qty_to_be_charged_ais_181_210_days",
+      "amazon_header": "quantity-to-be-charged-ais-181-210-days",
+      "type": "int"
+    },
+    {
+      "db_column": "estimated_ais_181_210_days",
+      "amazon_header": "estimated-ais-181-210-days",
+      "type": "decimal"
+    },
+    {
+      "db_column": "qty_to_be_charged_ais_211_240_days",
+      "amazon_header": "quantity-to-be-charged-ais-211-240-days",
+      "type": "int"
+    },
+    {
+      "db_column": "estimated_ais_211_240_days",
+      "amazon_header": "estimated-ais-211-240-days",
+      "type": "decimal"
+    },
+    {
+      "db_column": "qty_to_be_charged_ais_365_plus_days",
+      "amazon_header": "quantity-to-be-charged-ais-365-plus-days",
+      "type": "int"
+    },
+    {
+      "db_column": "estimated_ais_365_plus_days",
+      "amazon_header": "estimated-ais-365-plus-days",
+      "type": "decimal"
+    },
+    {
+      "db_column": "projected_ltsf_5_mo",
+      "amazon_header": "projected-ltsf-5-mo",
+      "type": "decimal"
+    },
+    {
+      "db_column": "qty_to_be_charged_ltsf_5_mo",
+      "amazon_header": "qty-to-be-charged-ltsf-5-mo",
+      "type": "int"
+    },
+    {
+      "db_column": "low_inventory_level_fee_exempted",
+      "amazon_header": "Exempted from Low-Inventory-Level fee?",
+      "type": "str"
+    },
+    {
+      "db_column": "low_inventory_level_fee_applied",
+      "amazon_header": "Low-Inventory-Level fee applied in current week?",
+      "type": "str"
+    },
+    {
+      "db_column": "reserved_staging",
+      "amazon_header": "Reserved Staging",
+      "type": "int"
+    },
+    {
+      "db_column": "fba_inventory_level_health_status",
+      "amazon_header": "fba-inventory-level-health-status",
+      "type": "str"
+    },
+    {
+      "db_column": "fba_minimum_inventory_level",
+      "amazon_header": "fba-minimum-inventory-level",
+      "type": "int"
+    },
+    {
+      "db_column": "no_sale_last_6_months",
+      "amazon_header": "no-sale-last-6-months",
+      "type": "str"
+    },
+    {
+      "db_column": "extra",
+      "amazon_header": "(unrecognized columns and legacy 28-col schema fall back here)",
+      "type": "json",
+      "note": "Documented opt-outs (2026-07-11): season-start-date / season-end-date — dropped by Amazon 2026-05-09, reappeared on a handful of US/UK rows 2026-07; deliberately left in extra until they ship consistently."
+    },
+    {
+      "db_column": "alert",
+      "amazon_header": "Alert | alert",
+      "type": "str"
+    },
+    {
+      "db_column": "country",
+      "amazon_header": "Country",
+      "type": "str"
+    },
+    {
+      "db_column": "customer_order",
+      "amazon_header": "Customer Order",
+      "type": "int"
+    },
+    {
+      "db_column": "fc_processing",
+      "amazon_header": "FC Processing",
+      "type": "int"
+    },
+    {
+      "db_column": "fc_transfer",
+      "amazon_header": "FC transfer | fc-transfer",
+      "type": "int"
+    },
+    {
+      "db_column": "fulfilled_by",
+      "amazon_header": "Fulfilled by",
+      "type": "str"
+    },
+    {
+      "db_column": "inbound",
+      "amazon_header": "Inbound",
+      "type": "int"
+    },
+    {
+      "db_column": "price",
+      "amazon_header": "Price",
+      "type": "decimal"
+    },
+    {
+      "db_column": "receiving",
+      "amazon_header": "Receiving",
+      "type": "int"
+    },
+    {
+      "db_column": "recommended_replenishment_qty",
+      "amazon_header": "Recommended replenishment qty",
+      "type": "int"
+    },
+    {
+      "db_column": "sales_last_30_days",
+      "amazon_header": "Sales last 30 days",
+      "type": "decimal"
+    },
+    {
+      "db_column": "shipped",
+      "amazon_header": "Shipped",
+      "type": "int"
+    },
+    {
+      "db_column": "supplier",
+      "amazon_header": "Supplier | supplier",
+      "type": "str"
+    },
+    {
+      "db_column": "total_units",
+      "amazon_header": "Total Units",
+      "type": "int"
+    },
+    {
+      "db_column": "unfulfillable",
+      "amazon_header": "Unfulfillable",
+      "type": "int"
+    },
+    {
+      "db_column": "unit_storage_size",
+      "amazon_header": "Unit storage size",
+      "type": "str"
+    },
+    {
+      "db_column": "units_sold_last_30_days",
+      "amazon_header": "Units Sold Last 30 Days",
+      "type": "int"
+    },
+    {
+      "db_column": "working",
+      "amazon_header": "Working",
+      "type": "int"
+    }
   ],
-  "filters": [
-   {
-    "column": "rpt_get_fba_inventory_planning_data.recommended_action",
-    "op": "neq",
-    "value": "NoRestockExcessActionRequired"
-   }
-  ],
-  "order_by": [
-   {
-    "column": "rpt_get_fba_inventory_planning_data.estimated_excess_quantity",
-    "dir": "desc"
-   }
-  ],
-  "limit": 100,
-  "report_date": "latest"
- }
+  "example_query": {
+    "store": "novaStore-UK",
+    "tables": [
+      "rpt_get_fba_inventory_planning_data"
+    ],
+    "columns": [
+      "rpt_get_fba_inventory_planning_data.sku",
+      "rpt_get_fba_inventory_planning_data.product_name",
+      "rpt_get_fba_inventory_planning_data.recommended_action",
+      "rpt_get_fba_inventory_planning_data.weeks_of_cover",
+      "rpt_get_fba_inventory_planning_data.estimated_excess_quantity",
+      "rpt_get_fba_inventory_planning_data.recommended_order_quantity",
+      "rpt_get_fba_inventory_planning_data.recommended_order_date"
+    ],
+    "filters": [
+      {
+        "column": "rpt_get_fba_inventory_planning_data.recommended_action",
+        "op": "neq",
+        "value": "NoRestockExcessActionRequired"
+      }
+    ],
+    "order_by": [
+      {
+        "column": "rpt_get_fba_inventory_planning_data.estimated_excess_quantity",
+        "dir": "desc"
+      }
+    ],
+    "limit": 100,
+    "report_date": "latest"
+  }
 }

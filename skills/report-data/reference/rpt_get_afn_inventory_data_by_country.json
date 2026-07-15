@@ -17,29 +17,85 @@
       "country",
       "condition_type"
     ],
-    "cron": "0 */6 * * *"
+    "cron": "0 */6 * * *",
+    "retention_days": 7,
+    "retention_note": "rows older than 7 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note"
   },
   "columns": [
-    {"db_column": "seller_sku",                     "amazon_header": "seller-sku",                     "type": "str"},
-    {"db_column": "fnsku",                          "amazon_header": "fulfillment-channel-sku",        "type": "str"},
-    {"db_column": "asin",                           "amazon_header": "asin",                           "type": "str"},
-    {"db_column": "condition_type",                 "amazon_header": "condition-type",                 "type": "str"},
-    {"db_column": "country",                        "amazon_header": "country",                        "type": "str", "values": ["GB", "DE", "FR", "IT", "ES", "PL", "NL", "BE", "SE", "IE", "US", "CA", "MX"]},
-    {"db_column": "quantity_for_local_fulfillment", "amazon_header": "quantity-for-local-fulfillment", "type": "int"},
-    {"db_column": "snapshot_date",                  "amazon_header": "(injected by ingest worker)",    "type": "date"}
+    {
+      "db_column": "seller_sku",
+      "amazon_header": "seller-sku",
+      "type": "str"
+    },
+    {
+      "db_column": "fnsku",
+      "amazon_header": "fulfillment-channel-sku",
+      "type": "str"
+    },
+    {
+      "db_column": "asin",
+      "amazon_header": "asin",
+      "type": "str"
+    },
+    {
+      "db_column": "condition_type",
+      "amazon_header": "condition-type",
+      "type": "str"
+    },
+    {
+      "db_column": "country",
+      "amazon_header": "country",
+      "type": "str",
+      "values": [
+        "GB",
+        "DE",
+        "FR",
+        "IT",
+        "ES",
+        "PL",
+        "NL",
+        "BE",
+        "SE",
+        "IE",
+        "US",
+        "CA",
+        "MX"
+      ]
+    },
+    {
+      "db_column": "quantity_for_local_fulfillment",
+      "amazon_header": "quantity-for-local-fulfillment",
+      "type": "int"
+    },
+    {
+      "db_column": "snapshot_date",
+      "amazon_header": "(injected by ingest worker)",
+      "type": "date"
+    }
   ],
   "example_query": {
     "store": "novaStore-UK",
-    "tables": ["rpt_get_afn_inventory_data_by_country"],
+    "tables": [
+      "rpt_get_afn_inventory_data_by_country"
+    ],
     "columns": [
       "rpt_get_afn_inventory_data_by_country.seller_sku",
       "rpt_get_afn_inventory_data_by_country.country",
       "rpt_get_afn_inventory_data_by_country.quantity_for_local_fulfillment"
     ],
     "filters": [
-      {"column": "rpt_get_afn_inventory_data_by_country.country", "op": "eq", "value": "GB"}
+      {
+        "column": "rpt_get_afn_inventory_data_by_country.country",
+        "op": "eq",
+        "value": "GB"
+      }
     ],
-    "order_by": [{"column": "rpt_get_afn_inventory_data_by_country.quantity_for_local_fulfillment", "dir": "desc"}],
+    "order_by": [
+      {
+        "column": "rpt_get_afn_inventory_data_by_country.quantity_for_local_fulfillment",
+        "dir": "desc"
+      }
+    ],
     "limit": 50,
     "report_date": "latest"
   }
