@@ -56,11 +56,13 @@
       "rpt_dk_sales_traffic_by_asin.unit_session_percentage",
       "rpt_dk_sales_traffic_by_asin.buy_box_percentage"
     ],
-    "filters": [],
+    "filters": [
+      {"column": "rpt_dk_sales_traffic_by_asin.date", "op": "gte", "value": "2026-06-01"}
+    ],
     "order_by": [
       {"column": "rpt_dk_sales_traffic_by_asin.date", "dir": "desc"}
     ],
     "limit": 100,
-    "report_date": "latest"
+    "report_date": "all"
   }
 }
