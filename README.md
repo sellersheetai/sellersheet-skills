@@ -4,7 +4,7 @@
 
 **Author**: [sellersheetai.com](https://sellersheetai.com)
 **License**: Apache-2.0
-**Latest release**: v0.10.2 ([changelog](./CHANGELOG.md))
+**Latest release**: v0.11.0 ([changelog](./CHANGELOG.md))
 
 ## What's in here
 
@@ -40,7 +40,7 @@ Before installing, confirm:
 
 1. **A SellerSheet account** at [sellersheetai.com](https://sellersheetai.com).
 2. **At least one Amazon store connected** in your SellerSheet workspace.
-3. **The SellerSheet MCP server registered in your agent.** It's a hosted remote server at `https://sellersheetai.com/mcp` — nothing to install locally. OAuth clients (Claude Desktop connectors, `codex mcp add`) need no key; other clients use an API key from [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → **MCP & API keys** → **Create Key**. Installing this plugin does **not** register the MCP server — skills and MCP are two independent steps. See [docs/setup-mcp.md](./docs/setup-mcp.md).
+3. **The SellerSheet MCP server connected in your agent.** It's a hosted remote server at `https://sellersheetai.com/mcp` — nothing to install locally. **Plugin installs (Claude Code, Codex) register it automatically** — just sign in via OAuth on first use, no API key. Agents without a plugin system register it manually (OAuth connectors, or an API key from [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → **MCP & API keys** → **Create Key**). See [docs/setup-mcp.md](./docs/setup-mcp.md).
 
 For the dashboard skill specifically, if you want PPC tabs to populate with real data, the connected store needs **Amazon Advertising profile access** — [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → My Stores → **Authorize Ads** on the store's row. Without it, ad-related sections render as scaffolds.
 
@@ -53,25 +53,24 @@ For the dashboard skill specifically, if you want PPC tabs to populate with real
 /plugin install sellersheet-skills@sellersheet-marketplace
 ```
 
-This installs the full skill bundle (the eight skills in the table above plus `sellersheet-shared`) as one plugin. Then register the MCP server (separate step):
-
-```bash
-claude mcp add-json sellersheet '{"type":"http","url":"https://sellersheetai.com/mcp","headers":{"Authorization":"Bearer YOUR_API_KEY"}}'
-```
+This installs everything in one step: the full skill bundle (the eight skills in the table above plus `sellersheet-shared`) **and the SellerSheet MCP server** — the plugin bundles a keyless remote-HTTP `.mcp.json`, so the server registers automatically. Authenticate once: run `/mcp`, pick `sellersheet`, and sign in via the browser (OAuth — no API key).
 
 ### Codex CLI / ChatGPT desktop
 
-Codex reads the same plugin marketplace format — one repo serves both:
+Codex reads the same plugin marketplace format — one repo, one install, skills + MCP:
 
 ```bash
 codex plugin marketplace add sellersheetai/sellersheet-skills
 codex plugin add sellersheet-skills@sellersheet-marketplace
+codex mcp login sellersheet     # browser OAuth — no API key
 ```
 
-Then register the MCP server — one command, no API key (a browser window opens for OAuth):
+### OpenClaw
+
+OpenClaw [accepts the Claude/Codex plugin layout as a compatible bundle](https://docs.openclaw.ai/tools/plugin):
 
 ```bash
-codex mcp add sellersheet --url https://sellersheetai.com/mcp
+openclaw plugins install git:github.com/sellersheetai/sellersheet-skills
 ```
 
 ### Claude Desktop
@@ -170,7 +169,7 @@ Full mechanism: [docs/auto-update.md](./docs/auto-update.md).
 
 | Plugin release | SellerSheet MCP minimum | Agent compatibility |
 |---|---|---|
-| v0.10.x | 2025-Q4 build | Claude Code 1.0+, Claude Desktop 0.10+, Codex CLI any, Gemini CLI 0.5+, Antigravity any |
+| v0.11.x | 2025-Q4 build | Claude Code 1.0+, Claude Desktop 0.10+, Codex CLI any, Gemini CLI 0.5+, Antigravity any |
 
 The plugin ships as one bundle — all skills release together at the plugin version. Each `SKILL.md` frontmatter `version:` mirrors `.claude-plugin/plugin.json`.
 

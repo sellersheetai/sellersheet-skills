@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "sellersheet": {
+      "type": "http",
+      "url": "https://sellersheetai.com/mcp"
+    }
+  }
+}

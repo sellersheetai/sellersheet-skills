@@ -1,7 +1,7 @@
 ---
 name: amazon-ads
 description: Guide for managing Amazon Advertising (SP, SB, SD) using SellerSheet MCP tools. Use when working with Amazon Ads campaigns, ad groups, keywords, targets, bids, budgets, bulk creation, negative keywords, ad performance data, bulk exports, change history, account management, invoices, or validation configs.
-version: 0.10.2
+version: 0.11.0
 ---
 
 # Amazon Ads — SellerSheet MCP Guide

@@ -4,32 +4,27 @@ Codex reads the same plugin marketplace format as Claude Code (`.claude-plugin/m
 
 ## Prerequisites
 
-- **The `codex` command on your PATH.** The ChatGPT desktop app bundles Codex but does
-  NOT expose the command — install the CLI first if `codex` says "command not found":
-  `npm i -g @openai/codex` (or `brew install codex`). CLI and desktop app share the same
-  `~/.codex` config, so anything you add via CLI shows up in the desktop app.
-  (The desktop UI can add MCP servers under Settings → Plugins → MCPs, but it has no way
-  to add third-party plugin marketplaces — Step 1 below needs the CLI.)
-- A SellerSheet account with at least one Amazon store connected — no API key needed for the OAuth path below
+- Codex CLI (`npm i -g @openai/codex`) — shares `~/.codex` with the ChatGPT desktop app
+- A SellerSheet account with at least one Amazon store connected — no API key needed
 
-## Step 1: Install the skills (plugin)
+## Step 1: Install the plugin (skills + MCP in one)
 
 ```bash
 codex plugin marketplace add sellersheetai/sellersheet-skills
 codex plugin add sellersheet-skills@sellersheet-marketplace
 ```
 
-Verify with `codex plugin list` — you should see `sellersheet-skills@sellersheet-marketplace  installed, enabled`.
+The plugin bundles the SellerSheet MCP server (keyless remote-HTTP `.mcp.json`), so
+`codex mcp list` now shows `sellersheet | enabled | Not logged in` with no extra step.
+Verify skills with `codex plugin list` — `sellersheet-skills@sellersheet-marketplace  installed, enabled`.
 
-## Step 2: Add the MCP server
-
-One command — no API key, no config editing:
+## Step 2: Sign in
 
 ```bash
-codex mcp add sellersheet --url https://sellersheetai.com/mcp
+codex mcp login sellersheet
 ```
 
-A browser window opens — sign in to SellerSheet and approve. `codex mcp list` should then show `sellersheet | enabled | Auth: OAuth`.
+A browser window opens — sign in to SellerSheet and approve. No API key.
 
 <details>
 <summary>Alternative: Bearer key instead of OAuth</summary>

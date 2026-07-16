@@ -1,7 +1,7 @@
 ---
 name: data-kiosk
 description: Use when authoring or running an Amazon SP-API Data Kiosk GraphQL query — Sales & Traffic (by date / by ASIN / trends), Economics (per-unit fees, cost, margin, preview, simulation), or Vendor Analytics (manufacturing/sourcing view). Provides the exact versioned root query type, dataset fields, required arguments, enums (DateGranularity/AsinGranularity), and per-field @resultRetention so you write a valid query instead of guessing. NOT for the synced rpt_dk_* warehouse (use report-data).
-version: 0.10.2
+version: 0.11.0
 ---
 
 # Data Kiosk

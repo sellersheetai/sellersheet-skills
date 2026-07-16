@@ -3,7 +3,6 @@
 ## Prerequisites
 
 - Claude Code 1.0+
-- A SellerSheet API key from [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → **MCP & API keys** → **Create Key**
 - At least one Amazon store connected at [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard)
 
 ## Install (plugin marketplace)
@@ -15,13 +14,14 @@
 
 `sellersheet-skills` is a single plugin that bundles every skill in the repo (see the [README skill table](../README.md#whats-in-here)). There is no per-skill install; one `/plugin install` gets the whole bundle.
 
-The plugin installs **skills only** — it does **not** register the MCP server (versions ≤0.5.0 bundled a broken `.mcp.json`; it was removed in 0.5.1). Register the MCP server as a separate step:
+Since v0.11.0 the plugin also bundles the **SellerSheet MCP server** (a keyless remote-HTTP
+`.mcp.json` — nothing runs locally), so one install gets skills + MCP. Authenticate once:
+run `/mcp`, select the `sellersheet` server (listed as `plugin:sellersheet-skills:sellersheet`),
+and sign in via the browser OAuth prompt. No API key needed.
 
-```bash
-claude mcp add-json sellersheet '{"type":"http","url":"https://sellersheetai.com/mcp","headers":{"Authorization":"Bearer YOUR_API_KEY"}}'
-```
-
-SellerSheet MCP is a hosted remote server — nothing runs locally. The dashboard's **Use key** dialog renders this command with your key filled in.
+If you already added a `sellersheet` MCP server manually, yours wins — the plugin's copy is
+shadowed automatically, nothing breaks. Prefer a static API key instead of OAuth? Keep your
+manual entry (dashboard → **MCP & API keys** → **Use key** renders it with the key filled in).
 
 ### Keep it current
 
@@ -56,6 +56,6 @@ Claude Code should invoke `sellersheet-dashboard` via the `Skill` tool.
 ## Troubleshooting
 
 - **Skill not appearing**: restart Claude Code or run `/reload-plugins`. The skill index is built on startup.
-- **`sellersheet` MCP not connected**: the plugin doesn't register it — run the `claude mcp add-json` command above, then restart Claude Code.
+- **`sellersheet` MCP shows Needs authentication**: run `/mcp`, select it, complete the browser sign-in.
 - **`get_user_context` returns "no stores"**: connect a store at [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard).
 - **PPC tabs are empty**: authorize Amazon Advertising profile access at [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → My Stores → the **Authorize Ads** button on the store's row.

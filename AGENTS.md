@@ -57,9 +57,12 @@ then release via promote.sh.
 - Claude Code + Codex user docs are **plugin-only** (no install.sh/manual-copy paths for
   those two agents). `npx skills`/`install.sh` serve agents without a plugin system.
 - No real store names, seller IDs, or ASINs — lint's privacy scan enforces the list.
+- The plugin bundles a **keyless remote-HTTP `.mcp.json`** (v0.11.0+) — one install =
+  skills + MCP for Claude Code and Codex; lint enforces it stays `type: http`, the exact
+  hosted URL, keyless, and never a local `command` (the 0.5.0 stdio bundle broke every load).
+  Agents WITHOUT a plugin system still register MCP manually per `docs/setup-mcp.md`.
 - Stale facts lint guards against (don't reintroduce): `@sellersheet/mcp-server` (npm 404),
   "Settings → API" (page doesn't exist; it's **MCP & API keys → Create Key**),
-  ".mcp.json auto-registers MCP" (dead since 0.5.1 — MCP and skills are two separate steps),
   "Stores → Connect Advertising" (real UI: My Stores → **Authorize Ads**).
 
 ## Compatibility smoke tests (run after structural changes)

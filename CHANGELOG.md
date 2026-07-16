@@ -12,6 +12,28 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.11.0] — 2026-07-16
+
+### Added
+
+- **The plugin now bundles the SellerSheet MCP server.** A keyless remote-HTTP `.mcp.json`
+  (`https://sellersheetai.com/mcp`) ships at the plugin root, so on Claude Code and Codex
+  **one plugin install delivers skills + MCP** — authenticate once via browser OAuth
+  (`/mcp` in Claude Code; `codex mcp login sellersheet` in Codex), no API key. A
+  manually-added `sellersheet` server shadows the plugin copy on both agents, so existing
+  setups keep working unchanged. This restores what ≤0.5.0 attempted with a broken *local
+  stdio* bundle (removed in 0.5.1) — the difference is nothing runs locally. lint now
+  enforces the bundle contract: `type: http`, the exact hosted URL, keyless, never a
+  local `command`.
+
+### Documentation
+
+- Install docs rewritten plugin-first: Claude Code and Codex get the one-step story
+  (install → sign in); the manual per-agent MCP table in `setup-mcp.md` now serves agents
+  without a plugin system. OpenClaw added to the README install section (its plugin
+  system accepts the Claude/Codex bundle layout). Codex prerequisites trimmed to a
+  one-liner per operator direction.
+
 ## [0.10.2] — 2026-07-16
 
 ### Added

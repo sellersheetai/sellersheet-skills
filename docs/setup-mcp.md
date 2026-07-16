@@ -25,8 +25,8 @@ Per-agent registration:
 | Agent | How to register |
 |---|---|
 | Claude Desktop | Settings → Connectors → **Add custom connector** → URL `https://sellersheetai.com/mcp` (OAuth — no key needed) |
-| Claude Code | `claude mcp add-json sellersheet '{"type":"http","url":"https://sellersheetai.com/mcp","headers":{"Authorization":"Bearer YOUR_API_KEY"}}'` |
-| Codex CLI / ChatGPT desktop | `codex mcp add sellersheet --url https://sellersheetai.com/mcp` — a browser window opens for OAuth on first use; **no key needed**. (Manual `config.toml`: the header field is `http_headers`, not `headers`.) |
+| Claude Code | **Automatic with the plugin** — authenticate via `/mcp`. Bearer alternative: `claude mcp add-json sellersheet '{"type":"http","url":"https://sellersheetai.com/mcp","headers":{"Authorization":"Bearer YOUR_API_KEY"}}'` |
+| Codex CLI / ChatGPT desktop | **Automatic with the plugin** — then `codex mcp login sellersheet`. Manual alternative: `codex mcp add sellersheet --url https://sellersheetai.com/mcp` (config.toml field is `http_headers`, not `headers`). |
 | Cursor | `~/.cursor/mcp.json` — the JSON block above without the `"type"` field |
 | Windsurf / Antigravity | Same block but with `"serverUrl"` instead of `"url"` |
 | Gemini CLI | `~/.gemini/settings.json` — `httpUrl` + `headers` |
@@ -34,7 +34,7 @@ Per-agent registration:
 
 The dashboard's **Use key** dialog ([sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → MCP & API keys) renders a ready-to-paste snippet for each of these clients with your key filled in.
 
-> **Note:** installing the `sellersheet-skills` plugin does **not** register the MCP server — MCP and skills are two independent steps, in every agent. (Versions ≤0.5.0 bundled a broken `.mcp.json`; it was removed in 0.5.1.)
+> **Plugin users skip the table above.** Since v0.11.0 the `sellersheet-skills` plugin (Claude Code, Codex) bundles a keyless remote-HTTP `.mcp.json`, so installing the plugin registers the `sellersheet` server automatically — just authenticate on first use (`/mcp` in Claude Code, `codex mcp login sellersheet` in Codex). A manually-added server with the same name shadows the plugin copy, so existing setups keep working unchanged. The manual table serves agents without a plugin system. (History: ≤0.5.0 bundled a broken *local stdio* server, removed in 0.5.1; v0.11.0 restores the bundle as *remote HTTP + OAuth* — nothing runs locally.)
 
 ## After installing MCP — install the skills
 
