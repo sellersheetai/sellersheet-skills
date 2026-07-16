@@ -12,6 +12,28 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.10.2] — 2026-07-16
+
+### Added
+
+- **`sellersheet-sheets`** — the Codex-spreadsheets-style **local build → one-shot import**
+  pipeline is now a first-class build route (`reference/local-build-import.md`): heavy
+  net-new builds author the whole workbook locally with openpyxl and land it as a native
+  Google Sheet via a single `start_drive_upload(convertTo=…)` call (optionally
+  `copy_sheet_tab` into an existing workbook, `_raw_*` tabs first), instead of dozens of
+  MCP round-trips. Includes the verified fidelity list (`=SQL()` verbatim, conditional
+  formats applied, charts, dropdowns, hidden tabs) and the hard-won gotchas (explicit
+  Arial 10 + column widths, DataBarRule dropped, `SQL()` ranges as args, upload
+  Content-Type match). Held until the `convertTo` server support reached production —
+  it deployed 2026-07-16. Hosted agents without a filesystem keep the MCP workflow.
+
+### Fixed
+
+- **`image-gen`** — `reference/aplus-modules.md` referenced the retired
+  `submit_aplus_document` tool; the approval submission tool is
+  `post_content_document_approval_submission` (recovered from the 2026-06-25 operationId
+  reconciliation that never crossed into this repo).
+
 ## [0.10.1] — 2026-07-16
 
 ### Fixed

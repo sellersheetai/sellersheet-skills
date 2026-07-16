@@ -1,7 +1,7 @@
 ---
 name: sellersheet-sheets
 description: Use whenever Google Sheets is the deliverable surface and SellerSheet MCP is the tool for sheet I/O. Reads, writes, formats, builds reports, dashboards, financial models, and live-data tables in Google Sheets via SellerSheet MCP endpoints (read_sheet, write_sheet, write_sheet_formula, format_sheet_range, set_sheet_number_format, add_sheet_chart, add_sheet_conditional_format, add_sheet_dropdown, etc.). Trigger when the user references a docs.google.com/spreadsheets URL, asks to publish output to a Google Sheet, builds anything in the SellerSheet workbook ecosystem, needs the live SQL() spill + image-thumbnail patterns, or builds an operator action surface (filter rows, Amazon enum dropdowns, status chips). Do NOT trigger for local .xlsx files — that's a different skill. This skill is self-contained — no need to load xlsx or any other sheet skill alongside; xlsx-style conventions (financial color coding, number formats, formula best practices) are adapted inline.
-version: 0.10.1
+version: 0.10.2
 ---
 
 # SellerSheet Google Sheets — via MCP
@@ -93,7 +93,7 @@ must land invisibly inside its conventions:
 3. Appending rows/columns to a table? Extend what the table already carries: fill the new cells' formulas from the neighboring pattern, and re-anchor conditional formats, dropdowns, and the basic filter to cover the added range.
 4. Never restyle beyond the requested range; leave unrelated pre-existing errors in place unless they break your change or the user asked for an audit (note them in the reply instead).
 
-**Build (new tab / new workbook).** The workflow below + Final review gate. Brand defaults apply in full.
+**Build (new tab / new workbook).** The workflow below + Final review gate. Brand defaults apply in full. **Route by size first:** a net-new workbook or heavy multi-tab build (more than ~15 write/format calls) with a local shell available → build the `.xlsx` locally and import it in ONE `start_drive_upload(convertTo=…)` call — see `reference/local-build-import.md`. Single-tab / light builds, or no local filesystem → the MCP workflow below.
 
 ## Build workflow
 
