@@ -256,6 +256,12 @@
       "amazon_header": "(unrecognized columns fall back here)",
       "type": "json",
       "note": "Documented opt-outs (2026-07-11): kindleEditionNormalizedPagesRead14d / kindleEditionNormalizedPagesRoyalties14d — KDP-book metrics Amazon ships on every row; no SellerSheet store sells Kindle content, deliberately not promoted."
+    },
+    {
+      "db_column": "top_of_search_impression_share",
+      "amazon_header": "topOfSearchImpressionShare",
+      "type": "decimal",
+      "note": "requested since 2026-07-15 (live-probe verified — no published SP sample lists it); NULL on earlier rows"
     }
   ],
   "example_query": {

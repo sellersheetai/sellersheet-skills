@@ -6,7 +6,7 @@
 - A SellerSheet API key from [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → **MCP & API keys** → **Create Key**
 - At least one Amazon store connected at [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard)
 
-## Option A — Plugin marketplace (recommended)
+## Install (plugin marketplace)
 
 ```
 /plugin marketplace add sellersheetai/sellersheet-skills
@@ -40,21 +40,6 @@ Third-party marketplaces don't auto-update by default. Enable it once:
 ```
 
 Or update on demand: `/plugin marketplace update sellersheet-marketplace` then `/plugin update sellersheet-skills`. Full detail in [auto-update.md](./auto-update.md).
-
-## Option B — Direct install (no marketplace)
-
-```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh)
-```
-
-This auto-detects `~/.claude/skills/` and copies the skill folders into it. It does **not** register the MCP server — add it yourself per [setup-mcp.md](./setup-mcp.md). Restart Claude Code to pick up the new skills.
-
-## Option C — Manual install
-
-```bash
-git clone https://github.com/sellersheetai/sellersheet-skills.git ~/projects/sellersheet-skills
-cp -r ~/projects/sellersheet-skills/skills/* ~/.claude/skills/
-```
 
 ## Verify
 

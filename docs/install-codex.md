@@ -55,11 +55,6 @@ Ask Codex: *"Show me my SellerSheet user context."* It should call `get_user_con
 codex plugin marketplace upgrade sellersheet-marketplace
 ```
 
-## Alternative installs (skills only, no plugin system)
-
-- [`npx skills`](./install-npx-skills.md): `npx skills add sellersheetai/sellersheet-skills -a codex`
-- No-Node fallback: `bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --target codex`
-
 ## Troubleshooting
 
 - **`get_user_context` not found**: the MCP server isn't registered — re-run Step 2, then start a new session.

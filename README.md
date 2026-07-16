@@ -105,7 +105,7 @@ Skills are a separate artifact from the MCP server — you still register the Se
 bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --target <agent>
 ```
 
-Where `<agent>` is `codex`, `gemini`, or `antigravity`. The install script auto-detects the agent's skill directory; pass `--path <dir>` to override.
+Where `<agent>` is `gemini` or `antigravity`. (Claude Code and Codex users: use the plugin marketplace above instead — it has built-in updates.) The install script auto-detects the agent's skill directory; pass `--path <dir>` to override.
 
 ### Openclaw, Hermes, custom agents
 
