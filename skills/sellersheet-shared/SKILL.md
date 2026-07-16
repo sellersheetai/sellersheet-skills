@@ -2,7 +2,7 @@
 name: sellersheet-shared
 description: >-
   Common conventions for ALL SellerSheet skills — read this FIRST when running any other skill from this bundle (sellersheet-sheets, sellersheet-dashboard, report-data, amazon-ads, amazon-report, data-kiosk, noon-report-data, image-gen). Contains the MCP preflight protocol (get_user_context → version check → canUseMcp), store reference rules (name-country format, multi-marketplace stores), the MCP response contract (always relay notification.message + human_action), and setup/troubleshooting. Not a standalone skill — it has no workflows of its own.
-version: 0.10.0
+version: 0.10.1
 ---
 
 # sellersheet-shared — common conventions
@@ -25,7 +25,7 @@ account, ads profile, noon account) and domain content.
      Per-agent walkthrough: [setup-mcp.md](https://github.com/sellersheetai/sellersheet-skills/blob/main/docs/setup-mcp.md).
    - ✅ Returns a user profile → continue.
 
-2. **Version check.** `get_user_context` returns `data.skills_catalog`. Compare `skills_catalog.skills[name=<the skill you are running>].latest_version` to that skill's frontmatter `version:`. Older → prompt the user with `data.skills_catalog.install_commands.update`. `skills_catalog` missing (older MCP build) → skip silently.
+2. **Version check.** `get_user_context` returns `data.skills_update` (server-computed). Compare `skills_update.latest` to this bundle's frontmatter `version:` — the whole bundle shares one version, so one comparison covers every skill. If yours is older, tell the user and give them the update command **matching their agent** from `skills_update.commands`: `claude-code-update` (Claude Code), `codex-update` (Codex / ChatGPT desktop), `other-update` (npx-skills agents). Never suggest `install.sh` to a plugin user — it creates a duplicate skill source. Older MCP builds without `skills_update`: fall back to `data.skills_catalog.skills[].latest_version`; missing both → skip silently.
 
 3. **Permissions.** `data.canUseMcp` must be true. If false, surface `data.message` (the blocking issues) and stop.
 
