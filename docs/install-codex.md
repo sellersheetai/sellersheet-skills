@@ -4,7 +4,12 @@ Codex reads the same plugin marketplace format as Claude Code (`.claude-plugin/m
 
 ## Prerequisites
 
-- Codex CLI (standalone, or the one bundled in the ChatGPT desktop app)
+- **The `codex` command on your PATH.** The ChatGPT desktop app bundles Codex but does
+  NOT expose the command — install the CLI first if `codex` says "command not found":
+  `npm i -g @openai/codex` (or `brew install codex`). CLI and desktop app share the same
+  `~/.codex` config, so anything you add via CLI shows up in the desktop app.
+  (The desktop UI can add MCP servers under Settings → Plugins → MCPs, but it has no way
+  to add third-party plugin marketplaces — Step 1 below needs the CLI.)
 - A SellerSheet account with at least one Amazon store connected — no API key needed for the OAuth path below
 
 ## Step 1: Install the skills (plugin)
