@@ -16,7 +16,7 @@ command -v jq >/dev/null || { echo "jq required (brew install jq / apt install j
 
 # ---------- 1. manifests are valid JSON ----------
 log "Validating JSON manifests..."
-for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json versions.json mcp/sellersheet.json; do
+for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json versions.json mcp/sellersheet.json .mcp.json; do
   jq empty "$f" 2>/dev/null || err "$f is not valid JSON"
 done
 
@@ -76,7 +76,6 @@ log "Stale-string guard..."
 declare -a FORBIDDEN=(
   "@sellersheet/mcp-server"                # npm package is a 404, removed 0.5.1
   "Settings → API"                         # dashboard page does not exist; real path: MCP & API keys
-  "auto-registers the SellerSheet MCP"     # .mcp.json auto-register died in 0.5.1
   "Stores → Connect Advertising"           # real UI: My Stores → Authorize Ads
 )
 for pat in "${FORBIDDEN[@]}"; do
@@ -126,6 +125,13 @@ for k in claude-code-update codex-update; do
 done
 jq -e '[.skills[] | select((.description // "") == "")] | length == 0' versions.json >/dev/null \
   || err "versions.json has a skill with an empty description"
+
+# ---------- 4c. plugin-bundled MCP contract ----------
+log "Checking plugin .mcp.json contract..."
+[[ "$(jq -r '.mcpServers.sellersheet.type' .mcp.json)" == "http" ]]  || err ".mcp.json sellersheet type must be http (remote — never a local command)"
+[[ "$(jq -r '.mcpServers.sellersheet.url' .mcp.json)" == "https://sellersheetai.com/mcp" ]] || err ".mcp.json sellersheet url drifted"
+[[ "$(jq -r '.mcpServers.sellersheet | has("command")' .mcp.json)" == "false" ]] || err ".mcp.json must not bundle a local command (the 0.5.0 lesson)"
+grep -qi "bearer\|api_key\|token" .mcp.json && err ".mcp.json must stay keyless (OAuth on first use)" || true
 
 # ---------- 5. privacy + ASIN scan ----------
 log "Privacy + ASIN scan..."
