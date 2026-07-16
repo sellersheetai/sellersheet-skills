@@ -22,3 +22,7 @@
 *.local.json
 # Maintainer-only tooling (lives at repo root, not shipped publicly)
 /scripts/
+
+# maintainer/agent working notes — local only, never published
+/AGENTS.md
+/CLAUDE.md
