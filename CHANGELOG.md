@@ -12,6 +12,26 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.10.1] — 2026-07-16
+
+### Fixed
+
+- **`versions.json` `install_commands` caught up to the plugin-only story** — the catalog
+  MCP serves via `get_user_context.skills_catalog` was steering plugin users at
+  `install.sh --update`, which installs a second skill copy next to the plugin (the exact
+  dual-source mess the plugin path exists to avoid), and had no Codex entry at all. Now:
+  complete per-agent pairs — `claude-code`/`claude-code-update`,
+  `codex`/`codex-update`, `other`/`other-update` (npx skills) — and `update` is a routing
+  note instead of an `install.sh` command.
+- **`sellersheet-shared`** — preflight step 2 now uses the server-computed
+  `data.skills_update` verdict (one bundle-level comparison, per-agent update commands)
+  instead of teaching agents to diff `skills_catalog` per-skill; explicitly forbids
+  suggesting `install.sh` to plugin users. Falls back to `skills_catalog` on older MCP
+  builds.
+- **lint** — new skills_catalog contract checks: all seven `install_commands` keys must
+  exist, update commands must not reference `install.sh`, every catalog skill needs a
+  non-empty description.
+
 ## [0.10.0] — 2026-07-16
 
 > This release was originally tagged with a hand-edited `plugin.json` bump only; the full

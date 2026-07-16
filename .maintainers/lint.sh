@@ -114,6 +114,19 @@ vj=$(jq -r '.skills[].name' versions.json | sort | tr '\n' ' ')
 fs=$(ls -1 skills/ | sort | tr '\n' ' ')
 [[ "$vj" == "$fs" ]] || err "versions.json skills ($vj) != skills/ folder ($fs)"
 
+# ---------- 4b. skills_catalog contract (consumed by MCP get_user_context) ----------
+log "Checking skills_catalog contract..."
+for k in claude-code claude-code-update codex codex-update other other-update update; do
+  v=$(jq -r --arg k "$k" '.install_commands[$k] // empty' versions.json)
+  [[ -n "$v" ]] || err "versions.json install_commands missing '$k'"
+done
+for k in claude-code-update codex-update; do
+  v=$(jq -r --arg k "$k" '.install_commands[$k] // empty' versions.json)
+  [[ "$v" != *install.sh* ]] || err "install_commands.$k points plugin users at install.sh (duplicate-source hazard)"
+done
+jq -e '[.skills[] | select((.description // "") == "")] | length == 0' versions.json >/dev/null \
+  || err "versions.json has a skill with an empty description"
+
 # ---------- 5. privacy + ASIN scan ----------
 log "Privacy + ASIN scan..."
 PAT='(\bSS-[A-Z]{2}\b|\bTJ-[A-Z]{2}\b|\bSML-[A-Z]{2}\b|\bSmilee\b|\bYumLock\b|\bSpireHues\b|sellersheet0430|sellersheet-bot@|tjme-amz|test\.sellersheetai|/home/claude/listing-optimizer-workspace)'
