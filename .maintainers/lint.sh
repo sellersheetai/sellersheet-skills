@@ -127,11 +127,15 @@ jq -e '[.skills[] | select((.description // "") == "")] | length == 0' versions.
   || err "versions.json has a skill with an empty description"
 
 # ---------- 4c. plugin-bundled MCP contract ----------
+# Flat shape (no mcpServers wrapper) — the shape Claude Code and Codex example
+# plugins use; both loaders verified live 2026-07-16 (wrapped also parses, but
+# flat is the convention we standardize on).
 log "Checking plugin .mcp.json contract..."
-[[ "$(jq -r '.mcpServers.sellersheet.type' .mcp.json)" == "http" ]]  || err ".mcp.json sellersheet type must be http (remote — never a local command)"
-[[ "$(jq -r '.mcpServers.sellersheet.url' .mcp.json)" == "https://sellersheetai.com/mcp" ]] || err ".mcp.json sellersheet url drifted"
-[[ "$(jq -r '.mcpServers.sellersheet | has("command")' .mcp.json)" == "false" ]] || err ".mcp.json must not bundle a local command (the 0.5.0 lesson)"
-grep -qi "bearer\|api_key\|token" .mcp.json && err ".mcp.json must stay keyless (OAuth on first use)" || true
+[[ "$(jq -r '.sellersheet.type' .mcp.json)" == "http" ]]  || err ".mcp.json sellersheet type must be http (remote — never a local command)"
+[[ "$(jq -r '.sellersheet.url' .mcp.json)" == "https://sellersheetai.com/mcp" ]] || err ".mcp.json sellersheet url drifted"
+[[ "$(jq -r '.sellersheet | has("command")' .mcp.json)" == "false" ]] || err ".mcp.json must not bundle a local command (the 0.5.0 lesson)"
+[[ "$(jq -r 'has("mcpServers")' .mcp.json)" == "false" ]] || err ".mcp.json must be the FLAT plugin shape — no mcpServers wrapper"
+grep -qiE "bearer|api_key|token" .mcp.json && err ".mcp.json must stay keyless (OAuth on first use)" || true
 
 # ---------- 5. privacy + ASIN scan ----------
 log "Privacy + ASIN scan..."
