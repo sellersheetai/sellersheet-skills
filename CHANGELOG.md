@@ -78,10 +78,6 @@ Planned for upcoming releases (under review):
 
 ## [0.10.0] — 2026-07-16
 
-> This release was originally tagged with a hand-edited `plugin.json` bump only; the full
-> version fan-out + this entry were repaired after the fact. See the new AGENTS.md release
-> protocol — releases go through `promote.sh`, never hand edits.
-
 ### Changed
 
 - **`sellersheet-sheets`** — new `reference/charts.md` (`add_sheet_chart` contract: column→series,

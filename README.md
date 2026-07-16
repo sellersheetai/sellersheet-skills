@@ -67,11 +67,18 @@ codex mcp login sellersheet     # browser OAuth — no API key
 
 ### OpenClaw
 
-OpenClaw [accepts the Claude/Codex plugin layout as a compatible bundle](https://docs.openclaw.ai/tools/plugin):
+OpenClaw [accepts the Claude/Codex plugin layout as a compatible bundle](https://docs.openclaw.ai/tools/plugin) — the plugin delivers the skills; connect the MCP server via OpenClaw's own MCP config:
 
 ```bash
-openclaw plugins install git:github.com/sellersheetai/sellersheet-skills
+openclaw plugins install sellersheet-skills --marketplace https://github.com/sellersheetai/sellersheet-skills
+openclaw mcp set sellersheet '{"url":"https://sellersheetai.com/mcp"}'
 ```
+
+(OpenClaw's plugin-bundled MCP transport is stdio-only today, so the bundled remote server is listed but inert there — the `openclaw mcp set` line is what connects it.)
+
+### Antigravity
+
+Antigravity uses [its own plugin format](https://antigravity.google/docs/plugins) (a `plugin.json` manifest with `skills/` + `mcp_config.json`, placed under `~/.gemini/config/plugins/`), not the Claude layout — install the skills via `npx skills add sellersheetai/sellersheet-skills -a antigravity` and add the MCP server per [docs/setup-mcp.md](./docs/setup-mcp.md).
 
 ### Claude Desktop
 

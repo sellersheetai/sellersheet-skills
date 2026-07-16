@@ -16,7 +16,7 @@ cat > "$HOOK" <<'EOF'
 echo "[pre-push] running .maintainers/lint.sh ..."
 if ! "$(git rev-parse --show-toplevel)/.maintainers/lint.sh"; then
   echo ""
-  echo "[pre-push] BLOCKED — lint failed. Fix the issues (or see AGENTS.md) and retry."
+  echo "[pre-push] BLOCKED — lint failed. Fix the issues (see .maintainers/README.md) and retry."
   exit 1
 fi
 EOF
