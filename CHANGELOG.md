@@ -12,6 +12,33 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.10.0] — 2026-07-16
+
+> This release was originally tagged with a hand-edited `plugin.json` bump only; the full
+> version fan-out + this entry were repaired after the fact. See the new AGENTS.md release
+> protocol — releases go through `promote.sh`, never hand edits.
+
+### Changed
+
+- **`sellersheet-sheets`** — new `reference/charts.md` (`add_sheet_chart` contract: column→series,
+  explicit anchor, type selection, placement, server-side verification limits); SKILL.md gains
+  three request modes (answer/edit/build) with an edit-discipline recipe and an
+  identifier-coercion quick-reference; `mcp-gotchas.md` documents USER_ENTERED coercing
+  identifiers (leading-zero UPC, date-shaped SKU) — apostrophe or @ text format.
+- **`report-data`** — query semantics synced with the 2026-07-15 server hardening: strict spec
+  keys, `dir|direction`, `is_null`, NULLS LAST, registry-derived `report_date` default,
+  AUTO-OVERRIDE rule, date-grain guidance, aggregation (op/alias/having/bucketing),
+  page-1-only COUNT, offset cap, retention-horizon note. DK example queries fixed
+  (`report_date 'all'` + date filter). 5 zombie BA/S&T reference JSONs + `_meta` entries
+  removed (tables dropped server-side); `_meta.cron` synced to the 01:00–01:19 local band
+  (39 tables); vendor-truth nullable date columns declared (9 tables);
+  `rpt_sp_targets`/`rpt_sp_keywords` calibration sync (dead columns dropped, dedup notes).
+
+### Documentation
+
+- Claude Code + Codex install paths are **plugin-only** — direct `install.sh`/manual-copy
+  alternatives removed for the two agents with a plugin system.
+
 ## [0.9.0] — 2026-07-15
 
 ### Added
