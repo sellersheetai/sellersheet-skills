@@ -12,6 +12,19 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.11.1] — 2026-07-16
+
+### Changed
+
+- **`.mcp.json` standardized on the flat plugin shape** — `{"sellersheet": {...}}` with no
+  `mcpServers` wrapper, matching the Claude Code / Codex example-plugin convention. Both
+  loaders were live-verified with the flat shape (the wrapped shape also parses; flat is
+  now the enforced contract in lint).
+- OpenClaw install path corrected to the verified form
+  (`openclaw plugins install sellersheet-skills --marketplace <github url>` +
+  `openclaw mcp set sellersheet` for the hosted server) and Antigravity guidance added
+  (own plugin format — use `npx skills` for the skills).
+
 ## [0.11.0] — 2026-07-16
 
 ### Added
