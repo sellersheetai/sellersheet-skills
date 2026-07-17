@@ -7,9 +7,10 @@ version: 0.11.2
 # noon Report Data
 
 SellerSheet's reporting server ingests four noon Export-API reports on a
-twice-daily schedule into warehouse tables (`rpt_noon_*`) you query with the **same
-`query_report_data` MCP tool** you use for Amazon — just point it at a noon
-store and a `rpt_noon_*` table.
+twice-daily schedule plus a daily FBN **catalog pull** (images/titles) into
+warehouse tables (`rpt_noon_*`) you query with the **same `query_report_data`
+MCP tool** you use for Amazon — just point it at a noon store and a
+`rpt_noon_*` table.
 
 ## Prerequisites
 
@@ -44,6 +45,7 @@ to read. Single-table per call (use `joins` to add tables).
 | `rpt_noon_finance` | Transaction view (item level) | `0 4,16 * * *` (04:00, 16:00) | 14d, full re-pull | incremental (UPSERT) |
 | `rpt_noon_fbn_aging` | FBN inventory v2 aging | `0 4,16 * * *` (04:00, 16:00) | — | **snapshot** (one full picture per `snapshot_date`) |
 | `rpt_noon_product_views` | Catalog product-views & sales | `0 4,16 * * *` (04:00, 16:00) | 14d, full re-pull | incremental (UPSERT) |
+| `rpt_noon_catalog` | FBN-eligible catalog items (paginated GET, not an Export) | `0 5 * * *` (daily 05:00) | — full catalog each fire | rolling UPSERT |
 
 The 3 time-based reports re-pull their whole lookback window every run (so late
 status/finance/analytics revisions are caught), then UPSERT — no duplicates.
@@ -102,6 +104,25 @@ every row in a pull and is **not** the data date you care about.
 - **Columns:** `partner_sku`, `mp_code`, `sku_config`, `sku`, `family`, `product_type`, `product_subtype`, `brand`, `currency_code`, `product_title`, `your_visitors`, `total_visitors`, `gross_units`, `shipped_units`, `cancelled_units`, `revenue_shipped`, `buy_box_visitor_percentage`, `conversion_visitors_percentage`, **`asp_shipped`**.
 - **Gotchas:** `asp_shipped` is the **average selling PRICE** (currency amount), NOT a percent despite noon's source header. `conversion_visitors_percentage` can exceed 100 (noon's definition). Sales columns (`gross_units`/`shipped_units`/`revenue_shipped`) are sparse — many view-only rows.
 
+### `rpt_noon_catalog` — FBN-eligible catalog items (image/title lookup; PROJECT-WIDE)
+- **Source:** `GET /fbn/inbound/v1/catalog/items` (paginated JSON, ≤1000/page) — the same
+  data the GAS sidebar's "List Eligible Items" button writes to the FBN Product tab.
+  NOT an Export report: no marketplace dimension (`marketplace` is a constant `'ALL'`).
+- **Grain:** one row per catalog item. **Key:** `project_code, partner_sku, sku`.
+- **Columns:** `partner_sku` (your SKU), `sku` (noon internal SKU, e.g. `N42555217A` —
+  matches the `sku` in the other rpt_noon tables), `title`, `storage_type`
+  (`STORAGE_TYPE_UNSPECIFIED|STANDARD|OVERSIZE|BULKY`), `image_url` (nooncdn CDN URL,
+  120px variant — render directly with `=IMAGE()`).
+- **Freshness semantics:** rolling UPSERT — every fire re-pulls the full catalog and
+  refreshes `report_date` on rows it sees. **Current catalog = `report_date = MAX(report_date)`**;
+  a row with an older `report_date` was delisted/removed from FBN eligibility.
+- **THE image pattern (mirrors the Amazon catalog pattern):** when building a noon sheet
+  with thumbnails, query this table for `sku, partner_sku, title, image_url`, write it to a
+  hidden `_raw_noon_catalog` helper tab, then put the thumbnail in column A of the visible
+  tab via the MAP/ARRAYFORMULA `IMAGE()` join keyed on `sku` — with IDENTICAL
+  WHERE/ORDER BY/LIMIT as the data spill so images stay row-aligned
+  (see `sellersheet-sheets` → `reference/image-pattern.md`).
+
 ---
 
 ## Example queries
@@ -140,6 +161,14 @@ Cancelled order items in SA this month:
               {"column":"rpt_noon_orders.item_status","op":"eq","value":"cancelled"},
               {"column":"rpt_noon_orders.order_placed_at","op":"gte","value":"2026-06-01"}],
   "report_date": "all" }
+```
+
+Catalog image/title lookup for a set of SKUs (thumbnail helper tab):
+```json
+{ "store": "myStore", "tables": ["rpt_noon_catalog"],
+  "columns": ["rpt_noon_catalog.partner_sku","rpt_noon_catalog.sku","rpt_noon_catalog.title","rpt_noon_catalog.storage_type","rpt_noon_catalog.image_url"],
+  "report_date": "all", "limit": 500 }
+// then in the sheet: =IMAGE(VLOOKUP($C2,'_raw_noon_catalog'!B:E,4,FALSE)) style join on sku
 ```
 
 Top SKUs by visitors (product views) in AE for a date:
