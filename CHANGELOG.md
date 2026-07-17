@@ -12,6 +12,17 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.11.2] — 2026-07-17
+
+### Changed
+
+- **`sellersheet-sheets`: the live tool schema is the `convertTo` availability oracle** —
+  the route-by-size rule and `reference/local-build-import.md` now instruct agents to
+  verify the one-call xlsx→native-Sheet import by loading the live `start_drive_upload`
+  docstring, never from memory or prior-session notes. A wrong "unavailable" call costs
+  ~50 sequential write/format round-trips (~25 min vs ~4 min via import, measured on a
+  real 2026-07-17 build).
+
 ## [0.11.1] — 2026-07-16
 
 ### Changed
