@@ -5,15 +5,15 @@
     "schema_via": "get_table_schema",
     "scope": "project_code (owner-only; resolved from connected noon_accounts)",
     "marketplace_auto_filter": false,
-    "cadence": "twice daily (UTC): orders 03/15, finance 04/16, fbn_aging 06/18, product_views 08/20",
-    "notes": "Marketplace is NOT auto-injected from the store suffix for noon \u2014 add an explicit filter. orders+finance are project-wide single reports sliced per-row (orders: market_place_country_code; finance: marketplace derived from contract_title NOON-XX). fbn_aging+product_views are exported per marketplace. fbn_aging key includes partner_barcode (a sku has many barcodes; sku may be empty with partner_barcode=UNIDENTIFIED)."
+    "cadence": "exports twice daily 04:00+16:00 UTC (all four: 0 4,16 * * *); catalog daily 05:00 UTC",
+    "notes": "Marketplace is NOT auto-injected from the store suffix for noon — add an explicit filter. orders+finance are project-wide single reports sliced per-row (orders: market_place_country_code; finance: marketplace derived from contract_title NOON-XX). fbn_aging+product_views are exported per marketplace. fbn_aging key includes partner_barcode (a sku has many barcodes; sku may be empty with partner_barcode=UNIDENTIFIED). rpt_noon_catalog is a paginated JSON GET (not an Export) — project-wide, marketplace=ALL."
   },
   "tables": [
     {
       "table": "rpt_noon_orders",
       "report_type": "NOON_ORDERS_EXPORT",
       "noon_category": "noon_noonoms_ordersexport",
-      "cron_utc": "0 3,15 * * *",
+      "cron_utc": "0 4,16 * * *",
       "is_snapshot": false,
       "strategy": "noon_export",
       "lookback_days": 7,
@@ -44,13 +44,13 @@
         "item_nr",
         "transaction_type"
       ],
-      "description": "Item-level finance transactions, all money VAT-inclusive numeric(16,2). Project-wide single report; marketplace derived per-row from contract_title (NOON-AE->AE) \u2014 filter marketplace or contract_title. Sum total for net payout."
+      "description": "Item-level finance transactions, all money VAT-inclusive numeric(16,2). Project-wide single report; marketplace derived per-row from contract_title (NOON-AE->AE) — filter marketplace or contract_title. Sum total for net payout."
     },
     {
       "table": "rpt_noon_fbn_aging",
       "report_type": "NOON_FBN_AGING",
       "noon_category": "fbn_inventoryv2_aging",
-      "cron_utc": "0 6,18 * * *",
+      "cron_utc": "0 4,16 * * *",
       "is_snapshot": true,
       "strategy": "noon_export",
       "report_date_mode": "all",
@@ -72,7 +72,7 @@
       "table": "rpt_noon_product_views",
       "report_type": "NOON_PRODUCT_VIEWS",
       "noon_category": "noon_catalog_reports_productviewsandsalesdata",
-      "cron_utc": "0 8,20 * * *",
+      "cron_utc": "0 4,16 * * *",
       "is_snapshot": false,
       "strategy": "noon_export",
       "lookback_days": 14,
@@ -86,6 +86,23 @@
         "country_code"
       ],
       "description": "Daily product views & sales per marketplace. asp_shipped is a PRICE not a percent; conversion_visitors_percentage can exceed 100; sales columns sparse."
+    },
+    {
+      "table": "rpt_noon_catalog",
+      "report_type": "NOON_CATALOG",
+      "cron_utc": "0 5 * * *",
+      "is_snapshot": false,
+      "strategy": "noon_catalog (paginated GET /fbn/inbound/v1/catalog/items — no export lifecycle)",
+      "report_date_mode": "all",
+      "marketplace_column": "marketplace (constant 'ALL' — project-wide, no marketplace dimension)",
+      "event_date_column": "report_date (= last date the row was seen in a pull)",
+      "key_columns": [
+        "project_code",
+        "partner_sku",
+        "sku"
+      ],
+      "description": "FBN-eligible product catalog: partner_sku <-> noon sku, title, storage_type enum, CDN image_url. The noon image/title lookup — JOIN on sku (or partner_sku) to add =IMAGE() thumbnail columns, exactly like the Amazon catalog pattern. Rolling UPSERT: current catalog = WHERE report_date = MAX(report_date); rows absent from newer pulls keep their old report_date (delisted items).",
+      "image_pattern": "write partner_sku+sku+title+image_url to a hidden _raw_noon_catalog helper tab; column A of the visible tab uses MAP/ARRAYFORMULA IMAGE() joined by sku with IDENTICAL WHERE/ORDER/LIMIT as the data spill (see sellersheet-sheets reference/image-pattern.md)"
     }
   ]
 }
