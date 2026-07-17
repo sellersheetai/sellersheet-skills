@@ -10,7 +10,7 @@ Use for **net-new workbooks or heavy multi-tab builds** — roughly anything tha
 take more than ~15 MCP write/format calls (multiple tabs, formula bands, conditional
 formats, charts).
 
-Requirements: a local shell + Python + `openpyxl` (`pip install openpyxl`). **Hosted
+Requirements: a local shell + Python + `openpyxl` (`pip install openpyxl`), and `convertTo` on the connected server's `start_drive_upload` — **verify by loading that tool's live docstring, never from memory/recall** (the schema the server hands you is the only current truth). **Hosted
 agents without a filesystem (claude.ai web, ChatGPT connectors) can't run this — use the
 standard MCP Build workflow instead.** Also skip it for small edits and single-tab
 additions to a live workbook: the MCP path is simpler and preserves in-place conventions.
