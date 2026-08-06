@@ -205,9 +205,24 @@ UK_Luggage_SD_COMP_NS-LG-28
 
 1. `query_report_data` on `rpt_sp_campaigns` — identify campaigns near or hitting daily budget cap
 2. `ads_sp_campaigns` action=`list` — get current budget amounts for candidates
-3. Write budget-change intent to sheet
-4. `ads_sp_campaigns` action=`update` — apply new daily budgets
-5. `ads_sp_portfolios` for portfolio-level budget caps if needed
+3. `ads_budget_usage` — LIVE intraday consumption (adProduct SP|SB|SD|PORTFOLIOS,
+   1-100 ids). A campaign at high % early in the day is about to stop serving;
+   always relay `usageUpdatedTimestamp` (the figure is not instantaneous)
+4. Recommendations before raising: `ads_sp_budget_recommendations` /
+   `ads_sb_budget_recommendations` / `ads_sd_budget_recommendations`
+   (missed-opportunity estimates); for a NOT-yet-created SP campaign use
+   `ads_sp_initial_budget_recommendation`
+5. Write budget-change intent to sheet
+6. `ads_sp_campaigns` action=`update` — apply new daily budgets
+7. `ads_sp_portfolios` for portfolio-level budget caps if needed
+8. **Automate event/performance raises with Budget Rules** instead of manual
+   edits: `ads_budget_rules_recommendation` (SP|SB, one campaignId) → special
+   events with suggested % → `ads_budget_rules` create (SCHEDULE rule with
+   `eventTypeRuleDuration {eventId}`) → associate to campaigns → verify with
+   `ads_budget_usage` during the window. PERFORMANCE rules raise budget while
+   a metric beats a threshold — metric enums differ by product (SP/SD
+   ACOS|CTR|CVR|ROAS, SB IS|NTB|ROAS; only SP has EQUAL_TO — see the tool
+   docstring)
 
 ### G. On-Demand Offline Report
 
@@ -355,6 +370,16 @@ No `ads_sb_portfolios` tool. Assign portfolios via `portfolioId` on create/updat
 | `ads_store_insights` | `type='asin_metrics'` (engagement) / `'insights'` (traffic & SQS) | Requires `brandEntityId` from `ads_brand_home`. Store-aggregate `asin_metrics` only accepts `TOTAL_VIEWS`/`TOTAL_CLICKS`; `insights` accepts exactly one non-SQS metric per call |
 | `ads_streams` | list / create / update / get | `subscriptionId` required for `get`/`update`. Most accounts return empty list |
 | `ads_validation_configs` | campaigns / targeting | Large payload (~200KB+). Use before building campaign creation bodies |
+
+### Budget Tools
+
+| Tool | Operations | Cross-cutting notes |
+|---|---|---|
+| `ads_budget_usage` | — (adProduct SP\|SB\|SD\|PORTFOLIOS) | Live intraday % of budget consumed, 1-100 ids, 207 success[]/error[] envelope |
+| `ads_budget_rules` | list / create / update / get / list_campaigns / list_for_campaign / associate / disassociate / bulk_associate / bulk_disassociate | One tool for SP\|SB\|SD via adProduct. bulk_* are SP-only and 401 on accounts without bulk access — use per-campaign associate. Create body = FLAT rule details; update body = {ruleId, ruleDetails, ruleState} wrappers with ONLY mutable ruleDetails fields. ≤25 rules/assoc ids, ≤50 bulk pairs. Mutating ops need ads write access |
+| `ads_budget_rules_recommendation` | — (adProduct SP\|SB) | Special-event suggestions for ONE campaignId; response eventId feeds eventTypeRuleDuration. SD not supported by Amazon; some marketplaces reject SB event rules |
+| `ads_sb_budget_recommendations` | — | SB sibling of the SP/SD tools; 1-100 ids |
+| `ads_sp_initial_budget_recommendation` | — | Budget suggestion BEFORE campaign creation; targetingExpressions are objects and each requires a `bid`; targetingType is lowercase 'auto'\|'manual' |
 
 ### Performance Data Tools
 
