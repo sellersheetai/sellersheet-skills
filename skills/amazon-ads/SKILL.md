@@ -22,7 +22,11 @@ product targets, and ALL negatives are a single `targets` resource (`negative` f
 entity at `reference/ads-v1/<entity>.md`** — complete leaf-level schema per ad
 product × verb, plus live-verified gotchas in `reference/ads-v1/README.md`.
 The legacy per-product tools (`ads_sp_*`, `ads_sb_*`, `ads_sd_*`) remain for
-entities v1 doesn't cover (portfolios, recommendations, exports, history, reports).
+surfaces v1 doesn't cover: portfolios, every recommendation endpoint, exports,
+change history, brand metrics, budget rules / budget usage, offline reports,
+and SP atomic bulk create. **Rule of thumb: entity CRUD (campaigns, ad groups,
+ads, targets incl. keywords + negatives) goes through v1; everything else is
+legacy by necessity, not preference.**
 
 ---
 
@@ -70,8 +74,9 @@ serve the need.
 
 **The warehouse tables are DAILY PERFORMANCE rows — not a campaign inventory.** Only campaigns
 with delivery in the window appear in `rpt_sp_*` / `rpt_sb_*` / `rpt_sd_*` (live count 47
-ENABLED vs 21 in the warehouse, observed). For a complete campaign inventory or count, use the
-live `ads_sp_campaigns` / `ads_sb_campaigns` / `ads_sd_campaigns` API. And `report_date: "latest"`
+ENABLED vs 21 in the warehouse, observed). For a complete campaign inventory or count, query the
+live API — `ads_campaigns` action=query (v1, all products in one call via
+`adProductFilter`). And `report_date: "latest"`
 pins to the newest **single** day, often a zero-spend partial day — use `report_date: "all"` plus
 explicit date filters for any cost or performance analysis.
 
@@ -84,8 +89,8 @@ Campaign → Ad Group → Keywords / Targets → Product Ads
 - **SP and SB**: full hierarchy
 - **SD**: `Campaign → Ad Group → Targets + Product Ads`
 
-Resolve IDs top-down before creating child entities. Use the parent tool with
-`action='list'` to get IDs.
+Resolve IDs top-down before creating child entities — `ads_campaigns` /
+`ads_ad_groups` action=query (v1) to get IDs; legacy tools use `action='list'`.
 
 ### 5. Campaign & Ad Group Naming Convention
 
@@ -219,26 +224,47 @@ Applies on top of the global sheet-approval convention (§2):
 
 1. `query_report_data` on `rpt_sp_keywords` — get `cost`, `sales_14d`, `clicks` per keyword
 2. Calculate ACoS per keyword; compare to target
-3. Over-target: write bid-down intent to sheet → `ads_sp_keywords` action=`update`
-4. Under-target with good volume: write bid-up intent → `ads_sp_keywords` action=`update`
-5. Repeat for SB keywords (`ads_sb_keywords`) and SD targets (`ads_sd_targets`)
+3. Resolve each keyword's `targetId`: `ads_targets` action=query (v1) with
+   `adProductFilter` + `keywordFilter` (keywords ARE targets in v1)
+4. Over-target: write bid-down intent to sheet; under-target with good volume:
+   write bid-up intent → `ads_targets` action=update, items
+   `{targetId, bid: {bid: <amount>}}` — read `reference/ads-v1/targets.md` first
+5. Same v1 tool covers SB keywords and SD targets (change `adProductFilter`).
+   Legacy fallback: `ads_sp_keywords` / `ads_sb_keywords` / `ads_sd_targets`
+   action=`update`
 
 ### D. Launch New Campaign (Bulk SP)
 
 1. `ads_sp_recommendations` — ranked or suggested keywords for target ASINs
-2. `ads_sp_bid_recommendations` — suggested bids for selected keywords/targets
+   (product-target ideas: `ads_sp_product_suggestions` /
+   `ads_sp_category_suggestions` + `ads_sp_category_refinements`)
+2. `ads_sp_bid_recommendations` — suggested bids for selected keywords/targets;
+   starting daily budget from `ads_sp_initial_budget_recommendation`
 3. Write full campaign spec to sheet for user review
-4. `ads_sp_bulk_create` — creates campaign + ad groups + keywords + product ads atomically
-5. Write returned campaign ID and ad group IDs to sheet
+4. `ads_sp_bulk_create` — creates campaign + ad groups + keywords + product ads
+   atomically (deliberately legacy: v1 has no atomic composite create — the v1
+   equivalent is 4 sequential creates with partial-failure cleanup)
+5. Write returned campaign ID and ad group IDs to sheet. Building entity-by-
+   entity instead? Use the v1 tools (`ads_campaigns` → `ads_ad_groups` →
+   `ads_targets` → `ads_ads`) and read `reference/ads-v1/` first — SP creates
+   require `marketplaceScope`/`marketplaces`/`startDateTime`, budget nests as
+   `budgetValue.monetaryBudgetValue.monetaryBudget.value`, and an SP ad group
+   cannot mix keyword and product targets
 
 ### E. Negative Keyword Mining
 
 1. `query_report_data` on `rpt_sp_search_terms` — filter `cost > threshold AND purchases_14d = 0`
 2. Group by campaign / ad group; review candidates with user
 3. Write negatives intent to sheet
-4. Ad group level: `ads_sp_neg_keywords` action=`create`
-5. Campaign level (blocks all ad groups): `ads_sp_campaign_neg_keywords` action=`create`
-6. Repeat for SB via `ads_sb_neg_keywords` (note: SB neg keywords use comma-string filters — see tool docstring)
+4. Create negatives with `ads_targets` action=create (v1): items carry
+   `negative: true` + `keywordTarget {keyword, matchType}`; scope with
+   `adGroupId` (ad-group negative) or `campaignId` alone (campaign negative —
+   blocks all ad groups). One tool for SP and SB; audit existing negatives
+   first with action=query + `negativeFilter {include: [true]}`. Read
+   `reference/ads-v1/targets.md` before composing.
+5. Legacy fallback (also the current-negatives warehouse audit): `ads_sp_neg_keywords` /
+   `ads_sp_campaign_neg_keywords` / `ads_sb_neg_keywords` (SB uses comma-string
+   filters — see tool docstring), plus the `rpt_*_negative_*` tables
 
 ### F. Budget Management
 
@@ -274,10 +300,12 @@ write the tab together; it is human-owned and re-read every mutating run.
 3. **Route by the 2×2 + preflight (reference §1)** — hot AND unprofitable is a
    bid problem (Recipe C), never a raise; usage <85% EOD means budget is not
    the limiter regardless of what `ads_*_budget_recommendations` suggests.
-4. A permanent constraint gets a base-budget edit (`ads_*_campaigns` update,
-   +20–30% steps); a temporary/conditional one gets a rule (F2/F3). Write the
-   intent row (`approval=PENDING`) to `Budget Change Log`, wait for operator
-   approval, apply, read back, record the result.
+4. A permanent constraint gets a base-budget edit (`ads_campaigns` action=update
+   (v1) — budget nests as `budgetValue.monetaryBudgetValue.monetaryBudget.value`;
+   legacy `ads_*_campaigns` update also works — +20–30% steps); a
+   temporary/conditional one gets a rule (F2/F3). Write the intent row
+   (`approval=PENDING`) to `Budget Change Log`, wait for operator approval,
+   apply, read back, record the result.
 
 **F2 — Event rule lifecycle (Prime Day, BFCM, …)**
 
@@ -386,6 +414,24 @@ Use when you need a full snapshot of campaign structure — IDs, states, budgets
 _Quick lookup only. Body schemas, filter syntax, and per-tool best practices are in
 each tool's docstring. This table covers: supported actions and cross-cutting gotchas._
 
+### Unified v1 — PREFERRED for entity CRUD
+
+_One common-model surface over `/adsApi/v1/*` for SP / SB / SD / Sponsored TV /
+DSP. Read `reference/ads-v1/<entity>.md` before composing any create/update
+body; live-verified gotchas in `reference/ads-v1/README.md`._
+
+| Tool | Actions | Cross-cutting notes |
+|---|---|---|
+| `ads_campaigns` | query / create / update / delete | `query` requires `adProductFilter`; paginate by resending the SAME filters + `nextToken`. SP create requires `marketplaceScope`, `marketplaces`, `startDateTime`, `autoCreationSettings`, `budgets`; budget nests `budgetValue.monetaryBudgetValue.monetaryBudget.value` |
+| `ads_ad_groups` | query / create / update / delete | |
+| `ads_ads` | query / create / update / delete | SP creative: `productIdType` = `SKU` (sellers) / `ASIN` (vendors). A schema-valid create can still fail per-index `PRODUCT_INELIGIBLE` |
+| `ads_targets` | query / create / update / delete | Keywords, product/category targets, AND all negatives in one resource (`negative` flag; campaign-level negative = `campaignId` without `adGroupId`). `productTarget.product` is an OBJECT `{productId}`. An SP ad group cannot mix keyword and product targets. Bid update = `{targetId, bid: {bid}}` |
+| `ads_ad_associations` | query / create / delete | Amazon DSP only — sponsored-ads profiles get 401 |
+
+Shared v1 gotchas: mutations return 207 `{success[], partialSuccess[], error[]}`
+even when everything failed — always read `error[]`; `delete` takes
+`{"<entity>Ids": [...]}` and ARCHIVES (entities stay queryable).
+
 ### Sponsored Products (SP)
 
 | Tool | Actions | Cross-cutting notes |
@@ -402,6 +448,10 @@ each tool's docstring. This table covers: supported actions and cross-cutting go
 | `ads_sp_portfolios` | list / create / update | Delete not supported; state only ENABLED via API |
 | `ads_sp_recommendations` | — | Pass `type="ranked_keywords"` (preferred) or `type="suggested_keywords"`. ⚠️ The tool's documented default `type="ranked"` / `"suggested"` is **rejected by the route** — use the `_keywords` suffix or the call errors |
 | `ads_sp_bid_recommendations` | — | |
+| `ads_sp_product_suggestions` | — | Suggested target ASINs (competitor/complementary) for your advertised ASINs, with the theme that produced each |
+| `ads_sp_category_suggestions` | — | Category targets recommended for a list of ASINs — the coarse half of product targeting |
+| `ads_sp_category_refinements` | — | Brand / age-range / genre facets targetable WITHIN one category (narrow a category target) |
+| `ads_sp_negative_brands` | recommendations / search | Brands to exclude as negative brand targets — Amazon's recommended exclusions, or search by keyword |
 | `ads_sp_bulk_create` | — | Full campaign structure atomically |
 
 ### SP Analytics & Advanced SP
@@ -479,7 +529,7 @@ artifacts._
 | `ads_budget_usage` | — (adProduct SP\|SB\|SD\|PORTFOLIOS) | Live intraday % of budget consumed, 1-100 ids, 207 success[]/error[] envelope |
 | `ads_budget_rules` | list / create / update / get / list_campaigns / list_for_campaign / associate / disassociate / bulk_associate / bulk_disassociate | One tool for SP\|SB\|SD via adProduct. bulk_* are SP-only and 401 on accounts without bulk access — use per-campaign associate. Create body = FLAT rule details; update body = {ruleId, ruleDetails, ruleState} wrappers with ONLY mutable ruleDetails fields. ≤25 rules/assoc ids, ≤50 bulk pairs. Mutating ops need ads write access |
 | `ads_budget_rules_recommendation` | — (adProduct SP\|SB) | Special-event suggestions for ONE campaignId; response eventId feeds eventTypeRuleDuration. SD not supported by Amazon; some marketplaces reject SB event rules |
-| `ads_sb_budget_recommendations` | — | SB sibling of the SP/SD tools; 1-100 ids |
+| `ads_sp_budget_recommendations` / `ads_sb_budget_recommendations` / `ads_sd_budget_recommendations` | — | Suggested daily budget + missed-opportunity estimates per campaign; 1-100 ids (SD takes `campaignIds` directly, not a `body` dict) |
 | `ads_sp_initial_budget_recommendation` | — | Budget suggestion BEFORE campaign creation; targetingExpressions are objects and each requires a `bid`; targetingType is lowercase 'auto'\|'manual' |
 
 ### Performance Data Tools
