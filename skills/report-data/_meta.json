@@ -197,7 +197,7 @@
       "pii": false,
       "deprecated": false,
       "strategy": "enrichment",
-      "description": "Persistent listing image cache keyed by (store_id, country_code, seller_sku). Populated automatically after GET_MERCHANT_LISTINGS_ALL_DATA syncs — only new SKUs call ListingsItems API. No date partitioning; omit report_date when querying.",
+      "description": "Persistent listing image cache keyed by (store_id, country_code, seller_sku). Populated automatically after GET_MERCHANT_LISTINGS_ALL_DATA syncs — only new SKUs call ListingsItems API. No date in the unique key, so report_date='latest' applies no date filter here; never pin an explicit date.",
       "key_columns": [
         "seller_sku",
         "asin",
