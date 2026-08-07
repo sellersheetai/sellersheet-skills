@@ -12,6 +12,24 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.11.4] — 2026-08-07
+
+### Fixed — `report-data`
+
+- **`report_date: "latest"` is per-MARKETPLACE, not per-store and not per-entity.**
+  Snapshot reports are fetched per marketplace and each stamps its own
+  `snapshot_date`, so the previous scalar `MAX(date)` rule silently dropped every
+  row of whichever marketplace ingested a day late (DE behind UK → zero DE SKUs,
+  success response, no warning). The `"all"` + client-side dedup workaround is
+  obsolete. The unit is deliberately the marketplace and NOT the entity —
+  per-SKU partitioning would return a deleted SKU's stale row forever as a
+  phantom in what reads as current state.
+- **`listing_images`**: `"latest"` applies no date filter (there is no date in its
+  unique key), so the default is safe — verified live. Never pin an explicit
+  date, which would return only the SKUs touched by the newest enrichment batch.
+- Date-grain fact tables (`rpt_sp_*`/`rpt_sb_*`/`rpt_sd_*` dailies, `rpt_dk_*`)
+  keep the scalar meaning, so range SUMs stay coherent.
+
 ## [0.11.3] — 2026-08-07
 
 ### Fixed — `amazon-ads`
