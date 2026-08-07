@@ -156,6 +156,45 @@ UK_Luggage_SD_COMP_NS-LG-28
   flight (breaks history). Apply only to new campaigns; document the legacy ones
   in the audit sheet.
 
+### 6. Budget Rule Naming Convention
+
+Budget rules are **permanent objects** (Amazon has no rule-delete API) that
+stack additively when satisfied together — an anonymous rule is an
+unattributable budget multiplier. Every rule the agent creates follows:
+
+```
+BR_<Country>_<SCH|PERF>_<Trigger>_P<Pct>_<Window>
+```
+
+- `Trigger`: event tag (`PRIMEDAY`, `BFCM`, …) or `DTRANGE` for SCHEDULE; the
+  metric (`ACOS` `ROAS` `IS` …) for PERFORMANCE.
+- `Window`: `YYYYMMDD-YYYYMMDD`, or `YYYYMMDD-OPEN` when open-ended.
+- Examples: `BR_US_SCH_PRIMEDAY_P30_20260713-20260714`,
+  `BR_AE_PERF_ACOS_P20_20260801-OPEN` (this shape is live-verified accepted).
+- Track every created rule in the workbook's `Budget Rules Registry` tab keyed
+  by `ruleId` — the name is the human handle, the registry is the identity
+  system. Full artifact schemas: `reference/budget-rules.md` §10.
+
+### 7. Budget Autonomy Boundaries
+
+Applies on top of the global sheet-approval convention (§2):
+
+- **Read freely, then report** — usage polling, recommendations, rule
+  list/get/list_for_campaign, registry reconciliation: no approval needed;
+  nothing changes on Amazon.
+- **Every mutation waits for the sheet** — base-budget edits, portfolio caps,
+  rule create/update/associate, and pause/disassociate of rules the agent
+  created: write the intent row (`approval=PENDING`) with before/after values
+  and evidence to `Budget Change Log`, relay `human_action`, and do not call
+  the mutating tool until the operator approves.
+- **Never touch rules you don't own** — a rule found on Amazon that is not in
+  the registry (`created_by` console/unknown) may be a load-bearing manual
+  control: flag it, propose, let the operator act.
+- **`Budget Caps` is the operator's envelope** — max budget, max single
+  increase %, max stacked rule %, target ACOS per scope. Discuss and set it
+  WITH the operator on first budget engagement; any proposal exceeding a cap is
+  flagged, never applied; an absent cap row is never an approval.
+
 ---
 
 ## Tier 2: Workflow Recipes
@@ -203,26 +242,83 @@ UK_Luggage_SD_COMP_NS-LG-28
 
 ### F. Budget Management
 
-1. `query_report_data` on `rpt_sp_campaigns` — identify campaigns near or hitting daily budget cap
-2. `ads_sp_campaigns` action=`list` — get current budget amounts for candidates
-3. `ads_budget_usage` — LIVE intraday consumption (adProduct SP|SB|SD|PORTFOLIOS,
-   1-100 ids). A campaign at high % early in the day is about to stop serving;
-   always relay `usageUpdatedTimestamp` (the figure is not instantaneous)
-4. Recommendations before raising: `ads_sp_budget_recommendations` /
-   `ads_sb_budget_recommendations` / `ads_sd_budget_recommendations`
-   (missed-opportunity estimates); for a NOT-yet-created SP campaign use
-   `ads_sp_initial_budget_recommendation`
-5. Write budget-change intent to sheet
-6. `ads_sp_campaigns` action=`update` — apply new daily budgets
-7. `ads_sp_portfolios` for portfolio-level budget caps if needed
-8. **Automate event/performance raises with Budget Rules** instead of manual
-   edits: `ads_budget_rules_recommendation` (SP|SB, one campaignId) → special
-   events with suggested % → `ads_budget_rules` create (SCHEDULE rule with
-   `eventTypeRuleDuration {eventId}`) → associate to campaigns → verify with
-   `ads_budget_usage` during the window. PERFORMANCE rules raise budget while
-   a metric beats a threshold — metric enums differ by product (SP/SD
-   ACOS|CTR|CVR|ROAS, SB IS|NTB|ROAS; only SP has EQUAL_TO — see the tool
-   docstring)
+**Read `reference/budget-rules.md` before any budget work** — payload shapes
+(create vs update are asymmetric), per-product deltas, the rule status
+lifecycle, live-verified behaviors, guardrail numbers, and the standing sheet
+tabs (`Budget Rules Registry` / `Budget Change Log` / `Budget Caps`). Budget
+management is four sub-recipes on different cadences (v1 is operator-invoked —
+run when asked; once the routine stabilizes, suggest scheduling, don't set it
+up unprompted):
+
+| Sub-recipe | Cadence | Standing artifact |
+|---|---|---|
+| F1 Pacing & budget changes | morning ask (+ optional afternoon) / weekly review | `Budget Change Log` |
+| F2 Event rule lifecycle | T-14 plan → T-3 arm → T-0 verify → T+1 teardown | `Budget Rules Registry` |
+| F3 Performance rules | set once, review monthly | `Budget Rules Registry` |
+| F4 Rule audit & reconciliation | monthly + after every event | `Budget Rules Registry` |
+
+First budget engagement on a store: probe capabilities (SB event recs are
+marketplace-gated, bulk association 401s, intraday is 5-marketplace-only — see
+reference §8) and **discuss `Budget Caps` with the operator** — propose values,
+write the tab together; it is human-owned and re-read every mutating run.
+
+**F1 — Pacing & budget changes**
+
+1. `ads_budget_usage` on the top ~20 campaigns by trailing-7d spend AND
+   adProduct=`PORTFOLIOS` in the same sweep (a bound portfolio silently stops
+   every member campaign). Judge `usage% ÷ expected-by-this-local-hour`, never
+   raw % — curve in reference §9. Relay `usageUpdatedTimestamp`: it can lag
+   hours, and zero-spend campaigns report a synthetic midnight stamp.
+2. For flagged campaigns, `query_report_data` on `rpt_*_campaigns`
+   (`report_date: "all"` + date filter) for trailing-7d ACOS.
+3. **Route by the 2×2 + preflight (reference §1)** — hot AND unprofitable is a
+   bid problem (Recipe C), never a raise; usage <85% EOD means budget is not
+   the limiter regardless of what `ads_*_budget_recommendations` suggests.
+4. A permanent constraint gets a base-budget edit (`ads_*_campaigns` update,
+   +20–30% steps); a temporary/conditional one gets a rule (F2/F3). Write the
+   intent row (`approval=PENDING`) to `Budget Change Log`, wait for operator
+   approval, apply, read back, record the result.
+
+**F2 — Event rule lifecycle (Prime Day, BFCM, …)**
+
+1. **T-14:** `ads_budget_rules_recommendation` per candidate campaign (SP|SB,
+   one campaignId per call; empty list = no upcoming events, normal). Plan
+   uplifts with the operator — and plan the **bid** raises too: event CPCs run
+   30–60% over baseline, budget-only uplift on a non-capped campaign does
+   nothing.
+2. **T-3:** per approved campaign: `list_for_campaign` (stack check, reference
+   §7) → `ads_budget_rules` create (SCHEDULE + `eventTypeRuleDuration
+   {eventId}`, name per the BR_ convention) → `associate` per campaign →
+   read back status: `PENDING_START` is the healthy pre-window state — never
+   re-create because it isn't `ACTIVE` yet.
+3. **T-0:** verify `ACTIVE` + `ads_budget_usage` shows the raised budget; write
+   a sheet snapshot each poll — **for SB/SD this snapshot is the only audit
+   record that will ever exist** (no report columns).
+4. **T+1:** confirm `EXPIRED`, measure the revert, disassociate + pause (no
+   delete API), **revert the manual event bid raises** (bids don't
+   auto-revert), run the F4 orphan sweep.
+
+**F3 — Performance rules**
+
+Only on proven winners: ≥14 days delivery, volume above the reference §9
+floors, campaign comfortably above Amazon's minimum budget. Threshold at
+0.75–0.85 × target ACOS (never AT target — the trailing-7d window whipsaws),
+increase +25% default. Metric enums differ by product (SP/SD ACOS|CTR|CVR|ROAS,
+SB IS|NTB|ROAS; `EQUAL_TO` SP-only; SP recurrence DAILY-only). After create +
+associate, read back status — `BUDGET_THRESHOLD_NOT_MET` means the rule is
+silently inert. Never use a performance rule to rehabilitate a loser: the
+budget cap is what limits the loss.
+
+**F4 — Rule audit & reconciliation**
+
+Monthly + after every event: `ads_budget_rules` list (page to exhaustion) ×
+SP/SB/SD, reconcile against `Budget Rules Registry`, classify orphans (active
+with zero associations, rules on archived campaigns, expired-still-associated).
+Rules not created by this agent or the operator are flag-only — never touch
+them. For month close, SP's v3 `spCampaigns` report rule columns attribute
+spend to rules day-by-day (SP only; SB/SD reconstruct from the sheet ledger).
+For a NOT-yet-created SP campaign's starting budget use
+`ads_sp_initial_budget_recommendation` (launch flow, Recipe D).
 
 ### G. On-Demand Offline Report
 
@@ -372,6 +468,11 @@ No `ads_sb_portfolios` tool. Assign portfolios via `portfolioId` on create/updat
 | `ads_validation_configs` | campaigns / targeting | Large payload (~200KB+). Use before building campaign creation bodies |
 
 ### Budget Tools
+
+_Before composing any budget-rule payload or proposing a budget change, read
+`reference/budget-rules.md` — create/update shape asymmetry, per-product enum
+deltas, rule status lifecycle, stacking guardrails, and the standing sheet
+artifacts._
 
 | Tool | Operations | Cross-cutting notes |
 |---|---|---|
