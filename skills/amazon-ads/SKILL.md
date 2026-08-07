@@ -208,17 +208,25 @@ Applies on top of the global sheet-approval convention (§2):
 ### A. Account Health Check
 
 1. `query_report_data` on `rpt_sp_campaigns`, `rpt_sb_campaigns`, `rpt_sd_campaigns`
-   — `report_date: "latest"`, sort by `spend` desc
-2. Compute totals: spend, sales_14d, ACoS (`spend / sales_14d * 100`), impressions, clicks
-3. Flag campaigns with ACoS above target or zero `sales_14d`
+   — `report_date: "all"` plus a trailing-N-day date filter (never `"latest"`
+   for cost totals — it can land on a zero-spend partial day), sort by `cost`
+   desc (`cost` is the one spend column present on all three tables)
+2. Compute totals — **the metric columns differ by product**: SP has
+   `cost`/`spend` + `sales_14d` + `purchases_14d`; SB and SD have `cost` +
+   `sales` + `purchases` (no `_14d`-suffixed columns at all). ACoS =
+   `cost / sales * 100` on the product's own sales column; plus impressions, clicks
+3. Flag campaigns with ACoS above target or zero sales (SP: `sales_14d = 0`;
+   SB/SD: `sales = 0`)
 4. Write summary to sheet
 
 ### B. Find Wasted Spend
 
 1. `query_report_data` on `rpt_sp_keywords` — filter `cost > threshold AND purchases_14d = 0`
 2. `query_report_data` on `rpt_sp_search_terms` — same filter
-3. Repeat for SB: `rpt_sb_keywords`, `rpt_sb_search_terms`
-4. Repeat for SD: `rpt_sd_targets`
+3. Repeat for SB: `rpt_sb_keywords`, `rpt_sb_search_terms` — filter
+   `cost > threshold AND purchases = 0` (SB/SD tables carry no 14d-suffixed
+   columns)
+4. Repeat for SD: `rpt_sd_targets` — `cost > threshold AND purchases = 0`
 5. Write waste list to sheet → propose negatives to user
 
 ### C. Bid Optimization
@@ -234,7 +242,8 @@ Applies on top of the global sheet-approval convention (§2):
 
 ### D. Launch New Campaign (Bulk SP)
 
-1. `ads_sp_recommendations` — ranked or suggested keywords for target ASINs
+1. `ads_sp_recommendations` — ranked keywords (`type="ranked_keywords"`, the
+   default) for target ASINs
    (product-target ideas: `ads_sp_product_suggestions` /
    `ads_sp_category_suggestions` + `ads_sp_category_refinements`)
 2. `ads_sp_bid_recommendations` — suggested bids for selected keywords/targets;
@@ -308,8 +317,9 @@ write the tab together; it is human-owned and re-read every mutating run.
    bid problem (Recipe C), never a raise; usage <85% EOD means budget is not
    the limiter regardless of what `ads_*_budget_recommendations` suggests.
 4. A permanent constraint gets a base-budget edit (`ads_campaigns` action=update
-   (v1) — budget nests as `budgetValue.monetaryBudgetValue.monetaryBudget.value`;
-   legacy `ads_*_campaigns` update also works — +20–30% steps); a
+   (v1) — budget nests as
+   `budgets[0].budgetValue.monetaryBudgetValue.monetaryBudget.value`; +20–30%
+   steps); a
    temporary/conditional one gets a rule (F2/F3). Write the intent row
    (`approval=PENDING`) to `Budget Change Log`, wait for operator approval,
    apply, read back, record the result.
@@ -433,7 +443,7 @@ body; live-verified gotchas in `reference/ads-v1/README.md`._
 | `ads_ad_groups` | query / create / update / delete | |
 | `ads_ads` | query / create / update / delete | SP creative: `productIdType` = `SKU` (sellers) / `ASIN` (vendors). A schema-valid create can still fail per-index `PRODUCT_INELIGIBLE` |
 | `ads_targets` | query / create / update / delete | Keywords, product/category targets, AND all negatives in one resource (`negative` flag; campaign-level negative = `campaignId` without `adGroupId`). `productTarget.product` is an OBJECT `{productId}`. An SP ad group cannot mix keyword and product targets. Bid update = `{targetId, bid: {bid}}` |
-| `ads_ad_associations` | query / create / delete | Amazon DSP only — sponsored-ads profiles get 401 |
+| `ads_ad_associations` | query / create / update / delete | Amazon DSP only — sponsored-ads profiles get 401 |
 
 Shared v1 gotchas: mutations return 207 `{success[], partialSuccess[], error[]}`
 even when everything failed — always read `error[]`; `delete` takes
@@ -444,7 +454,7 @@ even when everything failed — always read `error[]`; `delete` takes
 | Tool | Actions | Cross-cutting notes |
 |---|---|---|
 | `ads_sp_portfolios` | list / create / update | Delete not supported; state only ENABLED via API |
-| `ads_sp_recommendations` | — | Pass `type="ranked_keywords"` (preferred) or `type="suggested_keywords"`. ⚠️ The tool's documented default `type="ranked"` / `"suggested"` is **rejected by the route** — use the `_keywords` suffix or the call errors |
+| `ads_sp_recommendations` | — | Use `type="ranked_keywords"` — the deployed default; returns ranked keywords with per-match-type suggested bids. `type="suggested_keywords"` hits endpoints Amazon shut off 2026-06-15 → 403, **never use** |
 | `ads_sp_bid_recommendations` | — | |
 | `ads_sp_product_suggestions` | — | Suggested target ASINs (competitor/complementary) for your advertised ASINs, with the theme that produced each |
 | `ads_sp_category_suggestions` | — | Category targets recommended for a list of ASINs — the coarse half of product targeting |
@@ -463,7 +473,7 @@ ads) is the Unified v1 table above — there are no per-product CRUD tools._
 | `ads_sp_history` | — (single call) | `eventTypes` must be object `{"CAMPAIGN": true}` not array. Dates in ms (13 digits). Max 90 days |
 | `ads_sp_insights` | — | Requires adType=SD/DSP — may return "Unsupported Media Type" for SP-only accounts |
 | `ads_sp_brand_metrics` | post_report / get_report / download_report | Async. Not supported in all marketplaces (e.g. AE) |
-| `ads_sp_bid_rules` | create / update / associate / delete | Associate rule to campaign via `campaignId` param |
+| `ads_sp_bid_rules` | create / update / associate / list / delete | Run `list` first to see existing rules. Associate rule to campaign via `campaignId` param |
 | `ads_sp_campaign_recommendations` | list / apply / update | Amazon-generated recommendations only — NOT keyword suggestions (use `ads_sp_recommendations` for those) |
 
 ### Sponsored Brands (SB)
@@ -512,7 +522,7 @@ artifacts._
 | Tool | Operations | Cross-cutting notes |
 |---|---|---|
 | `ads_budget_usage` | — (adProduct SP\|SB\|SD\|PORTFOLIOS) | Live intraday % of budget consumed, 1-100 ids, 207 success[]/error[] envelope |
-| `ads_budget_rules` | list / create / update / get / list_campaigns / list_for_campaign / associate / disassociate / bulk_associate / bulk_disassociate | One tool for SP\|SB\|SD via adProduct. bulk_* are SP-only and 401 on accounts without bulk access — use per-campaign associate. Create body = FLAT rule details; update body = {ruleId, ruleDetails, ruleState} wrappers with ONLY mutable ruleDetails fields. ≤25 rules/assoc ids, ≤50 bulk pairs. Mutating ops need ads write access |
+| `ads_budget_rules` | list / create / update / get / list_campaigns / list_for_campaign / associate / disassociate / bulk_associate / bulk_disassociate | One tool for SP\|SB\|SD via adProduct. bulk_* are SP-only and return 401 — the bulk surface is not granted (verified on every tested account/marketplace), so always use per-campaign associate/disassociate; do not retry per account. Create body = FLAT rule details; update body = {ruleId, ruleDetails, ruleState} wrappers with ONLY mutable ruleDetails fields. ≤25 rules/assoc ids, ≤50 bulk pairs. Mutating ops need ads write access |
 | `ads_budget_rules_recommendation` | — (adProduct SP\|SB) | Special-event suggestions for ONE campaignId; response eventId feeds eventTypeRuleDuration. SD not supported by Amazon; some marketplaces reject SB event rules |
 | `ads_sp_budget_recommendations` / `ads_sb_budget_recommendations` / `ads_sd_budget_recommendations` | — | Suggested daily budget + missed-opportunity estimates per campaign; 1-100 ids (SD takes `campaignIds` directly, not a `body` dict) |
 | `ads_sp_initial_budget_recommendation` | — | Budget suggestion BEFORE campaign creation; targetingExpressions are objects and each requires a `bid`; targetingType is lowercase 'auto'\|'manual' |
