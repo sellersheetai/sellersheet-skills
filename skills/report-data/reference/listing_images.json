@@ -3,7 +3,7 @@
     "table": "listing_images",
     "report_type": null,
     "is_snapshot": false,
-    "description": "Persistent listing image cache. One row per (store_id, country_code, seller_sku). Populated automatically after GET_MERCHANT_LISTINGS_ALL_DATA syncs via ListingsItems API — fetch-once, only new SKUs trigger API calls. No date partitioning — omit report_date when querying.",
+    "description": "Persistent listing image cache. One row per (store_id, country_code, seller_sku). Populated automatically after GET_MERCHANT_LISTINGS_ALL_DATA syncs via ListingsItems API — fetch-once, only new SKUs trigger API calls. No date in the unique key, so report_date='latest' applies no date filter here (omitting it works too) — never pin an explicit date, which would return only the SKUs touched by the newest enrichment batch.",
     "pii": false,
     "queryable": true,
     "deprecated": false,
