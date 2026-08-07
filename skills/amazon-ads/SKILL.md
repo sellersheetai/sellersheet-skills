@@ -231,9 +231,7 @@ Applies on top of the global sheet-approval convention (§2):
 4. Over-target: write bid-down intent to sheet; under-target with good volume:
    write bid-up intent → `ads_targets` action=update, items
    `{targetId, bid: {bid: <amount>}}` — read `reference/ads-v1/targets.md` first
-5. Same v1 tool covers SB keywords and SD targets (change `adProductFilter`).
-   Legacy fallback: `ads_sp_keywords` / `ads_sb_keywords` / `ads_sd_targets`
-   action=`update`
+5. Same v1 tool covers SB keywords and SD targets (change `adProductFilter`)
 
 ### D. Launch New Campaign (Bulk SP)
 
@@ -243,16 +241,22 @@ Applies on top of the global sheet-approval convention (§2):
 2. `ads_sp_bid_recommendations` — suggested bids for selected keywords/targets;
    starting daily budget from `ads_sp_initial_budget_recommendation`
 3. Write full campaign spec to sheet for user review
-4. `ads_sp_bulk_create` — creates campaign + ad groups + keywords/targets +
-   product ads in one call. It runs on the unified v1 API with server-side
-   orchestration: ids are chained between stages, every stage reports a
-   per-step result (`SUCCESS`/`PARTIAL`/`ERROR` per campaign), and a re-call
-   passing the returned `campaignId`/`adGroupId` (ad group must re-include
-   `defaultBid`) retries just the missing children — no manual sequencing
-   or cleanup
-5. Write returned campaign ID and ad group IDs to sheet. Building entity-by-
-   entity instead? Use the v1 tools (`ads_campaigns` → `ads_ad_groups` →
-   `ads_targets` → `ads_ads`) and read `reference/ads-v1/` first — SP creates
+4. `ads_sp_bulk_create` — the whole structure in one call on the unified v1
+   API: campaign + ad groups + product ads + targets. **The spec is
+   v1-native**: every target item is `{targetType, targetDetails, bid?,
+   state?}` with `targetDetails` exactly as `ads_targets` takes them
+   (keywords are `KEYWORD` targets; negatives are `negativeTargets` lists;
+   campaign-level negatives sit on the spec root). The request is strictly
+   validated and preflighted (name collisions, ASIN→SKU) BEFORE anything is
+   created — a bad payload is rejected whole with a field path, never
+   part-created. Ids are chained server-side with per-step results per
+   campaign (`SUCCESS`/`PARTIAL`/`ERROR`).
+5. Write returned campaignId + adGroupIds to sheet. A `PARTIAL` row is
+   resumed by re-calling with that row's `campaignId` (and each created
+   `adGroupId` with its `defaultBid`) — creation is skipped for anything
+   carrying an id and only missing children are created. Building
+   entity-by-entity instead? `ads_campaigns` → `ads_ad_groups` →
+   `ads_targets` → `ads_ads`, reading `reference/ads-v1/` first — SP creates
    require `marketplaceScope`/`marketplaces`/`startDateTime`, budget nests as
    `budgetValue.monetaryBudgetValue.monetaryBudget.value`, and an SP ad group
    cannot mix keyword and product targets
@@ -266,11 +270,9 @@ Applies on top of the global sheet-approval convention (§2):
    `negative: true` + `keywordTarget {keyword, matchType}`; scope with
    `adGroupId` (ad-group negative) or `campaignId` alone (campaign negative —
    blocks all ad groups). One tool for SP and SB; audit existing negatives
-   first with action=query + `negativeFilter {include: [true]}`. Read
+   first with action=query + `negativeFilter {include: [true]}` (or the
+   synced `rpt_*_negative_*` warehouse tables). Read
    `reference/ads-v1/targets.md` before composing.
-5. Legacy fallback (also the current-negatives warehouse audit): `ads_sp_neg_keywords` /
-   `ads_sp_campaign_neg_keywords` / `ads_sb_neg_keywords` (SB uses comma-string
-   filters — see tool docstring), plus the `rpt_*_negative_*` tables
 
 ### F. Budget Management
 
