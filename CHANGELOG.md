@@ -12,6 +12,33 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.11.3] — 2026-08-07
+
+### Fixed — `amazon-ads`
+
+Corrections from an enterprise QA sweep of the ads MCP surface. Every item was
+verified against the deployed tool docstrings, the vendored v1 catalog, or a live
+call — several long-standing statements in the skill turned out to be wrong.
+
+- **Retired tools removed from the taught path.** Recipe F1 offered the retired
+  per-product `ads_*_campaigns` update as a callable fallback, and
+  `reference/budget-rules.md` named those tools as *the* base-budget surface. Both
+  now route through v1 `ads_campaigns`, with the real budget nesting
+  (`budgets[0].budgetValue.monetaryBudgetValue.monetaryBudget.value`).
+- **SB/SD warehouse columns.** Recipes A and B applied SP-only column names to the
+  SB/SD tables. Verified against the live schema: `rpt_sb_*` / `rpt_sd_*` carry
+  `cost`, `sales`, `purchases` — there are no `_14d`-suffixed columns there.
+- **`report_date: "latest"` for spend rankings.** Recipe A ranked spend off
+  `"latest"`, which pins to a usually-zero-spend partial day; it now uses `"all"`
+  plus a trailing-date filter.
+- **`ads_sp_recommendations`.** The Tier-3 row contradicted the deployed docstring
+  in both directions — it offered `suggested_keywords` (endpoints Amazon shut off
+  2026-06-15, now 403) and warned against a default that IS the deployed default.
+- **Budget-rule bulk association** is documented as returning 401 on every account
+  tested, not "some accounts", so agents stop retrying per account.
+- Smaller: `ads_sp_bid_rules` gained its missing `list` op and
+  `ads_ad_associations` its `update`.
+
 ## [0.11.2] — 2026-07-17
 
 ### Changed
