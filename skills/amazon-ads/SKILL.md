@@ -23,10 +23,12 @@ entity at `reference/ads-v1/<entity>.md`** — complete leaf-level schema per ad
 product × verb, plus live-verified gotchas in `reference/ads-v1/README.md`.
 The legacy per-product tools (`ads_sp_*`, `ads_sb_*`, `ads_sd_*`) remain for
 surfaces v1 doesn't cover: portfolios, every recommendation endpoint, exports,
-change history, brand metrics, budget rules / budget usage, offline reports,
-and SP atomic bulk create. **Rule of thumb: entity CRUD (campaigns, ad groups,
-ads, targets incl. keywords + negatives) goes through v1; everything else is
-legacy by necessity, not preference.**
+change history, brand metrics, budget rules / budget usage, and offline
+reports. **Rule of thumb: entity CRUD (campaigns, ad groups, ads, targets
+incl. keywords + negatives) goes through v1; everything else is legacy by
+necessity, not preference.** `ads_sp_bulk_create` is v1 too — it orchestrates
+the v1 creates server-side (campaign → ad group → targets → ads, ids chained,
+per-step results).
 
 ---
 
@@ -241,9 +243,13 @@ Applies on top of the global sheet-approval convention (§2):
 2. `ads_sp_bid_recommendations` — suggested bids for selected keywords/targets;
    starting daily budget from `ads_sp_initial_budget_recommendation`
 3. Write full campaign spec to sheet for user review
-4. `ads_sp_bulk_create` — creates campaign + ad groups + keywords + product ads
-   atomically (deliberately legacy: v1 has no atomic composite create — the v1
-   equivalent is 4 sequential creates with partial-failure cleanup)
+4. `ads_sp_bulk_create` — creates campaign + ad groups + keywords/targets +
+   product ads in one call. It runs on the unified v1 API with server-side
+   orchestration: ids are chained between stages, every stage reports a
+   per-step result (`SUCCESS`/`PARTIAL`/`ERROR` per campaign), and a re-call
+   passing the returned `campaignId`/`adGroupId` (ad group must re-include
+   `defaultBid`) retries just the missing children — no manual sequencing
+   or cleanup
 5. Write returned campaign ID and ad group IDs to sheet. Building entity-by-
    entity instead? Use the v1 tools (`ads_campaigns` → `ads_ad_groups` →
    `ads_targets` → `ads_ads`) and read `reference/ads-v1/` first — SP creates
