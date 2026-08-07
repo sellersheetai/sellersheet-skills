@@ -12,6 +12,15 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.11.5] — 2026-08-07
+
+### Fixed — `report-data`
+
+- Retired-tool reference: "use the live `ads_sp_campaigns` / `ads_sb_campaigns` /
+  `ads_sd_campaigns` API" for a complete campaign inventory. Those per-product
+  tools were retired 2026-08-07; it is now `ads_campaigns` with
+  `action='query'` and an `adProductFilter`.
+
 ## [0.11.4] — 2026-08-07
 
 ### Fixed — `report-data`
