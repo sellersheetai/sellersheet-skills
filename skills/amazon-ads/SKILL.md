@@ -92,14 +92,13 @@ Campaign → Ad Group → Keywords / Targets → Product Ads
 - **SD**: `Campaign → Ad Group → Targets + Product Ads`
 
 Resolve IDs top-down before creating child entities — `ads_campaigns` /
-`ads_ad_groups` action=query (v1) to get IDs; legacy tools use `action='list'`.
+`ads_ad_groups` action=query to get IDs.
 
 ### 5. Campaign & Ad Group Naming Convention
 
-Every campaign you create — via the unified `ads_campaigns` (preferred) or the
-legacy `ads_sp_campaigns` / `ads_sb_campaigns` / `ads_sd_campaigns` /
-`ads_sp_bulk_create` — must follow this format. Audit existing campaigns against
-it before any rollout; flag deviations to the user.
+Every campaign you create — via `ads_campaigns` or `ads_sp_bulk_create` —
+must follow this format. Audit existing campaigns against it before any
+rollout; flag deviations to the user.
 
 ```
 <Country>_<ProductLine>_<AdType>_<Targeting>_<SKU>
@@ -444,15 +443,6 @@ even when everything failed — always read `error[]`; `delete` takes
 
 | Tool | Actions | Cross-cutting notes |
 |---|---|---|
-| `ads_sp_campaigns` | list / create / update / delete | |
-| `ads_sp_ad_groups` | list / create / update / delete | Needs campaignId |
-| `ads_sp_keywords` | list / create / update / delete | Needs campaignId + adGroupId |
-| `ads_sp_neg_keywords` | list / create / update / delete | Ad group level |
-| `ads_sp_campaign_neg_keywords` | list / create / delete | Campaign level — blocks all ad groups; no update |
-| `ads_sp_targets` | list / create / update / delete | ASIN / category targeting |
-| `ads_sp_neg_targets` | list / create / update / delete | Ad group level |
-| `ads_sp_campaign_neg_targets` | list / create / delete | Campaign level; no update |
-| `ads_sp_product_ads` | list / create / update / delete | Links ASIN or SKU to ad group |
 | `ads_sp_portfolios` | list / create / update | Delete not supported; state only ENABLED via API |
 | `ads_sp_recommendations` | — | Pass `type="ranked_keywords"` (preferred) or `type="suggested_keywords"`. ⚠️ The tool's documented default `type="ranked"` / `"suggested"` is **rejected by the route** — use the `_keywords` suffix or the call errors |
 | `ads_sp_bid_recommendations` | — | |
@@ -460,7 +450,10 @@ even when everything failed — always read `error[]`; `delete` takes
 | `ads_sp_category_suggestions` | — | Category targets recommended for a list of ASINs — the coarse half of product targeting |
 | `ads_sp_category_refinements` | — | Brand / age-range / genre facets targetable WITHIN one category (narrow a category target) |
 | `ads_sp_negative_brands` | recommendations / search | Brands to exclude as negative brand targets — Amazon's recommended exclusions, or search by keyword |
-| `ads_sp_bulk_create` | — | Full campaign structure atomically |
+| `ads_sp_bulk_create` | — | Full campaign structure in one call — v1-native spec (Recipe D) |
+
+_SP entity CRUD (campaigns, ad groups, keywords, targets, negatives, product
+ads) is the Unified v1 table above — there are no per-product CRUD tools._
 
 ### SP Analytics & Advanced SP
 
@@ -477,34 +470,18 @@ even when everything failed — always read `error[]`; `delete` takes
 
 | Tool | Actions | Cross-cutting notes |
 |---|---|---|
-| `ads_sb_campaigns` | list / create / update / delete | delete = list of campaignId strings |
-| `ads_sb_ad_groups` | list / create / update / delete | |
-| `ads_sb_keywords` | list / create / update / delete | |
-| `ads_sb_neg_keywords` | list / create / update / delete | **Filter format: comma-strings** — see docstring |
-| `ads_sb_targets` | list / create / update / delete | |
-| `ads_sb_neg_targets` | list / create / update / delete | |
-| `ads_sb_ads` | list / create / update / delete | Creatives (V4) |
 | `ads_sb_bid_recommendations` | — | |
 | `ads_sb_keyword_recommendations` | — | |
 
-**SB list-filter formats differ by tool** — check each docstring, don't assume:
-- Most SB tools (campaigns, ad_groups, keywords, targets, ads): `{"stateFilter": {"include": ["ENABLED"]}}` object form
-- `ads_sb_neg_keywords`: comma-strings — `{"stateFilter": "enabled,archived"}`
-- `ads_sb_neg_targets`: filters-array — `{"filters": [{"filterType": ..., "values": [...]}]}`
-
-No `ads_sb_portfolios` tool. Assign portfolios via `portfolioId` on create/update; manage in Seller Central.
+_SB entity CRUD (campaigns, ad groups, keywords, targets, negatives, ad
+creatives) is the Unified v1 table above._ No `ads_sb_portfolios` tool —
+assign portfolios via `portfolioId` on campaign create/update; manage in
+Seller Central.
 
 ### Sponsored Display (SD)
 
-**All SD tools use comma-string filters** (e.g. `"stateFilter": "enabled,paused"`) — see each tool's docstring.
-
 | Tool | Actions | Cross-cutting notes |
 |---|---|---|
-| `ads_sd_campaigns` | list / create / update / delete | delete = archives |
-| `ads_sd_ad_groups` | list / create / update / delete | delete = archives |
-| `ads_sd_targets` | list / create / update / delete | delete = archives |
-| `ads_sd_neg_targets` | list / create / update / delete | delete = archives |
-| `ads_sd_product_ads` | list / create / update / delete | delete = archives |
 | `ads_sd_bid_recommendations` | — | Body needs `bidOptimization`, `costType`, `targetingClauses` |
 | `ads_sd_budget_recommendations` | — | Takes `campaignIds` (list, **max 100**) directly — not a `body` dict |
 | `ads_sd_targeting_recommendations` | — | Body needs `tactic`, `products`, `typeFilter` |
@@ -567,8 +544,8 @@ The negative-entity and placement tables let you audit current negatives and
 placement-level performance without an entity-list call.
 
 These are **daily performance rows** — a campaign with no delivery in the window has no row, so
-never derive "how many campaigns exist" from them; call `ads_sp_campaigns` (or the SB/SD
-equivalent) for that. Prefer `report_date: "all"` + date filters over `"latest"` when analysing
+never derive "how many campaigns exist" from them; query the live `ads_campaigns`
+tool for that. Prefer `report_date: "all"` + date filters over `"latest"` when analysing
 cost or performance, since `"latest"` may land on a zero-spend partial day.
 
 Common SP column names (verify others in the reference json before filtering): `cost`,
