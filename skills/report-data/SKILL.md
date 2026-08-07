@@ -1,7 +1,7 @@
 ---
 name: report-data
-description: Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules, requesting on-demand reports, polling for completion, downloading TSV data to Drive, or analyzing any report table. Covers inventory, listings, orders, financial, brand analytics, and ad report (SP/SB/SD) tables.
-version: 0.11.5
+description: Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules, requesting on-demand reports, polling for completion, downloading a finished report document from its presigned URL, or analyzing any report table. Covers inventory, listings, orders, financial, brand analytics, and ad report (SP/SB/SD) tables.
+version: 0.11.6
 ---
 
 # Report Data
@@ -20,14 +20,14 @@ Use this skill when the user asks for:
 - Seller feedback or Brand Analytics search term / market basket / repeat purchase data
 - Listing status, images, or catalog state
 - Schema-aware querying of any synced report table
-- On-demand report creation, polling, or Drive download
+- On-demand report creation, polling, or raw document download
 
 ## Two Paths
 
 | Path | Use For | Tools |
 |------|---------|-------|
 | **Cron sync (primary)** | Recurring daily/weekly data — query without hitting Amazon | `query_report_data`, `list_report_syncs` |
-| **Manual flow** | On-demand fresh report, Drive TSV output, report type not in cron system | `sp_api_create_report`, `sp_api_get_report`, `sp_api_search_reports` |
+| **Manual flow** | On-demand fresh report you download and process yourself; report type not in cron system | `sp_api_create_report`, `sp_api_get_report`, `sp_api_search_reports` |
 
 **AI permissions:** Query and observe only. **Never call `enable_report_sync`, `trigger_report_sync`, or `disable_report_sync`** — those are admin operations managed server-side.
 
@@ -326,7 +326,13 @@ Unique key: `(store_id, snapshot_date, fnsku, country, condition_type)`.
 
 ## Path 2: Manual Flow (on-demand)
 
-Use when you need a fresh report, Drive TSV output, or the type isn't in the cron system.
+Use when you need a fresh report or the type isn't in the cron system.
+
+**Know this before you start:** when the report is DONE you get a **download
+URL**, not report data. The server never reads report documents — see
+[Step 8](#step-8-download-the-document-yourself-then-write-the-result). If you
+cannot download and process a file locally, prefer Path 1 or hand the user the
+link.
 
 ### Step 1: Identify the Store
 
@@ -395,34 +401,70 @@ while True:
     # Wait 2–5 minutes, then poll again
 ```
 
-### Step 8: Write sheetUrl + Analyze
+### Step 8: Download the document yourself, then write the result
+
+**DONE gives you a link, not data.** `sp_api_get_report` never reads the report
+body — report documents run to hundreds of MB and pulling one into the shared
+server takes the service down for every user on it. The DONE response is:
 
 ```
-sheet_url = result['data']['sheetUrl']   # Drive configured path
-preview   = result['data'].get('preview') # no-Drive fallback
-
-if sheet_url:
-    write_sheet(spreadsheetId, 'Store Reports!H{row}',
-        [[f'=HYPERLINK("{sheet_url}","View Report")']])
-    # Then read_sheet to analyze
-
-elif preview:
-    # Analyze preview directly — first 100 rows in data.preview
+data.processingStatus     = 'DONE'
+data.reportName           = human-readable name (use it to label output)
+data.documentUrl          = presigned S3 URL
+data.compressionAlgorithm = 'GZIP' | null
+data.urlExpiresInSeconds  = ~300
 ```
+
+There is **no** `document`, `preview`, `rowCount`, `jsonPreview` or `sheetUrl`.
+That is the contract, not a failure or a degraded mode.
+
+```bash
+curl -s '<documentUrl>' | gunzip > report.txt    # gunzip ONLY when
+                                                 # compressionAlgorithm == 'GZIP'
+```
+
+Then:
+
+1. **Sniff the format.** First character `{` or `[` → JSON analytics report
+   (Brand Analytics, Sales & Traffic…): parse the `dataBy…` arrays, never treat
+   it as TSV. Anything else → tab-separated flat file with a header row.
+2. **Process locally** (awk / grep / pandas / jq). Never read a whole report
+   document into context.
+3. **Write only the curated result** with `write_sheet`, then link that tab
+   from your tracking row.
+
+```
+write_sheet(spreadsheetId, 'Store Reports!H{row}',
+    [[f'=HYPERLINK("#gid={analysis_tab_gid}","Analysis")']])
+```
+
+**The URL carries `response-content-encoding=identity`**, so the bytes come back
+as **raw gzip** — your HTTP client will not decompress them for you.
+
+**Link expired?** Call `sp_api_get_report` again — Amazon re-mints the URL on
+every call. Nothing is lost, no need to re-create the report.
+
+**No shell or fetch capability?** Say so and give the user the link. Do not ask
+the server to send you the contents; it will not.
 
 ### processingStatus Reference
 
 | Status | Meaning | Action |
 |--------|---------|--------|
-| DONE | Downloaded | write sheetUrl, analyze |
+| DONE | Document ready | download `data.documentUrl`, analyze, write the result |
 | IN_QUEUE | Waiting to start | poll again in 2–5 min |
 | IN_PROGRESS | Amazon processing | poll again in 2–5 min |
 | CANCELLED | Amazon cancelled | retry `sp_api_create_report` |
 | FATAL | Amazon error | inform user; retry may not help |
 
-### Drive Folder Requirement
+### No Drive copy on this path
 
-`sp_api_get_report` writes TSV to Drive only if `storeReportsFolderId` is set in `user.workspace_config` (auto-configured when user opens the SellerSheet sidebar). Without it, `data.preview` is returned (first 100 rows) — ask user to open the sidebar, then call `sp_api_get_report` again.
+`sp_api_get_report` does not write anything to Drive — not for any report, not
+at any size, regardless of `storeReportsFolderId`. It hands you a download URL
+and you write the curated result yourself with `write_sheet`. (The SellerSheet
+**sidebar** still produces a Drive spreadsheet for reports small enough to fit
+one — that is the human path and a different surface. It downloads the same
+presigned URL client-side; the server reads report bodies on neither path.)
 
 ### Typical Processing Times
 
@@ -449,8 +491,8 @@ elif preview:
 | G | requestTime | Written on createReport |
 | H | reportId | Write immediately after create |
 | I | processingStatus | Keep updated while polling; FATAL rows append Amazon's errorDetails |
-| J | sheetUrl | Write when DONE (use =HYPERLINK formula) |
-| K | folderUrl | Drive folder link (optional) |
+| J | sheetUrl | Link to the analysis you wrote when DONE (use =HYPERLINK formula). Sidebar-created rows carry its own Drive copy here |
+| K | folderUrl | Drive folder link (sidebar path only; blank on the MCP path) |
 
 Row 1: machine headers (hidden) · Row 2: title banner · Row 3: display labels · Data: row 4+
 

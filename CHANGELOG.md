@@ -12,6 +12,29 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.11.6] — 2026-08-07
+
+### Changed — `report-data` (BREAKING for the manual report flow)
+
+- **`sp_api_get_report` now returns a download link, not report data.** The
+  server no longer reads report documents at all. A DONE response carries
+  `documentUrl` + `compressionAlgorithm` + `urlExpiresInSeconds`; the agent
+  downloads and processes the document itself.
+- **Removed from the DONE response:** `document`, `preview`, `rowCount`,
+  `jsonPreview`, `format`, `bytes`, `hasMore`, `truncated`, and the Google
+  Sheet copy (`sheetUrl` / `folderUrl` / `sheetFormula` / `folderFormula` /
+  `importing` / `cached`). The Drive TSV→Sheet import is gone with them.
+- **Why:** report documents are unbounded. A one-month
+  `GET_BRAND_ANALYTICS_SEARCH_TERMS_REPORT` for a US seller decompresses past a
+  gigabyte; reading one peaked at 2.96 GB RSS and the kernel OOM-killed the
+  shared MCP worker seven times on 2026-08-07, disconnecting unrelated users
+  mid-request. No size threshold fixes that — the server simply stops reading
+  report bodies for agents.
+- Step 8 of the manual flow is rewritten accordingly: download, sniff `{`/`[`
+  for JSON vs TSV, process locally, write only the curated result with
+  `write_sheet`. Expired link → call `sp_api_get_report` again; Amazon re-mints
+  the URL on every call.
+
 ## [0.11.5] — 2026-08-07
 
 ### Fixed — `report-data`
