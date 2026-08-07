@@ -117,8 +117,9 @@ filter than reverse-mapping `profile_id`.
 
 `rpt_sp_*` / `rpt_sb_*` / `rpt_sd_*` are **DAILY PERFORMANCE rows** — only campaigns with
 delivery in the window appear (live count 47 ENABLED vs 21 in the warehouse, observed). For a
-complete campaign inventory or count, use the live `ads_sp_campaigns` (`ads_sb_campaigns` /
-`ads_sd_campaigns`) API instead. Also: `report_date='latest'` pins to the newest **single**
+complete campaign inventory or count, use the live `ads_campaigns` API instead
+(`action='query'` with `adProductFilter` set to `SPONSORED_PRODUCTS` /
+`SPONSORED_BRANDS` / `SPONSORED_DISPLAY`). Also: `report_date='latest'` pins to the newest **single**
 probed-date value, which is often a zero-spend partial day — for any cost or performance
 analysis just add a date filter (which auto-switches 'latest' to 'all' — see Query Rules) or
 pass `report_date='all'` explicitly. The same daily-grain semantics apply to the Data Kiosk
