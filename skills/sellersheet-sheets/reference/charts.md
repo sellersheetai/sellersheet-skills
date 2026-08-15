@@ -48,7 +48,7 @@ add_sheet_chart(spreadsheet_id, dataRange, chartType, title,
 - Title states the takeaway with units, ≤ ~60 chars: `Revenue by Marketplace ($, T30D)` — not `Chart 1`.
 - Axis titles only when the unit isn't already in the chart title or obvious from labels.
 - `legendPosition='NO_LEGEND'` for single-series charts; `BOTTOM_LEGEND` otherwise.
-- Emerald `#10B981` is the brand accent — Sheets assigns default series colors and this tool doesn't override them; don't fight it, mention recoloring as a browser-side option only if the user asks.
+- Emerald `#0F9E70` is the brand accent — Sheets assigns default series colors and this tool doesn't override them; don't fight it, mention recoloring as a browser-side option only if the user asks.
 
 ## Verify (server-side limits)
 

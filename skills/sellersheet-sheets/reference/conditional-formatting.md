@@ -35,7 +35,7 @@ add_sheet_conditional_format(
     spreadsheet_id, range_="Inventory!I9:I1000",
     gradient=True,
     min_color=[0.929, 0.451, 0.431],   // red at low
-    mid_color=[1, 0.847, 0.42],         // amber midpoint
+    mid_color=[1, 0.8471, 0.4197],         // amber midpoint
     max_color=[0.557, 0.792, 0.58],     // green at high
     min_value=0, mid_value=8, max_value=20)
 ```

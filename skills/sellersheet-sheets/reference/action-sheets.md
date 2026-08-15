@@ -26,7 +26,7 @@ Anchored in the live SellerSheet vendor workbook redesign (May 2026). The three 
 
 ## The decision: 3-row header vs 5-row header
 
-Every action surface gets a row-1 title banner (merged emerald). Below the banner, a sheet is one of two shapes. Pick before writing anything else.
+Every action surface gets a hidden row-1 machine-key row and a row-2 emerald title banner — NEVER merged: format the band, write the title in the first cell (v2 hard rule; merges break freeze panes). Below the banner, a sheet is one of two shapes. Pick before writing anything else.
 
 | Shape | When | Header rows | Data starts |
 |---|---|---|---|
@@ -68,9 +68,9 @@ function styleKeyHeaderRow(sheet, row, lastCol) {
 sheet.hideRows(1);
 ```
 
-### Row 2 — title banner (emerald, merged, brand presence)
+### Row 2 — title banner (emerald format band, brand presence)
 
-The first row the operator sees. Merged across the full column width. Brand-and-context text — `"SellerSheet • <SheetName>"` — in white Arial 14pt bold on emerald `#10B981`. Row height ~34 px. This is the row that makes every visible tab read as one branded workbook, per the brand-standards rule "Title bars on every visible tab wear emerald."
+The first row the operator sees. A FORMAT BAND across the full column width — never merged (v2 hard rule; merges break freeze panes). Brand-and-context text — `"SellerSheet • <SheetName>"` — written in the FIRST cell only, white Arial 14pt bold on brand Evergreen `#0F9E70` (NOT `#10B981` — that is semantic.success). Row height ~34 px. This is the row that makes every visible tab read as one branded workbook, per the brand-standards rule "Title bars on every visible tab wear emerald."
 
 ```javascript
 function styleTitleRow(sheet, row, lastCol, titleText) {
@@ -78,13 +78,13 @@ function styleTitleRow(sheet, row, lastCol, titleText) {
   sheet.getRange(row, 1).setValue(titleText);
   sheet.getRange(row, 1, 1, lastCol).merge()
     .setFontFamily('Arial').setFontSize(14).setFontColor('#FFFFFF')
-    .setBackground('#10B981').setFontWeight('bold')
+    .setBackground('#0F9E70').setFontWeight('bold')
     .setVerticalAlignment('middle').setHorizontalAlignment('left');
   sheet.setRowHeight(row, 34);
 }
 ```
 
-Title text format: `'SellerSheet • <SheetName>'` (use the bullet `•` U+2022 between brand and sheet name). Keep it short — this row should not need to wrap. Left-aligned, not centered — the title is a brand label, not a heading; centering merged banners makes the text float in dead space when the sheet is wide. Both rows 1 and 2 count toward `setFrozenRows` (the hidden row still occupies a logical slot in the frozen pane).
+Title text format: `'SellerSheet • <SheetName>'` (use the bullet `•` U+2022 between brand and sheet name). Keep it short — this row should not need to wrap. Left-aligned, not centered — the title is a brand label, not a heading; centering banner bands makes the text float in dead space when the sheet is wide. Both rows 1 and 2 count toward `setFrozenRows` (the hidden row still occupies a logical slot in the frozen pane).
 
 ```javascript
 // helper used in setupVendorSheet
@@ -106,7 +106,7 @@ In a **5-row sheet**, row 3 is the **filter-label band** — same emerald stylin
 function styleEmeraldRow(sheet, row, lastCol) {
   sheet.getRange(row, 1, 1, lastCol)
     .setFontFamily('Arial').setFontSize(10).setFontColor('#FFFFFF')
-    .setBackground('#10B981').setFontWeight('bold')
+    .setBackground('#0F9E70').setFontWeight('bold')
     .setVerticalAlignment('middle').setHorizontalAlignment('left');
   sheet.setRowHeight(row, 28);
 }
@@ -137,7 +137,7 @@ Default values: `'DESC'` in the Sort Order column; everything else blank. Operat
 
 ### Row 5 — navy display headers (5-row only)
 
-Full-width navy `[0.157, 0.2, 0.318]` (`#28334F`) band, Arial 10pt bold white text. Same style as row 3 of a 3-row sheet but in navy because this surface is read-mode, not action-mode.
+Full-width navy `[0.1569, 0.2, 0.3099]` (`#28334F`) band, Arial 10pt bold white text. Same style as row 3 of a 3-row sheet but in navy because this surface is read-mode, not action-mode.
 
 This is also the row where Sheets' **basic filter** dropdown arrows appear (see next section). On a 5-row sheet they sit on row 5; on a 3-row sheet they sit on row 3 (the emerald display row).
 
@@ -151,7 +151,7 @@ function styleNavyHeaderRow(sheet, row, lastCol) {
 }
 ```
 
-All header rows (title, emerald label, navy display) are **left-aligned**. Matches data-cell default behavior (text left, numbers right), keeps header text anchored to col A so the operator's eye lands in the same place per row. Center-aligning header rows on wide sheets makes labels float in dead space; merged emerald banners look especially awkward centered on a 20-col sheet.
+All header rows (title, emerald label, navy display) are **left-aligned**. Matches data-cell default behavior (text left, numbers right), keeps header text anchored to col A so the operator's eye lands in the same place per row. Center-aligning header rows on wide sheets makes labels float in dead space; emerald banner bands look especially awkward centered on a 20-col sheet.
 
 ## Basic filter on the display-header row
 
@@ -204,7 +204,7 @@ Both can be set at once. Row 4 narrows the pull, then row 5 narrows the view fur
 
 This is the single most useful design rule in the whole pattern:
 
-- **Emerald `#10B981`** marks the row the operator EDITS/ACTS on. Display headers of an action sheet (3-row layout), filter-label rows on a browse sheet (5-row). Also the title banner on row 2 of every sheet.
+- **[SUPERSEDED by v2 — headers are always navy]** Emerald once marked the row the operator EDITS/ACTS on. Under Direction D emerald `#0F9E70` appears ONLY on the row-2 banner; every display/label row is navy `#28334F` with font color carrying the input class.
 - **Navy `#28334F`** marks the row the operator READS. Display headers of a list/browse sheet (5-row layout).
 
 Same workbook can have both. The vendor workbook:
@@ -444,7 +444,7 @@ Idempotency rules:
 When building an action sheet, this is the checklist:
 
 1. **Row 1 = HIDDEN code-contract row**: lowerCamelCase keys, Arial 7pt gray. Hidden via `sheet.hideRows(1)`. Code reads these via `getColumnMapping(headers)`.
-2. **Row 2 = emerald title banner** merged across full width: `"SellerSheet • <SheetName>"`, Arial 14pt bold white on `#10B981`. First row the operator sees on every visible tab.
+2. **Row 2 = emerald title banner** — format band across full width, NEVER merged, title in the first cell: `"SellerSheet • <SheetName>"`, Arial 14pt bold white on `#0F9E70`. First row the operator sees on every visible tab.
 3. **Decide shape**: 3-row (action surface) or 5-row (filter + browse). Frozen rows match — including the hidden row 1.
 4. **Emerald = where operator acts; Navy = where operator reads.** Never both on same workflow row. Title row is brand-only and doesn't count toward this rule.
 5. **Filter rows narrow to A-L**: emerald band stops at col 12, cols M+ white-padded.

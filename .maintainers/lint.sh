@@ -77,6 +77,31 @@ declare -a FORBIDDEN=(
   "@sellersheet/mcp-server"                # npm package is a 404, removed 0.5.1
   "Settings → API"                         # dashboard page does not exist; real path: MCP & API keys
   "Stores → Connect Advertising"           # real UI: My Stores → Authorize Ads
+  # -- internal-repo references: public skills must be self-contained (2026-08-15) --
+  "sellersheet_flask_app"                  # internal monorepo name
+  "google_sheet_addon"                     # internal GAS source tree
+  "docs/design/"                           # internal design docs
+  "docs/superpowers"                       # internal plans/specs
+  "amz-reporting-server"                   # internal reporting repo
+  "flask/app/"                             # internal server source
+  "tools/check_convention_drift"           # internal dev lint
+  "sheet-template-dev"                     # internal dev skill
+  # -- drifted design constants purged 2026-08-15: must never reappear --
+  "#10B881"
+  "#283351"
+  "#25314B"
+  "#FFD76B"
+  "#8B9FB3"
+  "[0.063, 0.725, 0.506]"                  # 3-decimal floats truncate one RGB step low
+  "[0.157, 0.2, 0.318]"
+  "[1, 0.847, 0.42]"
+  "[1.0, 0.847, 0.42]"
+  "[0.549, 0.627, 0.702]"
+  "[0.063,0.725,0.506]"                    # no-space variants of the same drifted floats
+  "[0.157,0.2,0.318]"
+  "[1,0.847,0.42]"
+  "[0.549,0.627,0.702]"
+  "OPTIONAL · 选填"                        # canonical tag is OPTIONAL · 可选
 )
 for pat in "${FORBIDDEN[@]}"; do
   H=$(grep -rFn "$pat" skills/ docs/ README.md mcp/ install.sh 2>/dev/null || true)

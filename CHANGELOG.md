@@ -12,6 +12,33 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.11.7] — 2026-08-15
+
+### Fixed — official design-system values (`sellersheet-sheets`, `sellersheet-dashboard`)
+
+- **Brand banner color corrected to the official Evergreen `#0F9E70`** in every
+  palette table and code sample. `#10B981` is SellerSheet's semantic *success*
+  green — it was never the banner color; sheets built from the old samples had
+  an off-brand banner.
+- **All MCP RGB floats upgraded to truncation-safe 4-decimal values.** The
+  Google Sheets API truncates float→byte, so the previous 3-decimal floats
+  rendered one RGB step low (gold came out `#FFD76B` instead of `#FFD86B`,
+  navy `#283351` instead of `#28334F`). The floats shipped in this release are
+  exact — use them verbatim.
+- Note-tag vocabulary unified (`OPTIONAL · 可选`); banner rows documented as
+  format bands — never merged (merges break freeze panes).
+
+### Changed — `report-data`
+
+- Data Kiosk reference schemas are now pointed at the GraphQL query files that
+  ship with the `data-kiosk` skill; removed stale references.
+
+### Maintainers
+
+- `lint.sh` gains release-blocking guards for internal-reference markers and
+  the retired color constants; `CLAUDE.md` gains the explicit "public content
+  is self-contained and sanitized" protocol.
+
 ## [0.11.6] — 2026-08-07
 
 ### Changed — `report-data` (BREAKING for the manual report flow)

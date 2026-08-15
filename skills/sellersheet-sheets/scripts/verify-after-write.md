@@ -85,7 +85,7 @@ For SQL-spill header rows (navy bg + white bold):
 
 ```python
 get_sheet_cell(spreadsheet_id, range_="Tab!<header_cell>")
-# Check effective_format.backgroundColor — should be approximately [0.157, 0.2, 0.318]
+# Check effective_format.backgroundColor — should be approximately [0.1569, 0.2, 0.3099]
 # Check effective_format.textFormat.foregroundColor — should be approximately [1, 1, 1]
 # Check effective_format.textFormat.bold — should be true
 ```
@@ -154,7 +154,7 @@ Server-side `read_sheet` cannot verify:
 | All formulas evaluate without error | `read_sheet` whole tab, scan for `#REF!` / `#ERROR!` / `#VALUE!` / `#N/A` |
 | `=SQL(` cells are pending, not broken | `get_sheet_cell` on the cell; confirm formula starts with `=SQL(` and `effective_value.error.type` is `NAME` not `REF` |
 | Number formats applied | `get_sheet_cell` on sample cells; check `effective_format.numberFormat.pattern` |
-| Header rows have navy bg | `get_sheet_cell` on header cell; check `effective_format.backgroundColor` ≈ [0.157, 0.2, 0.318] |
+| Header rows have navy bg | `get_sheet_cell` on header cell; check `effective_format.backgroundColor` ≈ [0.1569, 0.2, 0.3099] |
 | Spills don't collide with footers/sections | spill anchor cell's `effective_value` is non-error; `effective_value.error.message` if present mentions specific overflow cell |
 | Open ranges grow correctly | append one test row to `_raw_*`; re-read visible tab |
 | Conditional formats applied | check the conditional-format list or visually inspect |
