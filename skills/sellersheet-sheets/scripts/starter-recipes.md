@@ -13,7 +13,7 @@ add_sheet_tab(spreadsheet_id, "Findings")
 # 2. Title + freshness
 write_sheet(spreadsheet_id, "Findings!A1", [["Audit Findings — <subject>"]])
 format_sheet_range(spreadsheet_id, "Findings!A1",
-    background_color=[0.063, 0.725, 0.506], font_color=[1,1,1], bold=True, font_size=18)
+    background_color=[0.0589, 0.6197, 0.4393], font_color=[1,1,1], bold=True, font_size=18)
 
 write_sheet(spreadsheet_id, "Findings!A2",
     [["Generated " + iso_timestamp + " · " + str(n_findings) + " findings · severity gradient on column D"]])
@@ -24,7 +24,7 @@ format_sheet_range(spreadsheet_id, "Findings!A2",
 write_sheet(spreadsheet_id, "Findings!A4:F4",
     [["Report Type", "Region", "Column", "Severity", "Drift %", "Recommended Fix"]])
 format_sheet_range(spreadsheet_id, "Findings!A4:F4",
-    background_color=[0.157, 0.2, 0.318], font_color=[1,1,1], bold=True)
+    background_color=[0.1569, 0.2, 0.3099], font_color=[1,1,1], bold=True)
 freeze_sheet_panes(spreadsheet_id, "Findings", rows=4)
 
 # 4. Write findings rows
@@ -35,7 +35,7 @@ set_sheet_number_format(spreadsheet_id, "Findings!E5:E1000", "0.0%;(0.0%);-")
 add_sheet_conditional_format(spreadsheet_id, "Findings!E5:E1000",
     gradient=True,
     min_color=[0.557, 0.792, 0.58],   # green low drift
-    mid_color=[1, 0.847, 0.42],        # amber midpoint
+    mid_color=[1, 0.8471, 0.4197],        # amber midpoint
     max_color=[0.929, 0.451, 0.431],   # red high drift
     min_value=0, mid_value=0.05, max_value=0.20)
 
@@ -69,7 +69,7 @@ write_sheet(spreadsheet_id, "_raw_catalog!A2:E<m+1>", catalog_rows)
 # 4. Build the visible tab — title + freshness + spill
 write_sheet(spreadsheet_id, "Inventory!A1", [["Inventory — multi-store"]])
 format_sheet_range(spreadsheet_id, "Inventory!A1",
-    background_color=[0.063, 0.725, 0.506], font_color=[1,1,1], bold=True, font_size=18)
+    background_color=[0.0589, 0.6197, 0.4393], font_color=[1,1,1], bold=True, font_size=18)
 
 write_sheet(spreadsheet_id, "Inventory!A2", [[freshness_pill_text]])
 
@@ -97,7 +97,7 @@ write_sheet_formula(spreadsheet_id, "Inventory!B8",
 
 # 6. Format the spilled header row (row 8, where SQL output's header lands)
 format_sheet_range(spreadsheet_id, "Inventory!A8:H8",
-    background_color=[0.157, 0.2, 0.318], font_color=[1,1,1], bold=True)
+    background_color=[0.1569, 0.2, 0.3099], font_color=[1,1,1], bold=True)
 
 # 7. Image column width (fixed 50 px). Do NOT set a row height — the thumbnail
 #    renders at the default ~21 px row, which is all a quick SKU reminder needs.
@@ -150,7 +150,7 @@ add_sheet_named_range(spreadsheet_id, "terminal_mult", "Assumptions!B5")
 write_sheet(spreadsheet_id, "Model!A1:F1",
     [["Year", "Revenue", "Growth", "EBITDA", "Margin", "PV"]])
 format_sheet_range(spreadsheet_id, "Model!A1:F1",
-    background_color=[0.063, 0.725, 0.506], font_color=[1,1,1], bold=True)
+    background_color=[0.0589, 0.6197, 0.4393], font_color=[1,1,1], bold=True)
 
 # Year 1 — formula references named range
 write_sheet_formula(spreadsheet_id, "Model!B2", "=B1*(1+growth_y1)")
@@ -181,12 +181,12 @@ ppc_id = next(t["sheetId"] for t in tabs if t["title"] == "PPC")
 # 2. HOME tiles — each row is a KPI band with a HYPERLINK to drill
 write_sheet(spreadsheet_id, "HOME!A4", [["WHAT TO TOUCH TODAY"]])
 format_sheet_range(spreadsheet_id, "HOME!A4",
-    background_color=[0.063, 0.725, 0.506], font_color=[1,1,1], bold=True)
+    background_color=[0.0589, 0.6197, 0.4393], font_color=[1,1,1], bold=True)
 
 write_sheet(spreadsheet_id, "HOME!A5:E5",
     [["Indicator", "Value", "Status", "Subtext", "Drill"]])
 format_sheet_range(spreadsheet_id, "HOME!A5:E5",
-    background_color=[0.157, 0.2, 0.318], font_color=[1,1,1], bold=True)
+    background_color=[0.1569, 0.2, 0.3099], font_color=[1,1,1], bold=True)
 
 write_sheet(spreadsheet_id, "HOME!A6:D6",
     [["Inventory at risk", "=COUNTIFS('_raw_inventory'!A:A, \"<store>\", '_raw_inventory'!<woc_col>, \"<4\")",
@@ -206,7 +206,7 @@ add_sheet_conditional_format(spreadsheet_id, "HOME!C6:C100",
     background_color=[0.929, 0.451, 0.431], font_color=[1,1,1])
 add_sheet_conditional_format(spreadsheet_id, "HOME!C6:C100",
     condition_type="CUSTOM_FORMULA", value='=$C6="AMBER"',
-    background_color=[1, 0.847, 0.42])
+    background_color=[1, 0.8471, 0.4197])
 add_sheet_conditional_format(spreadsheet_id, "HOME!C6:C100",
     condition_type="CUSTOM_FORMULA", value='=$C6="GREEN"',
     background_color=[0.557, 0.792, 0.58], font_color=[1,1,1])
@@ -224,19 +224,19 @@ add_sheet_tab(spreadsheet_id, "README")
 write_sheet(spreadsheet_id, "README!A1",
     [["<Report name> — <store(s)>"]])
 format_sheet_range(spreadsheet_id, "README!A1",
-    background_color=[0.063, 0.725, 0.506], font_color=[1,1,1], bold=True, font_size=14)
+    background_color=[0.0589, 0.6197, 0.4393], font_color=[1,1,1], bold=True, font_size=14)
 
 write_sheet(spreadsheet_id, "README!A2",
     [["Built <date> · <one-line description>. First open: Sheets will prompt 'Allow access to external images' — required for product thumbnails. Enable SellerSheet add-on (Extensions → SellerSheet → Open) for SQL() to evaluate."]])
 
 write_sheet(spreadsheet_id, "README!A4", [["TABS IN THIS WORKBOOK"]])
 format_sheet_range(spreadsheet_id, "README!A4",
-    background_color=[0.157, 0.2, 0.318], font_color=[1,1,1], bold=True)
+    background_color=[0.1569, 0.2, 0.3099], font_color=[1,1,1], bold=True)
 
 write_sheet(spreadsheet_id, "README!A5:D5",
     [["Tab", "Business question", "Refresh", "Notes"]])
 format_sheet_range(spreadsheet_id, "README!A5:D5",
-    background_color=[0.157, 0.2, 0.318], font_color=[1,1,1], bold=True)
+    background_color=[0.1569, 0.2, 0.3099], font_color=[1,1,1], bold=True)
 
 write_sheet(spreadsheet_id, "README!A6:D<n>", tab_rows)
 

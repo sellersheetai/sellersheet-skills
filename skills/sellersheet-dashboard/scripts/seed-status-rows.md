@@ -10,7 +10,7 @@ Template `_status` rows for the 12 standard `_raw_*` tabs. Substitute `<store>` 
  "last_error", "pull_run_id", "agent_actions_count"]
 ```
 
-Format: emerald `[0.063, 0.725, 0.506]` bg + white bold. Freeze row 1.
+Format: emerald `[0.0589, 0.6197, 0.4393]` bg + white bold. Freeze row 1.
 
 ## Data rows — single-store template
 

@@ -25,7 +25,7 @@ L=superseded_by (row_id, blank if current — non-blank rows are hidden by the F
 
 ### Header row format
 
-Apply emerald `[0.063, 0.725, 0.506]` bg + white bold + freeze row 1.
+Apply emerald `[0.0589, 0.6197, 0.4393]` bg + white bold + freeze row 1.
 
 ## `_agent_log` — append-only delta audit
 

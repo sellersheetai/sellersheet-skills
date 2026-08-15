@@ -1,7 +1,7 @@
 ---
 name: report-data
 description: Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules, requesting on-demand reports, polling for completion, downloading a finished report document from its presigned URL, or analyzing any report table. Covers inventory, listings, orders, financial, brand analytics, and ad report (SP/SB/SD) tables.
-version: 0.11.6
+version: 0.11.7
 ---
 
 # Report Data
@@ -162,7 +162,7 @@ Allowed ops: `sum`, `count`, `avg`, `min`, `max` — the key is **`op`** (not `f
 - Always use fully-qualified column names: `table_name.column_name`.
 - Use the `db_column` values from the reference JSONs exactly as written.
 - `report_date` controls the date filter. **When omitted, the default is registry-derived**: snapshot/roster tables → `"latest"`, daily-fact and ledger tables → `"all"` (the response notes the defaulting) — so the naive query does the right thing on every table class. Explicit values always win. Three modes plus one auto-override:
-    - `"latest"` (default) → **the newest snapshot of each MARKETPLACE**, not one date pinned across the whole store. Snapshot reports are fetched per marketplace and each stamps its own `snapshot_date`, so the old scalar `MAX(date)` rule silently deleted every row of whichever marketplace ingested a day late (DE behind UK → zero DE SKUs, success response, no warning). The partition is the tenant scope + the marketplace column *as named in that table's unique key* (`country_code`, `country`, `marketplace_id`, `profile_id` — the spelling varies and is read from the key, never guessed). Note the unit is deliberately the marketplace and **not** the entity: "newest row per SKU" was considered and rejected, because a snapshot is a full copy, so a SKU deleted from the catalog would keep returning yesterday's row forever as a phantom (`docs/superpowers/specs/2026-08-03-latest-per-entity-design.md` — its title says per-entity, its first section is the correction away from it). Right for **snapshot tables** (`rpt_get_afn_inventory_data`, `rpt_get_merchant_listings_all_data`, `rpt_get_v2_seller_performance_report`, `rpt_get_fba_myi_all_inventory_data`) where each day overwrites the previous. **You do not need `"all"` + a client-side dedup pass to see all marketplaces** — that workaround is obsolete.
+    - `"latest"` (default) → **the newest snapshot of each MARKETPLACE**, not one date pinned across the whole store. Snapshot reports are fetched per marketplace and each stamps its own `snapshot_date`, so the old scalar `MAX(date)` rule silently deleted every row of whichever marketplace ingested a day late (DE behind UK → zero DE SKUs, success response, no warning). The partition is the tenant scope + the marketplace column *as named in that table's unique key* (`country_code`, `country`, `marketplace_id`, `profile_id` — the spelling varies and is read from the key, never guessed). Note the unit is deliberately the marketplace and **not** the entity: "newest row per SKU" was considered and rejected, because a snapshot is a full copy, so a SKU deleted from the catalog would keep returning yesterday's row forever as a phantom. Right for **snapshot tables** (`rpt_get_afn_inventory_data`, `rpt_get_merchant_listings_all_data`, `rpt_get_v2_seller_performance_report`, `rpt_get_fba_myi_all_inventory_data`) where each day overwrites the previous. **You do not need `"all"` + a client-side dedup pass to see all marketplaces** — that workaround is obsolete.
     - `"all"` → no date filter. Right for **ID-based lookups** on incremental tables (find a specific `amazon_order_id`, `settlement_id`, `asin`, etc.) where you don't know which date the row was last touched — mandatory for `rpt_orders`, `rpt_get_v2_settlement_report_data_flat_file_v2`, `rpt_get_flat_file_returns_data_by_return_date`, `rpt_get_fba_fulfillment_removal_order_detail_data`, `rpt_get_ledger_detail_view_data`, `rpt_get_fba_reimbursements_data` lookups by primary key — **and for every date-range pull on a date-grain table** (ads dailies, `rpt_dk_*`).
     - `"YYYY-MM-DD"` → exact-date match. Right for **historical analysis** ("what was inventory on 2026-04-15?").
     - **AUTO-OVERRIDE**: when any filter targets a Date/DateTime column of the primary table, `"latest"` automatically behaves as `"all"` — your explicit temporal filter wins over the implicit newest-day pin. The response flags this in `data.report_date_note`. So a natural range query (`date >= '2026-06-10'`) just works without remembering to set `report_date`; pass an explicit `"YYYY-MM-DD"` to pin a specific day regardless.
@@ -193,9 +193,9 @@ Allowed ops: `sum`, `count`, `avg`, `min`, `max` — the key is **`op`** (not `f
 | `rpt_get_merchants_listings_fyp_report` | GET_MERCHANTS_LISTINGS_FYP_REPORT | suppressed SKUs; parser handles English + FR + lowercase header variants |
 | `listing_images` | (enriched from rpt_get_merchant_listings_all_data) | persistent image URL cache — see below |
 
-Full index: `.claude/skills/report-data/_meta.json` (45 entries; 2 marked deprecated). S&T now comes from Data Kiosk into `rpt_dk_sales_traffic_by_date` / `rpt_dk_sales_traffic_by_asin`; reference schemas for the Data Kiosk path live in `docs/sp-api-data-kiosk-schemas/` and `docs/sp-api-report-schemas/`.
+Full index: `.claude/skills/report-data/_meta.json` (45 entries; 2 marked deprecated). S&T now comes from Data Kiosk into `rpt_dk_sales_traffic_by_date` / `rpt_dk_sales_traffic_by_asin`; the exact Data Kiosk GraphQL query files ship with the data-kiosk skill (`.claude/skills/data-kiosk/reference/`).
 
-**Calibration verified 2026-05-04** end-to-end against real Amazon TSV/JSON across 5 stores. See `amz-reporting-server/docs/REPORT_CALIBRATION_STATUS.md` for per-report findings.
+**Calibration verified 2026-05-04** end-to-end against real Amazon TSV/JSON across 5 stores.
 
 ### Deliberate naming exceptions
 
@@ -535,7 +535,7 @@ On success: old `dataEndTime` → `dataStartTime`, today → `dataEndTime`.
 | Market Basket Analysis | GET_BRAND_ANALYTICS_MARKET_BASKET_REPORT |
 | Repeat Purchase Report | GET_BRAND_ANALYTICS_REPEAT_PURCHASE_REPORT |
 
-Full list of 114 types: `flask/app/shared/report_types.py`, or call `sp_api_search_reports` without `reportType`.
+Full list of 114 types: call `sp_api_search_reports` without `reportType`.
 
 ## Date Range Guidelines
 

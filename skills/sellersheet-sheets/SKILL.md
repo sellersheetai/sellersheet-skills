@@ -1,7 +1,7 @@
 ---
 name: sellersheet-sheets
 description: Use whenever Google Sheets is the deliverable surface and SellerSheet MCP is the tool for sheet I/O. Reads, writes, formats, builds reports, dashboards, financial models, and live-data tables in Google Sheets via SellerSheet MCP endpoints (read_sheet, write_sheet, write_sheet_formula, format_sheet_range, set_sheet_number_format, add_sheet_chart, add_sheet_conditional_format, add_sheet_dropdown, etc.). Trigger when the user references a docs.google.com/spreadsheets URL, asks to publish output to a Google Sheet, builds anything in the SellerSheet workbook ecosystem, needs the live SQL() spill + image-thumbnail patterns, or builds an operator action surface (filter rows, Amazon enum dropdowns, status chips). Do NOT trigger for local .xlsx files — that's a different skill. This skill is self-contained — no need to load xlsx or any other sheet skill alongside; xlsx-style conventions (financial color coding, number formats, formula best practices) are adapted inline.
-version: 0.11.6
+version: 0.11.7
 ---
 
 # SellerSheet Google Sheets — via MCP
@@ -62,11 +62,11 @@ For action sheets (operator inputs into the data) the additional 9-rule checklis
 
 | Use | Color name | RGB |
 |---|---|---|
-| **Banner row** (row 2; row 1 is the hidden machine row) | SellerSheet emerald | `[0.063, 0.725, 0.506]` |
-| **Section band** | Same emerald | `[0.063, 0.725, 0.506]` |
-| **Sub-header / column header / SQL-spilled table header** | Navy | `[0.157, 0.2, 0.318]` |
+| **Banner row** (row 2; row 1 is the hidden machine row) | SellerSheet emerald | `[0.0589, 0.6197, 0.4393]` |
+| **Section band** | Same emerald | `[0.0589, 0.6197, 0.4393]` |
+| **Sub-header / column header / SQL-spilled table header** | Navy | `[0.1569, 0.2, 0.3099]` |
 | **Status chip RED** | Red | `[0.929, 0.451, 0.431]` |
-| **Status chip AMBER** | Amber-orange | `[1.0, 0.847, 0.42]` |
+| **Status chip AMBER** | Amber-orange | `[1.0, 0.8471, 0.4197]` |
 | **Status chip GREEN** | Green | `[0.557, 0.792, 0.58]` |
 | **Footer callout / overflow notice** | Soft yellow | `[1.0, 0.949, 0.8]` |
 | **Metadata / subtext bar** | Light gray-blue | `[0.929, 0.945, 0.961]` |
@@ -116,7 +116,7 @@ Every build ends here. Create a TodoWrite item per line, work through them, and 
 - [ ] **`#NAME?` is pending ONLY on `=SQL(` / `=IMAGE(` cells.** `#NAME?` on any other formula (`=ARRAYFORMULA`, `=FILTER`, `=VLOOKUP`, …) is a real bug — fix it. Never wave a `#REF!`/`#ERROR!` through as "the add-on will fix it on open" — that is the #1 builder mistake (`error-semantics.md` Golden Rule).
 - [ ] **Spot-check server-side formulas evaluate.** 2–3 `=SUM`/`=VLOOKUP`/`=ARRAYFORMULA` cells: `effective_value` is the computed result, not the formula string and not `None`.
 - [ ] **Row counts match.** Wrote N rows → `_raw_*` has N+1 (with header). A shortfall signals chunked-write truncation or empty-string masquerading (`reference/mcp-gotchas.md`).
-- [ ] **Number formats + brand colors applied.** Sample a currency/percent/date cell and a header cell; confirm `effective_format` matches intent (navy header ≈ `[0.157, 0.2, 0.318]`).
+- [ ] **Number formats + brand colors applied.** Sample a currency/percent/date cell and a header cell; confirm `effective_format` matches intent (navy header ≈ `[0.1569, 0.2, 0.3099]` → exactly `#28334F`).
 - [ ] **Growth test** (growable tables only). Append one `_raw_*` row, confirm the SQL spill + chips + image join expand, then remove it.
 
 ### Server-side can't see everything — the user finishes it, once
@@ -150,7 +150,7 @@ out in one pass without probing it.
 | Band | Role | Style | Hidden? |
 |---|---|---|---|
 | **machine** | code-contract keys (`store`, `asn_nr`, `imageUrl`, lowerCamelCase) — code reads/writes by name via a header-map lookup, so columns can be reordered later | Arial 7pt, grey `#A8AEB8`, white bg, normal weight | **yes — `hideRows(1)`** |
-| **banner** | brand band `SellerSheet • <Sheet>` | Arial 14pt bold white on emerald `#10B981`, left-aligned, **never merged** | no |
+| **banner** | brand band `SellerSheet • <Sheet>` | Arial 14pt bold white on brand Evergreen `#0F9E70` (`[0.0589, 0.6197, 0.4393]`; NOT `#10B981` = semantic.success), left-aligned, **never merged** | no |
 | **bands** *(opt)* | section spans (STA metadata, noon Inbound ①②③) | navy `#28334F` spans, label in first cell of each span | no |
 | **controls** *(opt)* | a **label row + a value row** — operator inputs (Store/Status/filters) | label: navy bg + font-color semantics; value: input-bg `#EDF1F5` | no |
 | **display** | the human-read column header | navy `#28334F` bg, **slate `#8CA0B3`** font, **EN·CN cell notes** | no |

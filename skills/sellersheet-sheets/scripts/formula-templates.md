@@ -112,7 +112,7 @@ add_sheet_conditional_format(
     spreadsheet_id, range_="Inventory!I9:I1000",
     gradient=True,
     min_color=[0.929, 0.451, 0.431],
-    mid_color=[1, 0.847, 0.42],
+    mid_color=[1, 0.8471, 0.4197],
     max_color=[0.557, 0.792, 0.58],
     min_value=0, mid_value=8, max_value=20)
 ```
@@ -175,19 +175,19 @@ Pull real `<sheet_id>` from `list_sheet_tabs` — never hardcode plain text arro
 30-day line:
 
 ```javascript
-=SPARKLINE(_raw_metric_daily!B2:B31, {"charttype","line"; "color1","#10B981"; "linewidth",2})
+=SPARKLINE(_raw_metric_daily!B2:B31, {"charttype","line"; "color1","#0F9E70"; "linewidth",2})
 ```
 
 Win/loss for binary daily state:
 
 ```javascript
-=SPARKLINE(_raw_buybox_daily!B2:B31, {"charttype","winloss"; "color1","#10B981"; "negcolor","#EE7370"})
+=SPARKLINE(_raw_buybox_daily!B2:B31, {"charttype","winloss"; "color1","#0F9E70"; "negcolor","#EE7370"})
 ```
 
 Bounded axis (e.g. AHR with 0-1000 range):
 
 ```javascript
-=SPARKLINE(_raw_ahr_daily!B2:B31, {"charttype","line"; "color1","#10B981"; "ymin",0; "ymax",1000})
+=SPARKLINE(_raw_ahr_daily!B2:B31, {"charttype","line"; "color1","#0F9E70"; "ymin",0; "ymax",1000})
 ```
 
 ## Common aggregations on HOME

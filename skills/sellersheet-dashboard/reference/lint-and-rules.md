@@ -126,7 +126,7 @@ Never use `SUMIFS(spend, name, "*"&REGEXEXTRACT(sku,...)&"*")` to attribute ad c
 
 | Mistake | Symptom | Fix |
 |---|---|---|
-| Title bar navy instead of emerald | Visual inconsistency across tabs | `[0.063, 0.725, 0.506]` on row 1 of every visible tab |
+| Title bar navy instead of emerald | Visual inconsistency across tabs | `[0.0589, 0.6197, 0.4393]` on row 1 of every visible tab |
 | Image column NOT at column A on a SKU table | Operator can't recognize SKUs quickly | Move image to A, push SKU to B |
 | `IMAGE()` inside `ARRAYFORMULA` | `#REF!` even after Allow Access | Use `MAP(FILTER(...), LAMBDA(url, IF(url="","",IMAGE(url))))` |
 | Closed SQL range `_raw_x!A1:M77` | Table doesn't grow when raw data is appended | Open range `_raw_x!A1:M` |

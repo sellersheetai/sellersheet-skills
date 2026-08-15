@@ -1,5 +1,9 @@
 # Brand standards + output quality
 
+> These are SellerSheet's OFFICIAL design-system values, maintained upstream
+> and shipped with this skill. Treat them as fixed constants — never adjust
+> them per-sheet; updated values arrive with skill releases.
+
 The visual + numeric conventions every Google Sheet from this skill must satisfy. Mirrors and adapts the openpyxl/xlsx financial-model conventions for the SellerSheet MCP color format (RGB 0-1 floats).
 
 ## Professional font
@@ -31,11 +35,11 @@ If asked to "update" a sheet that has a different font, color scheme, or layout:
 
 | Use | RGB | Hex |
 |---|---|---|
-| **Title bar (row 1)** | `[0.063, 0.725, 0.506]` | `#10B981` SellerSheet emerald |
-| **Section band** | `[0.063, 0.725, 0.506]` | same emerald, merged across width |
-| **Sub-header / column header / SQL-spilled table header** | `[0.157, 0.2, 0.318]` | `#283351` navy |
+| **Title bar (banner row)** | `[0.0589, 0.6197, 0.4393]` | `#0F9E70` brand Evergreen (NOT #10B981 = semantic.success) |
+| **Section band** | `[0.0589, 0.6197, 0.4393]` | same Evergreen — format band, NEVER merged |
+| **Sub-header / column header / SQL-spilled table header** | `[0.1569, 0.2, 0.3099]` | `#28334F` navy |
 | **Status chip RED** | `[0.929, 0.451, 0.431]` | `#ED736E` |
-| **Status chip AMBER** | `[1.0, 0.847, 0.42]` | `#FFD86B` |
+| **Status chip AMBER** | `[1, 0.8471, 0.4197]` | `#FFD86B` |
 | **Status chip GREEN** | `[0.557, 0.792, 0.58]` | `#8ECA94` |
 | **Status chip GRAY** | `[0.78, 0.78, 0.78]` | `#C7C7C7` |
 | **Footer callout / overflow notice** | `[1.0, 0.949, 0.8]` | `#FFF2CC` soft yellow |
@@ -46,24 +50,24 @@ If asked to "update" a sheet that has a different font, color scheme, or layout:
 
 Title bars on **every visible tab** wear emerald — the workbook reads as one brand.
 
-The MCP color format is `[r, g, b]` floats in `[0.0, 1.0]`. Not the openpyxl-style hex string. Convert by dividing 0-255 ints by 255.
+The MCP color format is `[r, g, b]` floats in `[0.0, 1.0]`. Not the openpyxl-style hex string. Convert by dividing 0-255 ints by 255 and **round the 4th decimal UP — the Sheets API TRUNCATES float→byte**, so a 3-decimal float lands one RGB step low (e.g. 0.847×255 = 215.985 truncates to 215 = D7 instead of D8). The floats in this file are the canonical, truncation-safe values — use them verbatim.
 
 ## Header System v2 — "Direction D" (CANONICAL since 2026-06-11)
 
-Chosen by the operator after a four-direction mockup review (full spec:
-`docs/design/SHEET-DESIGN-SYSTEM.md` in the sellersheet_flask_app repo). **One header
+Chosen after a four-direction mockup review (SellerSheet design decision,
+2026-06-11). **One header
 background; font color carries the input semantics.** Supersedes the emerald-vs-navy
 band split below.
 
-- **Banner**: emerald `#10B981` `[0.063, 0.725, 0.506]`, white 14pt bold. Title text in the
+- **Banner**: brand Evergreen `#0F9E70` `[0.0589, 0.6197, 0.4393]` (NOT `#10B981` — that is SellerSheet's semantic success green), white 14pt bold. Title text in the
   first cell only — band formatted across its width, **NEVER merged** (merges break freeze panes).
 - **Every header/label row** (display headers, filter labels, config labels) on every sheet:
-  navy `#28334F` `[0.157, 0.2, 0.318]` background. No emerald display rows, no amber or
+  navy `#28334F` `[0.1569, 0.2, 0.3099]` background. No emerald display rows, no amber or
   soft-yellow header fills.
 - **Font color = input class**:
-  - REQUIRED input → gold `#FFD86B` `[1, 0.847, 0.42]` bold, plus a trailing ` ✎`
+  - REQUIRED input → gold `#FFD86B` `[1, 0.8471, 0.4197]` bold, plus a trailing ` ✎`
   - OPTIONAL input → white `#FFFFFF` bold, plus a trailing ` ✎`
-  - AUTO (button/agent-filled) → slate `#8CA0B3` `[0.549, 0.627, 0.702]`
+  - AUTO (button/agent-filled) → slate `#8CA0B3` `[0.5491, 0.6275, 0.702]`
 - **The pencil is the TEXT glyph `✎` (U+270E)** — it inherits the cell font color. Never the
   emoji `✏️` (fixed emoji colors = palette noise).
 - **Machine-parsed rows get formatting only** — row-1 key rows and any row code reads to build
@@ -84,7 +88,7 @@ band split below.
 
 Two band colors, two roles. Get the assignment right or the visual hierarchy collapses.
 
-- **Emerald `#10B981`** marks rows where the operator EDITS or ACTS — display headers of an action sheet, filter-label rows on a browse sheet.
+- **Emerald** (then `#10B981`) marked rows where the operator EDITS or ACTS — display headers of an action sheet, filter-label rows on a browse sheet.
 - **Navy `#28334F`** marks rows where the operator READS — display headers of a list / status / browse sheet.
 
 Same workbook can have both. A typical action workbook has:
@@ -130,7 +134,7 @@ Apply consistently: don't mix `$#,##0` and `$#,##0.00` within the same column.
 
 | Anti-pattern | Why it's bad | Do instead |
 |---|---|---|
-| Title bar navy instead of emerald | Visual inconsistency across tabs | Emerald `[0.063, 0.725, 0.506]` on row 1 of every visible tab |
+| Title bar navy instead of emerald | Visual inconsistency across tabs | Emerald `[0.0589, 0.6197, 0.4393]` on row 1 of every visible tab |
 | Image column placed at column G or later | Operator can't scan SKUs quickly | Image always at column A |
 | Closed SQL range `_raw_x!A1:M77` | Table doesn't grow when raw data is appended | Open range `_raw_x!A1:M` |
 | Footer / summary BELOW the growable table | Growth collides; user has to push notes down | Always put footers ABOVE the table |

@@ -1,7 +1,7 @@
 ---
 name: sellersheet-dashboard
 description: Use when building or maintaining an Amazon operator dashboard on Google Sheets via SellerSheet MCP — multi-tab status views for inventory, PPC, account health, listings, profit/margin, returns, buy box, cash conversion. Triggers on phrases like "build a dashboard", "operator dashboard", "FBA dashboard", "PPC dashboard", "Amazon overview sheet", "seller dashboard", and on follow-ups like "refresh the dashboard", "add an insight", "the freshness is wrong". Composes the tab plan, applies SellerSheet brand visuals, wires `rpt_*` warehouse data → `_raw_*` tabs → `SQL()` spill → visible tabs with thumbnails, and instruments each cell with provenance + freshness so the dashboard self-explains. Builds on `sellersheet-sheets` (sheet primitives + brand palette + SQL() patterns) and `report-data` (rpt_* tables). NOT for one-off reports — use `sellersheet-sheets` directly for those.
-version: 0.11.6
+version: 0.11.7
 ---
 
 # SellerSheet Operator Dashboard
@@ -55,7 +55,7 @@ If the user picks (a), proceed but populate ad-related `_raw_*` tabs with sentin
 
 ## What a SellerSheet operator dashboard looks like
 
-A single Google Sheet, one tab per business function. Every visible tab surfaces **decisions** the operator must make today, not raw data. Every row earns its place by changing a behavior. The whole workbook reads as one brand: emerald `[0.063, 0.725, 0.506]` titles, navy `[0.157, 0.2, 0.318]` column headers, red/amber/green status chips. Hidden `_raw_*` tabs back the visible spills.
+A single Google Sheet, one tab per business function. Every visible tab surfaces **decisions** the operator must make today, not raw data. Every row earns its place by changing a behavior. The whole workbook reads as one brand: emerald `[0.0589, 0.6197, 0.4393]` titles, navy `[0.1569, 0.2, 0.3099]` column headers, red/amber/green status chips. Hidden `_raw_*` tabs back the visible spills.
 
 **Three layers, one contract:**
 
@@ -134,7 +134,7 @@ Row 150 OR 400   AGENT INSIGHTS section (anchor depends on overflow guard — se
 
 **Footers never go below the table.** The growable table is always the last data element. AGENT INSIGHTS goes **below the spill with overflow buffer**.
 
-**Every SQL-spilled header row gets a navy background + white bold.** Apply with `format_sheet_range(... background_color=[0.157, 0.2, 0.318], font_color=[1,1,1], bold=True)` to the cell range where the spill's header row lands.
+**Every SQL-spilled header row gets a navy background + white bold.** Apply with `format_sheet_range(... background_color=[0.1569, 0.2, 0.3099], font_color=[1,1,1], bold=True)` to the cell range where the spill's header row lands.
 
 **Every SQL spill MUST end with `LIMIT N`** matching the row budget — see `reference/sql-limits.md` for the per-data-scope defaults.
 

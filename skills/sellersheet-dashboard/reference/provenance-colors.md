@@ -16,7 +16,7 @@ Lets a reader answer "where does this number come from, when was it last touched
 | **User input** | `[1.000, 0.949, 0.800]` | `#FFF2CC` | Yellow — `_raw_cogs` operator-edit cells (selling price, FBA fee, product cost, weight). |
 | **Config readback** | `[0.953, 0.973, 0.961]` | `#F3F8F6` | Cells that resolve via `cfg_fx` / `cfg_ship_rmb_kg` / `cfg_referral_pct` named ranges. Same emerald family as brand band, but 8% saturation — subliminally "config". |
 
-All five tints are ΔE > 4 from each other and from the SellerSheet emerald brand band `[0.063, 0.725, 0.506]`. No accidental collisions.
+All five tints are ΔE > 4 from each other and from the SellerSheet emerald brand band `[0.0589, 0.6197, 0.4393]`. No accidental collisions.
 
 ## Cell notes — mandatory, structured
 
@@ -50,20 +50,20 @@ Provenance fills are the **content** signal. The rest of the palette is the **st
 
 | Element | Color | Notes |
 |---|---|---|
-| Title bar row 1 | Emerald `[0.063, 0.725, 0.506]`, white bold 18pt | Every visible tab |
+| Title bar row 1 | Emerald `[0.0589, 0.6197, 0.4393]`, white bold 18pt | Every visible tab |
 | Freshness pill row 2 | bg `[0.929, 0.945, 0.961]`, font `[0.4,0.4,0.4]`, 9pt italic | One line of metadata; live formula from `_status` |
-| Section band | Emerald `[0.063, 0.725, 0.506]`, white bold 11pt | Merged across full width |
-| Sub-header / column header | Navy `[0.157, 0.2, 0.318]`, white bold | The row that holds column names |
-| **SQL-spilled table header row** | **Navy `[0.157, 0.2, 0.318]`, white bold** | Apply to the cell range where the spill's header lands (e.g. `Inventory and Restock!A14:K14`) |
+| Section band | Emerald `[0.0589, 0.6197, 0.4393]`, white bold 11pt | Merged across full width |
+| Sub-header / column header | Navy `[0.1569, 0.2, 0.3099]`, white bold | The row that holds column names |
+| **SQL-spilled table header row** | **Navy `[0.1569, 0.2, 0.3099]`, white bold** | Apply to the cell range where the spill's header lands (e.g. `Inventory and Restock!A14:K14`) |
 | TOP 3 FIRES banner | Red `[0.815, 0.220, 0.220]`, white bold 12pt | HOME!A4 only |
-| AGENT INSIGHTS section band | Emerald `[0.063, 0.725, 0.506]`, white bold | One per visible tab, anchored row 150 or 400 |
+| AGENT INSIGHTS section band | Emerald `[0.0589, 0.6197, 0.4393]`, white bold | One per visible tab, anchored row 150 or 400 |
 | KPI value cell | Bold 14pt | Big number tiles on HOME |
 | REORDER chip | Red `[0.929, 0.451, 0.431]`, white | Conditional formatting on the Decision column |
 | SOON chip | Amber-orange `[1, 0.65, 0.42]`, white | |
 | HOLD chip | Green `[0.557, 0.792, 0.58]`, white | |
 | REVIEW chip | Brown-gray `[0.65, 0.6, 0.55]`, white | |
 | DEAD / DORMANT chip | Dark gray `[0.45, 0.45, 0.45]`, white | |
-| WoC / margin gradient | Red `[0.929,0.451,0.431]` → Amber `[1,0.847,0.42]` → Green `[0.557,0.792,0.58]` | Open-range conditional gradient |
+| WoC / margin gradient | Red `[0.929,0.451,0.431]` → Amber `[1,0.8471,0.4197]` → Green `[0.557,0.792,0.58]` | Open-range conditional gradient |
 | Status badge GREEN-fresh | `[0.776, 0.91, 0.835]` | On `_status.status` column |
 | Status badge AMBER-aging | `[1, 0.898, 0.6]` | On `_status.status` column |
 | Status badge RED-stale / RED-error | `[0.957, 0.78, 0.765]` | On `_status.status` column |
