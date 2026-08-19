@@ -79,7 +79,8 @@ band split below.
   "which SKU is this" reminder, not a detail view.
 - Filter-input / config-value rows keep the light gray-blue `#EDF1F5` input band, italic.
 - Cell notes are bilingual and tag-first (`REQUIRED · 必填` / `OPTIONAL · 可选` /
-  `CONDITIONAL · 视情况必填` / `AUTO · 自动填写（勿改）`), matching the font-color class.
+  `CONDITIONAL · 视情况必填` / `AUTO · 自动填写（勿改）` / `AUTO · AI 生成，可编辑` /
+  `AUTO · AI 翻译，可编辑` for translation-output columns), matching the font-color class.
 
 ## [SUPERSEDED 2026-06-11] Emerald vs navy — the action-vs-read rule
 
