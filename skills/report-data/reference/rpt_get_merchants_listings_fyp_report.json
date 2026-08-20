@@ -16,7 +16,7 @@
       "sku",
       "asin",
       "condition",
-      "issue_description",
+      "issue_key",
       "country_code"
     ],
     "cron": "9 1 * * *",
@@ -62,6 +62,11 @@
     {
       "db_column": "issue_description",
       "amazon_header": "Issue Description (also: 'Issue description' on myStore-CA; 'Description du problème' on FR-account-default EU)",
+      "type": "str"
+    },
+    {
+      "db_column": "issue_key",
+      "amazon_header": "(derived: sha256(issue_description)[:16]; stable key for the same issue text — the prose stays in issue_description)",
       "type": "str"
     },
     {
