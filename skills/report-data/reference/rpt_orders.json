@@ -377,6 +377,31 @@
    "amazon_header": "(infrastructure)",
    "type": "date",
    "note": "Worker-stamped sync/provenance date (marketplace-local report day), not an Amazon field."
+  },
+  {
+   "db_column": "ioss_number",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
+  },
+  {
+   "db_column": "address_type",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
+  },
+  {
+   "db_column": "is_heavy_or_bulky",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
+  },
+  {
+   "db_column": "license_expiration_date",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "date"
+  },
+  {
+   "db_column": "license_state",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
   }
  ],
  "example_query": {
