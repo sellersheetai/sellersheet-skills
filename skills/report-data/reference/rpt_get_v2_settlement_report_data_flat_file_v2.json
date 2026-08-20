@@ -41,7 +41,8 @@
   {
    "db_column": "deposit_date",
    "amazon_header": "deposit-date",
-   "type": "date"
+   "type": "timestamptz",
+   "note": "UTC instant (timestamptz). Serialized without offset in query responses — treat as UTC."
   },
   {
    "db_column": "total_amount",
@@ -194,6 +195,18 @@
    "amazon_header": "(derived from posted-date-time)",
    "type": "timestamptz",
    "note": "Typed UTC twin of posted_date_time (added + fully backfilled 2026-08-20; count-parity verified on prod). Use THIS for time filtering/sorting; posted_date stays the DATE-grain key column."
+  },
+  {
+   "db_column": "store_id",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Internal tenant scope — auto-applied from `store`; never filter on it manually."
+  },
+  {
+   "db_column": "extra",
+   "amazon_header": "(infrastructure)",
+   "type": "json",
+   "note": "JSON of Amazon columns with no dedicated DB column (unmapped/new headers land here)."
   }
  ],
  "example_query": {

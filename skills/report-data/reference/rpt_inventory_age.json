@@ -1,25 +1,130 @@
 {
-  "_meta": {
-    "table": "rpt_inventory_age",
-    "naming_note": "RETIRED 2026-05-04. Deliberately keeps its legacy name — not renamed to an Amazon report-type name, since it exists only for legacy reads.",
-    "report_type": "GET_FBA_INVENTORY_AGED_DATA",
-    "is_snapshot": true,
-    "description": "RETIRED 2026-05-04. Aged inventory data lives in GET_FBA_INVENTORY_PLANNING_DATA's inv_age_* buckets and GET_FBA_MYI_ALL_INVENTORY_DATA's afn-warehouse columns. Table preserved for legacy reads only.",
-    "pii": false,
-    "queryable": false,
-    "deprecated": true,
-    "retired_at": "2026-05-04",
-    "strategy": "request",
-    "date_column": "snapshot_date",
-    "unique_key": [
-      "store_id",
-      "snapshot_date",
-      "sku",
-      "condition",
-      "country_code"
-    ],
-    "cron": "0 7 * * *"
+ "_meta": {
+  "table": "rpt_inventory_age",
+  "naming_note": "RETIRED 2026-05-04. Deliberately keeps its legacy name — not renamed to an Amazon report-type name, since it exists only for legacy reads.",
+  "report_type": "GET_FBA_INVENTORY_AGED_DATA",
+  "is_snapshot": true,
+  "description": "RETIRED 2026-05-04. Aged inventory data lives in GET_FBA_INVENTORY_PLANNING_DATA's inv_age_* buckets and GET_FBA_MYI_ALL_INVENTORY_DATA's afn-warehouse columns. Table preserved for legacy reads only.",
+  "pii": false,
+  "queryable": false,
+  "deprecated": true,
+  "retired_at": "2026-05-04",
+  "strategy": "request",
+  "date_column": "snapshot_date",
+  "unique_key": [
+   "store_id",
+   "snapshot_date",
+   "sku",
+   "condition",
+   "country_code"
+  ],
+  "cron": "0 7 * * *"
+ },
+ "columns": [
+  {
+   "db_column": "store_id",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Internal tenant scope — auto-applied from `store`; never filter on it manually."
   },
-  "columns": [],
-  "example_query": null
+  {
+   "db_column": "snapshot_date",
+   "amazon_header": "(infrastructure)",
+   "type": "date",
+   "note": "Worker-stamped snapshot date — report_date='latest' resolves on this."
+  },
+  {
+   "db_column": "country_code",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Marketplace code (UK/US/AE/...). Auto-filtered from the store suffix on per-marketplace tables."
+  },
+  {
+   "db_column": "sku",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
+  },
+  {
+   "db_column": "fnsku",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
+  },
+  {
+   "db_column": "asin",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
+  },
+  {
+   "db_column": "product_name",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
+  },
+  {
+   "db_column": "condition",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
+  },
+  {
+   "db_column": "storage_type",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
+  },
+  {
+   "db_column": "inv_age_0_90",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "int"
+  },
+  {
+   "db_column": "inv_age_91_180",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "int"
+  },
+  {
+   "db_column": "inv_age_181_270",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "int"
+  },
+  {
+   "db_column": "inv_age_271_365",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "int"
+  },
+  {
+   "db_column": "inv_age_365_plus",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "int"
+  },
+  {
+   "db_column": "qty_to_be_charged_ltsf_6_mo",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "int"
+  },
+  {
+   "db_column": "projected_ltsf_6_mo",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "decimal"
+  },
+  {
+   "db_column": "qty_to_be_charged_ltsf_12_mo",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "int"
+  },
+  {
+   "db_column": "projected_ltsf_12_mo",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "decimal"
+  },
+  {
+   "db_column": "qty_in_excess_of_365_days",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "int"
+  },
+  {
+   "db_column": "extra",
+   "amazon_header": "(infrastructure)",
+   "type": "json",
+   "note": "JSON of Amazon columns with no dedicated DB column (unmapped/new headers land here)."
+  }
+ ],
+ "example_query": null
 }

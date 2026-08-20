@@ -1,189 +1,213 @@
 {
-  "_meta": {
-    "table": "rpt_sb_purchased_products",
-    "report_type": "sbPurchasedProduct",
-    "is_snapshot": false,
-    "description": "Sponsored Brands purchased products report.",
-    "pii": false,
-    "queryable": true,
-    "deprecated": false,
-    "strategy": "ad_cron",
-    "date_column": "report_date",
-    "unique_key": [
-      "store_id",
-      "profile_id",
-      "report_date",
-      "campaign_id",
-      "ad_group_id",
-      "purchased_asin"
-    ],
-    "cron": "0 1 * * *",
-    "retention_days": 400,
-    "retention_note": "rows older than 400 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note"
-  },
-  "columns": [
-    {
-      "db_column": "country_code",
-      "amazon_header": "(derived from profile_id — denormalized 2026-05-20)",
-      "type": "str",
-      "note": "Marketplace this ads row belongs to. Query ads data per (store, country_code) directly — no need to reverse-map profile_id."
-    },
-    {
-      "db_column": "report_date",
-      "type": "date"
-    },
-    {
-      "db_column": "start_date",
-      "type": "date"
-    },
-    {
-      "db_column": "end_date",
-      "type": "date"
-    },
-    {
-      "db_column": "currency_code",
-      "type": "str"
-    },
-    {
-      "db_column": "campaign_id",
-      "type": "str"
-    },
-    {
-      "db_column": "campaign_name",
-      "type": "str"
-    },
-    {
-      "db_column": "ad_group_id",
-      "type": "str"
-    },
-    {
-      "db_column": "ad_group_name",
-      "type": "str"
-    },
-    {
-      "db_column": "keyword_id",
-      "type": "str"
-    },
-    {
-      "db_column": "target_id",
-      "type": "str"
-    },
-    {
-      "db_column": "purchased_asin",
-      "type": "str"
-    },
-    {
-      "db_column": "orders_14d",
-      "amazon_header": "orders14d",
-      "type": "int",
-      "note": "14-day attributed orders"
-    },
-    {
-      "db_column": "sales_14d",
-      "amazon_header": "sales14d",
-      "type": "decimal",
-      "note": "14-day attributed sales"
-    },
-    {
-      "db_column": "units_sold_14d",
-      "amazon_header": "unitsSold14d",
-      "type": "int",
-      "note": "14-day attributed units sold"
-    },
-    {
-      "db_column": "new_to_brand_orders_14d",
-      "amazon_header": "newToBrandOrders14d",
-      "type": "int"
-    },
-    {
-      "db_column": "new_to_brand_orders_percentage_14d",
-      "amazon_header": "newToBrandOrdersPercentage14d",
-      "type": "decimal"
-    },
-    {
-      "db_column": "new_to_brand_purchases_14d",
-      "amazon_header": "newToBrandPurchases14d",
-      "type": "int"
-    },
-    {
-      "db_column": "new_to_brand_purchases_percentage_14d",
-      "amazon_header": "newToBrandPurchasesPercentage14d",
-      "type": "decimal"
-    },
-    {
-      "db_column": "new_to_brand_sales_14d",
-      "amazon_header": "newToBrandSales14d",
-      "type": "decimal"
-    },
-    {
-      "db_column": "new_to_brand_sales_percentage_14d",
-      "amazon_header": "newToBrandSalesPercentage14d",
-      "type": "decimal"
-    },
-    {
-      "db_column": "new_to_brand_units_sold_14d",
-      "amazon_header": "newToBrandUnitsSold14d",
-      "type": "int"
-    },
-    {
-      "db_column": "new_to_brand_units_sold_percentage_14d",
-      "amazon_header": "newToBrandUnitsSoldPercentage14d",
-      "type": "decimal"
-    },
-    {
-      "db_column": "attribution_type",
-      "amazon_header": "attributionType",
-      "type": "str",
-      "note": "e.g. Promoted"
-    },
-    {
-      "db_column": "budget_currency",
-      "amazon_header": "budgetCurrency",
-      "type": "str",
-      "note": "campaign budget currency"
-    },
-    {
-      "db_column": "product_category",
-      "amazon_header": "productCategory",
-      "type": "str",
-      "note": "purchased ASIN category"
-    },
-    {
-      "db_column": "product_name",
-      "amazon_header": "productName",
-      "type": "str",
-      "note": "purchased ASIN title"
-    },
-    {
-      "db_column": "campaign_budget",
-      "amazon_header": "campaignBudgetAmount",
-      "type": "decimal"
-    },
-    {
-      "db_column": "campaign_budget_type",
-      "amazon_header": "campaignBudgetType",
-      "type": "str"
-    }
+ "_meta": {
+  "table": "rpt_sb_purchased_products",
+  "report_type": "sbPurchasedProduct",
+  "is_snapshot": false,
+  "description": "Sponsored Brands purchased products report.",
+  "pii": false,
+  "queryable": true,
+  "deprecated": false,
+  "strategy": "ad_cron",
+  "date_column": "report_date",
+  "unique_key": [
+   "store_id",
+   "profile_id",
+   "report_date",
+   "campaign_id",
+   "ad_group_id",
+   "purchased_asin"
   ],
-  "example_query": {
-    "store": "myStore-AE",
-    "tables": [
-      "rpt_sb_purchased_products"
-    ],
-    "columns": [
-      "rpt_sb_purchased_products.purchased_asin",
-      "rpt_sb_purchased_products.purchases",
-      "rpt_sb_purchased_products.sales",
-      "rpt_sb_purchased_products.new_to_brand_purchases"
-    ],
-    "filters": [],
-    "order_by": [
-      {
-        "column": "rpt_sb_purchased_products.sales",
-        "dir": "desc"
-      }
-    ],
-    "limit": 50,
-    "report_date": "latest"
+  "cron": "0 1 * * *",
+  "retention_days": 400,
+  "retention_note": "rows older than 400 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note"
+ },
+ "columns": [
+  {
+   "db_column": "country_code",
+   "amazon_header": "(derived from profile_id — denormalized 2026-05-20)",
+   "type": "str",
+   "note": "Marketplace this ads row belongs to. Query ads data per (store, country_code) directly — no need to reverse-map profile_id."
+  },
+  {
+   "db_column": "report_date",
+   "type": "date"
+  },
+  {
+   "db_column": "start_date",
+   "type": "date"
+  },
+  {
+   "db_column": "end_date",
+   "type": "date"
+  },
+  {
+   "db_column": "currency_code",
+   "type": "str"
+  },
+  {
+   "db_column": "campaign_id",
+   "type": "str"
+  },
+  {
+   "db_column": "campaign_name",
+   "type": "str"
+  },
+  {
+   "db_column": "ad_group_id",
+   "type": "str"
+  },
+  {
+   "db_column": "ad_group_name",
+   "type": "str"
+  },
+  {
+   "db_column": "keyword_id",
+   "type": "str"
+  },
+  {
+   "db_column": "target_id",
+   "type": "str"
+  },
+  {
+   "db_column": "purchased_asin",
+   "type": "str"
+  },
+  {
+   "db_column": "orders_14d",
+   "amazon_header": "orders14d",
+   "type": "int",
+   "note": "14-day attributed orders"
+  },
+  {
+   "db_column": "sales_14d",
+   "amazon_header": "sales14d",
+   "type": "decimal",
+   "note": "14-day attributed sales"
+  },
+  {
+   "db_column": "units_sold_14d",
+   "amazon_header": "unitsSold14d",
+   "type": "int",
+   "note": "14-day attributed units sold"
+  },
+  {
+   "db_column": "new_to_brand_orders_14d",
+   "amazon_header": "newToBrandOrders14d",
+   "type": "int"
+  },
+  {
+   "db_column": "new_to_brand_orders_percentage_14d",
+   "amazon_header": "newToBrandOrdersPercentage14d",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_purchases_14d",
+   "amazon_header": "newToBrandPurchases14d",
+   "type": "int"
+  },
+  {
+   "db_column": "new_to_brand_purchases_percentage_14d",
+   "amazon_header": "newToBrandPurchasesPercentage14d",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_sales_14d",
+   "amazon_header": "newToBrandSales14d",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_sales_percentage_14d",
+   "amazon_header": "newToBrandSalesPercentage14d",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_units_sold_14d",
+   "amazon_header": "newToBrandUnitsSold14d",
+   "type": "int"
+  },
+  {
+   "db_column": "new_to_brand_units_sold_percentage_14d",
+   "amazon_header": "newToBrandUnitsSoldPercentage14d",
+   "type": "decimal"
+  },
+  {
+   "db_column": "attribution_type",
+   "amazon_header": "attributionType",
+   "type": "str",
+   "note": "e.g. Promoted"
+  },
+  {
+   "db_column": "budget_currency",
+   "amazon_header": "budgetCurrency",
+   "type": "str",
+   "note": "campaign budget currency"
+  },
+  {
+   "db_column": "product_category",
+   "amazon_header": "productCategory",
+   "type": "str",
+   "note": "purchased ASIN category"
+  },
+  {
+   "db_column": "product_name",
+   "amazon_header": "productName",
+   "type": "str",
+   "note": "purchased ASIN title"
+  },
+  {
+   "db_column": "campaign_budget",
+   "amazon_header": "campaignBudgetAmount",
+   "type": "decimal"
+  },
+  {
+   "db_column": "campaign_budget_type",
+   "amazon_header": "campaignBudgetType",
+   "type": "str"
+  },
+  {
+   "db_column": "store_id",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Internal tenant scope — auto-applied from `store`; never filter on it manually."
+  },
+  {
+   "db_column": "profile_id",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Ads profile id (one per marketplace) — auto-filtered from the store suffix; do not filter manually."
+  },
+  {
+   "db_column": "ingested_at",
+   "amazon_header": "(infrastructure)",
+   "type": "timestamptz",
+   "note": "Row ingest timestamp (UTC). Bookkeeping, not business data. UTC instant (timestamptz). Serialized without offset in query responses — treat as UTC."
+  },
+  {
+   "db_column": "extra",
+   "amazon_header": "(infrastructure)",
+   "type": "json",
+   "note": "JSON of Amazon columns with no dedicated DB column (unmapped/new headers land here)."
   }
+ ],
+ "example_query": {
+  "store": "myStore-AE",
+  "tables": [
+   "rpt_sb_purchased_products"
+  ],
+  "columns": [
+   "rpt_sb_purchased_products.purchased_asin",
+   "rpt_sb_purchased_products.purchases",
+   "rpt_sb_purchased_products.sales",
+   "rpt_sb_purchased_products.new_to_brand_purchases"
+  ],
+  "filters": [],
+  "order_by": [
+   {
+    "column": "rpt_sb_purchased_products.sales",
+    "dir": "desc"
+   }
+  ],
+  "limit": 50,
+  "report_date": "latest"
+ }
 }

@@ -1,232 +1,256 @@
 {
-  "_meta": {
-    "table": "rpt_sb_search_terms",
-    "report_type": "sbSearchTerm",
-    "is_snapshot": false,
-    "description": "Sponsored Brands search term report.",
-    "pii": false,
-    "queryable": true,
-    "deprecated": false,
-    "strategy": "ad_cron",
-    "date_column": "report_date",
-    "unique_key": [
-      "store_id",
-      "profile_id",
-      "report_date",
-      "campaign_id",
-      "ad_group_id",
-      "keyword_id",
-      "target_id",
-      "search_term"
-    ],
-    "cron": "0 1 * * *",
-    "retention_days": 400,
-    "retention_note": "rows older than 400 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note",
-    "dedup_note": "2026-07-15 calibration: 56-64% of rows were duplicates (NULL target_id in a NULLS-DISTINCT unique key defeated upsert dedup). Constraint rebuilt NULLS NOT DISTINCT + history deduped keeping the latest ingest per key. SUM aggregates computed before this date were inflated."
-  },
-  "columns": [
-    {
-      "db_column": "country_code",
-      "amazon_header": "(derived from profile_id — denormalized 2026-05-20)",
-      "type": "str",
-      "note": "Marketplace this ads row belongs to. Query ads data per (store, country_code) directly — no need to reverse-map profile_id."
-    },
-    {
-      "db_column": "report_date",
-      "type": "date"
-    },
-    {
-      "db_column": "start_date",
-      "type": "date"
-    },
-    {
-      "db_column": "end_date",
-      "type": "date"
-    },
-    {
-      "db_column": "currency_code",
-      "type": "str"
-    },
-    {
-      "db_column": "campaign_id",
-      "type": "str"
-    },
-    {
-      "db_column": "campaign_name",
-      "type": "str"
-    },
-    {
-      "db_column": "campaign_status",
-      "type": "str"
-    },
-    {
-      "db_column": "ad_group_id",
-      "type": "str"
-    },
-    {
-      "db_column": "ad_group_name",
-      "type": "str"
-    },
-    {
-      "db_column": "keyword_id",
-      "type": "str"
-    },
-    {
-      "db_column": "keyword",
-      "type": "str"
-    },
-    {
-      "db_column": "keyword_bid",
-      "type": "decimal"
-    },
-    {
-      "db_column": "match_type",
-      "type": "str"
-    },
-    {
-      "db_column": "keyword_status",
-      "type": "str"
-    },
-    {
-      "db_column": "cost_type",
-      "type": "str"
-    },
-    {
-      "db_column": "target_id",
-      "type": "str"
-    },
-    {
-      "db_column": "targeting_text",
-      "type": "str"
-    },
-    {
-      "db_column": "search_term",
-      "type": "str"
-    },
-    {
-      "db_column": "ad_keyword_status",
-      "type": "str"
-    },
-    {
-      "db_column": "impressions",
-      "type": "int"
-    },
-    {
-      "db_column": "clicks",
-      "type": "int"
-    },
-    {
-      "db_column": "cost",
-      "type": "decimal"
-    },
-    {
-      "db_column": "purchases",
-      "type": "int"
-    },
-    {
-      "db_column": "purchases_same_sku",
-      "type": "int"
-    },
-    {
-      "db_column": "purchases_clicks",
-      "type": "int"
-    },
-    {
-      "db_column": "sales",
-      "type": "decimal"
-    },
-    {
-      "db_column": "sales_clicks",
-      "type": "decimal"
-    },
-    {
-      "db_column": "units_sold",
-      "type": "int"
-    },
-    {
-      "db_column": "new_to_brand_purchases",
-      "type": "int"
-    },
-    {
-      "db_column": "new_to_brand_purchases_percentage",
-      "type": "decimal"
-    },
-    {
-      "db_column": "new_to_brand_sales",
-      "type": "decimal"
-    },
-    {
-      "db_column": "video_complete_views",
-      "type": "int"
-    },
-    {
-      "db_column": "video_midpoint_views",
-      "type": "int"
-    },
-    {
-      "db_column": "video_first_quartile_views",
-      "type": "int"
-    },
-    {
-      "db_column": "video_third_quartile_views",
-      "type": "int"
-    },
-    {
-      "db_column": "video_5_second_views",
-      "type": "int"
-    },
-    {
-      "db_column": "video_5_second_view_rate",
-      "type": "decimal"
-    },
-    {
-      "db_column": "video_unmutes",
-      "type": "int"
-    },
-    {
-      "db_column": "viewable_impressions",
-      "type": "int"
-    },
-    {
-      "db_column": "viewability_rate",
-      "type": "decimal"
-    },
-    {
-      "db_column": "view_click_through_rate",
-      "type": "decimal"
-    },
-    {
-      "db_column": "campaign_budget",
-      "amazon_header": "campaignBudgetAmount",
-      "type": "decimal"
-    },
-    {
-      "db_column": "campaign_budget_type",
-      "amazon_header": "campaignBudgetType",
-      "type": "str"
-    }
+ "_meta": {
+  "table": "rpt_sb_search_terms",
+  "report_type": "sbSearchTerm",
+  "is_snapshot": false,
+  "description": "Sponsored Brands search term report.",
+  "pii": false,
+  "queryable": true,
+  "deprecated": false,
+  "strategy": "ad_cron",
+  "date_column": "report_date",
+  "unique_key": [
+   "store_id",
+   "profile_id",
+   "report_date",
+   "campaign_id",
+   "ad_group_id",
+   "keyword_id",
+   "target_id",
+   "search_term"
   ],
-  "example_query": {
-    "store": "myStore-AE",
-    "tables": [
-      "rpt_sb_search_terms"
-    ],
-    "columns": [
-      "rpt_sb_search_terms.search_term",
-      "rpt_sb_search_terms.keyword",
-      "rpt_sb_search_terms.cost",
-      "rpt_sb_search_terms.sales",
-      "rpt_sb_search_terms.purchases_clicks",
-      "rpt_sb_search_terms.units_sold"
-    ],
-    "filters": [],
-    "order_by": [
-      {
-        "column": "rpt_sb_search_terms.cost",
-        "dir": "desc"
-      }
-    ],
-    "limit": 50,
-    "report_date": "latest"
+  "cron": "0 1 * * *",
+  "retention_days": 400,
+  "retention_note": "rows older than 400 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note",
+  "dedup_note": "2026-07-15 calibration: 56-64% of rows were duplicates (NULL target_id in a NULLS-DISTINCT unique key defeated upsert dedup). Constraint rebuilt NULLS NOT DISTINCT + history deduped keeping the latest ingest per key. SUM aggregates computed before this date were inflated."
+ },
+ "columns": [
+  {
+   "db_column": "country_code",
+   "amazon_header": "(derived from profile_id — denormalized 2026-05-20)",
+   "type": "str",
+   "note": "Marketplace this ads row belongs to. Query ads data per (store, country_code) directly — no need to reverse-map profile_id."
+  },
+  {
+   "db_column": "report_date",
+   "type": "date"
+  },
+  {
+   "db_column": "start_date",
+   "type": "date"
+  },
+  {
+   "db_column": "end_date",
+   "type": "date"
+  },
+  {
+   "db_column": "currency_code",
+   "type": "str"
+  },
+  {
+   "db_column": "campaign_id",
+   "type": "str"
+  },
+  {
+   "db_column": "campaign_name",
+   "type": "str"
+  },
+  {
+   "db_column": "campaign_status",
+   "type": "str"
+  },
+  {
+   "db_column": "ad_group_id",
+   "type": "str"
+  },
+  {
+   "db_column": "ad_group_name",
+   "type": "str"
+  },
+  {
+   "db_column": "keyword_id",
+   "type": "str"
+  },
+  {
+   "db_column": "keyword",
+   "type": "str"
+  },
+  {
+   "db_column": "keyword_bid",
+   "type": "decimal"
+  },
+  {
+   "db_column": "match_type",
+   "type": "str"
+  },
+  {
+   "db_column": "keyword_status",
+   "type": "str"
+  },
+  {
+   "db_column": "cost_type",
+   "type": "str"
+  },
+  {
+   "db_column": "target_id",
+   "type": "str"
+  },
+  {
+   "db_column": "targeting_text",
+   "type": "str"
+  },
+  {
+   "db_column": "search_term",
+   "type": "str"
+  },
+  {
+   "db_column": "ad_keyword_status",
+   "type": "str"
+  },
+  {
+   "db_column": "impressions",
+   "type": "int"
+  },
+  {
+   "db_column": "clicks",
+   "type": "int"
+  },
+  {
+   "db_column": "cost",
+   "type": "decimal"
+  },
+  {
+   "db_column": "purchases",
+   "type": "int"
+  },
+  {
+   "db_column": "purchases_same_sku",
+   "type": "int"
+  },
+  {
+   "db_column": "purchases_clicks",
+   "type": "int"
+  },
+  {
+   "db_column": "sales",
+   "type": "decimal"
+  },
+  {
+   "db_column": "sales_clicks",
+   "type": "decimal"
+  },
+  {
+   "db_column": "units_sold",
+   "type": "int"
+  },
+  {
+   "db_column": "new_to_brand_purchases",
+   "type": "int"
+  },
+  {
+   "db_column": "new_to_brand_purchases_percentage",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_sales",
+   "type": "decimal"
+  },
+  {
+   "db_column": "video_complete_views",
+   "type": "int"
+  },
+  {
+   "db_column": "video_midpoint_views",
+   "type": "int"
+  },
+  {
+   "db_column": "video_first_quartile_views",
+   "type": "int"
+  },
+  {
+   "db_column": "video_third_quartile_views",
+   "type": "int"
+  },
+  {
+   "db_column": "video_5_second_views",
+   "type": "int"
+  },
+  {
+   "db_column": "video_5_second_view_rate",
+   "type": "decimal"
+  },
+  {
+   "db_column": "video_unmutes",
+   "type": "int"
+  },
+  {
+   "db_column": "viewable_impressions",
+   "type": "int"
+  },
+  {
+   "db_column": "viewability_rate",
+   "type": "decimal"
+  },
+  {
+   "db_column": "view_click_through_rate",
+   "type": "decimal"
+  },
+  {
+   "db_column": "campaign_budget",
+   "amazon_header": "campaignBudgetAmount",
+   "type": "decimal"
+  },
+  {
+   "db_column": "campaign_budget_type",
+   "amazon_header": "campaignBudgetType",
+   "type": "str"
+  },
+  {
+   "db_column": "store_id",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Internal tenant scope — auto-applied from `store`; never filter on it manually."
+  },
+  {
+   "db_column": "profile_id",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Ads profile id (one per marketplace) — auto-filtered from the store suffix; do not filter manually."
+  },
+  {
+   "db_column": "ingested_at",
+   "amazon_header": "(infrastructure)",
+   "type": "timestamptz",
+   "note": "Row ingest timestamp (UTC). Bookkeeping, not business data. UTC instant (timestamptz). Serialized without offset in query responses — treat as UTC."
+  },
+  {
+   "db_column": "extra",
+   "amazon_header": "(infrastructure)",
+   "type": "json",
+   "note": "JSON of Amazon columns with no dedicated DB column (unmapped/new headers land here)."
   }
+ ],
+ "example_query": {
+  "store": "myStore-AE",
+  "tables": [
+   "rpt_sb_search_terms"
+  ],
+  "columns": [
+   "rpt_sb_search_terms.search_term",
+   "rpt_sb_search_terms.keyword",
+   "rpt_sb_search_terms.cost",
+   "rpt_sb_search_terms.sales",
+   "rpt_sb_search_terms.purchases_clicks",
+   "rpt_sb_search_terms.units_sold"
+  ],
+  "filters": [],
+  "order_by": [
+   {
+    "column": "rpt_sb_search_terms.cost",
+    "dir": "desc"
+   }
+  ],
+  "limit": 50,
+  "report_date": "latest"
+ }
 }

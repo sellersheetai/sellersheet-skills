@@ -1,296 +1,320 @@
 {
-  "_meta": {
-    "table": "rpt_sd_ad_groups",
-    "report_type": "sdAdGroups",
-    "is_snapshot": false,
-    "description": "Sponsored Display ad group daily performance.",
-    "pii": false,
-    "queryable": true,
-    "deprecated": false,
-    "strategy": "ad_cron",
-    "date_column": "report_date",
-    "unique_key": [
-      "store_id",
-      "profile_id",
-      "report_date",
-      "campaign_id",
-      "ad_group_id"
-    ],
-    "cron": "0 1 * * *",
-    "retention_days": 730,
-    "retention_note": "rows older than 730 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note"
-  },
-  "columns": [
-    {
-      "db_column": "country_code",
-      "amazon_header": "(derived from profile_id — denormalized 2026-05-20)",
-      "type": "str",
-      "note": "Marketplace this ads row belongs to. Query ads data per (store, country_code) directly — no need to reverse-map profile_id."
-    },
-    {
-      "db_column": "report_date",
-      "type": "date"
-    },
-    {
-      "db_column": "start_date",
-      "type": "date"
-    },
-    {
-      "db_column": "end_date",
-      "type": "date"
-    },
-    {
-      "db_column": "currency_code",
-      "type": "str"
-    },
-    {
-      "db_column": "campaign_id",
-      "type": "str"
-    },
-    {
-      "db_column": "campaign_name",
-      "type": "str"
-    },
-    {
-      "db_column": "ad_group_id",
-      "type": "str"
-    },
-    {
-      "db_column": "ad_group_name",
-      "type": "str"
-    },
-    {
-      "db_column": "ad_group_status",
-      "type": "str"
-    },
-    {
-      "db_column": "default_bid",
-      "type": "decimal"
-    },
-    {
-      "db_column": "bid_optimization",
-      "type": "str"
-    },
-    {
-      "db_column": "impressions",
-      "type": "int"
-    },
-    {
-      "db_column": "impressions_frequency_average",
-      "type": "decimal"
-    },
-    {
-      "db_column": "impressions_views",
-      "type": "int"
-    },
-    {
-      "db_column": "clicks",
-      "type": "int"
-    },
-    {
-      "db_column": "cost",
-      "type": "decimal"
-    },
-    {
-      "db_column": "cumulative_reach",
-      "type": "int"
-    },
-    {
-      "db_column": "detail_page_views",
-      "type": "int"
-    },
-    {
-      "db_column": "detail_page_views_clicks",
-      "type": "int"
-    },
-    {
-      "db_column": "add_to_cart",
-      "type": "int"
-    },
-    {
-      "db_column": "add_to_cart_clicks",
-      "type": "int"
-    },
-    {
-      "db_column": "add_to_cart_rate",
-      "type": "decimal"
-    },
-    {
-      "db_column": "add_to_cart_views",
-      "type": "int"
-    },
-    {
-      "db_column": "e_cp_add_to_cart",
-      "type": "decimal"
-    },
-    {
-      "db_column": "branded_searches",
-      "type": "int"
-    },
-    {
-      "db_column": "branded_searches_clicks",
-      "type": "int"
-    },
-    {
-      "db_column": "branded_searches_views",
-      "type": "int"
-    },
-    {
-      "db_column": "branded_search_rate",
-      "type": "decimal"
-    },
-    {
-      "db_column": "e_cp_brand_search",
-      "type": "decimal"
-    },
-    {
-      "db_column": "purchases",
-      "type": "int"
-    },
-    {
-      "db_column": "purchases_clicks",
-      "type": "int"
-    },
-    {
-      "db_column": "purchases_promoted_clicks",
-      "type": "int"
-    },
-    {
-      "db_column": "sales",
-      "type": "decimal"
-    },
-    {
-      "db_column": "sales_clicks",
-      "type": "decimal"
-    },
-    {
-      "db_column": "sales_promoted_clicks",
-      "type": "decimal"
-    },
-    {
-      "db_column": "units_sold",
-      "type": "int"
-    },
-    {
-      "db_column": "units_sold_clicks",
-      "type": "int"
-    },
-    {
-      "db_column": "new_to_brand_purchases",
-      "type": "int"
-    },
-    {
-      "db_column": "new_to_brand_purchases_clicks",
-      "type": "int"
-    },
-    {
-      "db_column": "new_to_brand_sales",
-      "type": "decimal"
-    },
-    {
-      "db_column": "new_to_brand_sales_clicks",
-      "type": "decimal"
-    },
-    {
-      "db_column": "new_to_brand_units_sold",
-      "type": "int"
-    },
-    {
-      "db_column": "new_to_brand_units_sold_clicks",
-      "type": "int"
-    },
-    {
-      "db_column": "new_to_brand_detail_page_views",
-      "type": "int"
-    },
-    {
-      "db_column": "new_to_brand_detail_page_view_clicks",
-      "type": "int"
-    },
-    {
-      "db_column": "new_to_brand_detail_page_view_rate",
-      "type": "decimal"
-    },
-    {
-      "db_column": "new_to_brand_detail_page_view_views",
-      "type": "int"
-    },
-    {
-      "db_column": "new_to_brand_e_cp_detail_page_view",
-      "type": "decimal"
-    },
-    {
-      "db_column": "video_complete_views",
-      "type": "int"
-    },
-    {
-      "db_column": "video_midpoint_views",
-      "type": "int"
-    },
-    {
-      "db_column": "video_first_quartile_views",
-      "type": "int"
-    },
-    {
-      "db_column": "video_third_quartile_views",
-      "type": "int"
-    },
-    {
-      "db_column": "video_unmutes",
-      "type": "int"
-    },
-    {
-      "db_column": "view_attributed_conversions",
-      "type": "int"
-    },
-    {
-      "db_column": "view_click_through_rate",
-      "type": "decimal"
-    },
-    {
-      "db_column": "viewability_rate",
-      "type": "decimal"
-    },
-    {
-      "db_column": "campaign_budget",
-      "amazon_header": "campaignBudgetAmount",
-      "type": "decimal"
-    },
-    {
-      "db_column": "campaign_budget_type",
-      "amazon_header": "campaignBudgetType",
-      "type": "str"
-    },
-    {
-      "db_column": "purchases_same_sku",
-      "amazon_header": "purchasesSameSku",
-      "type": "int"
-    },
-    {
-      "db_column": "view_impressions",
-      "amazon_header": "viewImpressions",
-      "type": "int"
-    }
+ "_meta": {
+  "table": "rpt_sd_ad_groups",
+  "report_type": "sdAdGroups",
+  "is_snapshot": false,
+  "description": "Sponsored Display ad group daily performance.",
+  "pii": false,
+  "queryable": true,
+  "deprecated": false,
+  "strategy": "ad_cron",
+  "date_column": "report_date",
+  "unique_key": [
+   "store_id",
+   "profile_id",
+   "report_date",
+   "campaign_id",
+   "ad_group_id"
   ],
-  "example_query": {
-    "store": "myStore-AE",
-    "tables": [
-      "rpt_sd_ad_groups"
-    ],
-    "columns": [
-      "rpt_sd_ad_groups.campaign_id",
-      "rpt_sd_ad_groups.ad_group_name",
-      "rpt_sd_ad_groups.cost",
-      "rpt_sd_ad_groups.sales"
-    ],
-    "filters": [],
-    "order_by": [
-      {
-        "column": "rpt_sd_ad_groups.cost",
-        "dir": "desc"
-      }
-    ],
-    "limit": 50,
-    "report_date": "latest"
+  "cron": "0 1 * * *",
+  "retention_days": 730,
+  "retention_note": "rows older than 730 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note"
+ },
+ "columns": [
+  {
+   "db_column": "country_code",
+   "amazon_header": "(derived from profile_id — denormalized 2026-05-20)",
+   "type": "str",
+   "note": "Marketplace this ads row belongs to. Query ads data per (store, country_code) directly — no need to reverse-map profile_id."
+  },
+  {
+   "db_column": "report_date",
+   "type": "date"
+  },
+  {
+   "db_column": "start_date",
+   "type": "date"
+  },
+  {
+   "db_column": "end_date",
+   "type": "date"
+  },
+  {
+   "db_column": "currency_code",
+   "type": "str"
+  },
+  {
+   "db_column": "campaign_id",
+   "type": "str"
+  },
+  {
+   "db_column": "campaign_name",
+   "type": "str"
+  },
+  {
+   "db_column": "ad_group_id",
+   "type": "str"
+  },
+  {
+   "db_column": "ad_group_name",
+   "type": "str"
+  },
+  {
+   "db_column": "ad_group_status",
+   "type": "str"
+  },
+  {
+   "db_column": "default_bid",
+   "type": "decimal"
+  },
+  {
+   "db_column": "bid_optimization",
+   "type": "str"
+  },
+  {
+   "db_column": "impressions",
+   "type": "int"
+  },
+  {
+   "db_column": "impressions_frequency_average",
+   "type": "decimal"
+  },
+  {
+   "db_column": "impressions_views",
+   "type": "int"
+  },
+  {
+   "db_column": "clicks",
+   "type": "int"
+  },
+  {
+   "db_column": "cost",
+   "type": "decimal"
+  },
+  {
+   "db_column": "cumulative_reach",
+   "type": "int"
+  },
+  {
+   "db_column": "detail_page_views",
+   "type": "int"
+  },
+  {
+   "db_column": "detail_page_views_clicks",
+   "type": "int"
+  },
+  {
+   "db_column": "add_to_cart",
+   "type": "int"
+  },
+  {
+   "db_column": "add_to_cart_clicks",
+   "type": "int"
+  },
+  {
+   "db_column": "add_to_cart_rate",
+   "type": "decimal"
+  },
+  {
+   "db_column": "add_to_cart_views",
+   "type": "int"
+  },
+  {
+   "db_column": "e_cp_add_to_cart",
+   "type": "decimal"
+  },
+  {
+   "db_column": "branded_searches",
+   "type": "int"
+  },
+  {
+   "db_column": "branded_searches_clicks",
+   "type": "int"
+  },
+  {
+   "db_column": "branded_searches_views",
+   "type": "int"
+  },
+  {
+   "db_column": "branded_search_rate",
+   "type": "decimal"
+  },
+  {
+   "db_column": "e_cp_brand_search",
+   "type": "decimal"
+  },
+  {
+   "db_column": "purchases",
+   "type": "int"
+  },
+  {
+   "db_column": "purchases_clicks",
+   "type": "int"
+  },
+  {
+   "db_column": "purchases_promoted_clicks",
+   "type": "int"
+  },
+  {
+   "db_column": "sales",
+   "type": "decimal"
+  },
+  {
+   "db_column": "sales_clicks",
+   "type": "decimal"
+  },
+  {
+   "db_column": "sales_promoted_clicks",
+   "type": "decimal"
+  },
+  {
+   "db_column": "units_sold",
+   "type": "int"
+  },
+  {
+   "db_column": "units_sold_clicks",
+   "type": "int"
+  },
+  {
+   "db_column": "new_to_brand_purchases",
+   "type": "int"
+  },
+  {
+   "db_column": "new_to_brand_purchases_clicks",
+   "type": "int"
+  },
+  {
+   "db_column": "new_to_brand_sales",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_sales_clicks",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_units_sold",
+   "type": "int"
+  },
+  {
+   "db_column": "new_to_brand_units_sold_clicks",
+   "type": "int"
+  },
+  {
+   "db_column": "new_to_brand_detail_page_views",
+   "type": "int"
+  },
+  {
+   "db_column": "new_to_brand_detail_page_view_clicks",
+   "type": "int"
+  },
+  {
+   "db_column": "new_to_brand_detail_page_view_rate",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_detail_page_view_views",
+   "type": "int"
+  },
+  {
+   "db_column": "new_to_brand_e_cp_detail_page_view",
+   "type": "decimal"
+  },
+  {
+   "db_column": "video_complete_views",
+   "type": "int"
+  },
+  {
+   "db_column": "video_midpoint_views",
+   "type": "int"
+  },
+  {
+   "db_column": "video_first_quartile_views",
+   "type": "int"
+  },
+  {
+   "db_column": "video_third_quartile_views",
+   "type": "int"
+  },
+  {
+   "db_column": "video_unmutes",
+   "type": "int"
+  },
+  {
+   "db_column": "view_attributed_conversions",
+   "type": "int"
+  },
+  {
+   "db_column": "view_click_through_rate",
+   "type": "decimal"
+  },
+  {
+   "db_column": "viewability_rate",
+   "type": "decimal"
+  },
+  {
+   "db_column": "campaign_budget",
+   "amazon_header": "campaignBudgetAmount",
+   "type": "decimal"
+  },
+  {
+   "db_column": "campaign_budget_type",
+   "amazon_header": "campaignBudgetType",
+   "type": "str"
+  },
+  {
+   "db_column": "purchases_same_sku",
+   "amazon_header": "purchasesSameSku",
+   "type": "int"
+  },
+  {
+   "db_column": "view_impressions",
+   "amazon_header": "viewImpressions",
+   "type": "int"
+  },
+  {
+   "db_column": "store_id",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Internal tenant scope — auto-applied from `store`; never filter on it manually."
+  },
+  {
+   "db_column": "profile_id",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Ads profile id (one per marketplace) — auto-filtered from the store suffix; do not filter manually."
+  },
+  {
+   "db_column": "ingested_at",
+   "amazon_header": "(infrastructure)",
+   "type": "timestamptz",
+   "note": "Row ingest timestamp (UTC). Bookkeeping, not business data. UTC instant (timestamptz). Serialized without offset in query responses — treat as UTC."
+  },
+  {
+   "db_column": "extra",
+   "amazon_header": "(infrastructure)",
+   "type": "json",
+   "note": "JSON of Amazon columns with no dedicated DB column (unmapped/new headers land here)."
   }
+ ],
+ "example_query": {
+  "store": "myStore-AE",
+  "tables": [
+   "rpt_sd_ad_groups"
+  ],
+  "columns": [
+   "rpt_sd_ad_groups.campaign_id",
+   "rpt_sd_ad_groups.ad_group_name",
+   "rpt_sd_ad_groups.cost",
+   "rpt_sd_ad_groups.sales"
+  ],
+  "filters": [],
+  "order_by": [
+   {
+    "column": "rpt_sd_ad_groups.cost",
+    "dir": "desc"
+   }
+  ],
+  "limit": 50,
+  "report_date": "latest"
+ }
 }

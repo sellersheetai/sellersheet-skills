@@ -1,38 +1,56 @@
 {
-  "_meta": {
-    "table": "rpt_seller_feedback",
-    "naming_note": "PII, frozen — the reporting server never writes it. Deliberately NOT renamed.",
-    "report_type": "GET_SELLER_FEEDBACK_DATA",
-    "is_snapshot": false,
-    "description": "Seller feedback rows with encrypted rater email.",
-    "pii": true,
-    "queryable": false,
-    "deprecated": false,
-    "strategy": "request",
-    "date_column": "report_date",
-    "unique_key": [
-      "store_id",
-      "order_id",
-      "date"
-    ],
-    "cron": "0 9 * * *"
-  },
-  "columns": [
-    {
-      "db_column": "date",
-      "amazon_header": "Date",
-      "type": "date"
-    },
-    {
-      "db_column": "rating",
-      "amazon_header": "Rating",
-      "type": "int"
-    },
-    {
-      "db_column": "order_id",
-      "amazon_header": "Order ID",
-      "type": "str"
-    }
+ "_meta": {
+  "table": "rpt_seller_feedback",
+  "naming_note": "PII, frozen — the reporting server never writes it. Deliberately NOT renamed.",
+  "report_type": "GET_SELLER_FEEDBACK_DATA",
+  "is_snapshot": false,
+  "description": "Seller feedback rows with encrypted rater email.",
+  "pii": true,
+  "queryable": false,
+  "deprecated": false,
+  "strategy": "request",
+  "date_column": "report_date",
+  "unique_key": [
+   "store_id",
+   "order_id",
+   "date"
   ],
-  "example_query": null
+  "cron": "0 9 * * *"
+ },
+ "columns": [
+  {
+   "db_column": "date",
+   "amazon_header": "Date",
+   "type": "date"
+  },
+  {
+   "db_column": "rating",
+   "amazon_header": "Rating",
+   "type": "int"
+  },
+  {
+   "db_column": "order_id",
+   "amazon_header": "Order ID",
+   "type": "str"
+  },
+  {
+   "db_column": "store_id",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Internal tenant scope — auto-applied from `store`; never filter on it manually."
+  },
+  {
+   "db_column": "report_date",
+   "amazon_header": "(infrastructure)",
+   "type": "date",
+   "note": "Worker-stamped sync/provenance date (marketplace-local report day), not an Amazon field."
+  },
+  {
+   "db_column": "extra",
+   "amazon_header": "(infrastructure)",
+   "type": "json",
+   "note": "JSON of Amazon columns with no dedicated DB column (unmapped/new headers land here)."
+  }
+ ],
+ "example_query": null
 }

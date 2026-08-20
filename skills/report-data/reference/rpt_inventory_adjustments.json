@@ -1,26 +1,85 @@
 {
-  "_meta": {
-    "table": "rpt_inventory_adjustments",
-    "naming_note": "RETIRED 2026-05-04. Deliberately keeps its legacy name — not renamed to an Amazon report-type name, since it exists only for legacy reads.",
-    "report_type": "GET_FBA_FULFILLMENT_INVENTORY_ADJUSTMENTS_DATA",
-    "is_snapshot": false,
-    "description": "RETIRED 2026-05-04. Report type 2605 throttled by Amazon across every store. Table preserved for legacy reads only.",
-    "pii": false,
-    "queryable": false,
-    "deprecated": true,
-    "retired_at": "2026-05-04",
-    "strategy": "request",
-    "date_column": "report_date",
-    "unique_key": [
-      "store_id",
-      "adjusted_date",
-      "sku",
-      "fnsku",
-      "fulfillment_center_id",
-      "reason"
-    ],
-    "cron": "0 8 * * *"
+ "_meta": {
+  "table": "rpt_inventory_adjustments",
+  "naming_note": "RETIRED 2026-05-04. Deliberately keeps its legacy name — not renamed to an Amazon report-type name, since it exists only for legacy reads.",
+  "report_type": "GET_FBA_FULFILLMENT_INVENTORY_ADJUSTMENTS_DATA",
+  "is_snapshot": false,
+  "description": "RETIRED 2026-05-04. Report type 2605 throttled by Amazon across every store. Table preserved for legacy reads only.",
+  "pii": false,
+  "queryable": false,
+  "deprecated": true,
+  "retired_at": "2026-05-04",
+  "strategy": "request",
+  "date_column": "report_date",
+  "unique_key": [
+   "store_id",
+   "adjusted_date",
+   "sku",
+   "fnsku",
+   "fulfillment_center_id",
+   "reason"
+  ],
+  "cron": "0 8 * * *"
+ },
+ "columns": [
+  {
+   "db_column": "store_id",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Internal tenant scope — auto-applied from `store`; never filter on it manually."
   },
-  "columns": [],
-  "example_query": null
+  {
+   "db_column": "report_date",
+   "amazon_header": "(infrastructure)",
+   "type": "date",
+   "note": "Worker-stamped sync/provenance date (marketplace-local report day), not an Amazon field."
+  },
+  {
+   "db_column": "adjusted_date",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "date"
+  },
+  {
+   "db_column": "sku",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
+  },
+  {
+   "db_column": "fnsku",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
+  },
+  {
+   "db_column": "asin",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
+  },
+  {
+   "db_column": "product_name",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
+  },
+  {
+   "db_column": "fulfillment_center_id",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
+  },
+  {
+   "db_column": "reason",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
+  },
+  {
+   "db_column": "quantity",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "int"
+  },
+  {
+   "db_column": "extra",
+   "amazon_header": "(infrastructure)",
+   "type": "json",
+   "note": "JSON of Amazon columns with no dedicated DB column (unmapped/new headers land here)."
+  }
+ ],
+ "example_query": null
 }
