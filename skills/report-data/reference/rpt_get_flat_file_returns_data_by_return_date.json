@@ -204,6 +204,24 @@
    "amazon_header": "(pre-2026-08-20 raw)",
    "type": "str",
    "note": "Forensic copy of the pre-conversion raw strings; NULL on rows ingested after 2026-08-20. Ignore for analytics."
+  },
+  {
+   "db_column": "store_id",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Internal tenant scope — auto-applied from `store`; never filter on it manually."
+  },
+  {
+   "db_column": "report_date",
+   "amazon_header": "(infrastructure)",
+   "type": "date",
+   "note": "Worker-stamped sync/provenance date (marketplace-local report day), not an Amazon field."
+  },
+  {
+   "db_column": "extra",
+   "amazon_header": "(infrastructure)",
+   "type": "json",
+   "note": "JSON of Amazon columns with no dedicated DB column (unmapped/new headers land here)."
   }
  ],
  "example_query": {

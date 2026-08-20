@@ -215,6 +215,18 @@
    "amazon_header": "(derived from month-of-charge)",
    "type": "date",
    "note": "First-of-month DATE twin of month_of_charge (added + backfilled 2026-08-20). Use for range filters/grouping; e.g. charge_month >= '2026-06-01'."
+  },
+  {
+   "db_column": "store_id",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Internal tenant scope — auto-applied from `store`; never filter on it manually."
+  },
+  {
+   "db_column": "extra",
+   "amazon_header": "(infrastructure)",
+   "type": "json",
+   "note": "JSON of Amazon columns with no dedicated DB column (unmapped/new headers land here)."
   }
  ],
  "example_query": {

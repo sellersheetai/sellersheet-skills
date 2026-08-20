@@ -1,103 +1,115 @@
 {
-  "_meta": {
-    "table": "rpt_get_merchants_listings_fyp_report",
-    "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_suppressed_listings` still resolves as a read-only compat VIEW; prefer `rpt_get_merchants_listings_fyp_report` in new queries.",
-    "report_type": "GET_MERCHANTS_LISTINGS_FYP_REPORT",
-    "is_snapshot": true,
-    "description": "Suppressed listings snapshot with issue reasons.",
-    "pii": false,
-    "queryable": true,
-    "deprecated": false,
-    "strategy": "request",
-    "date_column": "snapshot_date",
-    "unique_key": [
-      "store_id",
-      "snapshot_date",
-      "sku",
-      "asin",
-      "condition",
-      "issue_key",
-      "country_code"
-    ],
-    "cron": "9 1 * * *",
-    "retention_days": 7,
-    "retention_note": "rows older than 7 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note"
-  },
-  "columns": [
-    {
-      "db_column": "status",
-      "amazon_header": "Status",
-      "type": "str"
-    },
-    {
-      "db_column": "reason",
-      "amazon_header": "Reason",
-      "type": "str"
-    },
-    {
-      "db_column": "sku",
-      "amazon_header": "SKU",
-      "type": "str"
-    },
-    {
-      "db_column": "asin",
-      "amazon_header": "ASIN",
-      "type": "str"
-    },
-    {
-      "db_column": "product_name",
-      "amazon_header": "Product name",
-      "type": "str"
-    },
-    {
-      "db_column": "condition",
-      "amazon_header": "Condition",
-      "type": "str"
-    },
-    {
-      "db_column": "status_change_date",
-      "amazon_header": "Status Change Date",
-      "type": "str"
-    },
-    {
-      "db_column": "issue_description",
-      "amazon_header": "Issue Description (also: 'Issue description' on myStore-CA; 'Description du problème' on FR-account-default EU)",
-      "type": "str"
-    },
-    {
-      "db_column": "issue_key",
-      "amazon_header": "(derived: sha256(issue_description)[:16]; stable key for the same issue text — the prose stays in issue_description)",
-      "type": "str"
-    },
-    {
-      "db_column": "country_code",
-      "amazon_header": "(injected by per_mkt fan-out)",
-      "type": "str"
-    },
-    {
-      "db_column": "snapshot_date",
-      "amazon_header": "(injected by ingest worker)",
-      "type": "date"
-    }
+ "_meta": {
+  "table": "rpt_get_merchants_listings_fyp_report",
+  "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_suppressed_listings` still resolves as a read-only compat VIEW; prefer `rpt_get_merchants_listings_fyp_report` in new queries.",
+  "report_type": "GET_MERCHANTS_LISTINGS_FYP_REPORT",
+  "is_snapshot": true,
+  "description": "Suppressed listings snapshot with issue reasons.",
+  "pii": false,
+  "queryable": true,
+  "deprecated": false,
+  "strategy": "request",
+  "date_column": "snapshot_date",
+  "unique_key": [
+   "store_id",
+   "snapshot_date",
+   "sku",
+   "asin",
+   "condition",
+   "issue_key",
+   "country_code"
   ],
-  "example_query": {
-    "store": "myStore-AE",
-    "tables": [
-      "rpt_get_merchants_listings_fyp_report"
-    ],
-    "columns": [
-      "rpt_get_merchants_listings_fyp_report.status",
-      "rpt_get_merchants_listings_fyp_report.reason",
-      "rpt_get_merchants_listings_fyp_report.sku"
-    ],
-    "filters": [],
-    "order_by": [
-      {
-        "column": "rpt_get_merchants_listings_fyp_report.status",
-        "dir": "asc"
-      }
-    ],
-    "limit": 100,
-    "report_date": "latest"
+  "cron": "9 1 * * *",
+  "retention_days": 7,
+  "retention_note": "rows older than 7 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note"
+ },
+ "columns": [
+  {
+   "db_column": "status",
+   "amazon_header": "Status",
+   "type": "str"
+  },
+  {
+   "db_column": "reason",
+   "amazon_header": "Reason",
+   "type": "str"
+  },
+  {
+   "db_column": "sku",
+   "amazon_header": "SKU",
+   "type": "str"
+  },
+  {
+   "db_column": "asin",
+   "amazon_header": "ASIN",
+   "type": "str"
+  },
+  {
+   "db_column": "product_name",
+   "amazon_header": "Product name",
+   "type": "str"
+  },
+  {
+   "db_column": "condition",
+   "amazon_header": "Condition",
+   "type": "str"
+  },
+  {
+   "db_column": "status_change_date",
+   "amazon_header": "Status Change Date",
+   "type": "date"
+  },
+  {
+   "db_column": "issue_description",
+   "amazon_header": "Issue Description (also: 'Issue description' on myStore-CA; 'Description du problème' on FR-account-default EU)",
+   "type": "str"
+  },
+  {
+   "db_column": "issue_key",
+   "amazon_header": "(derived: sha256(issue_description)[:16]; stable key for the same issue text — the prose stays in issue_description)",
+   "type": "str"
+  },
+  {
+   "db_column": "country_code",
+   "amazon_header": "(injected by per_mkt fan-out)",
+   "type": "str"
+  },
+  {
+   "db_column": "snapshot_date",
+   "amazon_header": "(injected by ingest worker)",
+   "type": "date"
+  },
+  {
+   "db_column": "store_id",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Internal tenant scope — auto-applied from `store`; never filter on it manually."
+  },
+  {
+   "db_column": "extra",
+   "amazon_header": "(infrastructure)",
+   "type": "json",
+   "note": "JSON of Amazon columns with no dedicated DB column (unmapped/new headers land here)."
   }
+ ],
+ "example_query": {
+  "store": "myStore-AE",
+  "tables": [
+   "rpt_get_merchants_listings_fyp_report"
+  ],
+  "columns": [
+   "rpt_get_merchants_listings_fyp_report.status",
+   "rpt_get_merchants_listings_fyp_report.reason",
+   "rpt_get_merchants_listings_fyp_report.sku"
+  ],
+  "filters": [],
+  "order_by": [
+   {
+    "column": "rpt_get_merchants_listings_fyp_report.status",
+    "dir": "asc"
+   }
+  ],
+  "limit": 100,
+  "report_date": "latest"
+ }
 }

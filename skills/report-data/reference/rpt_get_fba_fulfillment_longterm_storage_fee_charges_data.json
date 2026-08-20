@@ -1,112 +1,136 @@
 {
-  "_meta": {
-    "table": "rpt_get_fba_fulfillment_longterm_storage_fee_charges_data",
-    "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_ltsf_charges` still resolves as a read-only compat VIEW; prefer `rpt_get_fba_fulfillment_longterm_storage_fee_charges_data` in new queries.",
-    "report_type": "GET_FBA_FULFILLMENT_LONGTERM_STORAGE_FEE_CHARGES_DATA",
-    "is_snapshot": false,
-    "description": "Long-term storage fee charge data.",
-    "pii": false,
-    "queryable": true,
-    "deprecated": false,
-    "strategy": "request",
-    "date_column": "report_date",
-    "unique_key": [
-      "store_id",
-      "report_date",
-      "fnsku",
-      "sku",
-      "country",
-      "condition"
-    ],
-    "cron": "7 1 * * *",
-    "date_column_nullable": true,
-    "date_column_note": "0 NULL rows live today; column stays nullable in schema for legacy compat only."
-  },
-  "columns": [
-    {
-      "db_column": "sku",
-      "amazon_header": "sku",
-      "type": "str"
-    },
-    {
-      "db_column": "fnsku",
-      "amazon_header": "fnsku",
-      "type": "str"
-    },
-    {
-      "db_column": "asin",
-      "amazon_header": "asin",
-      "type": "str"
-    },
-    {
-      "db_column": "product_name",
-      "amazon_header": "product-name",
-      "type": "str"
-    },
-    {
-      "db_column": "condition",
-      "amazon_header": "condition",
-      "type": "str"
-    },
-    {
-      "db_column": "per_unit_volume",
-      "amazon_header": "per-unit-volume",
-      "type": "decimal"
-    },
-    {
-      "db_column": "currency",
-      "amazon_header": "currency",
-      "type": "str"
-    },
-    {
-      "db_column": "volume_unit",
-      "amazon_header": "volume-unit",
-      "type": "str"
-    },
-    {
-      "db_column": "country",
-      "amazon_header": "country",
-      "type": "str"
-    },
-    {
-      "db_column": "qty_charged",
-      "amazon_header": "qty-charged",
-      "type": "int"
-    },
-    {
-      "db_column": "amount_charged",
-      "amazon_header": "amount-charged",
-      "type": "decimal"
-    },
-    {
-      "db_column": "surcharge_age_tier",
-      "amazon_header": "surcharge-age-tier",
-      "type": "str"
-    },
-    {
-      "db_column": "rate_surcharge",
-      "amazon_header": "rate-surcharge",
-      "type": "decimal"
-    }
+ "_meta": {
+  "table": "rpt_get_fba_fulfillment_longterm_storage_fee_charges_data",
+  "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_ltsf_charges` still resolves as a read-only compat VIEW; prefer `rpt_get_fba_fulfillment_longterm_storage_fee_charges_data` in new queries.",
+  "report_type": "GET_FBA_FULFILLMENT_LONGTERM_STORAGE_FEE_CHARGES_DATA",
+  "is_snapshot": false,
+  "description": "Long-term storage fee charge data.",
+  "pii": false,
+  "queryable": true,
+  "deprecated": false,
+  "strategy": "request",
+  "date_column": "report_date",
+  "unique_key": [
+   "store_id",
+   "report_date",
+   "fnsku",
+   "sku",
+   "country",
+   "condition"
   ],
-  "example_query": {
-    "store": "myStore-AE",
-    "tables": [
-      "rpt_get_fba_fulfillment_longterm_storage_fee_charges_data"
-    ],
-    "columns": [
-      "rpt_get_fba_fulfillment_longterm_storage_fee_charges_data.snapshot_date",
-      "rpt_get_fba_fulfillment_longterm_storage_fee_charges_data.sku",
-      "rpt_get_fba_fulfillment_longterm_storage_fee_charges_data.fnsku"
-    ],
-    "filters": [],
-    "order_by": [
-      {
-        "column": "rpt_get_fba_fulfillment_longterm_storage_fee_charges_data.snapshot_date",
-        "dir": "asc"
-      }
-    ],
-    "limit": 100,
-    "report_date": "latest"
+  "cron": "7 1 * * *",
+  "date_column_nullable": true,
+  "date_column_note": "0 NULL rows live today; column stays nullable in schema for legacy compat only."
+ },
+ "columns": [
+  {
+   "db_column": "sku",
+   "amazon_header": "sku",
+   "type": "str"
+  },
+  {
+   "db_column": "fnsku",
+   "amazon_header": "fnsku",
+   "type": "str"
+  },
+  {
+   "db_column": "asin",
+   "amazon_header": "asin",
+   "type": "str"
+  },
+  {
+   "db_column": "product_name",
+   "amazon_header": "product-name",
+   "type": "str"
+  },
+  {
+   "db_column": "condition",
+   "amazon_header": "condition",
+   "type": "str"
+  },
+  {
+   "db_column": "per_unit_volume",
+   "amazon_header": "per-unit-volume",
+   "type": "decimal"
+  },
+  {
+   "db_column": "currency",
+   "amazon_header": "currency",
+   "type": "str"
+  },
+  {
+   "db_column": "volume_unit",
+   "amazon_header": "volume-unit",
+   "type": "str"
+  },
+  {
+   "db_column": "country",
+   "amazon_header": "country",
+   "type": "str"
+  },
+  {
+   "db_column": "qty_charged",
+   "amazon_header": "qty-charged",
+   "type": "int"
+  },
+  {
+   "db_column": "amount_charged",
+   "amazon_header": "amount-charged",
+   "type": "decimal"
+  },
+  {
+   "db_column": "surcharge_age_tier",
+   "amazon_header": "surcharge-age-tier",
+   "type": "str"
+  },
+  {
+   "db_column": "rate_surcharge",
+   "amazon_header": "rate-surcharge",
+   "type": "decimal"
+  },
+  {
+   "db_column": "store_id",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Internal tenant scope — auto-applied from `store`; never filter on it manually."
+  },
+  {
+   "db_column": "report_date",
+   "amazon_header": "(infrastructure)",
+   "type": "date",
+   "note": "Worker-stamped sync/provenance date (marketplace-local report day), not an Amazon field."
+  },
+  {
+   "db_column": "snapshot_date",
+   "amazon_header": "(infrastructure)",
+   "type": "date",
+   "note": "Worker-stamped snapshot date — report_date='latest' resolves on this."
+  },
+  {
+   "db_column": "extra",
+   "amazon_header": "(infrastructure)",
+   "type": "json",
+   "note": "JSON of Amazon columns with no dedicated DB column (unmapped/new headers land here)."
   }
+ ],
+ "example_query": {
+  "store": "myStore-AE",
+  "tables": [
+   "rpt_get_fba_fulfillment_longterm_storage_fee_charges_data"
+  ],
+  "columns": [
+   "rpt_get_fba_fulfillment_longterm_storage_fee_charges_data.snapshot_date",
+   "rpt_get_fba_fulfillment_longterm_storage_fee_charges_data.sku",
+   "rpt_get_fba_fulfillment_longterm_storage_fee_charges_data.fnsku"
+  ],
+  "filters": [],
+  "order_by": [
+   {
+    "column": "rpt_get_fba_fulfillment_longterm_storage_fee_charges_data.snapshot_date",
+    "dir": "asc"
+   }
+  ],
+  "limit": 100,
+  "report_date": "latest"
+ }
 }

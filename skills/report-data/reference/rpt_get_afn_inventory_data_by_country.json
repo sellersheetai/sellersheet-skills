@@ -1,102 +1,114 @@
 {
-  "_meta": {
-    "table": "rpt_get_afn_inventory_data_by_country",
-    "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_afn_inventory_by_country` still resolves as a read-only compat VIEW; prefer `rpt_get_afn_inventory_data_by_country` in new queries.",
-    "report_type": "GET_AFN_INVENTORY_DATA_BY_COUNTRY",
-    "is_snapshot": true,
-    "description": "Country-level FBA inventory for NARF-enrolled sellers. One row per (sku, country) showing quantity available for local fulfillment in that country. Pairs with rpt_get_afn_inventory_data: that table holds the pan-NA pool total; this one holds the per-country split.",
-    "pii": false,
-    "queryable": true,
-    "deprecated": false,
-    "strategy": "request",
-    "date_column": "snapshot_date",
-    "unique_key": [
-      "store_id",
-      "snapshot_date",
-      "fnsku",
-      "country",
-      "condition_type"
-    ],
-    "cron": "0 */6 * * *",
-    "retention_days": 7,
-    "retention_note": "rows older than 7 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note"
-  },
-  "columns": [
-    {
-      "db_column": "seller_sku",
-      "amazon_header": "seller-sku",
-      "type": "str"
-    },
-    {
-      "db_column": "fnsku",
-      "amazon_header": "fulfillment-channel-sku",
-      "type": "str"
-    },
-    {
-      "db_column": "asin",
-      "amazon_header": "asin",
-      "type": "str"
-    },
-    {
-      "db_column": "condition_type",
-      "amazon_header": "condition-type",
-      "type": "str"
-    },
-    {
-      "db_column": "country",
-      "amazon_header": "country",
-      "type": "str",
-      "values": [
-        "GB",
-        "DE",
-        "FR",
-        "IT",
-        "ES",
-        "PL",
-        "NL",
-        "BE",
-        "SE",
-        "IE",
-        "US",
-        "CA",
-        "MX"
-      ]
-    },
-    {
-      "db_column": "quantity_for_local_fulfillment",
-      "amazon_header": "quantity-for-local-fulfillment",
-      "type": "int"
-    },
-    {
-      "db_column": "snapshot_date",
-      "amazon_header": "(injected by ingest worker)",
-      "type": "date"
-    }
+ "_meta": {
+  "table": "rpt_get_afn_inventory_data_by_country",
+  "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_afn_inventory_by_country` still resolves as a read-only compat VIEW; prefer `rpt_get_afn_inventory_data_by_country` in new queries.",
+  "report_type": "GET_AFN_INVENTORY_DATA_BY_COUNTRY",
+  "is_snapshot": true,
+  "description": "Country-level FBA inventory for NARF-enrolled sellers. One row per (sku, country) showing quantity available for local fulfillment in that country. Pairs with rpt_get_afn_inventory_data: that table holds the pan-NA pool total; this one holds the per-country split.",
+  "pii": false,
+  "queryable": true,
+  "deprecated": false,
+  "strategy": "request",
+  "date_column": "snapshot_date",
+  "unique_key": [
+   "store_id",
+   "snapshot_date",
+   "fnsku",
+   "country",
+   "condition_type"
   ],
-  "example_query": {
-    "store": "novaStore-UK",
-    "tables": [
-      "rpt_get_afn_inventory_data_by_country"
-    ],
-    "columns": [
-      "rpt_get_afn_inventory_data_by_country.seller_sku",
-      "rpt_get_afn_inventory_data_by_country.country",
-      "rpt_get_afn_inventory_data_by_country.quantity_for_local_fulfillment"
-    ],
-    "filters": [
-      {
-        "column": "rpt_get_afn_inventory_data_by_country.country",
-        "op": "eq",
-        "value": "GB"
-      }
-    ],
-    "order_by": [
-      {
-        "column": "rpt_get_afn_inventory_data_by_country.quantity_for_local_fulfillment",
-        "dir": "desc"
-      }
-    ],
-    "limit": 50,
-    "report_date": "latest"
+  "cron": "0 */6 * * *",
+  "retention_days": 7,
+  "retention_note": "rows older than 7 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note"
+ },
+ "columns": [
+  {
+   "db_column": "seller_sku",
+   "amazon_header": "seller-sku",
+   "type": "str"
+  },
+  {
+   "db_column": "fnsku",
+   "amazon_header": "fulfillment-channel-sku",
+   "type": "str"
+  },
+  {
+   "db_column": "asin",
+   "amazon_header": "asin",
+   "type": "str"
+  },
+  {
+   "db_column": "condition_type",
+   "amazon_header": "condition-type",
+   "type": "str"
+  },
+  {
+   "db_column": "country",
+   "amazon_header": "country",
+   "type": "str",
+   "values": [
+    "GB",
+    "DE",
+    "FR",
+    "IT",
+    "ES",
+    "PL",
+    "NL",
+    "BE",
+    "SE",
+    "IE",
+    "US",
+    "CA",
+    "MX"
+   ]
+  },
+  {
+   "db_column": "quantity_for_local_fulfillment",
+   "amazon_header": "quantity-for-local-fulfillment",
+   "type": "int"
+  },
+  {
+   "db_column": "snapshot_date",
+   "amazon_header": "(injected by ingest worker)",
+   "type": "date"
+  },
+  {
+   "db_column": "store_id",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Internal tenant scope — auto-applied from `store`; never filter on it manually."
+  },
+  {
+   "db_column": "extra",
+   "amazon_header": "(infrastructure)",
+   "type": "json",
+   "note": "JSON of Amazon columns with no dedicated DB column (unmapped/new headers land here)."
   }
+ ],
+ "example_query": {
+  "store": "novaStore-UK",
+  "tables": [
+   "rpt_get_afn_inventory_data_by_country"
+  ],
+  "columns": [
+   "rpt_get_afn_inventory_data_by_country.seller_sku",
+   "rpt_get_afn_inventory_data_by_country.country",
+   "rpt_get_afn_inventory_data_by_country.quantity_for_local_fulfillment"
+  ],
+  "filters": [
+   {
+    "column": "rpt_get_afn_inventory_data_by_country.country",
+    "op": "eq",
+    "value": "GB"
+   }
+  ],
+  "order_by": [
+   {
+    "column": "rpt_get_afn_inventory_data_by_country.quantity_for_local_fulfillment",
+    "dir": "desc"
+   }
+  ],
+  "limit": 50,
+  "report_date": "latest"
+ }
 }
