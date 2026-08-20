@@ -1,124 +1,131 @@
 {
-  "_meta": {
-    "table": "rpt_get_ledger_detail_view_data",
-    "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_inventory_ledger` still resolves as a read-only compat VIEW; prefer `rpt_get_ledger_detail_view_data` in new queries.",
-    "report_type": "GET_LEDGER_DETAIL_VIEW_DATA",
-    "is_snapshot": false,
-    "description": "Inventory ledger events across fulfillment centers.",
-    "pii": false,
-    "queryable": true,
-    "deprecated": false,
-    "strategy": "request",
-    "date_column": "report_date",
-    "unique_key": [
-      "store_id",
-      "date",
-      "fnsku",
-      "reference_id",
-      "event_type",
-      "fulfillment_center"
-    ],
-    "cron": "0 1 * * *",
-    "retention_days": 90,
-    "retention_note": "rows older than 90 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note",
-    "date_column_nullable": true,
-    "date_column_note": "131 legacy rows have NULL report_date AND NULL date (pre-watermark partial writes). All current ingests write both. Add a not_null filter for strict temporal work."
-  },
-  "columns": [
-    {
-      "db_column": "date",
-      "amazon_header": "\"Date\"",
-      "type": "date"
-    },
-    {
-      "db_column": "fnsku",
-      "amazon_header": "\"FNSKU\"",
-      "type": "str"
-    },
-    {
-      "db_column": "asin",
-      "amazon_header": "\"ASIN\"",
-      "type": "str"
-    },
-    {
-      "db_column": "msku",
-      "amazon_header": "\"MSKU\"",
-      "type": "str"
-    },
-    {
-      "db_column": "title",
-      "amazon_header": "\"Title\"",
-      "type": "str"
-    },
-    {
-      "db_column": "event_type",
-      "amazon_header": "\"Event Type\"",
-      "type": "str"
-    },
-    {
-      "db_column": "reference_id",
-      "amazon_header": "\"Reference ID\"",
-      "type": "str"
-    },
-    {
-      "db_column": "quantity",
-      "amazon_header": "\"Quantity\"",
-      "type": "int"
-    },
-    {
-      "db_column": "fulfillment_center",
-      "amazon_header": "\"Fulfillment Center\"",
-      "type": "str"
-    },
-    {
-      "db_column": "disposition",
-      "amazon_header": "\"Disposition\"",
-      "type": "str"
-    },
-    {
-      "db_column": "reason",
-      "amazon_header": "\"Reason\"",
-      "type": "str"
-    },
-    {
-      "db_column": "country",
-      "amazon_header": "\"Country\"",
-      "type": "str"
-    },
-    {
-      "db_column": "reconciled_quantity",
-      "amazon_header": "\"Reconciled Quantity\"",
-      "type": "int"
-    },
-    {
-      "db_column": "unreconciled_quantity",
-      "amazon_header": "\"Unreconciled Quantity\"",
-      "type": "int"
-    },
-    {
-      "db_column": "date_and_time",
-      "amazon_header": "\"Date and Time\"",
-      "type": "str"
-    }
+ "_meta": {
+  "table": "rpt_get_ledger_detail_view_data",
+  "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_inventory_ledger` still resolves as a read-only compat VIEW; prefer `rpt_get_ledger_detail_view_data` in new queries.",
+  "report_type": "GET_LEDGER_DETAIL_VIEW_DATA",
+  "is_snapshot": false,
+  "description": "Inventory ledger events across fulfillment centers.",
+  "pii": false,
+  "queryable": true,
+  "deprecated": false,
+  "strategy": "request",
+  "date_column": "report_date",
+  "unique_key": [
+   "store_id",
+   "date",
+   "fnsku",
+   "reference_id",
+   "event_type",
+   "fulfillment_center"
   ],
-  "example_query": {
-    "store": "myStore-AE",
-    "tables": [
-      "rpt_get_ledger_detail_view_data"
-    ],
-    "columns": [
-      "rpt_get_ledger_detail_view_data.date",
-      "rpt_get_ledger_detail_view_data.fnsku",
-      "rpt_get_ledger_detail_view_data.asin"
-    ],
-    "filters": [],
-    "order_by": [
-      {
-        "column": "rpt_get_ledger_detail_view_data.date",
-        "dir": "asc"
-      }
-    ],
-    "limit": 100,
-    "report_date": "latest"
+  "cron": "0 1 * * *",
+  "retention_days": 90,
+  "retention_note": "rows older than 90 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note",
+  "date_column_nullable": true,
+  "date_column_note": "131 legacy rows have NULL report_date AND NULL date (pre-watermark partial writes). All current ingests write both. Add a not_null filter for strict temporal work."
+ },
+ "columns": [
+  {
+   "db_column": "date",
+   "amazon_header": "\"Date\"",
+   "type": "date"
+  },
+  {
+   "db_column": "fnsku",
+   "amazon_header": "\"FNSKU\"",
+   "type": "str"
+  },
+  {
+   "db_column": "asin",
+   "amazon_header": "\"ASIN\"",
+   "type": "str"
+  },
+  {
+   "db_column": "msku",
+   "amazon_header": "\"MSKU\"",
+   "type": "str"
+  },
+  {
+   "db_column": "title",
+   "amazon_header": "\"Title\"",
+   "type": "str"
+  },
+  {
+   "db_column": "event_type",
+   "amazon_header": "\"Event Type\"",
+   "type": "str"
+  },
+  {
+   "db_column": "reference_id",
+   "amazon_header": "\"Reference ID\"",
+   "type": "str"
+  },
+  {
+   "db_column": "quantity",
+   "amazon_header": "\"Quantity\"",
+   "type": "int"
+  },
+  {
+   "db_column": "fulfillment_center",
+   "amazon_header": "\"Fulfillment Center\"",
+   "type": "str"
+  },
+  {
+   "db_column": "disposition",
+   "amazon_header": "\"Disposition\"",
+   "type": "str"
+  },
+  {
+   "db_column": "reason",
+   "amazon_header": "\"Reason\"",
+   "type": "str"
+  },
+  {
+   "db_column": "country",
+   "amazon_header": "\"Country\"",
+   "type": "str"
+  },
+  {
+   "db_column": "reconciled_quantity",
+   "amazon_header": "\"Reconciled Quantity\"",
+   "type": "int"
+  },
+  {
+   "db_column": "unreconciled_quantity",
+   "amazon_header": "\"Unreconciled Quantity\"",
+   "type": "int"
+  },
+  {
+   "db_column": "date_and_time",
+   "amazon_header": "\"Date and Time\"",
+   "type": "timestamptz",
+   "note": "TIMESTAMPTZ since 2026-08-20 (was raw str). Stored UTC; Amazon ships ISO-8601 with numeric offset, colon-less (e.g. '2026-08-20T00:00:00-0700'). For the marketplace-LOCAL day use the `date` column — an evening local event has a different UTC date (e.g. IN local midnight = 18:30Z prior day)."
+  },
+  {
+   "db_column": "amazon_store",
+   "amazon_header": "\"Store\"",
+   "type": "str",
+   "note": "Amazon header addition observed 2026-08-20 (29/60 marketplace cells); ships EMPTY so far — mapped ahead of first real values."
   }
+ ],
+ "example_query": {
+  "store": "myStore-AE",
+  "tables": [
+   "rpt_get_ledger_detail_view_data"
+  ],
+  "columns": [
+   "rpt_get_ledger_detail_view_data.date",
+   "rpt_get_ledger_detail_view_data.fnsku",
+   "rpt_get_ledger_detail_view_data.asin"
+  ],
+  "filters": [],
+  "order_by": [
+   {
+    "column": "rpt_get_ledger_detail_view_data.date",
+    "dir": "asc"
+   }
+  ],
+  "limit": 100,
+  "report_date": "latest"
+ }
 }
