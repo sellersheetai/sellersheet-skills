@@ -156,6 +156,11 @@
    "amazon_header": "(infrastructure)",
    "type": "json",
    "note": "JSON of Amazon columns with no dedicated DB column (unmapped/new headers land here)."
+  },
+  {
+   "db_column": "program",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
   }
  ],
  "example_query": {

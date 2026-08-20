@@ -739,6 +739,11 @@
    "amazon_header": "(infrastructure)",
    "type": "str",
    "note": "Internal tenant scope — auto-applied from `store`; never filter on it manually."
+  },
+  {
+   "db_column": "fulfillment_service_and_programs",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
   }
  ],
  "example_query": {
