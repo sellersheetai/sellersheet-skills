@@ -111,6 +111,31 @@
    "amazon_header": "(infrastructure)",
    "type": "json",
    "note": "JSON of Amazon columns with no dedicated DB column (unmapped/new headers land here)."
+  },
+  {
+   "db_column": "qty_charged_long_time_range",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "int"
+  },
+  {
+   "db_column": "long_time_range_fee",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "decimal"
+  },
+  {
+   "db_column": "qty_charged_short_time_range",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "int"
+  },
+  {
+   "db_column": "short_time_range_fee",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "decimal"
+  },
+  {
+   "db_column": "enrolled_in_small_and_light",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
   }
  ],
  "example_query": {
