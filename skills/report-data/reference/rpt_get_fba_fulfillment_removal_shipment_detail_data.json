@@ -1,0 +1,113 @@
+{
+ "_meta": {
+  "table": "rpt_get_fba_fulfillment_removal_shipment_detail_data",
+  "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type.",
+  "report_type": "GET_FBA_FULFILLMENT_REMOVAL_SHIPMENT_DETAIL_DATA",
+  "is_snapshot": false,
+  "description": "FBA removal SHIPMENT events: what physically left the fulfilment centre against a removal order, with carrier and tracking. The sibling rpt_get_fba_fulfillment_removal_order_detail_data holds the ORDER side — requested vs cancelled vs disposed quantities. Join them on order_id to reconcile requested against shipped.",
+  "pii": false,
+  "queryable": true,
+  "deprecated": false,
+  "strategy": "request",
+  "date_column": "shipment_date",
+  "unique_key": [
+   "store_id",
+   "order_id",
+   "sku",
+   "tracking_number",
+   "shipment_date"
+  ],
+  "date_column_nullable": true,
+  "date_column_note": "Nullable in schema; 0 NULL rows of 601 live on prod (measured 2026-08-23). Amazon omits shipment-date only on rows that never shipped, and those do not reach this report — the column stays nullable for legacy compat, not because the parser skips it.",
+  "cron": "11 1 * * *"
+ },
+ "columns": [
+  {
+   "db_column": "store_id",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Internal tenant scope — auto-applied from `store`; never filter on it manually."
+  },
+  {
+   "db_column": "report_date",
+   "amazon_header": "(infrastructure)",
+   "type": "date",
+   "note": "Worker-stamped sync/provenance date (marketplace-local report day), not an Amazon field."
+  },
+  {
+   "db_column": "country_code",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Marketplace code (UK/US/AE/...). Auto-filtered from the store suffix on per-marketplace tables."
+  },
+  {
+   "db_column": "request_date",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "timestamptz",
+   "note": "UTC instant (timestamptz). Serialized without offset in query responses — treat as UTC."
+  },
+  {
+   "db_column": "order_id",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
+  },
+  {
+   "db_column": "shipment_date",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "timestamptz",
+   "note": "UTC instant (timestamptz). Serialized without offset in query responses — treat as UTC."
+  },
+  {
+   "db_column": "sku",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
+  },
+  {
+   "db_column": "fnsku",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
+  },
+  {
+   "db_column": "disposition",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
+  },
+  {
+   "db_column": "shipped_quantity",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "int"
+  },
+  {
+   "db_column": "carrier",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
+  },
+  {
+   "db_column": "tracking_number",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
+  },
+  {
+   "db_column": "shipment_status",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
+  },
+  {
+   "db_column": "removal_order_type",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str"
+  },
+  {
+   "db_column": "extra",
+   "amazon_header": "(infrastructure)",
+   "type": "json",
+   "note": "JSON of Amazon columns with no dedicated DB column (unmapped/new headers land here)."
+  },
+  {
+   "db_column": "ingested_at",
+   "amazon_header": "(infrastructure)",
+   "type": "timestamptz",
+   "note": "Row ingest timestamp (UTC). Bookkeeping, not business data. UTC instant (timestamptz). Serialized without offset in query responses — treat as UTC."
+  }
+ ]
+}

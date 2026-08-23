@@ -19,8 +19,8 @@
    "match_type"
   ],
   "cron": "0 1 * * *",
-  "retention_days": 21,
-  "retention_note": "rows older than 21 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note",
+  "retention_days": 400,
+  "retention_note": "rows older than 400 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note",
   "dedup_note": "2026-07-15 calibration: unique constraint rebuilt as NULLS NOT DISTINCT (target_id is NULL on every v3 row) and historical duplicates removed — SUM aggregates before this date were inflated; data is now clean."
  },
  "columns": [
