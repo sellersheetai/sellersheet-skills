@@ -10,7 +10,7 @@ description: >
   "recolor variants", "image-gen on the row", "学竞品风格生成产品图", "keep this scene / swap my
   product in". Default provider openai; gated phases (operator approves before spend). NOT for
   non-Amazon image edits — for that call the MCP image tools directly.
-version: 0.11.7
+version: 0.11.8
 ---
 
 # image-gen — Amazon listing image suite
