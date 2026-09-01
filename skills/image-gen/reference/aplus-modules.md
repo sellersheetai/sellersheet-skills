@@ -3,7 +3,8 @@
 A+ (Enhanced Brand Content) is the below-the-fold story. Two tiers: **Basic A+**
 (any Brand-Registered seller) and **Premium A+** (wider modules, video, hover
 hotspots, carousel — eligibility-gated). Slots a1–a5 (Basic) / p1–p5 (Premium) in
-the sheet.
+the sheet — valid `slot` values on generate/edit, and they bill like any other
+image (1 Image Credit each).
 
 ## Two ways to handle A+ copy
 Amazon A+ modules have **their own text fields** (headline + body) rendered as live

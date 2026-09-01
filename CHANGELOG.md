@@ -12,6 +12,32 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.11.8] — 2026-09-01
+
+### Changed — `image-gen` reconciled with the live pipeline
+
+- **NEW `reference/reference-modes.md`** — three reference modes: **Style**
+  (reverse-prompt → adapt; the reference is never an input — copyright-safe
+  concept recreation), **Blend** (adapted prompt + reference appended last as a
+  labeled style input), **Exact swap** (one call, reference FIRST as the base
+  scene, short layout-preserving prompt — no reverse/adapt). Intake and gates
+  now ask the operator which mode they want.
+- **Billing-safe reliability rules** replace the old retry ladder: there is no
+  server-side retry/fallback; never resubmit a `processing` job (it double
+  bills); re-run only on `status='error'` (auto-refunded); job status lives
+  ~15 minutes — capture `cdn_url` inside that window.
+- **'Images Generation' sheet contract updated to the current layout** (4 header
+  rows, data starts row 5, 13 lead columns A–M, slot blocks from column N with a
+  `reversed_prompt` field) and to the sidebar's status vocabulary
+  (`DONE` / `QUEUED job:` / `BLOCKED:` / `ERROR:`); image cells are
+  `=IMAGE(thumbnail_url)` plus a `Full-res:` cell note.
+- **Sizes corrected**: the generate default is 1024×1024 — request `2048x2048`
+  explicitly for PDP images.
+- **Library-first**: check `list_generated_images` before regenerating (free vs
+  a billed, different image); documented the per-language version lanes (`lang`)
+  and that canonical versions are allocated server-side.
+- Removed all Drive-era delivery guidance (generated images are CDN-only).
+
 ## [0.11.7] — 2026-08-15
 
 ### Fixed — official design-system values (`sellersheet-sheets`, `sellersheet-dashboard`)

@@ -49,22 +49,26 @@ how they interact. Always lead the edit prompt with an index legend:
     Task: recolor the product in Image 1 to match Image 2's hue. Change nothing
     else — same geometry, same label text, same camera angle, same lighting.
 
-## Style transfer — feed the reference as a 2nd input, do NOT just describe it
-To make YOUR product look like a reference image's *style* (its background,
-lighting, camera angle, framing, mood), pass BOTH as indexed inputs to edit_image:
+## Working from a reference image — pick the MODE first
+**Read `reference-modes.md` before any reference-driven edit.** Three modes:
+Style (adapted prompt, reference NOT an input — copyright-safe concept
+recreation), Blend (adapted prompt + reference appended LAST as a labeled
+input), Exact swap (reference FIRST as the base scene, one short
+layout-preserving call — no reverse/adapt). The Blend index legend:
 
     Image 1 = the product to keep (your exact item — colors, geometry, text).
-    Image 2 = STYLE REFERENCE ONLY — copy its background, lighting, angle, framing
-              and mood; take NO product, color, object, or text from it.
-    Task: render the Image-1 product in Image 2's style.
+    LAST image = STYLE REFERENCE ONLY — copy its background, lighting, angle,
+              framing and mood; take NO product, color, object, or text from it.
 
-A single-input edit + a *text description* of the style does NOT work: edit_image
-anchors to the input image's own composition and barely moves it — you get the
-original back, lightly cleaned. The reference must be an actual input image for its
-look to transfer. (Real example: "restyle our striped towels to a premium
-gray-background reference" → single-input-with-description returned the original
-nearly unchanged; the *same* task as a 2-input edit transferred the gray background
-+ three-quarter angle + muted premium lighting correctly.)
+One trap that motivates the modes: a single-input edit + a *weak one-line text
+description* of the style barely moves the image — edit_image anchors to the
+input's own composition and you get the original back, lightly cleaned. (Real
+example: "restyle our striped towels to a premium gray-background reference" →
+one-line description returned the original nearly unchanged; the same task as a
+2-input Blend transferred the gray background + three-quarter angle + muted
+premium lighting correctly.) The fix is either a FULL adapted rewrite from
+`reverse_prompt` (Style mode) or the reference as an actual input (Blend) —
+never a casual "make it look like the competitor's".
 
 Even when borrowing a style, still override it in the prompt for an Amazon MAIN
 image: pure white background, no text/logos/props, product-dominant, square.

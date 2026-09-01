@@ -32,7 +32,7 @@
       "name": "image-gen",
       "latest_version": "0.11.7",
       "path": "skills/image-gen",
-      "description": "Amazon listing images + A+ Content via gpt-image-2 — learn competitor style, generate/recolor product-faithful images, enforce main-image compliance, build A+ modules, score, and record to the 'Images Generation' sheet."
+      "description": "Amazon listing images + A+ Content via gpt-image-2 — learn competitor style, three reference modes (Style / Blend / Exact scene-swap), generate/recolor product-faithful images, enforce main-image compliance, build A+ modules, score, and record to the 'Images Generation' sheet."
     },
     {
       "name": "noon-report-data",

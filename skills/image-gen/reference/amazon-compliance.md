@@ -13,8 +13,8 @@ operator override (see slot-canon "main image policy varies by category").
   insets/collages, props, backgrounds, hands, or graphics of any kind on the main.
 - **Real, accurate product.** No illustration/render that misrepresents it. No
   bonus items shown that aren't included.
-- **≥1600px on the longest side** (zoom). 2000px+ ideal. Request `2048x2048` (the default) and
-  gpt-image-2 returns true 2048.
+- **≥1600px on the longest side** (zoom). 2000px+ ideal. Explicitly request `2048x2048`
+  (the generate default is only 1024) and gpt-image-2 returns true 2048.
 - **Square (1:1), JPEG/PNG/TIFF, sRGB.**
 - Category exceptions exist (apparel on-model, some accept a composite main) —
   confirm with the operator; don't assume pure-white is always required.
@@ -39,8 +39,8 @@ Do NOT put on an image / in A+ text:
   a reference image shows a cert mark, only keep it if the operator confirms they
   hold it — ASK. Never invent or carry over a cert from a competitor's photo.
 
-## QA checklist — run per image before status=APPROVED
-- [ ] **Resolution** ≥1600px longest edge (request `2048x2048` — the default).
+## QA checklist — run per image before marking it approved
+- [ ] **Resolution** ≥1600px longest edge (explicitly request `2048x2048` — the default is 1024).
 - [ ] **Main: white purity** — corners sample #FFFFFF; product-only; no text/props.
 - [ ] **Color accuracy** — matches the operator's REAL product (not the reference's).
 - [ ] **Text correctness** — every rendered word is spelled right and legible at
@@ -57,8 +57,9 @@ changes. For A+ this is easy — the copy lives in Amazon's text fields per loca
 infographics (text baked in), produce one localized variant per marketplace.
 
 ## The compliance gate
-`status` may only reach **APPROVED** after the QA checklist passes. Record the result
-in the slot's `scores` cell, e.g.
+An image may only be marked approved (sheet status `DONE · approved v{n}` — use the
+sidebar's status grammar, see sheet-contract.md) after the QA checklist passes.
+Record the result in the slot's `scores` cell, e.g.
 `{"fidelity":98,"compliance":"pass","legible_thumb":true,"claims":"ok","verdict":"pass"}`.
-On any main-image violation → status `FAILED: <reason>` and regenerate; never ship a
-main that risks suppression.
+On any main-image violation → status `ERROR: compliance — <reason>` and regenerate;
+never ship a main that risks suppression.

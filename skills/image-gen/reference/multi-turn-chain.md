@@ -3,23 +3,26 @@
 How to iterate on ONE image across many turns (refine, restyle step-by-step,
 add elements one at a time) using only `generate_image` + `edit_image`. There is
 no server-side conversation / `previous_response_id` chaining for images — the agent
-threads state itself: **each turn's output Drive URL becomes the next turn's input.**
+threads state itself: **each turn's output CDN URL becomes the next turn's input.**
 
 ## The loop
 
-The only thing you carry between turns is `current` — one Drive URL string.
+The only thing you carry between turns is `current` — one CDN URL string.
 
-1. **Anchor (turn 0).** Either `generate_image(...)` (inline → `data.images[0].drive_url`)
+1. **Anchor (turn 0).** Either `generate_image(...)` (inline → `data.images[0].cdn_url`)
    or `edit_image(image_sources=[real_photo_url], prompt=adapted json_prompt)` →
-   poll → `drive_url`. Set `current = drive_url`. Pass `output_folder_id` (or rely
-   on the workspace `imagesFolderId`) so every turn lands in Drive and returns a URL.
+   poll → `cdn_url`. Set `current = cdn_url`. `store` (`<store>-<CC>`) + `sku` +
+   `slot` are REQUIRED on every turn — they persist the result into the Image
+   Library and are what makes a `cdn_url` exist at all (400 without them).
 2. **Refine (turns 1..N).** For each single change:
-   - `edit_image(prompt=<one change + preserve-list>, image_sources=[current], provider="openai", output_folder_id=…)` → `job_id`
+   - `edit_image(prompt=<one change + preserve-list>, image_sources=[current], provider="openai", store=…, sku=…, slot=…)` → `job_id`
    - `check_image_job(job_id)` every ~30s until `status="done"`
-   - read `drive_url` (the new image) + `revised_prompt` (drift signal). If `drive_url`
-     is null on the first `done` poll, poll once more (Drive upload is async).
-   - deliver + gate with the operator; on approval set `current = new drive_url`.
-3. Repeat. Each `edit_image` turn costs 1 credit.
+   - read `cdn_url` (the new image) + `revised_prompt` (drift signal). If `cdn_url`
+     is null on the first `done` poll, poll once more (the R2 upload is async).
+   - deliver + gate with the operator; on approval set `current = new cdn_url`.
+3. Repeat. Each `edit_image` turn costs 1 image credit (auto-refunded on error).
+   Capture each turn's `cdn_url` promptly — job status is dropped ~15 min after
+   submit (the image itself stays in the Library).
 
 ## Prompting each turn (see `prompting.md`)
 
@@ -42,10 +45,12 @@ edit_image([C], 'add ONLY the text "12 OZ" bottom-right, small; change nothing e
 Each arrow is one approved turn. `current` walks A→B→C→D. `D` is the final.
 
 ## Gotchas
-- Chain input = the **full-res** `drive_url` (`uc?export=download&id=…`), NOT the
-  `thumbnail_url`. The thumbnail is only for sheet `IMAGE()` previews.
+- Chain input = the **full-res** `cdn_url`, NOT the `thumbnail_url`. The thumbnail
+  is only for sheet `IMAGE()` previews.
 - A fan-out (family recolor) is the same chain branched from one approved master —
-  one `edit_image` per color from the master's `drive_url`, batch-poll with
+  one `edit_image` per color from the master's `cdn_url`, batch-poll with
   `check_image_jobs`. See Phase 4 + `gotchas.md`.
-- Reliability ladder when openai stalls: retry once on openai, then fall
-  back to `provider="nanobanana"` (single input). See `provider-matrix.md`.
+- Long `processing` is normal (edit ~2 min, compose ~5 min) — NEVER resubmit a
+  processing job (new billed job = duplicate). Re-run only on `status='error'`
+  (auto-refunded); nanobanana is the fast single-input alternative for the
+  re-run. See `provider-matrix.md`.

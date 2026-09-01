@@ -21,9 +21,9 @@ Notes:
   others accept a composite with a human model as the main. Confirm with the operator; your own
   amazon-compliance judgment does NOT know category exceptions — treat it as advisory, let the
   operator override. See `reference/amazon-compliance.md` for the hard main-image rules + QA gate.
-- **Dims default 2048×2048** for PDP (Amazon wants ≥1600 for zoom). gpt-image-2 honors the `size`
-  param — request `2048x2048` and you get true 2048. A+ module sizes: see
-  `reference/aplus-modules.md`.
+- **Use 2048×2048 for PDP** (Amazon wants ≥1600 for zoom) — and REQUEST it explicitly: the
+  generate default is `1024x1024`, not 2048. gpt-image-2 honors the `size` param — request
+  `2048x2048` and you get true 2048. A+ module sizes: see `reference/aplus-modules.md`.
 - Don't depict features the physical product lacks (e.g. straps) even if a stock photo shows them.
 
 ## Photographic slots vs graphic/typographic slots
@@ -47,10 +47,13 @@ a ≤5–7-word benefit headline + one support line per image, mined from review
 benefit-led (not feature), quantified, mobile-scannable. The copy drives conversion as much as
 the picture. Localize per marketplace (reuse the photo, swap the text).
 
-## The 'Images Generation' sheet column map (post-renumber, s0–s8)
-12 lead cols then nine 10-col slot blocks. Block start columns:
-s0=M, s1=W, s2=AG, s3=AQ, s4=BA, s5=BK, s6=BU, s7=CE, s8=CO. After s8 come A+ a1–a5 / p1–p5.
-Within a block the 10 cells are: ref, role, dim, prompt, composition, scores, **v1, v2, v3**, status.
-So a slot's V1 cell = block start + 6 columns (s0_v1=S, s1_v1=AC, s2_v1=AM, s3_v1=AW, s4_v1=BG,
-s5_v1=BQ, s6_v1=CA, s7_v1=CK, s8_v1=CU); status = block start + 9 (s0=V, s1=AF, s2=AP, s3=AZ,
-s4=BJ, s5=BT, s6=CD, s7=CN, s8=CX).
+## The 'Images Generation' sheet column map (layout v3 — see sheet-contract.md)
+13 lead cols (A–M) then nineteen 10-col blocks (s0–s8, a1–a5, p1–p5) from col N.
+Within a block the 10 cells are: ref, role, dim, prompt, **reversed_prompt**, scores,
+**v1, v2, v3**, status. Slot n's block starts at column `14 + 10n` (1-indexed):
+s0=N, s1=X, s2=AH, s3=AR, s4=BB, s5=BL, s6=BV, s7=CF, s8=CP.
+V1 = block start + 6 (s0_v1=T, s1_v1=AD, s2_v1=AN, s3_v1=AX, s4_v1=BH, s5_v1=BR,
+s6_v1=CB, s7_v1=CL, s8_v1=CV); status = block start + 9 (s0=W, s1=AG, s2=AQ, s3=BA,
+s4=BK, s5=BU, s6=CE, s7=CO, s8=CY). A+ blocks continue from col 104 (a1=CZ …).
+**Before writing, verify against the hidden row-1 machine keys** — older workbooks
+predate the v3 realign and sit one column to the left.
