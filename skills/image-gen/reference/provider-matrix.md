@@ -11,8 +11,7 @@ Default **openai**. Both are image MCP tools (`generate_image`, `edit_image`) se
 | Speed / a fast draft | **nanobanana** | different backend, fast, search-grounded, single-input only |
 | Quick color-only nudges | either | `edit_image` chains well on nanobanana |
 
-`provider="both"` runs BOTH backends and **holds two image prices** (1 credit at
-≤1024 px, 2 above) — use it only when you
+`provider="both"` runs BOTH backends and **bills two images** — use it only when you
 genuinely want to compare outputs.
 
 ## Reliability — the rules that keep you from double-billing
@@ -24,7 +23,7 @@ genuinely want to compare outputs.
   `processing` (edit up to ~2 min, compose ~5 min) is normal, not a failure. A
   resubmit is a NEW, separately-billed job and a duplicate image.
 - **Re-run only on `status='error'`.** Errors (and partial delivery) are
-  **auto-refunded**, so the re-run costs the same one image price. If openai errored,
+  **auto-refunded**, so the re-run costs the same as the first. If openai errored,
   retrying once on openai is fine; for speed you may instead re-run on
   `nanobanana` (single input — for a recolor, pass the master alone and put the
   target color/hex in the prompt), mark the result "texture-degraded" in status,

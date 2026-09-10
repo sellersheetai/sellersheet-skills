@@ -33,7 +33,7 @@ the 'Images Generation' sheet. The hard-won rules live in `reference/`.
 ## Golden rules (do not violate)
 1. **Plan first, gate before spend.** Default to GATED phases: get operator sign-off on (a) the
    learned style/direction and (b) the first/master set, BEFORE generating the full family.
-   Image generation costs real money (Credits: 0.5 per image up to 1024 px, 1 above) — never fan out 20 images on an
+   Image generation costs real money (Credits, billed per action) — never fan out 20 images on an
    unconfirmed template.
 2. **Product fidelity is sacred.** The generated product must match the operator's REAL photos.
    If a feature isn't on the physical product (e.g. straps), never render it — and if a real
@@ -59,7 +59,10 @@ Setup facts before any spend:
 - `get_user_context` — confirm `canUseMcp` and take the store's ref from `store_refs`
   **verbatim** (`<store>-<CC>`, e.g. `myStore-US`); a bare store name is rejected.
 - **Check the Image Library first**: `list_generated_images(store, sku)` — an image that
-  already exists is free; a regeneration costs another 0.5–1 credits and returns a different image.
+  already exists is free; a regeneration is billed again and returns a different image.
+- The operator chooses the **model route** and reviews its prices on the Dashboard
+  (sellersheetai.com/dashboard), never from a tool. If jobs keep failing on the current
+  route, tell the operator to switch the route there and retry.
 - Pull the variation family early (`search_listings_items(variation_parent_sku=…)`, union
   across marketplaces) so you know every child SKU and which children lack a real color photo.
 
@@ -68,7 +71,7 @@ Competitor discovery (only if no operator-supplied ref): **prefer a US store** �
 US competitors** in-category via `search_catalog_items(keywords + salesRanks + images)`; take their
 high-res mains. Then:
 - Extract style from each competitor image: read the image (your own vision) + `reverse_prompt`
-  (0.1 credits) to derive a structured JSON prompt.
+  (a small text charge) to derive a structured JSON prompt.
 - **Compare our current images vs competitors, per slot**, and write concrete gap notes + a
   per-slot optimization suggestion.
 - For each suggestion, build a **direction board** locally so the operator sees the intended look:
@@ -133,7 +136,7 @@ reporting done. Close with a status summary.
 ## Phase 6 — A+ Content (when the operator wants A+ / Premium A+)
 Read `reference/aplus-modules.md` first. Generate each module image at its dimensions (default to
 the module's exact size) with gpt-image-2 — A+ slots `a1–a5`/`p1–p5` cost the same as any
-other image (0.5 credits up to 1024 px, 1 above). Two options for copy: **bake headlines/labels directly into the image**
+other image. Two options for copy: **bake headlines/labels directly into the image**
 (gpt-image-2 renders them — QA every word), OR keep the image clean and put the copy in Amazon's
 module **text fields** (easier localization — reuse one image, swap the text per marketplace).
 Build the page along the arc (header → benefits → comparison → trust → brand story). If the

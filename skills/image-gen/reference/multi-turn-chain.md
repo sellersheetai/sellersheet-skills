@@ -20,7 +20,7 @@ The only thing you carry between turns is `current` — one CDN URL string.
    - read `cdn_url` (the new image) + `revised_prompt` (drift signal). If `cdn_url`
      is null on the first `done` poll, poll once more (the R2 upload is async).
    - deliver + gate with the operator; on approval set `current = new cdn_url`.
-3. Repeat. Each `edit_image` turn costs 0.5 credits (1 above 1024 px; auto-refunded on error).
+3. Repeat. Each `edit_image` turn is billed as one image (auto-refunded on error).
    Capture each turn's `cdn_url` promptly — job status is dropped ~15 min after
    submit (the image itself stays in the Library).
 

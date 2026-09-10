@@ -12,6 +12,16 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.11.10] — 2026-09-10
+
+### Changed — `image-gen` billing guidance without the rate card
+
+- The skill no longer quotes prices (the Dashboard is where the operator reviews the
+  route and its rate card). It states only what an agent needs: every AI action is
+  billed from one Credits balance and refunded on failure, a regeneration is billed
+  again, `provider="both"` bills two images, and a job that keeps failing means the
+  operator should switch the **model route** on the Dashboard and retry.
+
 ## [0.11.9] — 2026-09-10
 
 ### Changed — `image-gen` prices state the unified Credits
