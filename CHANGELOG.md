@@ -12,6 +12,18 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.11.9] — 2026-09-10
+
+### Changed — `image-gen` prices state the unified Credits
+
+- SellerSheet now bills every AI action from **one prepaid Credits balance
+  (1 credit = $1)**: an image costs **0.5 credits up to 1024 px and 1 above**,
+  a text call such as `reverse_prompt` costs **0.1** (it is no longer free),
+  and `provider="both"` holds two image prices. The old "Image Credits" /
+  "Copy Credits" wording is gone from `SKILL.md`, `reference/gotchas.md`,
+  `reference/provider-matrix.md`, `reference/multi-turn-chain.md` and
+  `reference/aplus-modules.md`. Failed jobs are still refunded.
+
 ## [0.11.8] — 2026-09-01
 
 ### Changed — `image-gen` reconciled with the live pipeline

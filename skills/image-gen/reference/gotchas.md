@@ -9,7 +9,7 @@
   `store_refs` entry from `get_user_context` verbatim.
 - **Check the Image Library before regenerating.** `list_generated_images(store,
   sku/parent_sku, slot)` finds every image already saved — free, and returns the
-  exact image; a regeneration costs a credit and returns a different one.
+  exact image; a regeneration costs another 0.5–1 credits and returns a different one.
 - **Open the returned `cdn_url` / `thumbnail_url` directly.** If your harness needs
   the bytes locally to display the image, fetch with curl:
   `curl -sL "<cdn_url>" -o /tmp/x.png`.
@@ -33,8 +33,10 @@
 - **nanobanana smooths/loses fine texture** and outputs lower-res (~1024/1254). Use
   it for speed or an error re-run; for legible TEXT and max fidelity use openai.
   Mark nanobanana outputs "texture-degraded" in status.
-- Insufficient credits → HTTP 402; the operator tops up **Image Credits** at
-  sellersheetai.com/billing (the text-AI pool is separate — "Copy Credits").
+- Insufficient credits → HTTP 402; the operator tops up **Credits** at
+  sellersheetai.com/billing. ONE pool pays for every AI action — 1 credit = $1; an
+  image costs 0.5 credits up to 1024 px and 1 above; a text call such as
+  `reverse_prompt` costs 0.1. A failed job is refunded.
 
 ## Resolution / size
 
