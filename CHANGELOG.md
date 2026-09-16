@@ -12,6 +12,28 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.11.11] — 2026-09-16
+
+### Added — Tencent CodeBuddy Code as a first-class install path
+
+- CodeBuddy Code reads the Claude Code plugin layout (`.codebuddy-plugin/`, `.workbuddy-plugin/`,
+  then `.claude-plugin/`), and the bundled flat `.mcp.json` is accepted as-is — verified on
+  CodeBuddy Code 2.151.0 (`codebuddy plugin validate`, GitHub marketplace add, install,
+  all nine skills present). No manifest change was needed.
+- New bilingual guide `docs/install-codebuddy.md`; CodeBuddy rows in the README, `setup-mcp.md`
+  and `auto-update.md`; a `codebuddy-code` entry in `mcp/sellersheet.json`; `--target codebuddy`
+  (`~/.codebuddy/skills`) in `install.sh` for skill-only installs.
+- `versions.json` `install_commands` gains `codebuddy` / `codebuddy-update`, so `get_user_context`
+  can hand a CodeBuddy user the right update command; lint requires the keys.
+
+### Added — Chinese-speaking users (中文用户)
+
+- `README.zh-CN.md` — the full README in Chinese.
+- Every skill `description` now ends with Chinese trigger phrases (中文触发词), so a Chinese
+  prompt matches the right skill; the plugin and marketplace descriptions carry a Chinese sentence.
+- `sellersheet-shared` gains a **Language · 语言规则** section: reply in the user's language,
+  but keep tool names, store refs, `rpt_*` names, Amazon nouns and sheet headers in English.
+
 ## [0.11.10] — 2026-09-10
 
 ### Changed — `image-gen` billing guidance without the rate card

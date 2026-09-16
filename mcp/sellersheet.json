@@ -13,6 +13,7 @@
     "claude-desktop": "Settings → Connectors → Add custom connector → URL https://sellersheetai.com/mcp (OAuth, no key needed)",
     "claude-code": "claude mcp add-json sellersheet '{\"type\":\"http\",\"url\":\"https://sellersheetai.com/mcp\",\"headers\":{\"Authorization\":\"Bearer YOUR_API_KEY\"}}'",
     "codex": "codex mcp add sellersheet --url https://sellersheetai.com/mcp   (browser OAuth on first use — no key needed; config.toml uses http_headers, NOT headers, if you set a Bearer manually)",
+    "codebuddy-code": "Plugin route (recommended, keyless): /plugin marketplace add sellersheetai/sellersheet-skills then /plugin install sellersheet-skills@sellersheet-marketplace — registers the server, sign in via /mcp. Manual route: codebuddy mcp add-json --scope user sellersheet '{\"type\":\"http\",\"url\":\"https://sellersheetai.com/mcp\",\"headers\":{\"Authorization\":\"Bearer YOUR_API_KEY\"}}'  (腾讯云 CodeBuddy Code：推荐用插件方式安装，无需 API key；手动方式见左侧命令)",
     "cursor": "~/.cursor/mcp.json — mcpServers block above without the \"type\" field",
     "windsurf-antigravity": "use \"serverUrl\" instead of \"url\" in the block above",
     "gemini-cli": "~/.gemini/settings.json — httpUrl + headers",

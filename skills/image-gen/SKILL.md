@@ -1,6 +1,6 @@
 ---
 name: image-gen
-description: >
+description: >-
   Use when creating or optimizing Amazon product listing images or A+ Content for a store SKU or a
   whole variation family — learns mature competitors' image style, generates/recolors
   product-faithful images with gpt-image-2 via the connected image MCP tools, enforces Amazon
@@ -10,7 +10,8 @@ description: >
   "recolor variants", "image-gen on the row", "学竞品风格生成产品图", "keep this scene / swap my
   product in". Default provider openai; gated phases (operator approves before spend). NOT for
   non-Amazon image edits — for that call the MCP image tools directly.
-version: 0.11.10
+  中文触发词：亚马逊产品图生成、listing 图片优化、主图/副图/套图、A+ 页面、学习竞品风格、改色变体图、图片合规检查。
+version: 0.11.11
 ---
 
 # image-gen — Amazon listing image suite

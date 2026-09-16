@@ -12,7 +12,7 @@ set -euo pipefail
 
 REPO_URL="https://github.com/sellersheetai/sellersheet-skills.git"
 REPO_RAW="https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main"
-VERSION="0.11.10"
+VERSION="0.11.11"
 
 # ---------- args ----------
 TARGET=""
@@ -35,9 +35,9 @@ SellerSheet Skills installer v$VERSION
 Usage: install.sh [OPTIONS]
 
 OPTIONS:
-  --target <agent>     One of: claude-code, claude-desktop, codex, gemini,
-                       antigravity, openclaw, hermes, generic. Auto-detected
-                       if omitted.
+  --target <agent>     One of: claude-code, claude-desktop, codex, codebuddy,
+                       gemini, antigravity, openclaw, hermes, generic.
+                       Auto-detected if omitted.
   --path <dir>         Override the default skills directory for the target.
                        Required for openclaw, hermes, generic.
   --update             Pull the latest version and re-install.
@@ -51,6 +51,7 @@ EXAMPLES:
   install.sh                                  # auto-detect + install all
   install.sh --target claude-code             # global ~/.claude/skills
   install.sh --target codex                   # ~/.codex/skills
+  install.sh --target codebuddy               # ~/.codebuddy/skills (腾讯云 CodeBuddy Code)
   install.sh --target openclaw --path /opt/openclaw/skills
 EOF
                 exit 0 ;;
@@ -90,6 +91,8 @@ default_path_for_target() {
       esac ;;
     codex)
       echo "$HOME/.codex/skills" ;;
+    codebuddy)
+      echo "$HOME/.codebuddy/skills" ;;
     gemini)
       echo "$HOME/.gemini/skills" ;;
     antigravity)
@@ -104,6 +107,7 @@ detect_target() {
   # Auto-detect by which agent's config dir exists
   if [[ -d "$HOME/.claude" ]];      then echo "claude-code"; return; fi
   if [[ -d "$HOME/.codex" ]];       then echo "codex"; return; fi
+  if [[ -d "$HOME/.codebuddy" ]];   then echo "codebuddy"; return; fi
   if [[ -d "$HOME/.gemini" ]];      then echo "gemini"; return; fi
   if [[ -d "$HOME/.antigravity" ]]; then echo "antigravity"; return; fi
   echo "claude-code"  # default
@@ -136,7 +140,7 @@ if [[ $CHECK -eq 1 ]]; then
   printf "\n%-30s  %-12s  %-12s  %s\n" "SKILL" "INSTALLED" "AVAILABLE" "STATUS"
   printf "%-30s  %-12s  %-12s  %s\n" "------------------------------" "------------" "------------" "----------"
   # Check each installed location: claude-code default, codex, gemini, etc.
-  for default_target in claude-code codex gemini antigravity; do
+  for default_target in claude-code codex codebuddy gemini antigravity; do
     dir=$(default_path_for_target "$default_target" 2>/dev/null)
     [[ -z "$dir" ]] && continue
     [[ ! -d "$dir" ]] && continue
@@ -241,6 +245,11 @@ case "$TARGET" in
   codex|gemini|antigravity)
     log ""
     log "NEXT: restart your agent CLI to pick up the new skills." ;;
+  codebuddy)
+    log ""
+    log "NEXT: run /reload-plugins in CodeBuddy Code (or start a new session)."
+    log "      Register the MCP server too: see $CACHE_DIR/mcp/sellersheet.json (codebuddy-code)."
+    log "      (Tip: the plugin route registers MCP for you — /plugin marketplace add sellersheetai/sellersheet-skills)" ;;
   openclaw|hermes|generic)
     log ""
     log "NEXT: configure your agent to scan $SKILLS_DIR for skill folders." ;;

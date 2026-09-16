@@ -27,6 +27,7 @@ Per-agent registration:
 | Claude Desktop | Settings → Connectors → **Add custom connector** → URL `https://sellersheetai.com/mcp` (OAuth — no key needed) |
 | Claude Code | **Automatic with the plugin** — authenticate via `/mcp`. Bearer alternative: `claude mcp add-json sellersheet '{"type":"http","url":"https://sellersheetai.com/mcp","headers":{"Authorization":"Bearer YOUR_API_KEY"}}'` |
 | Codex CLI / ChatGPT desktop | **Automatic with the plugin** — then `codex mcp login sellersheet`. Manual alternative: `codex mcp add sellersheet --url https://sellersheetai.com/mcp` (config.toml field is `http_headers`, not `headers`). |
+| CodeBuddy Code (腾讯云 CodeBuddy) | **Automatic with the plugin** — authenticate via `/mcp`. Bearer alternative: `codebuddy mcp add-json --scope user sellersheet '{"type":"http","url":"https://sellersheetai.com/mcp","headers":{"Authorization":"Bearer YOUR_API_KEY"}}'` |
 | Cursor | `~/.cursor/mcp.json` — the JSON block above without the `"type"` field |
 | Windsurf / Antigravity | Same block but with `"serverUrl"` instead of `"url"` |
 | Gemini CLI | `~/.gemini/settings.json` — `httpUrl` + `headers` |
@@ -34,7 +35,7 @@ Per-agent registration:
 
 The dashboard's **Use key** dialog ([sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → MCP & API keys) renders a ready-to-paste snippet for each of these clients with your key filled in.
 
-> **Plugin users skip the table above.** Since v0.11.0 the `sellersheet-skills` plugin (Claude Code, Codex) bundles a keyless remote-HTTP `.mcp.json`, so installing the plugin registers the `sellersheet` server automatically — just authenticate on first use (`/mcp` in Claude Code, `codex mcp login sellersheet` in Codex). A manually-added server with the same name shadows the plugin copy, so existing setups keep working unchanged. The manual table serves agents without a plugin system. (History: ≤0.5.0 bundled a broken *local stdio* server, removed in 0.5.1; v0.11.0 restores the bundle as *remote HTTP + OAuth* — nothing runs locally.)
+> **Plugin users skip the table above.** Since v0.11.0 the `sellersheet-skills` plugin (Claude Code, Codex, CodeBuddy Code) bundles a keyless remote-HTTP `.mcp.json`, so installing the plugin registers the `sellersheet` server automatically — just authenticate on first use (`/mcp` in Claude Code and CodeBuddy Code, `codex mcp login sellersheet` in Codex). A manually-added server with the same name shadows the plugin copy, so existing setups keep working unchanged. The manual table serves agents without a plugin system. (History: ≤0.5.0 bundled a broken *local stdio* server, removed in 0.5.1; v0.11.0 restores the bundle as *remote HTTP + OAuth* — nothing runs locally.)
 
 ## After installing MCP — install the skills
 
@@ -44,6 +45,7 @@ Skills are a separate artifact from the MCP server. Pick the path that fits your
 |---|---|
 | **Claude Code** | `/plugin marketplace add sellersheetai/sellersheet-skills` then `/plugin install sellersheet-skills@sellersheet-marketplace` (one bundle, all skills) |
 | **Codex CLI / ChatGPT desktop** | `codex plugin marketplace add sellersheetai/sellersheet-skills` then `codex plugin add sellersheet-skills@sellersheet-marketplace` — Codex reads the same marketplace format, so one repo serves both |
+| **CodeBuddy Code (腾讯云 CodeBuddy)** | `/plugin marketplace add sellersheetai/sellersheet-skills` then `/plugin install sellersheet-skills@sellersheet-marketplace` — CodeBuddy accepts the `.claude-plugin/` layout; see [install-codebuddy.md](./install-codebuddy.md) (中英双语) |
 | **Other agents** | `npx skills add sellersheetai/sellersheet-skills` — recommended; see [install-npx-skills.md](./install-npx-skills.md). No-Node fallback: `bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --target <agent>` |
 
 After both MCP and skills are installed, restart your agent.
@@ -65,6 +67,8 @@ If you instead see "tool not found" or "unauthorized": one of the three setup pi
 ```
 
 Or update on demand: `/plugin marketplace update sellersheet-marketplace` then `/plugin update sellersheet-skills`.
+
+**CodeBuddy Code** — identical commands and the same `/plugin` → Marketplaces → Enable auto-update toggle.
 
 **Other agents** — re-run the installer with `--update`, or `--check` to compare installed vs latest:
 

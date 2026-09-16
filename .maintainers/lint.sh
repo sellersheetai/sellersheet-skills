@@ -140,11 +140,11 @@ fs=$(ls -1 skills/ | sort | tr '\n' ' ')
 
 # ---------- 4b. skills_catalog contract (consumed by MCP get_user_context) ----------
 log "Checking skills_catalog contract..."
-for k in claude-code claude-code-update codex codex-update other other-update update; do
+for k in claude-code claude-code-update codex codex-update codebuddy codebuddy-update other other-update update; do
   v=$(jq -r --arg k "$k" '.install_commands[$k] // empty' versions.json)
   [[ -n "$v" ]] || err "versions.json install_commands missing '$k'"
 done
-for k in claude-code-update codex-update; do
+for k in claude-code-update codex-update codebuddy-update; do
   v=$(jq -r --arg k "$k" '.install_commands[$k] // empty' versions.json)
   [[ "$v" != *install.sh* ]] || err "install_commands.$k points plugin users at install.sh (duplicate-source hazard)"
 done

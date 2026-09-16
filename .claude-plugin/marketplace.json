@@ -1,6 +1,6 @@
 {
   "name": "sellersheet-marketplace",
-  "description": "SellerSheet skills marketplace — Amazon seller agent skills built on the SellerSheet MCP.",
+  "description": "SellerSheet skills marketplace — Amazon seller agent skills built on the SellerSheet MCP. SellerSheet 技能市场：基于 SellerSheet MCP 的亚马逊卖家智能体技能。",
   "owner": {
     "name": "SellerSheet AI",
     "email": "support@sellersheetai.com"
@@ -10,7 +10,7 @@
       "name": "sellersheet-skills",
       "displayName": "SellerSheet Skills",
       "source": "./",
-      "description": "Production-ready agent skills for Amazon sellers using SellerSheet — Google Sheets I/O, multi-tab operator dashboards, SP-API/Ads warehouse queries, and gpt-image-2 listing/A+ image generation.",
+      "description": "Production-ready agent skills for Amazon sellers using SellerSheet — Google Sheets I/O, multi-tab operator dashboards, SP-API/Ads warehouse queries, and gpt-image-2 listing/A+ image generation. 面向亚马逊卖家的 SellerSheet 智能体技能包：Google 表格读写、多页签运营看板、SP-API/广告报表仓库查询、gpt-image-2 产品图与 A+ 生成。",
       "author": {
         "name": "SellerSheet AI",
         "email": "support@sellersheetai.com"

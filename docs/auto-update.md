@@ -50,7 +50,18 @@ Without auto-update, refresh on demand:
 
 `/plugin` → **Marketplaces** → select the marketplace → **Disable auto-update**, or set `"autoUpdate": false`. To disable *all* auto-updates (Claude Code itself included): `export DISABLE_AUTOUPDATER=1`.
 
-## Other agents (Codex, Gemini CLI, Antigravity, Openclaw, Hermes, …)
+## CodeBuddy Code (腾讯云 CodeBuddy)
+
+CodeBuddy's plugin manager mirrors Claude Code's, so the mechanism above applies unchanged: the version comes from `.claude-plugin/plugin.json`, third-party marketplaces do not auto-update until you opt in (`/plugin` → **Marketplaces** → **sellersheet-marketplace** → **Enable auto-update**, or the `CODEBUDDY_AUTO_UPDATE_THIRD_PARTY_MARKETPLACES` environment variable), and on-demand refresh is:
+
+```
+/plugin marketplace update sellersheet-marketplace
+/plugin update sellersheet-skills
+```
+
+Run `/reload-plugins` afterwards to activate the new version in the current session.
+
+## Other agents (Gemini CLI, Antigravity, Openclaw, Hermes, …)
 
 These agents install skills via `install.sh`, which clones this repo into `~/.cache/sellersheet-skills` and copies the skill folders. Re-run with `--update`:
 

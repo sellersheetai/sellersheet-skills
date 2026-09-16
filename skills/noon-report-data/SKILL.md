@@ -1,7 +1,9 @@
 ---
 name: noon-report-data
-description: Use when working with noon.com (noon Partners) report data that SellerSheet ingests on a schedule — querying noon orders, finance/transactions, FBN inventory aging, or product-views & sales for a connected noon store. Covers the 4 rpt_noon_* warehouse tables, their schedules, grain, and the query nuances (project-scoped, marketplace semantics, snapshot vs incremental).
-version: 0.11.10
+description: >-
+  Use when working with noon.com (noon Partners) report data that SellerSheet ingests on a schedule — querying noon orders, finance/transactions, FBN inventory aging, or product-views & sales for a connected noon store. Covers the 4 rpt_noon_* warehouse tables, their schedules, grain, and the query nuances (project-scoped, marketplace semantics, snapshot vs incremental).
+  中文触发词：noon 订单、noon 财务/交易明细、FBN 库存账龄、noon 商品浏览与销量、noon 店铺报表。
+version: 0.11.11
 ---
 
 # noon Report Data
