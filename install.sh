@@ -12,7 +12,7 @@ set -euo pipefail
 
 REPO_URL="https://github.com/sellersheetai/sellersheet-skills.git"
 REPO_RAW="https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main"
-VERSION="0.11.11"
+VERSION="0.11.12"
 
 # ---------- args ----------
 TARGET=""
@@ -236,9 +236,9 @@ log "Skills directory: $SKILLS_DIR"
 case "$TARGET" in
   claude-desktop)
     log ""
-    log "NEXT: copy the MCP config snippet from mcp/sellersheet.json into"
+    log "NEXT: copy the MCP config snippet from docs/mcp-config/sellersheet.json into"
     log "your claude_desktop_config.json and restart Claude Desktop."
-    log "  Config example: $CACHE_DIR/mcp/sellersheet.json" ;;
+    log "  Config example: $CACHE_DIR/docs/mcp-config/sellersheet.json" ;;
   claude-code)
     log ""
     log "NEXT: restart Claude Code or run /skills refresh to pick up the new skills." ;;
@@ -248,7 +248,7 @@ case "$TARGET" in
   codebuddy)
     log ""
     log "NEXT: run /reload-plugins in CodeBuddy Code (or start a new session)."
-    log "      Register the MCP server too: see $CACHE_DIR/mcp/sellersheet.json (codebuddy-code)."
+    log "      Register the MCP server too: see $CACHE_DIR/docs/mcp-config/sellersheet.json (codebuddy-code)."
     log "      (Tip: the plugin route registers MCP for you — /plugin marketplace add sellersheetai/sellersheet-skills)" ;;
   openclaw|hermes|generic)
     log ""

@@ -1,0 +1,24 @@
+{
+  "name": "SellerSheet",
+  "name_zh": "SellerSheet 亚马逊运营助手",
+  "name_en": "SellerSheet for Amazon Sellers",
+  "description": "Amazon Seller Central + Ads + Google Sheets for AI agents: report warehouse, dashboards, listings, ads, images.",
+  "description_zh": "连接亚马逊卖家后台、广告与 Google 表格：查询报表仓库、生成运营看板、管理 listing 与广告、生成产品图和 A+ 页面。",
+  "description_en": "Connect Amazon Seller Central, Ads and Google Sheets: query the report warehouse, build operator dashboards, manage listings and ads, generate listing images and A+ content.",
+  "source": "sellersheet",
+  "type": "mcp",
+  "examples_zh": [
+    "查一下 myStore-US 上周的库存和补货需求",
+    "用最近 30 天的广告数据做一个 PPC 看板写到 Google 表格",
+    "把 B0XXXXXXXX 的品牌分析搜索词报告拉出来并总结",
+    "为 MYSKU-001 生成一套亚马逊主图和 A+ 页面"
+  ],
+  "examples_en": [
+    "Show inventory levels and restock needs for myStore-US for last week",
+    "Build a PPC dashboard in Google Sheets from the last 30 days of ads data",
+    "Pull the Brand Analytics search terms report for B0XXXXXXXX and summarise it",
+    "Generate a set of Amazon main images and A+ content for MYSKU-001"
+  ],
+  "minWorkbuddyVersion": "4.24.0",
+  "version": "0.11.12"
+}

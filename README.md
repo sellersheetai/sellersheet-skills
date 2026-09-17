@@ -6,7 +6,7 @@
 
 **Author**: [sellersheetai.com](https://sellersheetai.com)
 **License**: Apache-2.0
-**Latest release**: v0.11.11 ([changelog](./CHANGELOG.md))
+**Latest release**: v0.11.12 ([changelog](./CHANGELOG.md))
 
 ## What's in here
 
@@ -77,6 +77,10 @@ codex mcp login sellersheet     # browser OAuth — no API key
 ```
 
 Then `/reload-plugins`, and sign in to the `sellersheet` server via `/mcp` (OAuth — no API key). Skills appear namespaced, e.g. `/sellersheet-skills:report-data`. Bilingual walkthrough: [docs/install-codebuddy.md](./docs/install-codebuddy.md).
+
+### WorkBuddy (腾讯 WorkBuddy)
+
+WorkBuddy does not read plugin marketplaces; SellerSheet is published to its **connector marketplace** instead. Install it from inside WorkBuddy (专家·技能·连接器 → 连接器 → SellerSheet → 连接) and sign in when prompted — nothing to download. This repo root doubles as the WorkBuddy connector package (`connector-meta.json`, `mcp.json`, `icon.svg`, the same `skills/`), so the connector always ships the same skills as the plugin. Details: [docs/install-workbuddy.md](./docs/install-workbuddy.md).
 
 ### OpenClaw
 
@@ -204,6 +208,7 @@ The plugin ships as one bundle — all skills release together at the plugin ver
 - [Install on Claude Desktop](./docs/install-claude-desktop.md)
 - [Install on Codex](./docs/install-codex.md)
 - [Install on CodeBuddy Code · 腾讯云 CodeBuddy 安装指南](./docs/install-codebuddy.md)
+- [Install on WorkBuddy · 腾讯 WorkBuddy 连接器](./docs/install-workbuddy.md)
 - [Install on Gemini CLI](./docs/install-gemini.md)
 - [Install on Antigravity](./docs/install-antigravity.md)
 - [Install on Openclaw / Hermes / generic agents](./docs/install-generic.md)

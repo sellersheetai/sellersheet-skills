@@ -16,7 +16,7 @@ command -v jq >/dev/null || { echo "jq required (brew install jq / apt install j
 
 # ---------- 1. manifests are valid JSON ----------
 log "Validating JSON manifests..."
-for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json versions.json mcp/sellersheet.json .mcp.json; do
+for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json versions.json docs/mcp-config/sellersheet.json .mcp.json; do
   jq empty "$f" 2>/dev/null || err "$f is not valid JSON"
 done
 
@@ -104,7 +104,7 @@ declare -a FORBIDDEN=(
   "OPTIONAL · 选填"                        # canonical tag is OPTIONAL · 可选
 )
 for pat in "${FORBIDDEN[@]}"; do
-  H=$(grep -rFn "$pat" skills/ docs/ README.md mcp/ install.sh 2>/dev/null || true)
+  H=$(grep -rFn "$pat" skills/ docs/ README.md README.zh-CN.md install.sh 2>/dev/null || true)
   [[ -z "$H" ]] || { err "forbidden stale string \"$pat\":"; echo "$H" | head -5 >&2; }
 done
 
@@ -169,6 +169,31 @@ HITS=$(grep -rEn "$PAT" skills/ docs/ README.md CHANGELOG.md 2>/dev/null || true
 [[ -z "$HITS" ]] || { err "private identifiers detected:"; echo "$HITS" | head -20 >&2; }
 ASIN=$(grep -rEn '\bB0[A-Z0-9]{8}\b' skills/ docs/ README.md CHANGELOG.md 2>/dev/null | grep -vE '(B0ABCDEFGH|B0ABCDEFG[0-9]|B0XXXXXXXX)' || true)
 [[ -z "$ASIN" ]] || { err "real-looking ASINs detected (use B0ABCDEFGH):"; echo "$ASIN" | head -10 >&2; }
+
+# ---------- 6. Tencent WorkBuddy connector files (dual-format root) ----------
+# The repo root is ALSO a WorkBuddy "MCP + Skill" connector: connector-meta.json,
+# mcp.json, icon.svg + description_zh/description_en/author in every SKILL.md.
+# Plugin loaders ignore those extras (verified on CodeBuddy, Codex, npx skills
+# 2026-09-17). sync_workbuddy.py derives them; nothing here is hand-edited.
+log "Checking WorkBuddy connector files..."
+for f in connector-meta.json mcp.json; do
+  jq empty "$f" 2>/dev/null || err "$f is not valid JSON"
+done
+[[ -f icon.svg ]] || err "icon.svg missing at the repo root (WorkBuddy marketplace icon, hand-maintained)"
+[[ "$(jq -r '.version' connector-meta.json)" == "$PV" ]] || err "connector-meta.json version != $PV"
+[[ "$(jq -r '.source' connector-meta.json)" == "sellersheet" ]] || err "connector-meta.json source must stay 'sellersheet' (global id on WorkBuddy)"
+[[ "$(jq -r '.mcpServers | length' mcp.json)" == "1" ]] || err "mcp.json must declare exactly one server (WorkBuddy rule)"
+[[ "$(jq -r '.mcpServers.sellersheet.type' mcp.json)" == "streamableHttp" ]] || err "mcp.json type must be streamableHttp"
+[[ "$(jq -r '.mcpServers.sellersheet.url' mcp.json)" == "https://sellersheetai.com/mcp" ]] || err "mcp.json url drifted"
+grep -qiE "bearer|api_key|token" mcp.json && err "mcp.json must stay keyless (WorkBuddy runs the OAuth flow)" || true
+for d in skills/*/; do
+  fm=$(awk '/^---$/{c++; next} c==1{print}' "${d}SKILL.md")
+  for k in description_zh description_en author; do
+    echo "$fm" | grep -q "^$k:" || err "${d}SKILL.md frontmatter missing '$k:' (WorkBuddy requires it — run sync_workbuddy.py)"
+  done
+done
+[[ -d mcp ]] && err "a top-level mcp/ directory is read by CodeBuddy as plugin MCP config — keep snippets under docs/mcp-config/" || true
+python3 .maintainers/sync_workbuddy.py --check >/dev/null 2>&1 || err "WorkBuddy connector files stale — run python3 .maintainers/sync_workbuddy.py"
 
 # ---------- summary ----------
 echo ""

@@ -12,6 +12,31 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.11.12] — 2026-09-17
+
+### Added — Tencent WorkBuddy connector (same tree, no copy)
+
+- The repo root now doubles as a WorkBuddy "MCP + Skill" connector: `connector-meta.json`,
+  `mcp.json` (`mcpServers` wrapper, `streamableHttp`, keyless — WorkBuddy runs the standard MCP
+  OAuth flow), `icon.svg`, and `description_zh` / `description_en` / `author` in every skill's
+  frontmatter. Plugin loaders ignore those extras — verified on CodeBuddy Code 2.151.0
+  (validate + install), Codex (install + list) and `npx skills` (list) — so Claude Code, Codex
+  and CodeBuddy installs are unchanged and the connector can never drift from the plugin.
+  `.maintainers/sync_workbuddy.py` derives the extra keys from `description` (promote.sh runs
+  it, lint fails if stale); `--zip` builds the marketplace submission.
+- `versions.json` `install_commands` gains `workbuddy` / `workbuddy-update` (install from the
+  in-app connector marketplace); new `docs/install-workbuddy.md`.
+
+### Changed — MCP snippet moved to `docs/mcp-config/sellersheet.json`
+
+- CodeBuddy loads every `mcp/*.json` inside a plugin as MCP server config, so the per-agent
+  snippet in `mcp/sellersheet.json` (with its `Bearer YOUR_API_KEY` placeholder) would have
+  overridden the keyless `.mcp.json` server on CodeBuddy. The snippet now lives under
+  `docs/mcp-config/` and `versions.json` `mcp_config_url` points there; lint refuses a
+  top-level `mcp/` directory.
+- MCP sign-in for every client now offers an email code as well as Google (server-side change,
+  no plugin change).
+
 ## [0.11.11] — 2026-09-16
 
 ### Added — Tencent CodeBuddy Code as a first-class install path

@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "sellersheet": {
+      "type": "streamableHttp",
+      "url": "https://sellersheetai.com/mcp",
+      "timeout": 30000
+    }
+  }
+}

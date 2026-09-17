@@ -13,7 +13,8 @@
 #   1. Validates <new-version> is semver and greater than the current version
 #   2. Bumps .version in plugin.json
 #   3. Mirrors it into versions.json (marketplace_version + every skill), each
-#      skills/*/SKILL.md frontmatter, install.sh VERSION, and README.md
+#      skills/*/SKILL.md frontmatter, install.sh VERSION, README.md, and the
+#      WorkBuddy connector-meta.json (via sync_workbuddy.py)
 #   4. Verifies CHANGELOG.md has a '## [<new-version>]' entry (you write the notes)
 #   5. Runs lint.sh
 #   6. Commits "Release v<new-version>" (push manually; CI auto-tags from plugin.json)
@@ -82,6 +83,9 @@ run "sed -i '' -E 's/^VERSION=\"[0-9.]+\"/VERSION=\"$NEW\"/' install.sh"
 # 5. README.md — 'Latest release' line + version-compat table row
 run "sed -i '' -E 's/\*\*Latest release\*\*: v[0-9]+\.[0-9]+\.[0-9]+/**Latest release**: v$NEW/' README.md"
 run "sed -i '' -E 's/\| v[0-9]+\.[0-9]+\.x \|/| v$MAJOR_MINOR.x |/' README.md"
+
+# 5b. WorkBuddy connector files (connector-meta.json version + derived SKILL.md keys)
+run "python3 .maintainers/sync_workbuddy.py"
 
 # 6. CHANGELOG must have an entry — the maintainer writes the notes
 if [[ $DRY_RUN -eq 0 ]] && ! grep -qE "^## \[$NEW\]" CHANGELOG.md; then

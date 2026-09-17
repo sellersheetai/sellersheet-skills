@@ -51,6 +51,10 @@ CodeBuddy Code 识别与 Claude Code 相同的插件目录结构，一步装好�
 
 然后运行 `/mcp`，选择 `sellersheet`，在浏览器中登录授权。完整中英双语指南：[docs/install-codebuddy.md](./docs/install-codebuddy.md)。
 
+### 腾讯 WorkBuddy
+
+WorkBuddy 不读取插件市场，SellerSheet 以**连接器**形式发布到 WorkBuddy 连接器市场。在 WorkBuddy 内安装：专家·技能·连接器 → 连接器 → SellerSheet → 连接，按提示登录即可，无需下载任何文件。本仓库根目录同时就是 WorkBuddy 连接器包（`connector-meta.json`、`mcp.json`、`icon.svg` 与同一套 `skills/`），因此连接器与插件永远是同一版技能。详见 [docs/install-workbuddy.md](./docs/install-workbuddy.md)。
+
 ### Claude Code
 
 ```
@@ -125,6 +129,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-sk
 ## 文档
 
 - [在 CodeBuddy Code 上安装（中英双语）](./docs/install-codebuddy.md)
+- [在腾讯 WorkBuddy 中安装连接器](./docs/install-workbuddy.md)
 - [通过 `npx skills` 安装（Codex、Cursor、Gemini 等）](./docs/install-npx-skills.md)
 - [在 Claude Code 上安装](./docs/install-claude-code.md)
 - [在 Claude Desktop 上安装](./docs/install-claude-desktop.md)

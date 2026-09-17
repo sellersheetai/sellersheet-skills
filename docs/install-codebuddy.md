@@ -112,6 +112,6 @@ The skill files are written in English, but every skill follows the shared rule:
 
 ## WorkBuddy
 
-Tencent WorkBuddy (the desktop office agent) shares CodeBuddy's plugin runtime and recognises the same layout, but its documented surfaces are the in-app Skill Marketplace / skill upload and a fixed set of connectors. Support for registering a custom MCP server such as SellerSheet inside WorkBuddy is being verified; until then, use CodeBuddy Code.
+Tencent WorkBuddy (the desktop office agent) installs SellerSheet as a **connector** from its own marketplace, not through `/plugin`. See [install-workbuddy.md](./install-workbuddy.md).
 
-腾讯 WorkBuddy（桌面办公智能体）与 CodeBuddy 共用插件运行时并识别同一目录结构，但其公开文档中的入口是应用内技能市场 / 技能上传和固定的连接器列表。在 WorkBuddy 中注册 SellerSheet 这类自定义 MCP 服务器的方式仍在验证中，在此之前请使用 CodeBuddy Code。
+腾讯 WorkBuddy（桌面办公智能体）通过其自带的连接器市场安装 SellerSheet，不走 `/plugin`。见 [install-workbuddy.md](./install-workbuddy.md)。

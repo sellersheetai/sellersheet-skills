@@ -1,9 +1,12 @@
 ---
 name: data-kiosk
+description_zh: "Data Kiosk、GraphQL 查询、销售与流量数据、经济性数据（费用、成本、利润）、Vendor 分析。"
+description_en: "Use when authoring or running an Amazon SP-API Data Kiosk GraphQL query — Sales & Traffic (by date / by ASIN…"
+author: SellerSheet AI
 description: >-
   Use when authoring or running an Amazon SP-API Data Kiosk GraphQL query — Sales & Traffic (by date / by ASIN / trends), Economics (per-unit fees, cost, margin, preview, simulation), or Vendor Analytics (manufacturing/sourcing view). Provides the exact versioned root query type, dataset fields, required arguments, enums (DateGranularity/AsinGranularity), and per-field @resultRetention so you write a valid query instead of guessing. NOT for the synced rpt_dk_* warehouse (use report-data).
   中文触发词：Data Kiosk、GraphQL 查询、销售与流量数据、经济性数据（费用、成本、利润）、Vendor 分析。
-version: 0.11.11
+version: 0.11.12
 ---
 
 # Data Kiosk
