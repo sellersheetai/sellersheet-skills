@@ -73,19 +73,20 @@ done < <(grep -rHoE '\]\(\.\./[a-z-]+/SKILL\.md\)' skills/*/SKILL.md 2>/dev/null
 
 # ---------- 2d. stale/forbidden strings (docs drift guard) ----------
 log "Stale-string guard..."
+# Private inputs (never committed — this file is public):
+#   SS_INTERNAL_STRINGS  newline-separated fixed strings that must not appear in
+#                        public content (internal repo / path / tool names)
+#   SS_PRIVACY_PATTERNS  one extended regex of private identifiers (real store
+#                        refs, brands, hostnames, mailboxes)
+# Locally they come from .maintainers/private-patterns.local (gitignored); in CI
+# from repository secrets of the same names (lint.yml). Missing = lint FAILS —
+# a silent skip would let a leak through.
+PRIVATE_LOCAL=".maintainers/private-patterns.local"
+[[ -f "$PRIVATE_LOCAL" ]] && source "$PRIVATE_LOCAL"
 declare -a FORBIDDEN=(
   "@sellersheet/mcp-server"                # npm package is a 404, removed 0.5.1
   "Settings → API"                         # dashboard page does not exist; real path: MCP & API keys
   "Stores → Connect Advertising"           # real UI: My Stores → Authorize Ads
-  # -- internal-repo references: public skills must be self-contained (2026-08-15) --
-  "sellersheet_flask_app"                  # internal monorepo name
-  "google_sheet_addon"                     # internal GAS source tree
-  "docs/design/"                           # internal design docs
-  "docs/superpowers"                       # internal plans/specs
-  "amz-reporting-server"                   # internal reporting repo
-  "flask/app/"                             # internal server source
-  "tools/check_convention_drift"           # internal dev lint
-  "sheet-template-dev"                     # internal dev skill
   # -- drifted design constants purged 2026-08-15: must never reappear --
   "#10B881"
   "#283351"
@@ -103,6 +104,14 @@ declare -a FORBIDDEN=(
   "[0.549,0.627,0.702]"
   "OPTIONAL · 选填"                        # canonical tag is OPTIONAL · 可选
 )
+# -- internal-reference strings: public skills must be self-contained (2026-08-15) --
+if [[ -z "${SS_INTERNAL_STRINGS:-}" ]]; then
+  err "SS_INTERNAL_STRINGS not set — create $PRIVATE_LOCAL (see .maintainers/README.md) or the CI secret"
+else
+  while IFS= read -r pat; do
+    [[ -n "$pat" ]] && FORBIDDEN+=("$pat")
+  done <<< "$SS_INTERNAL_STRINGS"
+fi
 for pat in "${FORBIDDEN[@]}"; do
   H=$(grep -rFn "$pat" skills/ docs/ README.md README.zh-CN.md install.sh 2>/dev/null || true)
   [[ -z "$H" ]] || { err "forbidden stale string \"$pat\":"; echo "$H" | head -5 >&2; }
@@ -164,9 +173,12 @@ grep -qiE "bearer|api_key|token" .mcp.json && err ".mcp.json must stay keyless (
 
 # ---------- 5. privacy + ASIN scan ----------
 log "Privacy + ASIN scan..."
-PAT='(\bSS-[A-Z]{2}\b|\bTJ-[A-Z]{2}\b|\bSML-[A-Z]{2}\b|\bREDACTED\b|\bREDACTED\b|\bREDACTED\b|REDACTED|REDACTED@|REDACTED|test\.sellersheetai|REDACTED)'
-HITS=$(grep -rEn "$PAT" skills/ docs/ README.md CHANGELOG.md 2>/dev/null || true)
-[[ -z "$HITS" ]] || { err "private identifiers detected:"; echo "$HITS" | head -20 >&2; }
+if [[ -z "${SS_PRIVACY_PATTERNS:-}" ]]; then
+  err "SS_PRIVACY_PATTERNS not set — create $PRIVATE_LOCAL (see .maintainers/README.md) or the CI secret"
+else
+  HITS=$(grep -rEn "$SS_PRIVACY_PATTERNS" skills/ docs/ README.md README.zh-CN.md CHANGELOG.md 2>/dev/null || true)
+  [[ -z "$HITS" ]] || { err "private identifiers detected:"; echo "$HITS" | head -20 >&2; }
+fi
 ASIN=$(grep -rEn '\bB0[A-Z0-9]{8}\b' skills/ docs/ README.md CHANGELOG.md 2>/dev/null | grep -vE '(B0ABCDEFGH|B0ABCDEFG[0-9]|B0XXXXXXXX)' || true)
 [[ -z "$ASIN" ]] || { err "real-looking ASINs detected (use B0ABCDEFGH):"; echo "$ASIN" | head -10 >&2; }
 

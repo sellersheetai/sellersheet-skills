@@ -26,3 +26,6 @@
 # maintainer/agent working notes — local only, never published
 /AGENTS.md
 /CLAUDE.md
+
+# Privacy-scan inputs for .maintainers/lint.sh — private identifiers, never committed
+.maintainers/private-patterns.local

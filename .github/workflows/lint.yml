@@ -19,5 +19,10 @@ jobs:
       # Single source of truth: the same script maintainers run locally
       # (and that the pre-push hook runs). Do NOT inline checks here —
       # add them to .maintainers/lint.sh instead.
+      # The privacy scan's inputs are repository secrets so the list of private
+      # identifiers never appears in this public repo (2026-09-17).
       - name: Run lint.sh
+        env:
+          SS_PRIVACY_PATTERNS: ${{ secrets.SS_PRIVACY_PATTERNS }}
+          SS_INTERNAL_STRINGS: ${{ secrets.SS_INTERNAL_STRINGS }}
         run: ./.maintainers/lint.sh

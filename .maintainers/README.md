@@ -18,6 +18,20 @@ Claude Code reads `plugin.json` `version` for update detection — **pushing con
 
 ## Workflow
 
+### One-time: the privacy-scan inputs (private, never committed)
+
+`lint.sh` refuses to run without them. Create `.maintainers/private-patterns.local`
+(gitignored) as a shell snippet setting two variables:
+
+```bash
+SS_PRIVACY_PATTERNS='(<one extended regex of real store refs, brands, hostnames, mailboxes>)'
+SS_INTERNAL_STRINGS=$'<internal repo name>\n<internal source tree>\n<internal doc path>'
+```
+
+CI reads the same two values from the repository secrets `SS_PRIVACY_PATTERNS` and
+`SS_INTERNAL_STRINGS` (`gh secret set SS_PRIVACY_PATTERNS < file`). Ask a maintainer for
+the current values; they are deliberately not in this repo.
+
 ### Before any push
 
 ```bash
