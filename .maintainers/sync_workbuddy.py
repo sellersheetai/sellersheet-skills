@@ -33,26 +33,32 @@ AUTHOR = 'SellerSheet AI'
 DERIVED_KEYS = ('description_zh', 'description_en', 'author')
 ZH_MARKERS = ('中文触发词：', '中文说明：')
 
+# Marketplace copy. Mirrors the MCP listing text the marketing team keeps
+# (positioning: "not another ERP — AI calls Amazon's own APIs; Google Sheets
+# is where you review"). Keep `description*` inside WorkBuddy's 20–100 字
+# guidance and the examples as sentences a seller would actually say.
 META = {
     'name': 'SellerSheet',
-    'name_zh': 'SellerSheet 亚马逊运营助手',
-    'name_en': 'SellerSheet for Amazon Sellers',
-    'description': 'Amazon Seller Central + Ads + Google Sheets for AI agents: report warehouse, dashboards, listings, ads, images.',
-    'description_zh': '连接亚马逊卖家后台、广告与 Google 表格：查询报表仓库、生成运营看板、管理 listing 与广告、生成产品图和 A+ 页面。',
-    'description_en': 'Connect Amazon Seller Central, Ads and Google Sheets: query the report warehouse, build operator dashboards, manage listings and ads, generate listing images and A+ content.',
+    'name_zh': 'SellerSheet · AI 直接运营亚马逊店铺',
+    'name_en': 'SellerSheet — run your Amazon stores with AI',
+    'description': '不用 ERP，让 AI 直接调用亚马逊接口运营店铺：查订单结算、批量改 Listing、建 FBA 货件、调广告、拉报表、生成合规主图，结果写进 Google Sheets 供你审核。',
+    'description_zh': '不用 ERP，让 AI 直接调用亚马逊接口运营店铺：查订单结算、批量改 Listing、建 FBA 货件、调广告、拉报表、生成合规主图；支持多店铺多站点，结果写进 Google Sheets 供你审核。',
+    'description_en': "Skip the ERP: AI calls Amazon's own APIs to run your stores — orders and settlements, bulk listing edits, FBA shipments, Ads bids and budgets, inventory and search-term reports, compliant product images. Multi-store, multi-marketplace, with Google Sheets as the review surface.",
     'source': 'sellersheet',
     'type': 'mcp',
     'examples_zh': [
-        '查一下 myStore-US 上周的库存和补货需求',
-        '用最近 30 天的广告数据做一个 PPC 看板写到 Google 表格',
-        '把 B0XXXXXXXX 的品牌分析搜索词报告拉出来并总结',
-        '为 MYSKU-001 生成一套亚马逊主图和 A+ 页面',
+        '把 myStore-US 最近 7 天的订单拉到表格里，按 SKU 汇总销量和销售额',
+        '列出所有可售库存低于 30 天的 SKU，给出补货建议',
+        '列出 ACoS 高于 40% 的 SP 广告活动，把关键词和竞价拉出来',
+        '拉最近 30 天的搜索词报告，找出转化好但还没投的词',
+        '参考这张竞品图的风格，给我的产品生成一张白底主图',
     ],
     'examples_en': [
-        'Show inventory levels and restock needs for myStore-US for last week',
-        'Build a PPC dashboard in Google Sheets from the last 30 days of ads data',
-        'Pull the Brand Analytics search terms report for B0XXXXXXXX and summarise it',
-        'Generate a set of Amazon main images and A+ content for MYSKU-001',
+        'Pull the last 7 days of orders for myStore-US into a sheet, summarised by SKU',
+        'List every SKU with less than 30 days of sellable inventory and suggest restock quantities',
+        'Show SP campaigns with ACoS above 40% and pull their keywords and bids',
+        'Pull the last 30 days of search-term data and find converting terms I am not targeting yet',
+        'Generate a white-background main image for my product in the style of this competitor photo',
     ],
     'minWorkbuddyVersion': '4.24.0',
 }
