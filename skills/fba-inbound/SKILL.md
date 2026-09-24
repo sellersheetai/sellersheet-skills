@@ -3,7 +3,7 @@ name: fba-inbound
 description_zh: "创建FBA货件、入库计划、发货到亚马逊、补货、STA表、分仓方案、运输方案、箱标、装箱单、上传物流单号、货件状态、取消计划、刷美西仓（刷仓换低运费）——无论是否使用 SellerSheet FBA 表格。"
 description_en: "Use when a user wants stock sent to Amazon FBA — \"create FBA shipment\", \"inbound plan\", \"send to Amazon\",…"
 author: SellerSheet AI
-version: 0.12.0
+version: 0.12.1
 description: >-
   Use when a user wants stock sent to Amazon FBA — "create FBA shipment", "inbound plan",
   "send to Amazon", "restock FBA", "STA sheet", "placement options", "transport options",

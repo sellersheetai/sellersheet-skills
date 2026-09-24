@@ -6,7 +6,7 @@ author: SellerSheet AI
 description: >-
   Use when building or maintaining an Amazon operator dashboard on Google Sheets via SellerSheet MCP — multi-tab status views for inventory, PPC, account health, listings, profit/margin, returns, buy box, cash conversion. Triggers on phrases like "build a dashboard", "operator dashboard", "FBA dashboard", "PPC dashboard", "Amazon overview sheet", "seller dashboard", and on follow-ups like "refresh the dashboard", "add an insight", "the freshness is wrong". Composes the tab plan, applies SellerSheet brand visuals, wires `rpt_*` warehouse data → `_raw_*` tabs → `SQL()` spill → visible tabs with thumbnails, and instruments each cell with provenance + freshness so the dashboard self-explains. Builds on `sellersheet-sheets` (sheet primitives + brand palette + SQL() patterns) and `report-data` (rpt_* tables). NOT for one-off reports — use `sellersheet-sheets` directly for those.
   中文触发词：运营看板、亚马逊仪表盘、库存/广告/账户健康/listing/利润/退货/Buy Box 看板、刷新看板、新增洞察、数据新鲜度。
-version: 0.12.0
+version: 0.12.1
 ---
 
 # SellerSheet Operator Dashboard

@@ -6,7 +6,7 @@
 
 **Author**: [sellersheetai.com](https://sellersheetai.com)
 **License**: Apache-2.0
-**Latest release**: v0.12.0 ([changelog](./CHANGELOG.md))
+**Latest release**: v0.12.1 ([changelog](./CHANGELOG.md))
 
 ## What's in here
 

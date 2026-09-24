@@ -11,6 +11,18 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.12.1] — 2026-09-25
+
+### Changed — `fba-inbound`
+
+- STA-Options: the `Warehouse ID` cell now carries a note `City, ST · Region (中文)` — the city
+  and state Amazon returns for the destination FC, plus the East / Central / West region when
+  the FC is in the known table (an unknown FC shows no region rather than a guess). The cell
+  value stays the bare code. Documented in the layout reference; the placement and transport
+  results now carry `shipments[].destination{city,state}` for Mode B tables.
+- Warehouse fishing page: a new plan with the same inputs can be offered different warehouses;
+  removed the earlier wording that said otherwise.
+
 ## [0.12.0] — 2026-09-25
 
 ### Added — `fba-inbound` skill

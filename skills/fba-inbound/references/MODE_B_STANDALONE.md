@@ -42,7 +42,8 @@ sync_fba_shipment_status(store, plan_id, shipment_id)
 
 **Placement options** — one row per option:
 `Placement | Shipments | Warehouses | Placement fee | aiRank` (aiRank 1 = lowest fee; say
-so). With "help me choose": the two-total table in `COST_COMPARISON.md`.
+so). Print each warehouse as the code plus its city and state from `shipments[].destination`
+(`RYY2 White, GA`) — what Seller Central shows next to the code. With "help me choose": the two-total table in `COST_COMPARISON.md`.
 
 **Transport options** — per shipment, two lists: partnered
 `transportationOptionId | mode | carrier | cost currency` sorted by cost; own carrier

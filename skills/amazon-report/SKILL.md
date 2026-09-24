@@ -6,7 +6,7 @@ author: SellerSheet AI
 description: >-
   Use when requesting or parsing an Amazon SP-API on-demand report document — Brand Analytics (search query performance, search terms, search catalog performance, market basket, repeat purchase), Sales & Traffic, Promotion/Coupon performance, Vendor (sales, traffic, inventory, forecasting, net pure product margin, real-time), B2B product opportunities, marketplace ASIN page-view, end-user data, account health. Provides the exact reportType, required reportOptions enums, and the full JSON field tree of the returned document so you don't guess field names. NOT for the synced rpt_* warehouse (use report-data).
   中文触发词：亚马逊按需报告、品牌分析报告（搜索词、搜索查询表现、购物篮、复购）、销售与流量报告、促销/优惠券报告、Vendor 报告、报告字段结构。
-version: 0.12.0
+version: 0.12.1
 ---
 
 # Amazon Report

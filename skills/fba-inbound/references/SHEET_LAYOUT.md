@@ -99,6 +99,10 @@ header + column header + one row per shipment + blank):
   empty cost), delivery window `<id> (<Mon DD> - <Mon DD>)` in the spreadsheet's timezone.
   `Transportation Fee` = the cost parsed from the chosen transport text; `Est.` = rate × kg / m³.
   Weight is KG (LB ÷ 2.20462), volume CBM (IN³ × 0.0000163871, CM³ × 0.000001).
+- The `Warehouse ID` cell keeps the bare FC code (every reader keys on it) and carries a
+  NOTE `City, ST · Region (中文)` — city/state from Amazon's shipment destination, the
+  region only when the FC is in the known table (East / Central / West as Seller Central
+  groups them); an unknown FC shows no region rather than a guess.
 - The sidebar's Confirm reads the ids as the text before the first space; the AI never
   writes these cells by hand — it passes `sta_spreadsheet_id` and the server does.
 

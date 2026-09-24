@@ -82,7 +82,7 @@ orchestrate_fba_packing(store, plan_name, source_address, items, boxes,
                         msku_prep_details, sta_spreadsheet_id) → ~40–60 s
 → planId, packingOptionId, packingGroupId,
   placementOptions[{placementOptionId, placementFee, shipmentCount, shipmentIds,
-                    shipments[{shipmentId, warehouseId, status, totals}], aiRank}],
+                    shipments[{shipmentId, warehouseId, destination{city,state}, status, totals}], aiRank}],
   staOptions {tab, rows, blocks}
 ```
 `source_address` = the Shipment Setting row (keys `name, addressLine1, addressLine2, city,
