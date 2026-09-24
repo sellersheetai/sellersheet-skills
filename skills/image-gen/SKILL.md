@@ -14,7 +14,7 @@ description: >-
   product in". Default provider openai; gated phases (operator approves before spend). NOT for
   non-Amazon image edits — for that call the MCP image tools directly.
   中文触发词：亚马逊产品图生成、listing 图片优化、主图/副图/套图、A+ 页面、学习竞品风格、改色变体图、图片合规检查。
-version: 0.11.12
+version: 0.12.0
 ---
 
 # image-gen — Amazon listing image suite

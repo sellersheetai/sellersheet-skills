@@ -6,11 +6,11 @@
 
 **Author**: [sellersheetai.com](https://sellersheetai.com)
 **License**: Apache-2.0
-**Latest release**: v0.11.12 ([changelog](./CHANGELOG.md))
+**Latest release**: v0.12.0 ([changelog](./CHANGELOG.md))
 
 ## What's in here
 
-Eight production-ready skills for working with the SellerSheet MCP. More skills coming after their reviews complete.
+Nine production-ready skills for working with the SellerSheet MCP. More skills coming after their reviews complete.
 
 | Skill | What it does |
 |---|---|
@@ -22,6 +22,7 @@ Eight production-ready skills for working with the SellerSheet MCP. More skills 
 | **amazon-ads** | Amazon Advertising (SP, SB, SD) operations — campaigns, ad groups, keywords/targets, bids, budgets, bulk creation, negatives, exports, change history, recommendations. Bundles 35 real Ads Reporting API v3 `createReport` request bodies with authoritative column sets. |
 | **amazon-report** | Amazon SP-API on-demand report documents — the exact `reportType`, required `reportOptions` enums, and full JSON field tree for 22 reports (Brand Analytics, Sales & Traffic, Promotion/Coupon, Vendor, account health), so agents request the right report and parse fields by their real names. NOT for the synced `rpt_*` warehouse — that's `report-data`. |
 | **data-kiosk** | Amazon SP-API Data Kiosk GraphQL authoring — versioned root query types, dataset fields, required arguments, enums, and per-field `@resultRetention` for Sales & Traffic, Economics, and Vendor Analytics, so agents write a valid `createQuery` instead of guessing. |
+| **fba-inbound** | FBA inbound shipments end to end — intake checklist, plan + packing + placement options, the user's transport / delivery-window pick, confirmation, box labels, packing list, tracking, status, plus a warehouse-fishing loop (刷美西仓). Mode A works on the SellerSheet FBA spreadsheet and the sidebar's own plan workbook (the server renders STA-Options, Inbound PL and the label links); Mode B needs no SellerSheet spreadsheet and delivers to chat, HTML, your own sheet or Excel. Never picks an option for you unless you name the rule. |
 
 Plus **`sellersheet-shared`**, a small companion skill every other skill references — the MCP preflight protocol, store-reference rules, response contract, and troubleshooting live there once instead of being copied into each skill. It installs automatically with the bundle.
 
@@ -29,7 +30,6 @@ Plus **`sellersheet-shared`**, a small companion skill every other skill referen
 
 - `sellersheet` — Amazon business operations orchestrator
 - `amazon-api` — Amazon SP-API guide
-- `fba-inbound` — FBA inbound shipment workflow
 - `listing-optimizer` — Full listing optimization
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
@@ -197,7 +197,7 @@ Full mechanism: [docs/auto-update.md](./docs/auto-update.md).
 
 | Plugin release | SellerSheet MCP minimum | Agent compatibility |
 |---|---|---|
-| v0.11.x | 2025-Q4 build | Claude Code 1.0+, Claude Desktop 0.10+, Codex CLI any, CodeBuddy Code 2.151+, Gemini CLI 0.5+, Antigravity any |
+| v0.12.x | 2025-Q4 build | Claude Code 1.0+, Claude Desktop 0.10+, Codex CLI any, CodeBuddy Code 2.151+, Gemini CLI 0.5+, Antigravity any |
 
 The plugin ships as one bundle — all skills release together at the plugin version. Each `SKILL.md` frontmatter `version:` mirrors `.claude-plugin/plugin.json`.
 

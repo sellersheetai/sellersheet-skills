@@ -6,7 +6,7 @@ author: SellerSheet AI
 description: >-
   Guide for managing Amazon Advertising (SP, SB, SD) using SellerSheet MCP tools. Use when working with Amazon Ads campaigns, ad groups, keywords, targets, bids, budgets, bulk creation, negative keywords, ad performance data, bulk exports, change history, account management, invoices, or validation configs.
   中文触发词：亚马逊广告、SP/SB/SD 广告活动、广告组、关键词与投放、竞价、预算、否定词、批量创建广告、广告数据导出、变更历史、广告账户与发票。
-version: 0.11.12
+version: 0.12.0
 ---
 
 # Amazon Ads — SellerSheet MCP Guide

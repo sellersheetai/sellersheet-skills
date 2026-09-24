@@ -10,7 +10,7 @@
 
 ## 包含哪些技能
 
-八个生产级技能，全部通过 SellerSheet MCP 工作。技能文件以英文编写，但会**用你的语言回答**：用中文提问就得到中文说明（工具名、店铺引用、表名、亚马逊术语和表格表头保持英文，服务器按这些名字读取数据）。
+九个生产级技能，全部通过 SellerSheet MCP 工作。技能文件以英文编写，但会**用你的语言回答**：用中文提问就得到中文说明（工具名、店铺引用、表名、亚马逊术语和表格表头保持英文，服务器按这些名字读取数据）。
 
 | 技能 | 作用 |
 |---|---|
@@ -22,12 +22,13 @@
 | **amazon-ads** | 亚马逊广告（SP、SB、SD）操作：广告活动、广告组、关键词/投放、竞价、预算、批量创建、否定词、导出、变更历史、推荐。内置 35 个真实的广告报表 API v3 `createReport` 请求体。 |
 | **amazon-report** | 亚马逊 SP-API 按需报告文档：22 种报告（品牌分析、销售与流量、促销/优惠券、Vendor、账户健康）的精确 `reportType`、必填 `reportOptions` 枚举与完整 JSON 字段树。不用于已同步的 `rpt_*` 仓库，那是 `report-data` 的事。 |
 | **data-kiosk** | 亚马逊 SP-API Data Kiosk GraphQL 查询编写：带版本的根查询类型、数据集字段、必填参数、枚举和逐字段 `@resultRetention`，覆盖销售与流量、经济性、Vendor 分析。 |
+| **fba-inbound** | FBA 入仓全流程：先收集必要信息（发货地址、产品与箱规、承运方式、日期），再建计划、装箱、分仓方案、由你选择运输方案与送达窗口、确认、箱标、装箱单、上传物流单号、货件状态，另有刷美西仓循环。模式 A 直接用 SellerSheet FBA 表格和插件的计划工作簿（STA-Options、Inbound PL、箱标链接由服务器写入）；模式 B 不需要 SellerSheet 表格，结果输出到对话、HTML、你的表格或 Excel。除非你指定规则，否则绝不替你选方案。 |
 
 另有 **`sellersheet-shared`**：所有技能引用的公共约定（MCP 预检流程、店铺引用规则、响应契约、语言规则、故障排查），随技能包自动安装。
 
 ### 即将推出（审核中）
 
-`sellersheet`（亚马逊业务操作编排）、`amazon-api`、`fba-inbound`（FBA 入仓流程）、`listing-optimizer`、`listing-refurbish`、`amazon-listing-optimizer`。进展见 [CHANGELOG](./CHANGELOG.md)。
+`sellersheet`（亚马逊业务操作编排）、`amazon-api`、`listing-optimizer`、`listing-refurbish`、`amazon-listing-optimizer`。进展见 [CHANGELOG](./CHANGELOG.md)。
 
 ## 前置条件
 

@@ -7,10 +7,34 @@ All notable changes to SellerSheet Skills are documented here. Format follows [K
 Planned for upcoming releases (under review):
 - `sellersheet` — Amazon business operations orchestrator
 - `amazon-api` — Amazon SP-API guide
-- `fba-inbound` — FBA inbound shipment workflow
 - `listing-optimizer` — Full agent-orchestrated listing optimization
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
+
+## [0.12.0] — 2026-09-25
+
+### Added — `fba-inbound` skill
+
+- FBA inbound shipments end to end with the SellerSheet MCP tools: a 16-line intake
+  checklist that must be complete before anything is created on Amazon; plan + packing +
+  placement options (`orchestrate_fba_packing`); the user's own transport and delivery-window
+  pick (`generate_shipment_transport_options`, never chosen for them); confirmation
+  (`confirm_fba_placement`); box labels at the sheet's label size (`get_labels`); packing
+  list (`create_fba_packing_list`); tracking upload; status sync; cancel.
+- Two modes. **Mode A** works on the SellerSheet FBA spreadsheet and the sidebar's own plan
+  workbook (`create_sta_sheet`): pass `sta_spreadsheet_id` and the server renders STA-Options,
+  the Inbound PL packing list and the box-label PDF links exactly as the sidebar does, so a
+  human can continue any step with the sidebar buttons. **Mode B** needs no SellerSheet
+  spreadsheet — results go to chat tables, an HTML page, the user's own Google Sheet or a
+  local Excel file.
+- Autopilot and "help me choose": the chain runs end to end only when the user asked for it,
+  pausing at the two choices; a comparison page (placement fee vs partnered quotes vs own-carrier
+  rates) and named rules ("cheapest total", "fewest shipments", "prefer warehouse X") the agent
+  may apply only when the user named them.
+- Warehouse fishing (刷仓 / 刷美西仓): the create → check → cancel → create loop for a wanted
+  destination FC, with the 3-day placement validity and the ship-from-address lever explained.
+- A handover file (`fba-inbound-<planName>.md`, a `_handover` tab in Mode A) rewritten after
+  every phase so a human or another agent can continue without the chat.
 
 ## [0.11.12] — 2026-09-17
 
