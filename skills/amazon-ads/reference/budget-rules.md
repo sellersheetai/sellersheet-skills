@@ -7,13 +7,19 @@ published spec, decision guardrails, and the standing sheet artifacts that make
 budget runs repeatable. Examples use demo refs (`MYSTORE-AE`); substitute the
 operator's real store ref.
 
+**Which tool does what:** `ads_budget_rules` reads (`operation` = list · get ·
+list_campaigns · list_for_campaign). Every change is its own tool:
+`ads_budget_rules_create` · `ads_budget_rules_update` ·
+`ads_budget_rules_associate` (`bulk=true` for the SP bulk variant) ·
+`ads_budget_rules_disassociate` (same `bulk` flag).
+
 ---
 
 ## 1. Three budget levers — pick the right one first
 
 | Lever | Tool | Semantics | Use when |
 |---|---|---|---|
-| **Base daily budget** | `ads_campaigns` action=`update` (v1) — budget nests `budgets[0].budgetValue.monetaryBudgetValue.monetaryBudget.value` | Permanent until changed again | The constraint is permanent (a capped winner) |
+| **Base daily budget** | `ads_campaigns_update` (v1) — budget nests `budgets[0].budgetValue.monetaryBudgetValue.monetaryBudget.value` | Permanent until changed again | The constraint is permanent (a capped winner) |
 | **Budget rule** | `ads_budget_rules` | Temporary **% increase only**, auto-reverts outside its window/condition | The raise is temporary or conditional (event, peak days, metric-gated) |
 | **Portfolio cap** | `ads_sp_portfolios` | A **ceiling** over member campaigns (often monthly/date-range) | Enforcing a spend envelope — it never raises anything |
 
@@ -49,7 +55,7 @@ sizing sanity-check, never as the decision.
 
 ## 2. Payload shapes — create vs update are NOT symmetric
 
-**Create** (`operation=create`, body = list of 1–25 **flat** rule details):
+**Create** (`ads_budget_rules_create`, body = list of 1–25 **flat** rule details):
 
 ```json
 [{
@@ -67,7 +73,7 @@ ads_budget_rules_recommendation>"}}` — the rule follows Amazon's event dates.
 PERFORMANCE adds: `"performanceMeasureCondition": {"metricName": "ACOS",
 "comparisonOperator": "LESS_THAN_OR_EQUAL_TO", "threshold": 20}`.
 
-**Update** (`operation=update`, body = list of **wrappers**, not flat):
+**Update** (`ads_budget_rules_update`, body = list of **wrappers**, not flat):
 
 ```json
 [{
@@ -162,7 +168,7 @@ reverted the effective budget on the next usage read.
 - **`ads_budget_usage.budget` is the budget in force under the current policy**
   — while a rule is satisfied it exceeds the campaign's base `dailyBudget`.
   Never derive a base-budget change from it while any rule on the campaign is
-  ACTIVE; read the base from `ads_campaigns` action=`query` (with the
+  ACTIVE; read the base from `ads_campaigns` (with the
   `adProductFilter` for that product).
 - **Rule names:** ~40-char names with underscores and hyphens (the `BR_`
   convention) are accepted. Amazon does not meaningfully surface duplicates —
@@ -170,7 +176,7 @@ reverted the effective budget on the next usage read.
 - **Never infer the rule set from a campaign read.** `list_for_campaign` is the
   authoritative "which rules apply to this campaign" view — any single
   applicable-rule field on a campaign response can be incomplete when rules
-  stack. Split the two reads: base budget from `ads_campaigns` action=`query`,
+  stack. Split the two reads: base budget from `ads_campaigns`,
   in-force (rule-raised) budget from `ads_budget_usage.budget`; the difference
   is the rule effect.
 
