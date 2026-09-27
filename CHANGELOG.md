@@ -11,6 +11,20 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.12.4] — 2026-09-28
+
+### Changed — `amazon-ads`
+
+- One tool per verb, matching the SellerSheet MCP server: every Ads tool that
+  used to read AND write behind `action` / `operation` is now a read tool that
+  keeps its name plus one tool per change — e.g. `ads_campaigns` (query) with
+  `ads_campaigns_create` / `_update` / `_delete`; `ads_targets_update` for a
+  bid change; `ads_sp_bid_rules_pause`; `ads_budget_rules_associate`;
+  `ads_sp_campaign_recommendations_apply`. Read tools run without a
+  confirmation prompt; every change asks first. Recipes, tool tables,
+  `reference/budget-rules.md` and `reference/ads-v1/README.md` updated.
+- `report-data`: the campaign-inventory note no longer passes `action=`.
+
 ## [0.12.3] — 2026-09-27
 
 ### Changed
