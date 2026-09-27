@@ -108,13 +108,13 @@ declare -a FORBIDDEN=(
 if [[ -z "${SS_INTERNAL_STRINGS:-}" ]]; then
   err "SS_INTERNAL_STRINGS not set — create $PRIVATE_LOCAL (see .maintainers/README.md) or the CI secret"
 else
-  while IFS= read -r pat; do
-    [[ -n "$pat" ]] && FORBIDDEN+=("$pat")
+  while IFS= read -r pattern; do
+    [[ -n "$pattern" ]] && FORBIDDEN+=("$pattern")
   done <<< "$SS_INTERNAL_STRINGS"
 fi
-for pat in "${FORBIDDEN[@]}"; do
-  H=$(grep -rFn "$pat" skills/ docs/ README.md README.zh-CN.md install.sh 2>/dev/null || true)
-  [[ -z "$H" ]] || { err "forbidden stale string \"$pat\":"; echo "$H" | head -5 >&2; }
+for pattern in "${FORBIDDEN[@]}"; do
+  H=$(grep -rFn "$pattern" skills/ docs/ README.md README.zh-CN.md install.sh 2>/dev/null || true)
+  [[ -z "$H" ]] || { err "forbidden stale string \"$pattern\":"; echo "$H" | head -5 >&2; }
 done
 
 # ---------- 3. version unified across every file ----------

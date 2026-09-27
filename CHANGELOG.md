@@ -11,6 +11,15 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.12.2] — 2026-09-27
+
+### Changed
+
+- `plugin.json` declares `privacyPolicyUrl` (https://sellersheetai.com/privacy-policy).
+- `report-data`: the report-document download is two steps (save, then `gunzip`) instead of a
+  `curl | gunzip` pipe.
+- Maintainer lint: a loop variable renamed for clarity (no behaviour change).
+
 ## [0.12.1] — 2026-09-25
 
 ### Changed — `fba-inbound`

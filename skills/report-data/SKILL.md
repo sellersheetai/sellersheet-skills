@@ -6,7 +6,7 @@ author: SellerSheet AI
 description: >-
   Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules, requesting on-demand reports, polling for completion, downloading a finished report document from its presigned URL, or analyzing any report table. Covers inventory, listings, orders, financial, brand analytics, and ad report (SP/SB/SD) tables.
   中文触发词：亚马逊报告数据、库存报告、补货需求、订单、退货、结算、搜索词、listing 状态、rpt_ 数据仓库查询、报告同步计划、按需报告下载。
-version: 0.12.1
+version: 0.12.2
 ---
 
 # Report Data
@@ -424,8 +424,9 @@ There is **no** `document`, `preview`, `rowCount`, `jsonPreview` or `sheetUrl`.
 That is the contract, not a failure or a degraded mode.
 
 ```bash
-curl -s '<documentUrl>' | gunzip > report.txt    # gunzip ONLY when
-                                                 # compressionAlgorithm == 'GZIP'
+curl -s -o report.gz '<documentUrl>'    # save the document
+gunzip report.gz                        # ONLY when compressionAlgorithm == 'GZIP'
+                                        # (otherwise save it as report.txt directly)
 ```
 
 Then:
