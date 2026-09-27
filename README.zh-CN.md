@@ -2,15 +2,50 @@
 
 **[English → README.md](./README.md)**
 
-> 面向使用 [SellerSheet](https://sellersheetai.com) 的亚马逊卖家的生产级智能体技能。支持 Claude Code、Claude Desktop、Codex、腾讯云 CodeBuddy Code、Gemini CLI、Antigravity、Openclaw、Hermes，以及任何会扫描技能目录的智能体。
+> **不用 ERP，对 AI 说需求就能运营亚马逊店铺。** 本插件把你的智能体接到 [SellerSheet](https://sellersheetai.com)：
+> 由它调用亚马逊官方接口（Amazon SP-API、Amazon Ads API），结果全部写进 Google 表格，你审核后再提交。
+> 一次安装 = 技能包 + 托管的 SellerSheet MCP（350+ 个工具）。OAuth 登录，无需 API key。
+
+支持 Claude Code、Claude Desktop、Codex、腾讯云 CodeBuddy Code、Gemini CLI、Antigravity、Openclaw、Hermes，以及任何会扫描技能目录的智能体。
 
 **作者**：[sellersheetai.com](https://sellersheetai.com)
 **许可证**：Apache-2.0
 **最新版本**：见 [README.md](./README.md) 顶部与 [更新日志](./CHANGELOG.md)
 
-## 包含哪些技能
+## 能做什么
 
-九个生产级技能，全部通过 SellerSheet MCP 工作。技能文件以英文编写，但会**用你的语言回答**：用中文提问就得到中文说明（工具名、店铺引用、表名、亚马逊术语和表格表头保持英文，服务器按这些名字读取数据）。
+| 领域 | 示例 |
+|---|---|
+| **订单与财务** | 按时段拉订单、单笔订单费用拆解、结算周期汇总、发送 Request a Review |
+| **Listing 管理** | 从表格批量改价格、库存和属性，上架限制检查，类目模板，Listing 报错排查 |
+| **FBA 入库** | 建计划 → 装箱 → 分仓 → 运输 → 箱标 → 跟踪，全流程 |
+| **广告（SP / SB / SD）** | 广告活动、关键词、竞价、预算、否定词、搜索词挖掘、广告报表 |
+| **定价与费用** | Buy Box 与最低价、Featured Offer 建议价、佣金与 FBA 费用估算 |
+| **报表与数据仓库** | 50+ 张已同步报表、品牌分析、Sales & Traffic、Data Kiosk |
+| **买家洞察** | ASIN 或类目的好评/差评主题、退货原因、6 个月趋势 |
+| **商品图与 A+** | 合规主图、学竞品风格换场景、变体改色、A+ 模块 |
+| **noon 中东站** | 订单、财务、FBN 库存账龄、商品浏览与销量 |
+
+支持多店铺、多站点（美国、欧洲、日本、中东等），同一段对话里可以切换店铺。
+
+## 直接这样问 AI
+
+- "把 myStore-US 最近 7 天的订单拉到表格里，按 SKU 汇总销量和销售额"
+- "订单 112-XXXXXXX-XXXXXXX 亚马逊到底扣了哪些费用？"
+- "列出 ACoS 高于 40% 的 SP 广告活动，把关键词和竞价拉出来"
+- "把这批关键词竞价上调 10%，先写到表格我确认再提交"
+- "用表格里的箱规建一个 FBA 货件，并下载箱标"
+- "列出所有可售库存低于 30 天的 SKU"
+- "B0XXXXXXXX 的买家最常夸的和最常抱怨的点是什么？"
+- "参考这张竞品图的风格，给我的产品生成一张白底主图"
+
+**表格就是审核台。** AI 把结果写进表格，带表头、格式和筛选；你在表格里改完，对 AI 说"把我改过的行提交到亚马逊"即可。
+
+AI 生图、生成文案和买家洞察按次从 SellerSheet 账户 Credits 扣费，失败自动退回。
+
+## 技能包内容
+
+九个技能，教你的智能体用好 SellerSheet MCP。技能文件以英文编写，但会**用你的语言回答**：用中文提问就得到中文说明（工具名、店铺引用、表名、亚马逊术语和表格表头保持英文，服务器按这些名字读取数据）。
 
 | 技能 | 作用 |
 |---|---|
@@ -146,6 +181,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-sk
 - Issues：[github.com/sellersheetai/sellersheet-skills/issues](https://github.com/sellersheetai/sellersheet-skills/issues)
 - 讨论区：[github.com/sellersheetai/sellersheet-skills/discussions](https://github.com/sellersheetai/sellersheet-skills/discussions)
 - 邮箱：support@sellersheetai.com
+- 隐私政策：[sellersheetai.com/privacy-policy](https://sellersheetai.com/privacy-policy)
 
 ## 许可证
 

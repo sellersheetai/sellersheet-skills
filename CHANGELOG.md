@@ -11,6 +11,17 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.12.3] — 2026-09-27
+
+### Changed
+
+- Plugin and marketplace descriptions now say what a seller can do (orders, listings, FBA,
+  ads, reports, images — multi-store, reviewed in Google Sheets) instead of listing skill
+  names; `plugin.json` and `marketplace.json` carry the same text.
+- README (EN + 中文): new "What you can do" and "Just ask" sections with example requests,
+  the Sheets review flow and the per-action credits note; skill count wording fixed (nine);
+  privacy policy link under Support.
+
 ## [0.12.2] — 2026-09-27
 
 ### Changed

@@ -2,15 +2,53 @@
 
 **[中文说明 → README.zh-CN.md](./README.zh-CN.md)**
 
-> Production-ready agent skills for Amazon sellers using [SellerSheet](https://sellersheetai.com). Skills work across Claude Code, Claude Desktop, Codex, Tencent CodeBuddy Code, Gemini CLI, Antigravity, Openclaw, Hermes, and any agent that scans a skill directory.
+> **Run your Amazon stores by asking your AI — no ERP.** This plugin connects your agent to
+> [SellerSheet](https://sellersheetai.com), which calls the official Amazon SP-API and Amazon Ads API
+> for you and writes every result into Google Sheets, where you review it before anything is submitted.
+> One install = the skills + the hosted SellerSheet MCP (350+ tools). Sign in with OAuth; no API key.
+
+Works in Claude Code, Claude Desktop, Codex, Tencent CodeBuddy Code, Gemini CLI, Antigravity, Openclaw, Hermes, and any agent that scans a skill directory.
 
 **Author**: [sellersheetai.com](https://sellersheetai.com)
 **License**: Apache-2.0
-**Latest release**: v0.12.2 ([changelog](./CHANGELOG.md))
+**Latest release**: v0.12.3 ([changelog](./CHANGELOG.md))
 
-## What's in here
+## What you can do
 
-Nine production-ready skills for working with the SellerSheet MCP. More skills coming after their reviews complete.
+| Area | Examples |
+|---|---|
+| **Orders & finance** | Orders by date range, per-order fee breakdown, settlement summaries, Request a Review |
+| **Listings** | Bulk-edit price, stock and attributes from a sheet, restriction checks, category templates, listing-error fixes |
+| **FBA inbound** | Plan → packing → placement → transport → box labels → tracking, end to end |
+| **Ads (SP / SB / SD)** | Campaigns, keywords, bids, budgets, negatives, search-term mining, reports |
+| **Pricing & fees** | Buy Box and lowest price, Featured Offer price, referral and FBA fee estimates |
+| **Reports & warehouse** | 50+ synced report tables, Brand Analytics, Sales & Traffic, Data Kiosk |
+| **Buyer insights** | Top praise and complaints, return reasons, 6-month trends per ASIN or category |
+| **Images & A+** | Compliant main images, competitor-style scenes, variant recolors, A+ modules |
+| **noon** | Orders, finance, FBN inventory aging, product views and sales |
+
+Multi-store and multi-marketplace (US, EU, JP, Middle East …) — switch stores mid-conversation.
+
+## Just ask
+
+- "Pull the last 7 days of orders for myStore-US into a sheet, summed by SKU."
+- "Which fees did Amazon take on order 112-XXXXXXX-XXXXXXX?"
+- "List SP campaigns with ACoS above 40%, with their keywords and bids."
+- "Raise these keyword bids 10% — write them to the sheet first; I'll confirm before you submit."
+- "Build an FBA shipment from the case packs in my sheet and download the box labels."
+- "Which SKUs have under 30 days of sellable stock?"
+- "What do buyers praise and complain about most on B0XXXXXXXX?"
+- "Generate a white-background main image for my product in the style of this competitor shot."
+
+**Sheets are the review surface.** The AI writes results with headers, formats and filters; you edit
+the rows; then say "submit the rows I changed to Amazon."
+
+AI images, listing copy and buyer insights are billed per action from your SellerSheet credits; a
+failed action is refunded.
+
+## Skills in this bundle
+
+Nine skills that teach your agent how to use the SellerSheet MCP well. More skills coming after their reviews complete.
 
 | Skill | What it does |
 |---|---|
@@ -55,7 +93,7 @@ For the dashboard skill specifically, if you want PPC tabs to populate with real
 /plugin install sellersheet-skills@sellersheet-marketplace
 ```
 
-This installs everything in one step: the full skill bundle (the eight skills in the table above plus `sellersheet-shared`) **and the SellerSheet MCP server** — the plugin bundles a keyless remote-HTTP `.mcp.json`, so the server registers automatically. Authenticate once: run `/mcp`, pick `sellersheet`, and sign in via the browser (OAuth — no API key).
+This installs everything in one step: the full skill bundle (the nine skills in the table above plus `sellersheet-shared`) **and the SellerSheet MCP server** — the plugin bundles a keyless remote-HTTP `.mcp.json`, so the server registers automatically. Authenticate once: run `/mcp`, pick `sellersheet`, and sign in via the browser (OAuth — no API key).
 
 ### Codex CLI / ChatGPT desktop
 
@@ -230,6 +268,7 @@ Issues and PRs welcome. Skills follow these conventions:
 - Issues: [github.com/sellersheetai/sellersheet-skills/issues](https://github.com/sellersheetai/sellersheet-skills/issues)
 - Discussions: [github.com/sellersheetai/sellersheet-skills/discussions](https://github.com/sellersheetai/sellersheet-skills/discussions)
 - Email: support@sellersheetai.com
+- Privacy policy: [sellersheetai.com/privacy-policy](https://sellersheetai.com/privacy-policy)
 
 ## License
 
