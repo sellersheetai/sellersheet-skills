@@ -50,9 +50,9 @@ Provenance fills are the **content** signal. The rest of the palette is the **st
 
 | Element | Color | Notes |
 |---|---|---|
-| Title bar row 1 | Emerald `[0.0589, 0.6197, 0.4393]`, white bold 18pt | Every visible tab |
+| Title bar row 1 | Emerald `[0.0589, 0.6197, 0.4393]`, white bold Arial 14pt | Every visible tab; format the band across the width, never merge |
 | Freshness pill row 2 | bg `[0.929, 0.945, 0.961]`, font `[0.4,0.4,0.4]`, 9pt italic | One line of metadata; live formula from `_status` |
-| Section band | Emerald `[0.0589, 0.6197, 0.4393]`, white bold 11pt | Merged across full width |
+| Section band | Emerald `[0.0589, 0.6197, 0.4393]`, white bold 11pt | Format the band across the full width, never merge (merges break freeze panes and collide with SQL spills) |
 | Sub-header / column header | Navy `[0.1569, 0.2, 0.3099]`, white bold | The row that holds column names |
 | **SQL-spilled table header row** | **Navy `[0.1569, 0.2, 0.3099]`, white bold** | Apply to the cell range where the spill's header lands (e.g. `Inventory and Restock!A14:K14`) |
 | TOP 3 FIRES banner | Red `[0.815, 0.220, 0.220]`, white bold 12pt | HOME!A4 only |

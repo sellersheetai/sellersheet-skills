@@ -65,8 +65,8 @@ Setup facts before any spend:
   **verbatim** (`<store>-<CC>`, e.g. `myStore-US`); a bare store name is rejected.
 - **Check the Image Library first**: `list_generated_images(store, sku)` — an image that
   already exists is free; a regeneration is billed again and returns a different image.
-- The operator chooses the **model route** and reviews its prices on the Dashboard
-  (sellersheetai.com/dashboard), never from a tool. If jobs keep failing on the current
+- The operator chooses the **model route** on the Dashboard (sellersheetai.com/dashboard) —
+  no tool can change it — and reviews its prices there. If jobs keep failing on the current
   route, tell the operator to switch the route there and retry.
 - Pull the variation family early (`listings_searchListingsItems(variation_parent_sku=…)`, union
   across marketplaces) so you know every child SKU and which children lack a real color photo.

@@ -11,7 +11,17 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
-## [0.13.1] — 2026-09-29
+## [0.13.1] — 2026-09-30
+
+### Working rules, each stated once
+
+- `report-data` → Query Rules: answer from the synced warehouse before calling a live
+  tool, and size a query (`limit: 1` or a count) before fetching — narrow or aggregate
+  anything over ~200 rows.
+- `sellersheet-shared` → Store references: when the user has several stores or
+  marketplaces and has not said which, confirm the store ref first.
+- `sellersheet-sheets` → Build workflow: read a range before overwriting it, and pair a
+  warehouse result with a `SQL()` cell the user can re-run.
 
 ### `sellersheet-shared` — renamed or missing tools
 
@@ -19,6 +29,73 @@ Two troubleshooting rows: a tool that answers "`X` was renamed on <date>. Use `Y
 did nothing — call `Y` with the same arguments; and a tool a skill names but your
 tool list lacks means the client cached an older list — reconnect SellerSheet (or
 restart the agent), then retry.
+
+Also in `sellersheet-shared`: a third troubleshooting row for a workspace that is not
+configured (no spreadsheet or folder ID, or the sheet and Drive tools cannot open
+them). The message used to live only inside `amazon-ads`; it now lives here, where
+every skill can use it.
+
+### Fixed — `report-data`
+
+- **On-demand tracking sheet.** The steps now write the report ID, processing status
+  and analysis link to the columns the Store Reports tab actually uses (Report ID,
+  Processing Status, Sheet URL). They used to write into the report-options and
+  request-time columns.
+- **Retired restock report.** The report-types list offered
+  `GET_RESTOCK_INVENTORY_RECOMMENDATIONS_REPORT`; it is retired. The list now shows
+  the FBA Inventory Planning report (`GET_FBA_INVENTORY_PLANNING_DATA`) and says so.
+- **Finding report types.** Removed the claim that `reports_getReports` without a
+  report type lists every type. That tool lists the reports Amazon already holds for
+  a store and needs a report type; the section now says where report types are
+  documented, and the create step shows where `reportOptions` go.
+- **Brand Analytics and old Sales & Traffic.** The key-tables list no longer offers
+  two retired tables. Brand Analytics has no synced table (request it on-demand);
+  Sales & Traffic comes from the Data Kiosk tables.
+- **Housekeeping.** The index count is corrected to 51 tables, a stray leftover
+  table from the retired scheduler tab is removed, and file paths are relative to
+  the skill's own folder.
+
+### Fixed — `amazon-report`
+
+- Removed a pointer to a skill that is not part of this bundle.
+- The create → poll → download steps are no longer restated; the skill points to
+  `report-data`, which owns them.
+- The "already synced" list no longer names the retired inventory and Sales &
+  Traffic tables.
+
+### Fixed — `noon-report-data`
+
+- The description said 4 tables; the skill documents 5 (the FBN catalog is the
+  fifth), and the description now says so.
+
+### Fixed — `amazon-ads`
+
+- Removed repeated text. The rule that ads warehouse tables are daily performance
+  rows (not a campaign inventory) and that `report_date: "latest"` can land on a
+  partial day is now stated once, in the data-paths section. The synced ads table
+  list defers to `report-data`, and the relay and workspace rules defer to
+  `sellersheet-shared`. No behaviour rule was dropped.
+
+### Fixed — `sellersheet-sheets`
+
+- The Polish step named a tool that does not exist (`add_sheet_filter`); it now
+  names `set_sheet_basic_filter`.
+- The reference index lists the local-build import guide it was missing.
+- The "when not to use" list pointed to a skill that is not in this bundle; it now
+  points to `amazon-ads`, `fba-inbound` and `report-data`.
+
+### Fixed — `sellersheet-dashboard`
+
+- Title band: Arial 14pt bold, formatted across the width and never merged (the
+  skill said 18pt and merged section bands).
+- Amazon Ads access instructions now say My Stores → Authorize Ads.
+- The Brand Analytics requirement no longer names a table that does not exist.
+- The listings status row names the correct listings table.
+
+### Fixed — `image-gen`
+
+- The local-copy example now uses a file extension that matches the image format
+  (openai output is JPEG by default).
 
 ## [0.13.0] — 2026-09-29
 

@@ -11,8 +11,10 @@
   sku/parent_sku, slot)` finds every image already saved — free, and returns the
   exact image; a regeneration is billed again and returns a different one.
 - **Open the returned `cdn_url` / `thumbnail_url` directly.** If your harness needs
-  the bytes locally to display the image, fetch with curl:
-  `curl -sL "<cdn_url>" -o /tmp/x.png`.
+  the bytes locally to display the image, fetch with curl and keep the file
+  extension from the URL (the file's real format): `curl -sL "<cdn_url>" -o /tmp/x.jpg`.
+  openai output is JPEG by default (`output_format` overrides it per call) and
+  nanobanana output is PNG, so name the local file to match.
 - **`cdn_url` can lag `status='done'` by a few seconds** (the R2 upload is async).
   Null on the first done poll → poll once more, don't conclude failure. Job status
   is dropped ~15 min after submit — capture the URL before then (the image itself

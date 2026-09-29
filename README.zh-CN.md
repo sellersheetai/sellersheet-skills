@@ -53,7 +53,7 @@ AI 生图、生成文案和买家洞察按次从 SellerSheet 账户 Credits 扣�
 | **sellersheet-dashboard** | 多页签运营看板：库存、广告（PPC）、账户健康、listing、利润率、退货、Buy Box、现金周转，带数据新鲜度标注和智能体洞察。基于 `sellersheet-sheets`。 |
 | **report-data** | 亚马逊 SP-API 与广告 API 报表数据：查询 SellerSheet 数据仓库中 50+ 张 `rpt_*` 表（库存、listing、订单、退货、财务、品牌分析、SP/SB/SD 广告），查看同步计划，按需报告的 创建 → 轮询 → 下载 流程。库存水位、补货需求、搜索词、结算、listing 状态等问题都用它。 |
 | **image-gen** | 用 gpt-image-2 生成亚马逊 listing 图片与 A+ 页面：学习成熟竞品的图片风格，生成/改色产品图，检查主图合规，搭建 A+ 模块并评分，记录到「Images Generation」表格。 |
-| **noon-report-data** | noon.com（noon Partners）报表数据：4 张 `rpt_noon_*` 表（订单、财务/交易、FBN 库存账龄、商品浏览与销量），每日两次同步，按项目范围与市场语义查询。 |
+| **noon-report-data** | noon.com（noon Partners）报表数据：5 张 `rpt_noon_*` 表（订单、财务/交易、FBN 库存账龄、商品浏览与销量、FBN 商品目录），每日两次同步，按项目范围与市场语义查询。 |
 | **amazon-ads** | 亚马逊广告（SP、SB、SD）操作：广告活动、广告组、关键词/投放、竞价、预算、批量创建、否定词、导出、变更历史、推荐。内置 35 个真实的广告报表 API v3 `createReport` 请求体。 |
 | **amazon-report** | 亚马逊 SP-API 按需报告文档：22 种报告（品牌分析、销售与流量、促销/优惠券、Vendor、账户健康）的精确 `reportType`、必填 `reportOptions` 枚举与完整 JSON 字段树。不用于已同步的 `rpt_*` 仓库，那是 `report-data` 的事。 |
 | **data-kiosk** | 亚马逊 SP-API Data Kiosk GraphQL 查询编写：带版本的根查询类型、数据集字段、必填参数、枚举和逐字段 `@resultRetention`，覆盖销售与流量、经济性、Vendor 分析。 |

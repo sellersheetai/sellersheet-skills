@@ -46,7 +46,7 @@ For PPC tabs and ad-attribution columns to populate with real data, the connecte
 
 > ⚠️ **No Amazon Advertising profile access detected for `<store>`.**
 >
-> The PPC Command tab and ad-attribution columns on Profit and Cash will be scaffolds only — no real campaign data, no ROAS, no per-SKU ad cost. To unlock them, authorize Amazon Ads at [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → Stores → `<store>` → Connect Advertising profile.
+> The PPC Command tab and ad-attribution columns on Profit and Cash will be scaffolds only — no real campaign data, no ROAS, no per-SKU ad cost. To unlock them, authorize Amazon Ads at [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → My Stores → **Authorize Ads** on `<store>`'s row.
 >
 > Want me to:
 > (a) build the dashboard now with ad sections as scaffolds (operator can add ad access later and the data flows through), or
@@ -56,7 +56,7 @@ If the user picks (a), proceed but populate ad-related `_raw_*` tabs with sentin
 
 ### 4. Other tables (optional, alert if missing)
 
-- **Brand Analytics** (`rpt_brand_analytics_*`) — only for Brand Registry sellers. If missing, the Search & Share tab stays as a placeholder.
+- **Brand Analytics** — Brand Registry sellers only, and there is no synced `rpt_*` table for it: the data comes from an on-demand report (see the `amazon-report` skill). Until you pull one, the Search & Share tab stays as a placeholder.
 - **Vendor Retail reports** — only for Vendor accounts. Skip the Vendor section.
 
 ## What a SellerSheet operator dashboard looks like
@@ -124,7 +124,7 @@ In `_raw_*` tabs the corresponding column order is: `store, sku, asin, image_url
 ## Layout grammar — every visible tab follows this
 
 ```
-Row 1     Title (emerald, white bold 18pt)
+Row 1     Title (emerald, white bold Arial 14pt; format the band across the width, never merge)
 Row 2     Freshness pill (live formula resolving from _status)
 Row 3     Spacer
 Row 4+    AT-A-GLANCE / rollup sections (emerald section bands, navy sub-headers)

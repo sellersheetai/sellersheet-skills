@@ -4,7 +4,7 @@ description_zh: "亚马逊报告数据、库存报告、补货需求、订单、
 description_en: "Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules,…"
 author: SellerSheet AI
 description: >-
-  Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules, requesting on-demand reports, polling for completion, downloading a finished report document from its presigned URL, or analyzing any report table. Covers inventory, listings, orders, financial, brand analytics, and ad report (SP/SB/SD) tables. Do NOT use for noon.com data (use noon-report-data) or when you don't yet know a report's exact schema — read amazon-report or data-kiosk first, then come back here for the sync/poll/download mechanics.
+  Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules, requesting on-demand reports, polling for completion, downloading a finished report document from its presigned URL, or analyzing any report table. Covers inventory, listings, orders, financial, and ad report (SP/SB/SD) tables; Brand Analytics has no synced table, so request it on-demand (schemas in amazon-report). Do NOT use for noon.com data (use noon-report-data) or when you don't yet know a report's exact schema — read amazon-report or data-kiosk first, then come back here for the sync/poll/download mechanics.
   中文触发词：亚马逊报告数据、库存报告、补货需求、订单、退货、结算、搜索词、listing 状态、rpt_ 数据仓库查询、报告同步计划、按需报告下载。
 version: 0.13.0
 metadata: {apis: [data, sp_api_reports], pattern: Pipeline}
@@ -14,7 +14,7 @@ metadata: {apis: [data, sp_api_reports], pattern: Pipeline}
 
 ## Prerequisites
 
-Run the standard preflight in [`sellersheet-shared`](../sellersheet-shared/SKILL.md) (installed alongside this skill): `get_user_context` succeeds → version check via `data.skills_catalog` → `data.canUseMcp` is true. **Extra auth for this skill:** Ads-API tables (`rpt_sp_*`, `rpt_sb_*`, `rpt_sd_*`) need Amazon Advertising profile access; Brand Analytics tables need Brand Registry.
+Run the standard preflight in [`sellersheet-shared`](../sellersheet-shared/SKILL.md) (installed alongside this skill): `get_user_context` succeeds → version check via `data.skills_catalog` → `data.canUseMcp` is true. **Extra auth for this skill:** Ads-API tables (`rpt_sp_*`, `rpt_sb_*`, `rpt_sd_*`) need Amazon Advertising profile access; on-demand Brand Analytics reports need Brand Registry.
 
 ---
 
@@ -23,7 +23,7 @@ Run the standard preflight in [`sellersheet-shared`](../sellersheet-shared/SKILL
 Use this skill when the user asks for:
 - Inventory levels, stranded stock, restock needs, storage fees, or fee previews
 - Orders, returns, removals, reimbursements, or settlements
-- Seller feedback or Brand Analytics search term / market basket / repeat purchase data
+- Seller feedback or Brand Analytics search term / market basket / repeat purchase data (Brand Analytics is on-demand only — no synced table)
 - Listing status, images, or catalog state
 - Schema-aware querying of any synced report table
 - On-demand report creation, polling, or raw document download
@@ -47,9 +47,9 @@ Reports sync automatically on schedule and are stored in PostgreSQL `rpt_*` tabl
 
 ### Workflow
 
-1. Read `.claude/skills/report-data/_meta.json`.
+1. Read `_meta.json` in this skill's folder (next to this `SKILL.md`).
 2. Pick the table that matches the user request.
-3. Read `.claude/skills/report-data/reference/<table>.json` for exact column names.
+3. Read `reference/<table>.json` in this skill's folder for exact column names.
 4. Check last sync time, then query data.
 5. If no data, tell the user the sync hasn't run yet — do NOT enable or trigger it.
 
@@ -165,6 +165,8 @@ Allowed ops: `sum`, `count`, `avg`, `min`, `max` — the key is **`op`** (not `f
 
 ### Query Rules
 
+- **Warehouse first, live second.** Answer from the synced table (`query_report_data`) before calling a live tool. No rows → tell the user, then use the live tool when one answers the question. Live-only by design: real-time prices and Buy Box, current order status, and anything you change.
+- **Size before you fetch.** Check with `limit: 1` (or an `aggregations` count) first. Up to ~200 rows → fetch the columns the task needs; more → narrow it (date range, top N, one SKU or campaign) or aggregate. Never dump a whole table into context.
 - Always use fully-qualified column names: `table_name.column_name`.
 - Use the `db_column` values from the reference JSONs exactly as written.
 - `report_date` controls the date filter. **When omitted, the default is registry-derived**: snapshot/roster tables → `"latest"`, daily-fact and ledger tables → `"all"` (the response notes the defaulting) — so the naive query does the right thing on every table class. Explicit values always win. Three modes plus one auto-override:
@@ -192,14 +194,14 @@ Allowed ops: `sum`, `count`, `avg`, `min`, `max` — the key is **`op`** (not `f
 | `rpt_orders` | GET_FLAT_FILE_ALL_ORDERS_DATA_BY_LAST_UPDATE_GENERAL | **full history retained — never pruned** (append/UPSERT on `amazon_order_id`+`sku`, no rolling deletion). Onboard does a one-shot **30-day backfill**, then an hourly `LAST_UPDATE` incremental appends new orders + folds in status changes forever. So the earliest `purchase_date` reaches back ≈30 days before the store's onboard date — *not* all-time history, and *not* capped at 30 days of retention. Includes `is_business_order` + 6 B2B/locale cols (added 2026-05-04) |
 | `rpt_get_fba_storage_fee_charges_data` | GET_FBA_STORAGE_FEE_CHARGES_DATA | monthly; `breakdown_incentive_fee_amount` is a colon-separated str — use derived `incentive_program` + `incentive_amount` |
 | `rpt_get_fba_fulfillment_customer_returns_data` | GET_FBA_FULFILLMENT_CUSTOMER_RETURNS_DATA | EU samples populate `status` ('Unit returned to inventory', etc.) |
-| `rpt_sales_and_traffic` | GET_SALES_AND_TRAFFIC_REPORT | legacy S&T flat file — page views, sessions, conversions (Brand Analytics permission required) |
 | `rpt_dk_sales_traffic_by_date` | Data Kiosk analytics_salesAndTraffic_2024_04_24 (byDate) | store-level daily KPIs; nested Amount objects unwrapped to numeric + shared `currency_code`; `unit_session_percentage` = conversion rate |
 | `rpt_dk_sales_traffic_by_asin` | Data Kiosk analytics_salesAndTraffic_2024_04_24 (byAsin) | ASIN-level daily KPIs; same unwrap + conversion-rate semantics as by_date |
-| `rpt_search_terms_analytics` | GET_BRAND_ANALYTICS_SEARCH_TERMS_REPORT | weekly, brand analytics |
 | `rpt_get_merchants_listings_fyp_report` | GET_MERCHANTS_LISTINGS_FYP_REPORT | suppressed SKUs; parser handles English + FR + lowercase header variants |
 | `listing_images` | (enriched from rpt_get_merchant_listings_all_data) | persistent image URL cache — see below |
 
-Full index: `.claude/skills/report-data/_meta.json` (45 entries; 2 marked deprecated). S&T now comes from Data Kiosk into `rpt_dk_sales_traffic_by_date` / `rpt_dk_sales_traffic_by_asin`; the exact Data Kiosk GraphQL query files ship with the data-kiosk skill (`.claude/skills/data-kiosk/reference/`).
+Full index: `_meta.json` in this skill's folder (51 entries; 2 marked deprecated). S&T now comes from Data Kiosk into `rpt_dk_sales_traffic_by_date` / `rpt_dk_sales_traffic_by_asin` (the old `rpt_sales_and_traffic` is retired); the exact Data Kiosk GraphQL query files ship in the `reference/` folder of the data-kiosk skill.
+
+**Brand Analytics has no synced table** (search terms, market basket, repeat purchase and demographics were retired from the warehouse on 2026-07-15 — nothing ever landed). Request those reports on-demand (Path 2 below; exact `reportOptions` and document schemas are in the `amazon-report` skill). They need Brand Registry.
 
 **Calibration verified 2026-05-04** end-to-end against real Amazon TSV/JSON across 5 stores.
 
@@ -383,14 +385,17 @@ result = reports_createReport(store='myStore-AE',
                               reportType='GET_MERCHANT_LISTINGS_ALL_DATA',
                               dataStartTime='2024-01-01T00:00:00Z',   # omit for snapshot reports
                               dataEndTime='2024-01-31T23:59:59Z')
+# Analytics / Brand Analytics / Vendor reports also take reportOptions,
+# e.g. reportOptions={'reportPeriod': 'WEEK'} - the amazon-report skill lists
+# the required keys and allowed values per report type.
 report_id = result['data']['reportId']
 ```
 
 ### Step 6: Write reportId + Status to Sheet
 
 ```
-write_sheet(spreadsheetId, 'Store Reports!F{row}', [[report_id]])
-write_sheet(spreadsheetId, 'Store Reports!G{row}', [['IN_QUEUE']])
+write_sheet(spreadsheetId, 'Store Reports!H{row}', [[report_id]])
+write_sheet(spreadsheetId, 'Store Reports!I{row}', [['IN_QUEUE']])
 ```
 
 ### Step 7: Poll Until DONE
@@ -399,7 +404,7 @@ write_sheet(spreadsheetId, 'Store Reports!G{row}', [['IN_QUEUE']])
 while True:
     result = sp_api_get_report(store='myStore-AE', reportId=report_id)
     status = result['data']['processingStatus']
-    write_sheet(spreadsheetId, 'Store Reports!G{row}', [[status]])
+    write_sheet(spreadsheetId, 'Store Reports!I{row}', [[status]])
     if status == 'DONE':
         break
     elif status in ('CANCELLED', 'FATAL'):
@@ -441,7 +446,7 @@ Then:
    from your tracking row.
 
 ```
-write_sheet(spreadsheetId, 'Store Reports!H{row}',
+write_sheet(spreadsheetId, 'Store Reports!J{row}',
     [[f'=HYPERLINK("#gid={analysis_tab_gid}","Analysis")']])
 ```
 
@@ -512,22 +517,6 @@ is owned by the server-side cron system (`list_report_syncs` +
 carries exactly three tabs: **Store Reports** (on-demand), **Report Lookup**
 (search existing Amazon reports), **Store Report Type** (reference catalog).
 
------|--------|-------|
-| A | storeName | Store name |
-| B | reportName | Must be a date-range report type |
-| C | dataStartTime | Start of current window |
-| D | dataEndTime | End of current window |
-| E | requestTime | Auto-filled on create |
-| F | reportId | Auto-filled with Amazon reportId |
-| G | processingStatus | IN_QUEUE / IN_PROGRESS / DONE / ERROR / CANCELLED |
-| H | lastUpdated | Auto-filled when DONE |
-| I | rowsAdded | Count of appended rows |
-| J | lastError | Error message if failure |
-| K | sheetUrl | =HYPERLINK to cumulative history spreadsheet |
-| L | folderUrl | =HYPERLINK to Drive folder |
-
-On success: old `dataEndTime` → `dataStartTime`, today → `dataEndTime`.
-
 ---
 
 ## Report Types Reference
@@ -538,11 +527,20 @@ On success: old `dataEndTime` → `dataStartTime`, today → `dataEndTime`.
 | FBA Inventory | GET_FBA_MYI_UNSUPPRESSED_INVENTORY_DATA |
 | Amazon Search Terms Report | GET_BRAND_ANALYTICS_SEARCH_TERMS_REPORT |
 | Orders (Flat File) | GET_FLAT_FILE_ALL_ORDERS_DATA_BY_LAST_UPDATE_GENERAL |
-| FBA Restock Inventory | GET_RESTOCK_INVENTORY_RECOMMENDATIONS_REPORT |
+| FBA Inventory Planning (restock) | GET_FBA_INVENTORY_PLANNING_DATA |
 | Market Basket Analysis | GET_BRAND_ANALYTICS_MARKET_BASKET_REPORT |
 | Repeat Purchase Report | GET_BRAND_ANALYTICS_REPEAT_PURCHASE_REPORT |
 
-Full list of 114 types: call `reports_getReports` without `reportType`.
+`GET_RESTOCK_INVENTORY_RECOMMENDATIONS_REPORT` is retired: the planning report
+above replaced it, and it is what `rpt_get_fba_inventory_planning_data` stores.
+
+This is a short list, not a catalog. Amazon defines 100+ report types, and
+`reportType` accepts any Amazon SP-API report type constant (or its
+human-readable name). To find one: the synced types are in `_meta.json`; the
+analytics, Brand Analytics and Vendor types, with their `reportOptions`, are in
+the `amazon-report` skill. `reports_getReports` does not list types: it lists
+the reports Amazon already holds for a store, and it needs a `reportType` (or a
+`nextToken` to page).
 
 ## Date Range Guidelines
 

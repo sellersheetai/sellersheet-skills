@@ -38,7 +38,7 @@
       "name": "noon-report-data",
       "latest_version": "0.13.0",
       "path": "skills/noon-report-data",
-      "description": "noon.com (noon Partners) report data — query the 4 rpt_noon_* warehouse tables (orders, finance, FBN inventory aging, product-views & sales) for a connected noon store; twice-daily schedule, project-scoped, per-marketplace semantics."
+      "description": "noon.com (noon Partners) report data — query the 5 rpt_noon_* warehouse tables (orders, finance, FBN inventory aging, product-views & sales, FBN catalog) for a connected noon store; twice-daily schedule, project-scoped, per-marketplace semantics."
     },
     {
       "name": "amazon-report",

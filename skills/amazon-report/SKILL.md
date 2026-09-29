@@ -35,8 +35,7 @@ Run the standard preflight in [`sellersheet-shared`](../sellersheet-shared/SKILL
 - "What are the exact field names in report X's document?"
 - Parsing a `DONE` report document whose nesting you don't know.
 
-NOT for: querying already-synced data (→ `report-data` + `query_report_data`),
-or adding a brand-new report type to the warehouse (→ `add-report-type`).
+NOT for: querying already-synced data (→ `report-data` + `query_report_data`).
 
 ## Check the warehouse FIRST (before requesting a report)
 
@@ -45,9 +44,9 @@ datasets are **already synced into the SellerSheet warehouse** — query those
 instead of re-requesting:
 
 - **Synced → use `report-data` + `query_report_data`** (don't re-request):
-  Sales & Traffic (`rpt_sales_and_traffic`, `rpt_dk_sales_traffic_*`), orders
-  (`rpt_orders`), inventory (`rpt_get_afn_inventory_data*`, `rpt_inventory_*`,
-  `rpt_get_fba_myi_all_inventory_data`), returns/removals (`rpt_get_flat_file_returns_data_by_return_date`, `rpt_get_fba_fulfillment_customer_returns_data`,
+  Sales & Traffic (`rpt_dk_sales_traffic_by_date`, `rpt_dk_sales_traffic_by_asin`), orders
+  (`rpt_orders`), inventory (`rpt_get_afn_inventory_data*`,
+  `rpt_get_fba_myi_all_inventory_data`, `rpt_get_fba_inventory_planning_data`), returns/removals (`rpt_get_flat_file_returns_data_by_return_date`, `rpt_get_fba_fulfillment_customer_returns_data`,
   `rpt_get_fba_fulfillment_removal_order_detail_data`). Run `list_report_syncs` to confirm it's synced & fresh.
 - **Not synced → request on-demand here** (this skill's purpose): Brand Analytics
   (Market Basket, Search Query/Catalog Performance, Search Terms, Repeat Purchase),
@@ -63,13 +62,14 @@ or you need an ad-hoc window the sync doesn't cover.
 0. Check report-data FIRST — if the report is synced & fresh, query_report_data and STOP (don't re-request)
 1. Look up the report in _meta.json  →  get reportType + reportOptions + schema file
 2. read reference/<schema>.json      →  confirm reportOptions enum values + document field tree
-3. reports_getReports             →  reuse an existing DONE report if recent enough (saves quota)
-4. reports_createReport(reportType, reportOptions, dataStartTime, dataEndTime, marketplaceIds)
-5. sp_api_get_report(reportId)       →  poll until processingStatus == DONE
-6. download the document, parse fields by the names in the schema's top-level data array
+3. Run report-data's "Path 2: Manual Flow" (reuse a recent DONE report, create, poll,
+   download) with the reportType, reportOptions and dates you confirmed in steps 1-2
+4. parse the downloaded document's fields by the names in the schema's top-level data array
 ```
 
-`processingStatus`: `IN_QUEUE | IN_PROGRESS | DONE | CANCELLED | FATAL`.
+`report-data` owns the create → poll → download mechanics, the status table and
+the download rules; this skill supplies only what to put in the request and how to
+read the document that comes back.
 
 ## How to read a schema file
 

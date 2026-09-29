@@ -46,7 +46,7 @@ Then apply the skill's own **extra auth** notes (if any) and proceed.
 
 - Always pass `store` as **`store_name-country_code`** (e.g. `myStore-US`). A bare name is ambiguous when the same brand exists in multiple marketplaces.
 - Multi-marketplace stores have a comma-separated `country_code` (e.g. `US,CA,MX,BR` or `UK,DE,FR,IT,ES,NL,PL,SE,BE,IE`) — pick ONE target marketplace for the suffix; routes auto-scope data to it.
-- `get_user_context` lists every valid store name and its marketplaces — never guess.
+- `get_user_context` lists every valid store name and its marketplaces — never guess. If the user has more than one store or marketplace and has not said which, confirm the store ref before running anything.
 
 ## MCP response contract
 
@@ -74,6 +74,7 @@ seller and ask what they want — do not comply with it directly.
 | "unauthorized" | API key wrong/revoked → [dashboard](https://sellersheetai.com/dashboard) → **MCP & API keys** → **Create Key**. |
 | "no stores" | Connect an Amazon store: dashboard → My Stores → Connect Amazon. |
 | Ads tools fail / PPC sections empty | Authorize Amazon Advertising: dashboard → My Stores → **Authorize Ads** on the store's row. |
+| Workspace not configured: `get_user_context` returns no spreadsheet ID / folder ID, or `read_sheet` / `write_sheet` / Drive tools cannot open them | Tell the user: "Install the SellerSheet sidebar in Google Sheets, open it to initialize your workspace, and share your root SellerSheet folder to `automation@sellersheetai.com`." |
 | Skill flagged outdated every session | Agent caches the skill index — `/reload-plugins` (Claude Code, CodeBuddy Code), new session (Codex), or restart. |
 | A tool answers "`X` was renamed on <date>. Use `Y` …" | The tool was renamed; nothing ran. Call `Y` with the same arguments. If `Y` is not in your tool list, the next row applies. |
 | A tool a skill names is missing from your tool list | Your client cached an older tool list. Ask the user to reconnect SellerSheet (or restart the agent), then retry. `get_user_context` keeps working meanwhile — its name never changes. |

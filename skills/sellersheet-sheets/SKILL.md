@@ -108,10 +108,10 @@ When asked to build a Google Sheet report:
 1. **Inspect what's there** — `list_sheet_tabs`, `get_sheet_metadata`, `read_sheet` a sample range to discover existing conventions.
 2. **Provision tabs** — `add_sheet_tab` for each new tab. Hidden data tabs prefixed `_raw_*`; configuration on `_config`.
 3. **Setup tab structure** — `setup_sheet` for the standard 2-row header convention, or manually `write_sheet` + `format_sheet_range` + `freeze_sheet_panes`.
-4. **Write data + formulas** — `write_sheet` for values (USER_ENTERED parses `=` as formula too), `write_sheet_formula` for explicit single-cell intent. Before every `write_sheet`, sweep the values array for literal text starting with `=`/`+` and prefix those cells with `'` (Quick-reference rule 4). Per `reference/formula-conventions.md`: cell references, not hardcoded numbers.
+4. **Write data + formulas** — read a range before you overwrite it; never write over cells you have not seen. When a tab holds a warehouse query result, add a `SQL()` cell that reproduces it, so the user can re-run and check the numbers. `write_sheet` for values (USER_ENTERED parses `=` as formula too), `write_sheet_formula` for explicit single-cell intent. Before every `write_sheet`, sweep the values array for literal text starting with `=`/`+` and prefix those cells with `'` (Quick-reference rule 4). Per `reference/formula-conventions.md`: cell references, not hardcoded numbers.
 5. **Format numbers + headers** — `set_sheet_number_format` for currency / percent / dates. `format_sheet_range` for header bands. See `reference/brand-standards.md`.
 6. **Visualize** — `add_sheet_chart` (design rules, type selection, anchor placement: `reference/charts.md`), `add_sheet_conditional_format` for gradients and value-based chips (`reference/conditional-formatting.md`).
-7. **Polish** — `resize_sheet_columns` for deliberate fixed widths (the default; size to the header, not the data), `add_sheet_filter`, `protect_sheet_range`. Use `autofit_sheet_columns` only as a final touch on short/structured columns (codes, KPIs, statuses) and only **after** the filter — it doesn't reserve room for the filter arrow, so autofit-before-filter clips headers. Never autofit column A or long free-text columns (images, product titles, descriptions) — keep those fixed. See `reference/brand-standards.md` → Column widths.
+7. **Polish** — `resize_sheet_columns` for deliberate fixed widths (the default; size to the header, not the data), `set_sheet_basic_filter` (dropdown arrows on the display header row), `protect_sheet_range`. Use `autofit_sheet_columns` only as a final touch on short/structured columns (codes, KPIs, statuses) and only **after** the filter — it doesn't reserve room for the filter arrow, so autofit-before-filter clips headers. Never autofit column A or long free-text columns (images, product titles, descriptions) — keep those fixed. See `reference/brand-standards.md` → Column widths.
 8. **Verify** — run the Final review gate below. Do not declare the build done until it passes.
 
 ## Final review gate — do NOT skip
@@ -211,6 +211,7 @@ Detailed specs live in `reference/`. Load the relevant file before implementing 
 | `reference/mcp-gotchas.md` | `&` in tab names, USER_ENTERED parses `=` as formula, merged-cell side effects, NULL vs empty-string in numeric `_raw_*`, chunked write recipe for large payloads |
 | `reference/config-tab.md` | `_config` separation, named ranges (`cfg_fx`, `cfg_ship_rmb_kg`, `cfg_referral_pct`), FX as-of freshness rule |
 | `reference/openpyxl-mcp-mapping.md` | Translation table for users coming from openpyxl / Excel macros / Google Apps Script, with known-limitations table |
+| `reference/local-build-import.md` | Heavy net-new builds: author the whole workbook locally as `.xlsx`, import it as a native Google Sheet in ONE `start_drive_upload` call with `convertTo` — when to use it, the pipeline, and when to skip it |
 
 ## Scripts index
 
@@ -228,7 +229,7 @@ Copy-paste templates and verification routines live in `scripts/`.
 - **A Docs page, not a Sheets workbook** → use the docs-* MCP tools.
 - **A sheet that lives entirely server-side and is never opened in a browser** — the `SQL()` and `IMAGE()` patterns require a browser session with the SellerSheet add-on.
 - **Multi-tab operator dashboards** with freshness instrumentation + agent insights → use `sellersheet-dashboard` (it builds on top of this skill).
-- **Amazon business operations** (orders, listings, ads) → use `sellersheet`.
+- **Amazon business operations** (ads, FBA inbound, warehouse-synced reports) → use the matching domain skill: `amazon-ads`, `fba-inbound`, `report-data`.
 - **Choosing which Amazon `rpt_*` table to query** → use `report-data`.
 
 ## First-time setup for users

@@ -45,7 +45,8 @@ per-step results).
 
 ### 1. Getting Started
 
-Run the standard preflight + store-reference rules in
+Run the standard preflight, store-reference rules and response contract (relay
+`notification.message` and `human_action`) in
 [`sellersheet-shared`](../sellersheet-shared/SKILL.md) first. Ads-specific delta:
 **every ads tool requires BOTH `store` (in `<name>-<countryCode>` format) and
 `countryCode`** (e.g. `store="myStore-US"`, `countryCode="US"`) — a bare store name
@@ -57,20 +58,14 @@ value** — `SPONSORED_PRODUCTS` | `SPONSORED_BRANDS` | `SPONSORED_DISPLAY` —
 never the shorthand `SP` / `SB` / `SD` this skill uses in prose; Amazon rejects
 the shorthand.
 
-**Workspace not configured?**
-If `get_user_context` returns no spreadsheet ID / folder ID, or `read_sheet` /
-`write_sheet` / Drive tools fail to access them, tell the user:
-> "Install the SellerSheet sidebar in Google Sheets, open it to initialize your
-> workspace, and share your root SellerSheet folder to
-> `automation@sellersheetai.com`."
+No spreadsheet ID / folder ID, or the sheet and Drive tools cannot open them?
+Follow the workspace row in `sellersheet-shared` → Troubleshooting.
 
 ### 2. Sheet as Audit Surface
 
 - **Before mutations** (create/update/delete): write intent to sheet with `write_sheet`
 - **After every tool call**: write `data.result` to sheet with `write_sheet`
 - **Before reading live state**: check sheet first with `read_sheet` to skip redundant API calls
-- **Always relay** `notification.message` and `human_action` to the user
-- `human_action` will become automated agent sheet-write actions in a future update
 
 **Two kinds of "yes" — approve vs. commit.** Every write in this skill falls into one of two
 buckets. **Autopilot is a MODE the seller declares explicitly** — "do it end to end", "don't
@@ -108,20 +103,18 @@ it does not declare a mode. Default is interactive; autopilot is opt-in per conv
 | Last 1-2 days — may be incomplete | Warn user: Amazon attribution not yet finalized |
 | Need columns/dimensions not in synced tables, OK to wait hours | `ads_create_async_report` + `ads_get_async_report` |
 
-Pass `report_date: "latest"` for the most recent synced date. Use `YYYY-MM-DD` for
-historical ranges.
-
 **`query_report_data` is the default.** The offline report path (`ads_create_async_report`)
 takes 30 minutes to several hours — only use it when synced tables genuinely cannot
 serve the need.
 
-**The warehouse tables are DAILY PERFORMANCE rows — not a campaign inventory.** Only campaigns
-with delivery in the window appear in `rpt_sp_*` / `rpt_sb_*` / `rpt_sd_*` (live count 47
-ENABLED vs 21 in the warehouse, observed). For a complete campaign inventory or count, query the
-live API — `ads_query_campaign` (v1, all products in one call via
-`adProductFilter`). And `report_date: "latest"`
-pins to the newest **single** day, often a zero-spend partial day — use `report_date: "all"` plus
-explicit date filters for any cost or performance analysis.
+**The warehouse tables are DAILY PERFORMANCE rows — not a campaign inventory.** A campaign
+with no delivery in the window has no row in `rpt_sp_*` / `rpt_sb_*` / `rpt_sd_*`, so never
+derive "how many campaigns exist" from them; for a complete campaign inventory or count,
+query the live API — `ads_query_campaign` (v1, all products in one call via
+`adProductFilter`). And `report_date: "latest"` pins to the newest **single** day, often a
+zero-spend partial day — for any cost or performance analysis use `report_date: "all"` plus
+explicit date filters (`YYYY-MM-DD` pins one day). `report-data` owns the full query
+semantics of these tables.
 
 ### 4. Ad Type Hierarchy
 
@@ -587,26 +580,14 @@ artifacts._
 
 ### Synced Report Tables
 
-**SP:** `rpt_sp_campaigns`, `rpt_sp_ad_groups`, `rpt_sp_keywords`, `rpt_sp_targets`,
-`rpt_sp_search_terms`, `rpt_sp_advertised_products`, `rpt_sp_purchased_products`,
-`rpt_sp_campaign_placement`, `rpt_sp_negative_keywords`,
-`rpt_sp_campaign_negative_keywords`, `rpt_sp_negative_targets`,
-`rpt_sp_campaign_negative_targets`
-
-**SB:** `rpt_sb_campaigns`, `rpt_sb_ad_groups`, `rpt_sb_keywords`, `rpt_sb_targets`,
-`rpt_sb_search_terms`, `rpt_sb_advertised_products`, `rpt_sb_purchased_products`,
-`rpt_sb_negative_keywords`
-
-**SD:** `rpt_sd_campaigns`, `rpt_sd_ad_groups`, `rpt_sd_targets`,
-`rpt_sd_advertised_products`, `rpt_sd_negative_targets`
-
-The negative-entity and placement tables let you audit current negatives and
-placement-level performance without an entity-list call.
-
-These are **daily performance rows** — a campaign with no delivery in the window has no row, so
-never derive "how many campaigns exist" from them; query the live `ads_query_campaign`
-tool for that. Prefer `report_date: "all"` + date filters over `"latest"` when analysing
-cost or performance, since `"latest"` may land on a zero-spend partial day.
+The synced ads tables are `rpt_sp_*`, `rpt_sb_*` and `rpt_sd_*` (campaigns, ad
+groups, keywords, targets, search terms, advertised and purchased products, the
+negative-entity tables, and SP-only placement). Not every product has every table
+(SD, for instance, has no keyword or search-term table). The `report-data` skill
+owns the exact table list (`_meta.json`) and every table's columns
+(`reference/<table>.json`). The negative-entity and placement tables let you audit
+current negatives and placement-level performance without an entity-list call.
+Daily-row semantics and the `report_date` rule are in Tier 1 §3 above.
 
 Common SP column names (verify others in the reference json before filtering): `cost`,
 `clicks`, `impressions`, `purchases_14d`, `sales_14d`, `acos_clicks_14d`,
