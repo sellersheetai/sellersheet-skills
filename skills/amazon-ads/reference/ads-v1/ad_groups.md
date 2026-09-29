@@ -231,7 +231,7 @@ field name = required within its object. Enums >15 values: ENUMS.md.
 - `adGroups[].frequencies`: array<{eventCount: integer, eventMaxCount*: integer, eventType: enum: IMPRESSION, extraFrequencyCapImpressionTypes: array<enum: LinearTVImpression>, frequencyTargetingSetting*: enum: HOUSEHOLD | USER, timeCount*: integer, timeUnit*: enum: DAYS | HOURS | MINUTES}>
 - `adGroups[].inventoryType` **REQUIRED**: enum (17 values - see ENUMS.md)
 - `adGroups[].name` **REQUIRED**: string
-- `adGroups[].optimization` **REQUIRED**: {bidStrategy*: enum: PRIORITIZE_KPI_TARGET | SPEND_BUDGET_IN_FULL | USE_CAMPAIGN_STRATEGY, budgetSettings: {budgetAllocation: enum: AUTO | MANUAL, dailyMinSpendValue: number}}
+- `adGroups[].optimization` **REQUIRED**: {bidStrategy*: enum: PRIORITIZE_BRAND_OUTCOME | PRIORITIZE_KPI_TARGET | SPEND_BUDGET_IN_FULL | USE_CAMPAIGN_STRATEGY, budgetSettings: {budgetAllocation: enum: AUTO | MANUAL, dailyMinSpendValue: number}}
 - `adGroups[].pacing` **REQUIRED**: {deliveryProfile*: enum: ASAP | EVEN | PACE_AHEAD}
 - `adGroups[].purchaseOrderNumber`: string
 - `adGroups[].startDateTime` **REQUIRED**: string
@@ -251,7 +251,7 @@ field name = required within its object. Enums >15 values: ENUMS.md.
 - `adGroups[].fees`: array<{addToBudgetSpentAmount*: boolean, feeType*: enum: AMAZON_AUDIENCE | AMAZON_DSP | MANAGED_SERVICE_FEE | OMNICHANNEL_METRICS | THIRD_PARTY_APPLIED | THIRD_PARTY_AUDIENCE | THIRD_PARTY_TARGETING, feeValue*: number, thirdPartyProvider*: enum: COM_SCORE | CPM_1 | CPM_2 | CPM_3 | DOUBLE_CLICK_CAMPAIGN_MANAGER | DOUBLE_VERIFY | INTEGRAL_AD_SCIENCE}>
 - `adGroups[].frequencies`: array<{eventCount: integer, eventMaxCount*: integer, eventType: enum: IMPRESSION, extraFrequencyCapImpressionTypes: array<enum: LinearTVImpression>, frequencyTargetingSetting*: enum: HOUSEHOLD | USER, timeCount*: integer, timeUnit*: enum: DAYS | HOURS | MINUTES}>
 - `adGroups[].name`: string
-- `adGroups[].optimization`: {bidStrategy: enum: PRIORITIZE_KPI_TARGET | SPEND_BUDGET_IN_FULL | USE_CAMPAIGN_STRATEGY, budgetSettings: {budgetAllocation: enum: AUTO | MANUAL, dailyMinSpendValue: number}}
+- `adGroups[].optimization`: {bidStrategy: enum: PRIORITIZE_BRAND_OUTCOME | PRIORITIZE_KPI_TARGET | SPEND_BUDGET_IN_FULL | USE_CAMPAIGN_STRATEGY, budgetSettings: {budgetAllocation: enum: AUTO | MANUAL, dailyMinSpendValue: number}}
 - `adGroups[].pacing`: {deliveryProfile: enum: ASAP | EVEN | PACE_AHEAD}
 - `adGroups[].purchaseOrderNumber`: string
 - `adGroups[].startDateTime`: string

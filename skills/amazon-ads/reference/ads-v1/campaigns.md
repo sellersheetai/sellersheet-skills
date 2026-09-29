@@ -271,7 +271,7 @@ field name = required within its object. Enums >15 values: ENUMS.md.
 - `campaigns[].frequencies`: array<{eventCount: integer, eventMaxCount*: integer, eventType: enum: IMPRESSION, extraFrequencyCapImpressionTypes: array<enum: LinearTVImpression>, frequencyTargetingSetting*: enum: HOUSEHOLD | USER, timeCount*: integer, timeUnit*: enum: DAYS | HOURS | MINUTES}>
 - `campaigns[].marketplaces`: array<enum (23 values - see ENUMS.md)>
 - `campaigns[].name` **REQUIRED**: string
-- `campaigns[].optimizations` **REQUIRED**: {bidSettings*: {bidStrategy*: enum: PRIORITIZE_KPI_TARGET | SPEND_BUDGET_IN_FULL | USE_CAMPAIGN_STRATEGY}, budgetSettings: {budgetAllocation: enum: AUTO | MANUAL, flightBudgetRolloverStrategy: enum: CUMULATIVE_BUDGET_ROLLOVER | NO_ROLLOVER | PRIOR_BUDGET_ROLLOVER}, conversionSettings: {viewWeight*: number}, goalSettings: {kpi*: enum (20 values - see ENUMS.md), kpiValue: number}, primaryInventoryTypes: array<enum: AUDIO | DISPLAY | VIDEO_OLV | VIDEO_STV>}
+- `campaigns[].optimizations` **REQUIRED**: {bidSettings*: {bidStrategy*: enum: PRIORITIZE_BRAND_OUTCOME | PRIORITIZE_KPI_TARGET | SPEND_BUDGET_IN_FULL | USE_CAMPAIGN_STRATEGY}, budgetSettings: {budgetAllocation: enum: AUTO | MANUAL, flightBudgetRolloverStrategy: enum: CUMULATIVE_BUDGET_ROLLOVER | NO_ROLLOVER | PRIOR_BUDGET_ROLLOVER}, conversionSettings: {viewWeight*: number}, goalSettings: {kpi*: enum (20 values - see ENUMS.md), kpiValue: number}, primaryInventoryTypes: array<enum: AUDIO | DISPLAY | VIDEO_OLV | VIDEO_STV>}
 - `campaigns[].purchaseOrderNumber`: string
 - `campaigns[].skanAppId`: string
 - `campaigns[].state` **REQUIRED**: enum: DRAFT | ENABLED | PAUSED | PROPOSED
@@ -287,7 +287,7 @@ field name = required within its object. Enums >15 values: ENUMS.md.
 - `campaigns[].flights`: array<{budget*: {budgetType*: enum: MONETARY, budgetValue*: oneOf: monetaryBudgetValue{monetaryBudgetValue: {monetaryBudget: {currencyCode*: enum (59 values - see ENUMS.md), ruleValue: number, value*: number}}}}, endDateTime*: string, flightId: string, name: string, startDateTime*: string}>
 - `campaigns[].frequencies`: array<{eventCount: integer, eventMaxCount*: integer, eventType: enum: IMPRESSION, extraFrequencyCapImpressionTypes: array<enum: LinearTVImpression>, frequencyTargetingSetting*: enum: HOUSEHOLD | USER, timeCount*: integer, timeUnit*: enum: DAYS | HOURS | MINUTES}>
 - `campaigns[].name`: string
-- `campaigns[].optimizations`: {bidSettings: {bidStrategy: enum: PRIORITIZE_KPI_TARGET | SPEND_BUDGET_IN_FULL | USE_CAMPAIGN_STRATEGY}, budgetSettings: {budgetAllocation: enum: AUTO | MANUAL, flightBudgetRolloverStrategy: enum: CUMULATIVE_BUDGET_ROLLOVER | NO_ROLLOVER | PRIOR_BUDGET_ROLLOVER}, conversionSettings: {viewWeight: number}, goalSettings: {kpi: enum (20 values - see ENUMS.md), kpiValue: number}, primaryInventoryTypes: array<enum: AUDIO | DISPLAY | VIDEO_OLV | VIDEO_STV>}
+- `campaigns[].optimizations`: {bidSettings: {bidStrategy: enum: PRIORITIZE_BRAND_OUTCOME | PRIORITIZE_KPI_TARGET | SPEND_BUDGET_IN_FULL | USE_CAMPAIGN_STRATEGY}, budgetSettings: {budgetAllocation: enum: AUTO | MANUAL, flightBudgetRolloverStrategy: enum: CUMULATIVE_BUDGET_ROLLOVER | NO_ROLLOVER | PRIOR_BUDGET_ROLLOVER}, conversionSettings: {viewWeight: number}, goalSettings: {kpi: enum (20 values - see ENUMS.md), kpiValue: number}, primaryInventoryTypes: array<enum: AUDIO | DISPLAY | VIDEO_OLV | VIDEO_STV>}
 - `campaigns[].purchaseOrderNumber`: string
 - `campaigns[].skanAppId`: string
 - `campaigns[].state`: enum: DRAFT | ENABLED | PAUSED | PROPOSED
