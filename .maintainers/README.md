@@ -60,7 +60,7 @@ claude plugin eval . --trust-plugin --json evals/results/local.json \
 ```
 
 Each case runs 3 times by default (with-plugin **and** a no-plugin baseline, so ~6 agent
-runs per case) — the full 9-case suite is roughly 50–60 agent runs plus judge calls, so
+runs per case) — the full 8-case suite is roughly 45–50 agent runs plus judge calls, so
 budget a few dollars at list price per full run; `--max-cost-usd` is a hard ceiling, not an
 estimate. To iterate on ONE case cheaply while writing or fixing a grader:
 
@@ -80,23 +80,32 @@ the spend cap with `SS_PLUGIN_EVAL_MAX_COST_USD=5`.
 - The `amazon-ads` skill text still names the pre-rename tool names in prose (e.g.
   `ads_campaigns`, `ads_budget_rules` — see its "Unified v1 tools" and "T-14" sections)
   until that text is updated in a follow-up change. In practice the agent usually still
-  picks the correct (renamed) tool from its live catalog, and correctly recovers from a
-  tombstone when it doesn't (`renamed-tool-tombstone` passes 1.0) — but this stale
-  prose is the root cause of the next finding, and worth fixing regardless of the eval.
-- `ads-family-uses-amazon-enum` reproducibly scores ~0.67: the agent calls
-  `ads_get_budget_rules_for_advertiser` (the correct, current tool) but with
-  `adProduct: "SB"` instead of the full enum `SPONSORED_BRANDS`. Cause: the skill's own
-  prose abbreviates the enum as `SP|SB|SD` in several tables (e.g. the budget-rules
-  section), which the agent copies literally. Fix is a skill-text change (spell out the
-  enum, or add a one-line "always send the full ad-product enum, never SP/SB/SD"
-  reminder near those tables) — out of scope for this eval-suite change.
-- `ads-delete-is-commit` and `fba-cancel-asks-first` currently score 0: neither skill
-  gates a destructive call (`ads_delete_campaign`, `cancel_inbound_plan`) behind an
-  explicit second confirmation beyond the user's own wording — `fba-inbound`'s own rule
-  0 says cancel "only when the user says 'cancel'", and the test prompts do say it, so
-  today's documented behavior is to act immediately. Whether to add a stronger typed-
-  CONFIRM gate (matching what these two cases assert) is a skill-policy decision, not an
-  eval-suite bug — these two cases are intentionally written to the stricter bar and are
+  picks the correct (renamed) tool from its live catalog — but this stale prose is the
+  root cause of the next finding, and worth fixing regardless of the eval. (The
+  `renamed-tool-tombstone` case that used to cover tombstone recovery was dropped
+  2026-09-29: the tombstone behavior is proven by the server's own tests and a live
+  Task 26 call — an eval can't realistically simulate a client stuck on a cached,
+  pre-rename tool list.)
+- `ads-family-uses-amazon-enum` (fixed, re-run 2026-09-29): previously reproducibly
+  scored ~0.67 — the agent called `ads_get_budget_rules_for_advertiser` (the correct,
+  current tool) but with `adProduct: "SB"` instead of the full enum
+  `SPONSORED_BRANDS`, copying an abbreviated `SP|SB|SD` the skill's own tables used to
+  show. A `--case "ads-*"` re-run after the operation-registry fix wave (which touched
+  the budget-usage/budget-rules tables) scores this case 1.0 / passRate 1.0 — recorded
+  here as evidence, not re-verified against every future skill edit.
+- `ads-delete-is-commit` (fixed, re-run 2026-09-29): previously scored 0 — the skill did
+  not gate `ads_delete_campaign` behind an explicit second confirmation beyond the
+  user's own wording. The operation-registry fix wave (2026-09-29) aligned the
+  amazon-ads autopilot Commit-gate wording with `fba-inbound`'s (proceed only when the
+  seller's own instruction explicitly named the destructive action and its target,
+  otherwise drop back to asking); the same `--case "ads-*"` re-run scores this case
+  1.0 / passRate 1.0.
+- `fba-cancel-asks-first` still scores 0 (untouched by this fix wave — a different
+  skill): `cancel_inbound_plan` is not gated behind an explicit second confirmation
+  beyond the user's own wording — `fba-inbound`'s own rule 0 says cancel "only when the
+  user says 'cancel'", and the test prompt does say it, so today's documented behavior
+  is to act immediately. Whether to add a stronger typed-CONFIRM gate (matching what
+  this case asserts) is a skill-policy decision, not an eval-suite bug — this case is
   expected to stay red until that policy is decided and the skills are updated.
 
 None of the above blocks this suite from shipping; `SS_SKIP_PLUGIN_EVAL=1` on

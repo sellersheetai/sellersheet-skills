@@ -82,12 +82,14 @@ words, to complete something end to end):
   only when the user's own instruction already covers this specific change — never invent a
   change autopilot wasn't asked for.
 - **Commit** — deleting, archiving, or otherwise ending something (a campaign, ad group,
-  target, budget rule association, negative): restate exactly what will be removed, then end
-  that message with a literal question asking the user to confirm — e.g. "Delete campaign X —
-  are you sure?" — never a bare instruction like "reply CONFIRM" with no question in the
-  message. Wait for the reply to be the literal word `CONFIRM`. Autopilot never skips this —
-  "do the whole thing" authorizes creates and updates within the stated scope, never an
-  irreversible removal without a separate, explicit `CONFIRM`.
+  target, budget rule association, negative): interactive — restate exactly what will be
+  removed, then end that message with a literal question asking the user to confirm — e.g.
+  "Delete campaign X — are you sure?" — never a bare instruction like "reply CONFIRM" with no
+  question in the message. Wait for the reply to be the literal word `CONFIRM`. Autopilot —
+  proceed only when the user's own instruction already explicitly named THIS destructive
+  action and its target (e.g. "delete campaign X"); a bare "do the whole thing" authorizes
+  creates and updates within the stated scope but never an irreversible removal by itself —
+  drop back to asking (as in interactive) when it doesn't.
 - **Spend-bearing** calls (a budget increase, a budget rule that raises spend) state the
   amount or the % increase before the call in interactive mode, and report it after the call
   on autopilot — never silently.
@@ -275,8 +277,7 @@ Applies on top of the global sheet-approval convention (§2):
 
 ### D. Launch New Campaign (Bulk SP)
 
-1. `ads_get_ranked_keyword_recommendation` — ranked keywords (`type="ranked_keywords"`, the
-   default) for target ASINs
+1. `ads_get_ranked_keyword_recommendation` — ranked keywords for target ASINs
    (product-target ideas: `ads_sp_get_product_recommendations` /
    `ads_get_category_recommendations_for_asins` + `ads_get_refinements_for_category`)
 2. `ads_get_theme_based_bid_recommendation_for_ad_group_v1` — suggested bids for selected keywords/targets;
@@ -493,7 +494,7 @@ even when everything failed — always read `error[]`; `delete` takes
 | Tool | Actions | Cross-cutting notes |
 |---|---|---|
 | `ads_list_portfolios` (list) · `ads_create_portfolio` · `ads_update_portfolio` | — | Delete not supported; state only ENABLED via API |
-| `ads_get_ranked_keyword_recommendation` | — | Use `type="ranked_keywords"` — the deployed default; returns ranked keywords with per-match-type suggested bids. `type="suggested_keywords"` hits endpoints Amazon shut off 2026-06-15 → 403, **never use** |
+| `ads_get_ranked_keyword_recommendation` | — | Returns ranked keywords with per-match-type suggested bids; no `type` param — the server tries Amazon's newer media type and falls back automatically when a marketplace refuses it |
 | `ads_get_theme_based_bid_recommendation_for_ad_group_v1` | — | |
 | `ads_sp_get_product_recommendations` | — | Suggested target ASINs (competitor/complementary) for your advertised ASINs, with the theme that produced each |
 | `ads_get_category_recommendations_for_asins` | — | Category targets recommended for a list of ASINs — the coarse half of product targeting |
@@ -563,8 +564,8 @@ artifacts._
 
 | Tool | Operations | Cross-cutting notes |
 |---|---|---|
-| `ads_campaigns_budget_usage` · `ads_portfolio_budget_usage` | — (adProduct: `SPONSORED_PRODUCTS` \| `SPONSORED_BRANDS` \| `SPONSORED_DISPLAY` for campaigns; `PORTFOLIOS` on the portfolio tool) | Live intraday % of budget consumed, 1-100 ids, 207 success[]/error[] envelope |
-| `ads_get_budget_rules_for_advertiser` · `ads_get_budget_rule_by_rule_id_for_campaigns` · `ads_get_campaigns_associated_with_budget_rule` · `ads_list_associated_budget_rules_for_campaigns` · `ads_create_budget_rules_for_campaigns` · `ads_update_budget_rules_for_campaigns` · `ads_create_associated_budget_rules_for_campaigns` · `ads_disassociate_associated_budget_rule_for_campaigns` | adProduct: `SPONSORED_PRODUCTS` \| `SPONSORED_BRANDS` \| `SPONSORED_DISPLAY` | The associate/disassociate tools take `bulk=true` for the SP-only bulk variant, which returns 401 — the bulk surface is not granted (verified on every tested account/marketplace), so always associate per campaign; do not retry per account. Create body = FLAT rule details; update body = {ruleId, ruleDetails, ruleState} wrappers with ONLY mutable ruleDetails fields. ≤25 rules/assoc ids, ≤50 bulk pairs. Writes need ads write access |
+| `ads_campaigns_budget_usage` (adProduct: `SPONSORED_PRODUCTS` \| `SPONSORED_BRANDS` \| `SPONSORED_DISPLAY`) · `ads_portfolio_budget_usage` (no adProduct) | — | Live intraday % of budget consumed, 1-100 ids, 207 success[]/error[] envelope |
+| `ads_get_budget_rules_for_advertiser` · `ads_get_budget_rule_by_rule_id_for_campaigns` · `ads_get_campaigns_associated_with_budget_rule` · `ads_list_associated_budget_rules_for_campaigns` · `ads_create_budget_rules_for_campaigns` · `ads_update_budget_rules_for_campaigns` · `ads_create_associated_budget_rules_for_campaigns` · `ads_disassociate_associated_budget_rule_for_campaigns` | adProduct: `SPONSORED_PRODUCTS` \| `SPONSORED_BRANDS` \| `SPONSORED_DISPLAY` | Associate/disassociate are always per-campaign (one campaignId + one budgetRuleId) — the SP-only bulk variant is not exposed here (not granted on any tested account/marketplace). Create body = FLAT rule details; update body = {ruleId, ruleDetails, ruleState} wrappers with ONLY mutable ruleDetails fields. ≤25 rules/assoc ids. Writes need ads write access |
 | `ads_get_budget_rules_recommendation` | — (adProduct: `SPONSORED_PRODUCTS` \| `SPONSORED_BRANDS`) | Special-event suggestions for ONE campaignId; response eventId feeds eventTypeRuleDuration. SD not supported by Amazon; some marketplaces reject SB event rules |
 | `ads_sp_get_budget_recommendations` / `ads_sb_get_budget_recommendations` / `ads_get_sd_budget_recommendations` | — | Suggested daily budget + missed-opportunity estimates per campaign; 1-100 ids (SD takes `campaignIds` directly, not a `body` dict) |
 | `ads_get_budget_recommendation` | — | Budget suggestion BEFORE campaign creation; targetingExpressions are objects and each requires a `bid`; targetingType is lowercase 'auto'\|'manual' |

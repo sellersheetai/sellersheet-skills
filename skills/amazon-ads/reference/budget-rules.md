@@ -18,8 +18,8 @@ operator's real store ref.
 `ads_list_associated_budget_rules_for_campaigns` (list_for_campaign). Every
 change is its own tool:
 `ads_create_budget_rules_for_campaigns` · `ads_update_budget_rules_for_campaigns` ·
-`ads_create_associated_budget_rules_for_campaigns` (`bulk=true` for the SP bulk variant) ·
-`ads_disassociate_associated_budget_rule_for_campaigns` (same `bulk` flag).
+`ads_create_associated_budget_rules_for_campaigns` (one campaign at a time) ·
+`ads_disassociate_associated_budget_rule_for_campaigns` (same, per campaign).
 
 ---
 
@@ -153,10 +153,11 @@ reverted the effective budget on the next usage read.
   case-insensitively. Always read `error[]` alongside `success[]`; `index` maps
   to your request order. Report BOTH counts ("38 of 44 ok; 6 errors — see
   sheet"). Request-level failures are plain 400/429.
-- **`bulk_associate` / `bulk_disassociate` return 401** on accounts where the
-  bulk surface isn't granted — verified across three separate ads accounts and
-  marketplaces. Treat as unavailable; per-campaign `associate` / `disassociate`
-  is the working path. Do not report the 401 as an account problem.
+- **SP's bulk associate/disassociate surface returned 401** on every tested
+  account/marketplace (not granted) and is not exposed by these tools —
+  `ads_create_associated_budget_rules_for_campaigns` /
+  `ads_disassociate_associated_budget_rule_for_campaigns` are always
+  per-campaign. Do not treat "no bulk option" as a missing feature to report.
 - **SB `ads_get_budget_rules_recommendation` is marketplace-gated** ("Unsupported
   Marketplace for Budget Event Rules") — confirmed rejected on AE and AU,
   confirmed working on US. The gate fires before campaign validation. An EMPTY
@@ -237,7 +238,7 @@ Guardrails:
 | Intraday (`intraDaySchedule`) | US, CA, UK, IN, JP | everywhere else — day-parting there = bid/placement adjustments |
 | SB event recommendations | US (verified) | AE, AU (verified rejections); gate precedes campaign validation |
 | SD event recommendations | — | nowhere (Amazon has none; hand-build date-range rules from SP/SB event dates) |
-| SP bulk (dis)associate | — | 401 on all tested accounts; use per-campaign ops |
+| SP bulk (dis)associate | — | not exposed; 401 on all tested accounts — use per-campaign ops |
 
 Probe once per store × marketplace (cheap reads: rules `list` per product, one
 recommendation call, one usage call) and record the answers in the workbook's
