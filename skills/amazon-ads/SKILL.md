@@ -489,6 +489,7 @@ run without a prompt; every write asks._
 | `ads_query_ad_group` · `ads_create_ad_group` · `ads_update_ad_group` · `ads_delete_ad_group` | |
 | `ads_query_ad` · `ads_create_ad` · `ads_update_ad` · `ads_delete_ad` | SP creative: `productIdType` = `SKU` (sellers) / `ASIN` (vendors). A schema-valid create can still fail per-index `PRODUCT_INELIGIBLE` |
 | `ads_query_target` · `ads_create_target` · `ads_update_target` · `ads_delete_target` | Keywords, product/category targets, AND all negatives in one resource (`negative` flag; campaign-level negative = `campaignId` without `adGroupId`). `productTarget.product` is an OBJECT `{productId}`. An SP ad group cannot mix keyword and product targets. Bid update = `ads_update_target` with `{targetId, bid: {bid}}` |
+| `ads_update_campaign_budget` · `ads_update_campaign_state` · `ads_update_target_bid` | Narrow one-entity writes (Amazon Ads' own tool names): a budget amount + `recurrenceTimePeriod` (DAILY \| LIFETIME \| MONTHLY), a state (ENABLED \| PAUSED \| ARCHIVED), or one target's bid. Prefer them for these three changes — smaller body, easier approval; the same gates apply (ARCHIVED is irreversible) |
 | `ads_query_ad_association` · `ads_create_ad_association` · `ads_update_ad_association` · `ads_delete_ad_association` | Amazon DSP only — sponsored-ads profiles get 401 |
 
 Shared v1 gotchas: mutations return 207 `{success[], partialSuccess[], error[]}`
