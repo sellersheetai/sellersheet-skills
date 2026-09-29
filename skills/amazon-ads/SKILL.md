@@ -605,5 +605,5 @@ Common SP column names (verify others in the reference json before filtering): `
 `acos_clicks_7d`. **Column names are snake_case** — not the camelCase used in
 `ads_create_async_report` columns (e.g. warehouse `sales_14d` vs report-config `sales14d`).
 
-For column names: load the `report-data` skill or read
-`.claude/skills/report-data/reference/<table>.json`.
+For column names: load the `report-data` skill;
+its `reference/<table>.json` files list every column.
