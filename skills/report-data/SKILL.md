@@ -33,7 +33,7 @@ Use this skill when the user asks for:
 | Path | Use For | Tools |
 |------|---------|-------|
 | **Cron sync (primary)** | Recurring daily/weekly data — query without hitting Amazon | `query_report_data`, `list_report_syncs` |
-| **Manual flow** | On-demand fresh report you download and process yourself; report type not in cron system | `sp_api_create_report`, `sp_api_get_report`, `sp_api_search_reports` |
+| **Manual flow** | On-demand fresh report you download and process yourself; report type not in cron system | `reports_createReport`, `sp_api_get_report`, `reports_getReports` |
 
 **AI permissions:** Query and observe only. **Never call `enable_report_sync`, `trigger_report_sync`, or `disable_report_sync`** — those are admin operations managed server-side.
 
@@ -359,7 +359,7 @@ rows = read_sheet(spreadsheetId, 'Store Reports!A:Z')
 ### Step 3: Check Amazon for an Existing DONE Report
 
 ```
-result = sp_api_search_reports(store='myStore-AE',
+result = reports_getReports(store='myStore-AE',
                                reportType='GET_MERCHANT_LISTINGS_ALL_DATA',
                                processingStatuses=['DONE'],
                                pageSize=5)
@@ -379,7 +379,7 @@ write_sheet(spreadsheetId, 'Store Reports!A{row}',
 ### Step 5: Create the Report
 
 ```
-result = sp_api_create_report(store='myStore-AE',
+result = reports_createReport(store='myStore-AE',
                               reportType='GET_MERCHANT_LISTINGS_ALL_DATA',
                               dataStartTime='2024-01-01T00:00:00Z',   # omit for snapshot reports
                               dataEndTime='2024-01-31T23:59:59Z')
@@ -461,7 +461,7 @@ the server to send you the contents; it will not.
 | DONE | Document ready | download `data.documentUrl`, analyze, write the result |
 | IN_QUEUE | Waiting to start | poll again in 2–5 min |
 | IN_PROGRESS | Amazon processing | poll again in 2–5 min |
-| CANCELLED | Amazon cancelled | retry `sp_api_create_report` |
+| CANCELLED | Amazon cancelled | retry `reports_createReport` |
 | FATAL | Amazon error | inform user; retry may not help |
 
 ### No Drive copy on this path
@@ -542,7 +542,7 @@ On success: old `dataEndTime` → `dataStartTime`, today → `dataEndTime`.
 | Market Basket Analysis | GET_BRAND_ANALYTICS_MARKET_BASKET_REPORT |
 | Repeat Purchase Report | GET_BRAND_ANALYTICS_REPEAT_PURCHASE_REPORT |
 
-Full list of 114 types: call `sp_api_search_reports` without `reportType`.
+Full list of 114 types: call `reports_getReports` without `reportType`.
 
 ## Date Range Guidelines
 

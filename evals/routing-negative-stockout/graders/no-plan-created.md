@@ -1,6 +1,6 @@
 ---
 type: tool_used
-tool: mcp__plugin_sellersheet-skills_sellersheet__create_inbound_plan
+tool: mcp__plugin_sellersheet-skills_sellersheet__fbaInbound_createInboundPlan
 min: 0
 max: 0
 ---

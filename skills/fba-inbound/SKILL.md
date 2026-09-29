@@ -123,11 +123,11 @@ The chain above (`orchestrate_fba_packing`, `generate_shipment_transport_options
 async operation to finish before it returns to you — there is nothing to poll for those.
 
 If you instead call one of the granular, single-step operations
-(`create_inbound_plan`, `generate_placement_options`, `generate_packing_options`,
-`generate_transportation_options`, `generate_delivery_window_options`) — for example on the
+(`fbaInbound_createInboundPlan`, `fbaInbound_generatePlacementOptions`, `fbaInbound_generatePackingOptions`,
+`fbaInbound_generateTransportationOptions`, `fbaInbound_generateDeliveryWindowOptions`) — for example on the
 legacy path where packing/placement options are generated separately — it returns
 immediately with an `operationId` while Amazon is still working. Poll
-`get_inbound_operation_status` yourself, bounded: first check after 10–15 seconds, then back
+`fbaInbound_getInboundOperationStatus` yourself, bounded: first check after 10–15 seconds, then back
 off (roughly double the wait each time), at most 3 checks total. If it is still
 `IN_PROGRESS` after that, stop polling and hand the operation id back to the user instead of
 looping forever, so they know what to ask you to check next.

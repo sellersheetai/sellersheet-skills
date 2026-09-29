@@ -8,7 +8,7 @@ guess; never call `create_sta_sheet` or `orchestrate_fba_packing` with a ✗ out
 |---|---|---|---|---|---|
 | 1 | Store (`<store>-<CC>`) | always | `get_user_context().data.stores[].store_refs` | same | one ref, verbatim |
 | 2 | Ship-from address | always | `Shipment Setting` row by `warehouseCode` (`<store>-<CC>-<code>`) → name, addressLine1/2, city, stateOrProvinceCode, countryCode, postalCode, phoneNumber, companyName, email | ask, or read the user's own sheet / file | every field non-empty; phone required by Amazon |
-| 3 | Products: MSKU + total units | always | `Product Info` row per MSKU (same store): seller-sku, asin, fnsku | ask, or the user's sheet / xlsx | MSKU must exist on the store (`get_listing` / `search_listings_items` if unsure) |
+| 3 | Products: MSKU + total units | always | `Product Info` row per MSKU (same store): seller-sku, asin, fnsku | ask, or the user's sheet / xlsx | MSKU must exist on the store (`listings_getListingsItem` / `listings_searchListingsItems` if unsure) |
 | 4 | Box spec per MSKU: units/box, L×W×H, weight, units | Box First (default) | `Product Info` qtyPerBox, boxDimensions "LxWxH", boxWeight + the row-9 Weight/Dimension Unit | ask | units KG/LB, CM/IN; a box ≤ 25 in / 63.5 cm on every side and ≤ 50 lb / 22.7 kg unless the user says the product is oversize |
 | 5 | Prep / label owner | default if not given | `Product Info` labelOwner, prepOwner, prepCategory, prepTypes | state the default SELLER / SELLER / NONE in the reply; never a blocking ✗ | AMAZON or SELLER |
 | 6 | Carrier type | always | Manage Shipments `shippingSolution` | ask | AMAZON_PARTNERED_CARRIER or USE_YOUR_OWN_CARRIER |

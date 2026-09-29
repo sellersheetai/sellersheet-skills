@@ -11,7 +11,7 @@ your record.
 |---|---|
 | Store | `get_user_context().data.stores[].store_refs` — one ref, verbatim |
 | Ship-from address | the user, or a row they point you to in THEIR sheet (`read_sheet`) or file; all fields + phone |
-| MSKUs, units, box spec, prep | the user's table — ask for it as `MSKU, units, units/box, LxWxH, weight, units`; read it from their Google Sheet with `read_sheet` or from a local `.xlsx`/`.csv` they gave you. Validate each MSKU exists on the store (`search_listings_items` / `get_listing`) |
+| MSKUs, units, box spec, prep | the user's table — ask for it as `MSKU, units, units/box, LxWxH, weight, units`; read it from their Google Sheet with `read_sheet` or from a local `.xlsx`/`.csv` they gave you. Validate each MSKU exists on the store (`listings_searchListingsItems` / `listings_getListingsItem`) |
 | Carrier type, mode, dates, preferred warehouses, rates | the user |
 | Output form | the user: chat tables (default), an HTML page, a tab in their Google Sheet (`write_sheet`, id + tab name), a local `.xlsx` (write it with openpyxl) |
 

@@ -164,6 +164,153 @@ or scripts that call these tools by name.
 
 Tools that kept their name: `ads_dsp_advertisers`, `ads_sp_bulk_create`.
 
+### BREAKING — SP-API tool names
+
+Every SP-API MCP tool is renamed to match Amazon's own `<namespace>_<operationId>`
+convention — the same scheme applied to `amazon-ads` above (128 old names → 128 new
+ones, one-to-one). As with the Ads rename, there are no alias tools — an old name
+stops working. Calling a retired name through the SellerSheet MCP server returns one
+message naming its replacement for 90 days from server rollout; after that the name is
+simply unknown. The FBA compound tools that already call multiple Amazon operations
+under one name — `orchestrate_fba_packing`, `confirm_fba_placement`,
+`cancel_inbound_plan`, `get_fba_plan_status`, `sync_fba_shipment_status`,
+`create_fba_packing_list`, `submit_listings_feed` — are unaffected and keep their
+existing names. The full old → new map is below — update any saved prompts,
+automations, or scripts that call these tools by name.
+
+### Old → new tool name map (SP-API)
+
+| Old tool name | New tool name |
+|---|---|
+| `cancel_data_kiosk_query` | `dataKiosk_cancelQuery` |
+| `cancel_feed` | `feeds_cancelFeed` |
+| `cancel_fulfillment_order` | `fbaOutbound_cancelFulfillmentOrder` |
+| `cancel_self_ship_appointment` | `fbaInbound_cancelSelfShipAppointment` |
+| `check_listing_restrictions` | `listings_getListingsRestrictions` |
+| `confirm_delivery_window_options` | `fbaInbound_confirmDeliveryWindowOptions` |
+| `confirm_packing_option` | `fbaInbound_confirmPackingOption` |
+| `confirm_shipment_content_update_preview` | `fbaInbound_confirmShipmentContentUpdatePreview` |
+| `confirm_transportation_options` | `fbaInbound_confirmTransportationOptions` |
+| `create_data_kiosk_query` | `dataKiosk_createQuery` |
+| `create_fulfillment_order` | `fbaOutbound_createFulfillmentOrder` |
+| `create_fulfillment_return` | `fbaOutbound_createFulfillmentReturn` |
+| `create_inbound_plan` | `fbaInbound_createInboundPlan` |
+| `create_marketplace_item_labels` | `fbaInbound_createMarketplaceItemLabels` |
+| `create_solicitation` | `solicitations_createProductReviewAndSellerFeedbackSolicitation` |
+| `delete_listing` | `listings_deleteListingsItem` |
+| `delivery_offers` | `fbaOutbound_deliveryOffers` |
+| `estimate_fees_batch` | `productFees_getMyFeesEstimates` |
+| `estimate_fees_for_asin` | `productFees_getMyFeesEstimateForASIN` |
+| `estimate_fees_for_sku` | `productFees_getMyFeesEstimateForSKU` |
+| `generate_delivery_window_options` | `fbaInbound_generateDeliveryWindowOptions` |
+| `generate_packing_options` | `fbaInbound_generatePackingOptions` |
+| `generate_placement_options` | `fbaInbound_generatePlacementOptions` |
+| `generate_self_ship_appointment_slots` | `fbaInbound_generateSelfShipAppointmentSlots` |
+| `generate_shipment_content_update_previews` | `fbaInbound_generateShipmentContentUpdatePreviews` |
+| `generate_transportation_options` | `fbaInbound_generateTransportationOptions` |
+| `get_browse_node_return_topics` | `customerFeedback_getBrowseNodeReturnTopics` |
+| `get_browse_node_return_trends` | `customerFeedback_getBrowseNodeReturnTrends` |
+| `get_browse_node_review_topics` | `customerFeedback_getBrowseNodeReviewTopics` |
+| `get_browse_node_review_trends` | `customerFeedback_getBrowseNodeReviewTrends` |
+| `get_catalog_item` | `catalogItems_getCatalogItem` |
+| `get_competitive_pricing` | `productPricing_getCompetitivePricing` |
+| `get_competitive_summary` | `productPricing_getCompetitiveSummary` |
+| `get_content_document` | `aplusContent_getContentDocument` |
+| `get_data_kiosk_document` | `dataKiosk_getDocument` |
+| `get_data_kiosk_queries` | `dataKiosk_getQueries` |
+| `get_delivery_challan_document` | `fbaInbound_getDeliveryChallanDocument` |
+| `get_feature_inventory` | `fbaOutbound_getFeatureInventory` |
+| `get_feature_sku` | `fbaOutbound_getFeatureSKU` |
+| `get_featured_offer_expected_price` | `productPricing_getFeaturedOfferExpectedPriceBatch` |
+| `get_features` | `fbaOutbound_getFeatures` |
+| `get_feeds` | `feeds_getFeeds` |
+| `get_financial_events_for_order` | `finances_listFinancialEventsByOrderId` |
+| `get_fulfillment_order` | `fbaOutbound_getFulfillmentOrder` |
+| `get_fulfillment_preview` | `fbaOutbound_getFulfillmentPreview` |
+| `get_inbound_operation_status` | `fbaInbound_getInboundOperationStatus` |
+| `get_inbound_plan` | `fbaInbound_getInboundPlan` |
+| `get_inventory_summaries` | `fbaInventory_getInventorySummaries` |
+| `get_item_browse_node` | `customerFeedback_getItemBrowseNode` |
+| `get_item_eligibility_preview` | `fbaInboundEligibility_getItemEligibilityPreview` |
+| `get_item_offers` | `productPricing_getItemOffers` |
+| `get_item_offers_batch` | `productPricing_getItemOffersBatch` |
+| `get_item_review_topics` | `customerFeedback_getItemReviewTopics` |
+| `get_item_review_trends` | `customerFeedback_getItemReviewTrends` |
+| `get_listing` | `listings_getListingsItem` |
+| `get_listing_offers` | `productPricing_getListingOffers` |
+| `get_listing_offers_batch` | `productPricing_getListingOffersBatch` |
+| `get_order` | `orders_getOrder` |
+| `get_order_metrics` | `sales_getOrderMetrics` |
+| `get_package_tracking_details` | `fbaOutbound_getPackageTrackingDetails` |
+| `get_pricing` | `productPricing_getPricing` |
+| `get_product_type` | `productTypeDefinitions_getDefinitionsProductType` |
+| `get_self_ship_appointment_slots` | `fbaInbound_getSelfShipAppointmentSlots` |
+| `get_selling_partner_metrics` | `replenishment_getSellingPartnerMetrics` |
+| `get_shipment` | `fbaInbound_getShipment` |
+| `get_shipment_content_update_preview` | `fbaInbound_getShipmentContentUpdatePreview` |
+| `get_solicitation_actions` | `solicitations_getSolicitationActionsForOrder` |
+| `list_all_fulfillment_orders` | `fbaOutbound_listAllFulfillmentOrders` |
+| `list_catalog_categories` | `catalogItems_listCatalogCategories` |
+| `list_content_document_asin_relations` | `aplusContent_listContentDocumentAsinRelations` |
+| `list_delivery_window_options` | `fbaInbound_listDeliveryWindowOptions` |
+| `list_financial_event_groups` | `finances_listFinancialEventGroups` |
+| `list_financial_events` | `finances_listFinancialEvents` |
+| `list_financial_events_by_group` | `finances_listFinancialEventsByGroupId` |
+| `list_financial_transactions` | `finances_listTransactions` |
+| `list_inbound_plan_boxes` | `fbaInbound_listInboundPlanBoxes` |
+| `list_inbound_plan_items` | `fbaInbound_listInboundPlanItems` |
+| `list_inbound_plan_pallets` | `fbaInbound_listInboundPlanPallets` |
+| `list_inbound_plans` | `fbaInbound_listInboundPlans` |
+| `list_item_compliance_details` | `fbaInbound_listItemComplianceDetails` |
+| `list_offer_metrics` | `replenishment_listOfferMetrics` |
+| `list_offers` | `replenishment_listOffers` |
+| `list_packing_group_boxes` | `fbaInbound_listPackingGroupBoxes` |
+| `list_packing_group_items` | `fbaInbound_listPackingGroupItems` |
+| `list_packing_options` | `fbaInbound_listPackingOptions` |
+| `list_placement_options` | `fbaInbound_listPlacementOptions` |
+| `list_prep_details` | `fbaInbound_listPrepDetails` |
+| `list_return_reason_codes` | `fbaOutbound_listReturnReasonCodes` |
+| `list_shipment_boxes` | `fbaInbound_listShipmentBoxes` |
+| `list_shipment_content_update_previews` | `fbaInbound_listShipmentContentUpdatePreviews` |
+| `list_shipment_items` | `fbaInbound_listShipmentItems` |
+| `list_shipment_pallets` | `fbaInbound_listShipmentPallets` |
+| `list_transportation_options` | `fbaInbound_listTransportationOptions` |
+| `patch_listing` | `listings_patchListingsItem` |
+| `post_content_document_approval_submission` | `aplusContent_postContentDocumentApprovalSubmission` |
+| `post_content_document_asin_relations` | `aplusContent_postContentDocumentAsinRelations` |
+| `post_content_document_suspend_submission` | `aplusContent_postContentDocumentSuspendSubmission` |
+| `put_listing` | `listings_putListingsItem` |
+| `schedule_self_ship_appointment` | `fbaInbound_scheduleSelfShipAppointment` |
+| `search_catalog_items` | `catalogItems_searchCatalogItems` |
+| `search_content_documents` | `aplusContent_searchContentDocuments` |
+| `search_content_publish_records` | `aplusContent_searchContentPublishRecords` |
+| `search_listings_items` | `listings_searchListingsItems` |
+| `search_orders` | `orders_searchOrders` |
+| `search_product_types` | `productTypeDefinitions_searchDefinitionsProductTypes` |
+| `set_packing_information` | `fbaInbound_setPackingInformation` |
+| `set_prep_details` | `fbaInbound_setPrepDetails` |
+| `sp_api_cancel_report` | `reports_cancelReport` |
+| `sp_api_cancel_report_schedule` | `reports_cancelReportSchedule` |
+| `sp_api_create_report` | `reports_createReport` |
+| `sp_api_create_report_schedule` | `reports_createReportSchedule` |
+| `sp_api_get_report_schedule` | `reports_getReportSchedule` |
+| `sp_api_list_report_schedules` | `reports_getReportSchedules` |
+| `sp_api_search_reports` | `reports_getReports` |
+| `update_content_document` | `aplusContent_updateContentDocument` |
+| `update_fulfillment_order` | `fbaOutbound_updateFulfillmentOrder` |
+| `update_inbound_plan_name` | `fbaInbound_updateInboundPlanName` |
+| `update_item_compliance_details` | `fbaInbound_updateItemComplianceDetails` |
+| `update_shipment_name` | `fbaInbound_updateShipmentName` |
+| `update_shipment_source_address` | `fbaInbound_updateShipmentSourceAddress` |
+| `validate_content_document_asin_relations` | `aplusContent_validateContentDocumentAsinRelations` |
+| `vendor_retail_get_purchase_order` | `vendorOrders_getPurchaseOrder` |
+| `vendor_retail_get_purchase_orders` | `vendorOrders_getPurchaseOrders` |
+| `vendor_retail_get_purchase_orders_status` | `vendorOrders_getPurchaseOrdersStatus` |
+| `vendor_retail_get_shipment_details` | `vendorShipments_GetShipmentDetails` |
+| `vendor_retail_get_shipment_labels` | `vendorShipments_GetShipmentLabels` |
+| `vendor_retail_get_transaction` | `vendorTransactionStatus_getTransaction` |
+| `vendor_retail_submit_shipment_confirmation` | `vendorShipments_SubmitShipmentConfirmations` |
+
 ## [0.12.4] — 2026-09-28
 
 ### Changed — `amazon-ads`

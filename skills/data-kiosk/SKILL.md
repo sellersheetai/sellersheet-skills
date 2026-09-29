@@ -25,7 +25,7 @@ against the live Data Kiosk endpoints.
 
 Run the standard preflight in [`sellersheet-shared`](../sellersheet-shared/SKILL.md).
 **Extra auth for this skill:** Vendor Analytics needs a **vendor** account;
-`create_data_kiosk_query` / `cancel_data_kiosk_query` require **SP write** access.
+`dataKiosk_createQuery` / `dataKiosk_cancelQuery` require **SP write** access.
 
 ## When to use
 
@@ -57,10 +57,10 @@ When unsure whether it's synced, check `report-data`'s `_meta.json` / `list_repo
 0. Check report-data FIRST — if the dataset is synced & fresh, query_report_data and STOP (don't create)
 1. Pick area + version from _meta.json   →  get the analytics_<area>_<version> root + dataset
 2. read reference/<schema>.graphql        →  confirm dataset args, enums, field names, retention
-3. create_data_kiosk_query(query)         →  returns data.result.queryId
+3. dataKiosk_createQuery(query)         →  returns data.result.queryId
 4. get_data_kiosk_query(queryId)          →  poll until processingStatus == DONE
 5. read result.dataDocumentId             →  (field is dataDocumentId, NOT dataDocument; errorDocumentId on FATAL)
-6. get_data_kiosk_document(documentId)    →  fetch the NDJSON/JSON result rows
+6. dataKiosk_getDocument(documentId)    →  fetch the NDJSON/JSON result rows
 ```
 
 `processingStatus`: `IN_QUEUE | IN_PROGRESS | DONE | CANCELLED | FATAL`.

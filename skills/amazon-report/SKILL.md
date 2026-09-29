@@ -63,8 +63,8 @@ or you need an ad-hoc window the sync doesn't cover.
 0. Check report-data FIRST — if the report is synced & fresh, query_report_data and STOP (don't re-request)
 1. Look up the report in _meta.json  →  get reportType + reportOptions + schema file
 2. read reference/<schema>.json      →  confirm reportOptions enum values + document field tree
-3. sp_api_search_reports             →  reuse an existing DONE report if recent enough (saves quota)
-4. sp_api_create_report(reportType, reportOptions, dataStartTime, dataEndTime, marketplaceIds)
+3. reports_getReports             →  reuse an existing DONE report if recent enough (saves quota)
+4. reports_createReport(reportType, reportOptions, dataStartTime, dataEndTime, marketplaceIds)
 5. sp_api_get_report(reportId)       →  poll until processingStatus == DONE
 6. download the document, parse fields by the names in the schema's top-level data array
 ```
@@ -113,7 +113,7 @@ account type, document data key, schema path). Highlights:
 | account health ¹ | — | accountStatuses | accountHealthReport-2020-11-18.json |
 
 ¹ reportType inferred (not in the bundled schema example) — confirm via
-`sp_api_search_reports` / Amazon docs. The document field schema is authoritative regardless.
+`reports_getReports` / Amazon docs. The document field schema is authoritative regardless.
 
 ## Gotchas
 
@@ -143,4 +143,4 @@ account type, document data key, schema path). Highlights:
   `purchasedWithRank`, not `purchasedWithRate`.
 - Treating Sales & Traffic as one shape — it has BOTH `salesAndTrafficByDate` and
   `salesAndTrafficByAsin`; `asinGranularity`/`dateGranularity` pick which arrays populate.
-- Re-creating a report you already have — call `sp_api_search_reports` first.
+- Re-creating a report you already have — call `reports_getReports` first.

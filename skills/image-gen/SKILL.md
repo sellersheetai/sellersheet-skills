@@ -68,12 +68,12 @@ Setup facts before any spend:
 - The operator chooses the **model route** and reviews its prices on the Dashboard
   (sellersheetai.com/dashboard), never from a tool. If jobs keep failing on the current
   route, tell the operator to switch the route there and retry.
-- Pull the variation family early (`search_listings_items(variation_parent_sku=…)`, union
+- Pull the variation family early (`listings_searchListingsItems(variation_parent_sku=…)`, union
   across marketplaces) so you know every child SKU and which children lack a real color photo.
 
 ## Phase 1 — Learn the style (GATE: show direction before generating)
 Competitor discovery (only if no operator-supplied ref): **prefer a US store** — find **≥3 mature
-US competitors** in-category via `search_catalog_items(keywords + salesRanks + images)`; take their
+US competitors** in-category via `catalogItems_searchCatalogItems(keywords + salesRanks + images)`; take their
 high-res mains. Then:
 - Extract style from each competitor image: read the image (your own vision) + `reverse_prompt`
   (a small text charge) to derive a structured JSON prompt.

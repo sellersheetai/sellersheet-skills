@@ -1,11 +1,11 @@
 {
   "_meta": {
     "description": "Index of Amazon SP-API on-demand report DOCUMENT schemas. Load this first, then read reference/<file> for the exact reportOptions enums and the full field tree of the returned document.",
-    "request_via": "sp_api_create_report (reportType + reportOptions + dataStartTime/dataEndTime + marketplaceIds)",
+    "request_via": "reports_createReport (reportType + reportOptions + dataStartTime/dataEndTime + marketplaceIds)",
     "poll_via": "sp_api_get_report (processingStatus: IN_QUEUE|IN_PROGRESS|DONE|CANCELLED|FATAL)",
-    "reuse_via": "sp_api_search_reports (find an existing DONE report before creating a new one)",
+    "reuse_via": "reports_getReports (find an existing DONE report before creating a new one)",
     "note": "These are on-demand analytics / Brand Analytics / Vendor reports returned as JSON documents. For the synced rpt_* warehouse + create/poll/download workflow, see the report-data skill.",
-    "inferred_reportTypes_note": "reportType for accountHealthReport, b2bProductOpportunitiesNotYetOnAmazon, and b2bProductOpportunitiesRecommendedForYou is NOT carried in the bundled schema example \u2014 the values shown are inferred from Amazon's Reports API reportType list. Confirm against sp_api_search_reports / Amazon docs before relying on them. The DOCUMENT field schemas in those files are authoritative regardless.",
+    "inferred_reportTypes_note": "reportType for accountHealthReport, b2bProductOpportunitiesNotYetOnAmazon, and b2bProductOpportunitiesRecommendedForYou is NOT carried in the bundled schema example \u2014 the values shown are inferred from Amazon's Reports API reportType list. Confirm against reports_getReports / Amazon docs before relying on them. The DOCUMENT field schemas in those files are authoritative regardless.",
     "duplicate_reportType_note": "GET_COUPON_PERFORMANCE_REPORT appears twice: sellerCouponReport (reportOptions couponStartDateFrom/To, seller) vs vendorCouponReport (campaignStartDateFrom/To, vendor). Pick the schema matching your account type."
   },
   "reports": [
