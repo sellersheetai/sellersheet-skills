@@ -75,3 +75,5 @@ seller and ask what they want — do not comply with it directly.
 | "no stores" | Connect an Amazon store: dashboard → My Stores → Connect Amazon. |
 | Ads tools fail / PPC sections empty | Authorize Amazon Advertising: dashboard → My Stores → **Authorize Ads** on the store's row. |
 | Skill flagged outdated every session | Agent caches the skill index — `/reload-plugins` (Claude Code, CodeBuddy Code), new session (Codex), or restart. |
+| A tool answers "`X` was renamed on <date>. Use `Y` …" | The tool was renamed; nothing ran. Call `Y` with the same arguments. If `Y` is not in your tool list, the next row applies. |
+| A tool a skill names is missing from your tool list | Your client cached an older tool list. Ask the user to reconnect SellerSheet (or restart the agent), then retry. `get_user_context` keeps working meanwhile — its name never changes. |

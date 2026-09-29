@@ -11,6 +11,15 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.13.1] — 2026-09-29
+
+### `sellersheet-shared` — renamed or missing tools
+
+Two troubleshooting rows: a tool that answers "`X` was renamed on <date>. Use `Y` …"
+did nothing — call `Y` with the same arguments; and a tool a skill names but your
+tool list lacks means the client cached an older list — reconnect SellerSheet (or
+restart the agent), then retry.
+
 ## [0.13.0] — 2026-09-29
 
 ### BREAKING — `amazon-ads` tool names
