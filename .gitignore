@@ -29,3 +29,7 @@
 
 # Privacy-scan inputs for .maintainers/lint.sh — private identifiers, never committed
 .maintainers/private-patterns.local
+
+# claude plugin eval run output — written by every run; evals/mocks/**/.replay/ (adopted
+# agent-mock recordings) is NOT ignored and should be committed for repeatable CI runs
+evals/results/

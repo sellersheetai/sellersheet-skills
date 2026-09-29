@@ -1,0 +1,27 @@
+{
+  "placementOptions": [
+    {
+      "placementOptionId": "po-tie1",
+      "status": "OFFERED",
+      "expiration": "2026-10-02T00:00:00Z",
+      "shipmentCount": 1,
+      "shipments": [
+        {"shipmentId": "sh-1", "warehouseId": "RYY2", "totals": {"weightKg": 12.0, "volumeCbm": 0.08}}
+      ],
+      "placementFee": {"currencyCode": "USD", "value": 78.0},
+      "aiRank": 1
+    },
+    {
+      "placementOptionId": "po-tie2",
+      "status": "OFFERED",
+      "expiration": "2026-10-02T00:00:00Z",
+      "shipmentCount": 1,
+      "shipments": [
+        {"shipmentId": "sh-1b", "warehouseId": "ONT8", "totals": {"weightKg": 12.0, "volumeCbm": 0.08}}
+      ],
+      "placementFee": {"currencyCode": "USD", "value": 78.0},
+      "aiRank": 1
+    }
+  ],
+  "nextToken": ""
+}

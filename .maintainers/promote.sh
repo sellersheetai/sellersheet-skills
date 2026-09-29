@@ -9,6 +9,9 @@
 #   ./.maintainers/promote.sh <new-version>            # e.g. 0.4.0
 #   ./.maintainers/promote.sh <new-version> --dry-run
 #
+#   SS_SKIP_PLUGIN_EVAL=1 ./.maintainers/promote.sh <new-version>   # skip the eval gate
+#   SS_PLUGIN_EVAL_MAX_COST_USD=5 ./.maintainers/promote.sh <new-version>   # lower the cap
+#
 # What it does:
 #   1. Validates <new-version> is semver and greater than the current version
 #   2. Bumps .version in plugin.json
@@ -17,12 +20,16 @@
 #      WorkBuddy connector-meta.json (via sync_workbuddy.py)
 #   4. Verifies CHANGELOG.md has a '## [<new-version>]' entry (you write the notes)
 #   5. Runs lint.sh
+#   5b. Runs `claude plugin eval` on evals/ (--threshold 0.8) — refuses the release
+#       if any case scores below it. See .maintainers/README.md for cost + how to
+#       run one case; skip with SS_SKIP_PLUGIN_EVAL=1, cap spend with
+#       SS_PLUGIN_EVAL_MAX_COST_USD.
 #   6. Commits "Release v<new-version>" (push manually; CI auto-tags from plugin.json)
 #
 # To add a NEW skill to the bundle: drop the folder into skills/<name>/ with a
 # SKILL.md, add it to versions.json .skills[], then run this script to release.
 #
-# Prerequisites: jq, git
+# Prerequisites: jq, git, and (for the eval gate) the claude CLI + model credentials
 
 set -euo pipefail
 
@@ -98,6 +105,24 @@ if [[ $DRY_RUN -eq 1 ]]; then
   echo "  DRY: ./.maintainers/lint.sh"
 else
   ./.maintainers/lint.sh
+fi
+
+# 7b. plugin evals (evals/ — amazon-ads + fba-inbound routing/safety/autopilot suites).
+# SS_SKIP_PLUGIN_EVAL=1 skips this step (offline machine, no model credentials, or a
+# maintainer who already ran it separately); SS_PLUGIN_EVAL_MAX_COST_USD caps the
+# list-price spend (default 20 — see .maintainers/README.md for the per-run cost and
+# how to run a single case). Refuses the release on a non-zero exit.
+EVAL_MAX_COST="${SS_PLUGIN_EVAL_MAX_COST_USD:-20}"
+if [[ "${SS_SKIP_PLUGIN_EVAL:-0}" == "1" ]]; then
+  log "Skipping plugin evals (SS_SKIP_PLUGIN_EVAL=1)."
+elif [[ $DRY_RUN -eq 1 ]]; then
+  echo "  DRY: claude plugin eval . --trust-plugin --json evals/results/promote-gate.json --threshold 0.8 --no-publish --max-cost-usd $EVAL_MAX_COST"
+else
+  log "Running plugin evals (max-cost-usd \$$EVAL_MAX_COST — set SS_PLUGIN_EVAL_MAX_COST_USD to change, SS_SKIP_PLUGIN_EVAL=1 to skip)..."
+  command -v claude >/dev/null || err "claude CLI not found — required for the plugin-eval gate (or set SS_SKIP_PLUGIN_EVAL=1)"
+  claude plugin eval . --trust-plugin --json evals/results/promote-gate.json \
+    --threshold 0.8 --no-publish --max-cost-usd "$EVAL_MAX_COST" \
+    || err "plugin evals scored below threshold (or failed to run) — see evals/results/promote-gate.json. Fix the regression, or SS_SKIP_PLUGIN_EVAL=1 if you already verified this separately."
 fi
 
 if [[ $DRY_RUN -eq 1 ]]; then
