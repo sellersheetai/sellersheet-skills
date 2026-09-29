@@ -1,0 +1,17 @@
+SellerSheet Skills
+Copyright 2026 SellerSheet AI
+
+This product is licensed under the Apache License, Version 2.0
+(http://www.apache.org/licenses/LICENSE-2.0). See LICENSE for the full text.
+
+Third-party attribution
+------------------------
+
+fba-inbound skill (skills/fba-inbound/)
+
+  A small number of Amazon FBA inbound-shipment domain facts, restated here
+  in this skill's own words (the carrier-mixing rule for mixed partnered- and
+  own-carrier shipments, and the shipment-cancellation void windows), were
+  cross-checked against Amazon's `amazon-selling-partner` Claude Code plugin,
+  which is licensed under the Apache License, Version 2.0. No code or text
+  from that plugin is reproduced in this repository.

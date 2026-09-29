@@ -1,17 +1,25 @@
+---
+last_updated: 2026-08-07
+origin: live-verified against the Amazon Ads API (SP/SB/SD budget rules + budget usage endpoints)
+---
+
 # Budget Rules & Budget Tools — deep reference
 
-Read this BEFORE composing any `ads_budget_rules` payload or proposing a budget
+Read this BEFORE composing any budget-rule payload or proposing a budget
 change. It covers what the tool docstrings cannot: cross-product asymmetries,
 the rule status lifecycle, live-verified behaviors that differ from Amazon's
 published spec, decision guardrails, and the standing sheet artifacts that make
 budget runs repeatable. Examples use demo refs (`MYSTORE-AE`); substitute the
 operator's real store ref.
 
-**Which tool does what:** `ads_budget_rules` reads (`operation` = list · get ·
-list_campaigns · list_for_campaign). Every change is its own tool:
-`ads_budget_rules_create` · `ads_budget_rules_update` ·
-`ads_budget_rules_associate` (`bulk=true` for the SP bulk variant) ·
-`ads_budget_rules_disassociate` (same `bulk` flag).
+**Which tool does what:** four read tools —
+`ads_get_budget_rules_for_advertiser` (list), `ads_get_budget_rule_by_rule_id_for_campaigns`
+(get), `ads_get_campaigns_associated_with_budget_rule` (list_campaigns),
+`ads_list_associated_budget_rules_for_campaigns` (list_for_campaign). Every
+change is its own tool:
+`ads_create_budget_rules_for_campaigns` · `ads_update_budget_rules_for_campaigns` ·
+`ads_create_associated_budget_rules_for_campaigns` (`bulk=true` for the SP bulk variant) ·
+`ads_disassociate_associated_budget_rule_for_campaigns` (same `bulk` flag).
 
 ---
 
@@ -19,9 +27,9 @@ list_campaigns · list_for_campaign). Every change is its own tool:
 
 | Lever | Tool | Semantics | Use when |
 |---|---|---|---|
-| **Base daily budget** | `ads_campaigns_update` (v1) — budget nests `budgets[0].budgetValue.monetaryBudgetValue.monetaryBudget.value` | Permanent until changed again | The constraint is permanent (a capped winner) |
-| **Budget rule** | `ads_budget_rules` | Temporary **% increase only**, auto-reverts outside its window/condition | The raise is temporary or conditional (event, peak days, metric-gated) |
-| **Portfolio cap** | `ads_sp_portfolios` | A **ceiling** over member campaigns (often monthly/date-range) | Enforcing a spend envelope — it never raises anything |
+| **Base daily budget** | `ads_update_campaign` (v1) — budget nests `budgets[0].budgetValue.monetaryBudgetValue.monetaryBudget.value` | Permanent until changed again | The constraint is permanent (a capped winner) |
+| **Budget rule** | `ads_create_budget_rules_for_campaigns` (+ `ads_create_associated_budget_rules_for_campaigns`) | Temporary **% increase only**, auto-reverts outside its window/condition | The raise is temporary or conditional (event, peak days, metric-gated) |
+| **Portfolio cap** | `ads_list_portfolios` | A **ceiling** over member campaigns (often monthly/date-range) | Enforcing a spend envelope — it never raises anything |
 
 Decision boundary (memorize):
 
@@ -44,7 +52,7 @@ data with adequate volume — see §9 floors):
 2. **Efficient?** trailing-7d ACOS ≤ 0.85 × target on adequate volume. No → negatives/bids. Stop.
 3. **In stock?** ≥21 days of cover for the advertised SKUs (check inventory tools). No → don't fund a stockout. Stop.
 4. **Portfolio headroom?** The campaign's portfolio is not on track to exhaust its cap. A campaign raise under a bound portfolio is a no-op.
-5. **Rule stack sane?** `list_for_campaign` first — see §7.
+5. **Rule stack sane?** `ads_list_associated_budget_rules_for_campaigns` first — see §7.
 
 A campaign that is hot AND unprofitable is a **bid problem** (Recipe C), not a
 budget problem. `ads_*_budget_recommendations` models top-of-funnel missed
@@ -55,7 +63,7 @@ sizing sanity-check, never as the decision.
 
 ## 2. Payload shapes — create vs update are NOT symmetric
 
-**Create** (`ads_budget_rules_create`, body = list of 1–25 **flat** rule details):
+**Create** (`ads_create_budget_rules_for_campaigns`, body = list of 1–25 **flat** rule details):
 
 ```json
 [{
@@ -68,12 +76,12 @@ sizing sanity-check, never as the decision.
 ```
 
 Event-based SCHEDULE: `duration: {"eventTypeRuleDuration": {"eventId": "<from
-ads_budget_rules_recommendation>"}}` — the rule follows Amazon's event dates.
+ads_get_budget_rules_recommendation>"}}` — the rule follows Amazon's event dates.
 
 PERFORMANCE adds: `"performanceMeasureCondition": {"metricName": "ACOS",
 "comparisonOperator": "LESS_THAN_OR_EQUAL_TO", "threshold": 20}`.
 
-**Update** (`ads_budget_rules_update`, body = list of **wrappers**, not flat):
+**Update** (`ads_update_budget_rules_for_campaigns`, body = list of **wrappers**, not flat):
 
 ```json
 [{
@@ -122,7 +130,7 @@ Agent interpretation:
 | Status | Meaning | Action |
 |---|---|---|
 | `PENDING_START` | Window hasn't begun **in marketplace-local time** | **Healthy.** Never re-create — that's how stacks happen |
-| `ACTIVE` | Raising budget now | Verify with `ads_budget_usage` |
+| `ACTIVE` | Raising budget now | Verify with `ads_campaigns_budget_usage` |
 | `BUDGET_THRESHOLD_NOT_MET` | Perf rule: campaign below Amazon's minimum budget | Healthy mechanism, inert rule — tell the operator |
 | `ON_HOLD` | Condition not met / superseded | Investigate if unexpected |
 | `EXPIRED` | Past end date | Teardown: disassociate + pause |
@@ -149,11 +157,11 @@ reverted the effective budget on the next usage read.
   bulk surface isn't granted — verified across three separate ads accounts and
   marketplaces. Treat as unavailable; per-campaign `associate` / `disassociate`
   is the working path. Do not report the 401 as an account problem.
-- **SB `ads_budget_rules_recommendation` is marketplace-gated** ("Unsupported
+- **SB `ads_get_budget_rules_recommendation` is marketplace-gated** ("Unsupported
   Marketplace for Budget Event Rules") — confirmed rejected on AE and AU,
   confirmed working on US. The gate fires before campaign validation. An EMPTY
   event list on a supported marketplace is normal (no upcoming events).
-- **`ads_sp_initial_budget_recommendation` targetingExpressions are objects and
+- **`ads_get_budget_recommendation` targetingExpressions are objects and
   each requires a `bid`** even though the spec omits it; `targetingType` is
   lowercase `auto`/`manual`.
 - **`usageUpdatedTimestamp` semantics (measured on live campaigns):** the stamp
@@ -165,19 +173,19 @@ reverted the effective budget on the next usage read.
   associate/disassociate) trigger a prompt usage re-evaluation — after an
   approved change, read usage once more to capture the fresh post-change figure
   for the sheet.
-- **`ads_budget_usage.budget` is the budget in force under the current policy**
-  — while a rule is satisfied it exceeds the campaign's base `dailyBudget`.
-  Never derive a base-budget change from it while any rule on the campaign is
-  ACTIVE; read the base from `ads_campaigns` (with the
+- **`ads_campaigns_budget_usage.budget` is the budget in force under the
+  current policy** — while a rule is satisfied it exceeds the campaign's base
+  `dailyBudget`. Never derive a base-budget change from it while any rule on
+  the campaign is ACTIVE; read the base from `ads_query_campaign` (with the
   `adProductFilter` for that product).
 - **Rule names:** ~40-char names with underscores and hyphens (the `BR_`
   convention) are accepted. Amazon does not meaningfully surface duplicates —
   the sheet registry, keyed by `ruleId`, is your real identity system.
-- **Never infer the rule set from a campaign read.** `list_for_campaign` is the
-  authoritative "which rules apply to this campaign" view — any single
+- **Never infer the rule set from a campaign read.** `ads_list_associated_budget_rules_for_campaigns`
+  is the authoritative "which rules apply to this campaign" view — any single
   applicable-rule field on a campaign response can be incomplete when rules
-  stack. Split the two reads: base budget from `ads_campaigns`,
-  in-force (rule-raised) budget from `ads_budget_usage.budget`; the difference
+  stack. Split the two reads: base budget from `ads_query_campaign`,
+  in-force (rule-raised) budget from `ads_campaigns_budget_usage.budget`; the difference
   is the rule effect.
 
 ## 6. Caps, limits, audit paths
@@ -188,13 +196,13 @@ reverted the effective budget on the next usage read.
 | Rule ids per associate call | 25 |
 | Rules per campaign (Amazon max) | 250 — a ceiling, not a safety margin |
 | `pageSize` on rule list ops | required, 1–30 |
-| Ids per `ads_budget_usage` call | 100 — chunk larger sets |
+| Ids per `ads_campaigns_budget_usage` call | 100 — chunk larger sets |
 | Ids per SB budget-recommendations call | 100 |
 | Intraday windows per rule | 1; **US/CA/UK/IN/JP marketplaces only** |
 
 **No delete API.** Retirement = `disassociate` from every campaign + update
 `ruleState=PAUSED`. Rules are permanent objects; hygiene (below) keeps
-`list_for_campaign` legible.
+`ads_list_associated_budget_rules_for_campaigns` legible.
 
 **Historical audit:** SP only — v3 `spCampaigns` report (groupBy `campaign`)
 columns `campaignRuleBasedBudgetAmount`, `campaignApplicableBudgetRuleId`,
@@ -210,11 +218,11 @@ Every satisfied rule applies **additively**: effective = `base × (1 + Σ pct/10
 **Measured live (2026-08-07):** two rules (+5% and +10%) on a 4.00-budget
 campaign produced an effective budget of exactly **4.60** (= 4.00 × 1.15,
 additive), not 4.62 (multiplicative), during the active window — and
-`ads_budget_usage.budget` reported the raised figure. A +40% performance rule
+`ads_campaigns_budget_usage.budget` reported the raised figure. A +40% performance rule
 during a +100% event rule = +140%, on the year's most expensive clicks.
 Guardrails:
 
-1. **`list_for_campaign` before every create/associate** — the authoritative view.
+1. **`ads_list_associated_budget_rules_for_campaigns` before every create/associate** — the authoritative view.
 2. Refuse to create a rule overlapping an existing one of the same type +
    trigger whose window intersects.
 3. Sum every rule that could be satisfied simultaneously; keep worst-case
@@ -324,6 +332,6 @@ results).
   zero associations, rules on archived campaigns, EXPIRED still associated) and
   propose cleanup.
 - T+1 after every event rule: confirm `EXPIRED`, **measure** that the budget
-  actually reverted (compare `ads_budget_usage.budget` to the registry's base),
+  actually reverted (compare `ads_campaigns_budget_usage.budget` to the registry's base),
   disassociate + pause, and — the classic omission — **revert any manual event
   bid raises**: budget rules auto-revert, bids do not.

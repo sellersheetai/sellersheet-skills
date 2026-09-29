@@ -18,7 +18,7 @@ field name = required within its object. Enums >15 values: ENUMS.md.
 - `adAssociations[].adId` **REQUIRED**: string
 - `adAssociations[].endDateTime`: string
 - `adAssociations[].startDateTime`: string
-- `adAssociations[].state` **REQUIRED**: enum: ENABLED | PAUSED
+- `adAssociations[].state` **REQUIRED**: enum: DRAFT | ENABLED | PAUSED | PROPOSED
 - `adAssociations[].weight`: integer
 
 ## ALL - UPDATE
@@ -27,7 +27,7 @@ field name = required within its object. Enums >15 values: ENUMS.md.
 - `adAssociations[].adAssociationId` **REQUIRED**: string
 - `adAssociations[].endDateTime`: string
 - `adAssociations[].startDateTime`: string
-- `adAssociations[].state`: enum: ENABLED | PAUSED
+- `adAssociations[].state`: enum: DRAFT | ENABLED | PAUSED | PROPOSED
 - `adAssociations[].weight`: integer
 
 ## ALL - DELETE
@@ -49,7 +49,7 @@ field name = required within its object. Enums >15 values: ENUMS.md.
 - `adAssociations[].adId` **REQUIRED**: string
 - `adAssociations[].endDateTime`: string
 - `adAssociations[].startDateTime`: string
-- `adAssociations[].state` **REQUIRED**: enum: ENABLED | PAUSED
+- `adAssociations[].state` **REQUIRED**: enum: DRAFT | ENABLED | PAUSED | PROPOSED
 - `adAssociations[].weight`: integer
 
 ## AMAZON_DSP - UPDATE
@@ -58,7 +58,7 @@ field name = required within its object. Enums >15 values: ENUMS.md.
 - `adAssociations[].adAssociationId` **REQUIRED**: string
 - `adAssociations[].endDateTime`: string
 - `adAssociations[].startDateTime`: string
-- `adAssociations[].state`: enum: ENABLED | PAUSED
+- `adAssociations[].state`: enum: DRAFT | ENABLED | PAUSED | PROPOSED
 - `adAssociations[].weight`: integer
 
 ## AMAZON_DSP - DELETE

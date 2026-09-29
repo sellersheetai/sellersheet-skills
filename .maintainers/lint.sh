@@ -207,6 +207,24 @@ done
 [[ -d mcp ]] && err "a top-level mcp/ directory is read by CodeBuddy as plugin MCP config — keep snippets under docs/mcp-config/" || true
 python3 .maintainers/sync_workbuddy.py --check >/dev/null 2>&1 || err "WorkBuddy connector files stale — run python3 .maintainers/sync_workbuddy.py"
 
+# ---------- 7. live tool-name allowlist ----------
+# Every backticked `ads_*` / `noon_*` / `sp_api_*` name in skills/** must be a tool that
+# actually exists today (.maintainers/tool-names.txt, names only, refreshed by
+# promote.sh from the live MCP tool registry). Those three prefixes are exclusively
+# tool names in this codebase (never a table/column/JSON-field name), so this check
+# has no false positives — a hit means a rename or retirement upstream left a stale
+# name behind in the public docs.
+log "Checking tool-name references against .maintainers/tool-names.txt..."
+TOOL_NAMES_FILE=".maintainers/tool-names.txt"
+if [[ ! -f "$TOOL_NAMES_FILE" ]]; then
+  err "$TOOL_NAMES_FILE missing — see .maintainers/README.md (promote.sh regenerates it)"
+else
+  while IFS= read -r name; do
+    [[ -z "$name" ]] && continue
+    grep -qxF "$name" "$TOOL_NAMES_FILE" || err "skills/** references \`$name\`, which is not in $TOOL_NAMES_FILE — renamed or retired upstream? update the skill text (see the old->new map if this is a rename)"
+  done < <(grep -rhoE '`(ads|noon|sp_api)_[a-z0-9_]+`' skills/ 2>/dev/null | tr -d '`' | sort -u)
+fi
+
 # ---------- summary ----------
 echo ""
 if [[ $FAIL -eq 0 ]]; then

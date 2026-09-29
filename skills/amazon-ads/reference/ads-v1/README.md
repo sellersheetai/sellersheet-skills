@@ -1,11 +1,11 @@
 # Amazon Ads API v1 (unified) — FULL request-body field catalogs
 
 Complete leaf-level request-body schemas for the unified v1 MCP tools
-(`ads_campaigns`, `ads_ad_groups`, `ads_ads`, `ads_targets`,
-`ads_ad_associations`) — one file per entity, covering every ad product
+(`ads_query_campaign`, `ads_query_ad_group`, `ads_query_ad`, `ads_query_target`,
+`ads_query_ad_association` — plus each entity's `_create`/`_update`/`_delete`
+siblings) — one file per entity, covering every ad product
 (Sponsored Products / Brands / Display / Television, Amazon DSP) and every
-verb (query / create / update / delete — one tool per verb: `ads_<entity>` queries,
-`ads_<entity>_create|_update|_delete` write). `*` after a field = required within
+verb (query / create / update / delete). `*` after a field = required within
 its object. Enums with more than 15 values are listed in `ENUMS.md`.
 
 Generated from Amazon's official Ads API v1 OpenAPI specifications

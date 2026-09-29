@@ -4,8 +4,9 @@ Maintenance scripts for the public `sellersheet-skills` repo. Committed since v0
 
 | File | Purpose |
 |---|---|
-| `promote.sh` | Release a new version: bump the canonical version in `plugin.json` and fan it out to `versions.json`, every `SKILL.md`, `install.sh`, and `README.md`; verify the `CHANGELOG.md` entry; run lint; run the plugin-eval gate; commit. |
-| `lint.sh` | Local mirror of `.github/workflows/lint.yml` — JSON validity, SKILL.md frontmatter, version-consistency, marketplace ↔ repo sync, privacy + ASIN scan. Run before pushing. |
+| `promote.sh` | Release a new version: bump the canonical version in `plugin.json` and fan it out to `versions.json`, every `SKILL.md`, `install.sh`, and `README.md`; optionally refresh `tool-names.txt`; verify the `CHANGELOG.md` entry; run lint; run the plugin-eval gate; commit. |
+| `lint.sh` | Local mirror of `.github/workflows/lint.yml` — JSON validity, SKILL.md frontmatter, version-consistency, marketplace ↔ repo sync, tool-name allowlist, privacy + ASIN scan. Run before pushing. |
+| `tool-names.txt` | The live MCP tool catalog (names only, one per line) — `lint.sh` fails on any backticked `` `ads_*` ``/`` `noon_*` ``/`` `sp_api_*` `` name in `skills/**` that isn't in this list, so a rename or retirement upstream can't silently leave a stale tool name in the public docs. **`promote.sh` step 5c only touches it when you pass `SS_TOOLS_JSON=<path to a main-repo checkout's marketing-site/src/_data/mcp-tools.json, AT THE COMMIT this release's skill text actually matches>`** — there is no safe default to guess, because a sibling checkout that merely exists can be on an older commit with stale names (this bit the 0.13.0 release: a sibling checkout existed but predated the rename, and blindly refreshing from it overwrote a correct list with a stale one and failed lint for the wrong reason). Leave it unset for a routine release; regenerate by hand (sorted names from the live tool catalog, one per line) when a rename or retirement actually ships. |
 
 ## Architecture: single-plugin model
 

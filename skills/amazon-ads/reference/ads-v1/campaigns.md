@@ -13,7 +13,8 @@ field name = required within its object. Enums >15 values: ENUMS.md.
 - `nameFilter`: {include*: array<string>, queryTermMatchType*: enum: BROAD_MATCH | EXACT_MATCH}
 - `nextToken`: string
 - `portfolioIdFilter`: {include*: array<string>}
-- `stateFilter`: {include*: array<enum: ARCHIVED | ENABLED | PAUSED>}
+- `retailerScopeFilter`: {include*: array<enum: AMAZON | OTHER_RETAILERS>}
+- `stateFilter`: {include*: array<enum: ARCHIVED | DRAFT | ENABLED | PAUSED | PROPOSED>}
 
 ## ALL - CREATE
 
@@ -22,25 +23,26 @@ field name = required within its object. Enums >15 values: ENUMS.md.
 - `campaigns[].adomains`: array<string>
 - `campaigns[].autoCreationSettings`: {autoCreateTargets: boolean, autoManageCampaign: boolean}
 - `campaigns[].brandId`: string
-- `campaigns[].budgets`: array<{budgetType*: enum: MONETARY, budgetValue*: oneOf: monetaryBudgetValue{monetaryBudgetValue: {marketplaceSettings: array<{marketplace*: enum (23 values - see ENUMS.md), monetaryBudget*: object}>, monetaryBudget: {value*: number}}}, recurrenceTimePeriod*: enum: DAILY | LIFETIME | MONTHLY}>
+- `campaigns[].budgets`: array<{budgetType*: enum: MONETARY, budgetValue*: oneOf: monetaryBudgetValue{monetaryBudgetValue: {marketplaceSettings: array<{marketplace*: enum (23 values - see ENUMS.md), monetaryBudget*: object}>, monetaryBudget: {currencyCode*: enum (62 values - see ENUMS.md), ruleValue: number, value*: number}}}, recurrenceTimePeriod*: enum: DAILY | LIFETIME | MONTHLY}>
 - `campaigns[].costType`: enum: CPC | CPM | FIXED_PRICE | VCPM
-- `campaigns[].countries`: array<enum (75 values - see ENUMS.md)>
+- `campaigns[].countries`: array<enum (252 values - see ENUMS.md)>
 - `campaigns[].endDateTime`: string
 - `campaigns[].fees`: array<{feeType*: enum: AGENCY, feeValue*: number, feeValueType*: enum: PERCENTAGE_OF_BUDGET}>
-- `campaigns[].flights`: array<{budget*: {budgetType*: enum: MONETARY, budgetValue*: oneOf: monetaryBudgetValue{monetaryBudgetValue: {marketplaceSettings: array<object>, monetaryBudget: {value*: number}}}}, endDateTime*: string, flightId: string, name: string, startDateTime*: string}>
-- `campaigns[].frequencies`: array<{eventMaxCount*: integer, frequencyTargetingSetting*: enum: HOUSEHOLD | USER, timeCount*: integer, timeUnit*: enum: DAYS | HOURS | MINUTES}>
-- `campaigns[].marketplaceConfigurations`: array<{marketplace*: enum (23 values - see ENUMS.md), overrides*: {endDateTime: string, name: string, optimizations: {bidSettings: {bidAdjustments: {audienceBidAdjustments: array<object>, creativeBidAdjustments: array<object>, placementBidAdjustments: array<object>, shopperSegmentBidAdjustments: array<object>}, bidStrategy: enum: MANUAL | NEW_TO_BRAND | PRIORITIZE_KPI_TARGET | RULE_BASED | SALES_DOWN_ONLY | SALES_UP_AND_DOWN | SPEND_BUDGET_IN_FULL | USE_CAMPAIGN_STRATEGY}, budgetSettings: {budgetAllocation: enum: AUTO | MANUAL, flightBudgetRolloverStrategy: enum: CUMULATIVE_BUDGET_ROLLOVER | NO_ROLLOVER | PRIOR_BUDGET_ROLLOVER, offAmazonBudgetControlStrategy: enum: MAXIMIZE_REACH | MINIMIZE_SPEND}, goalSettings: {kpi*: enum (32 values - see ENUMS.md), kpiValue: number}, primaryInventoryTypes: array<enum: AUDIO | DISPLAY | VIDEO_OLV | VIDEO_STV>}, startDateTime: string, state: enum: ARCHIVED | ENABLED | PAUSED, tags: array<{key*: string, value*: string}>}}>
+- `campaigns[].flights`: array<{budget*: {budgetType*: enum: MONETARY, budgetValue*: oneOf: monetaryBudgetValue{monetaryBudgetValue: {marketplaceSettings: array<object>, monetaryBudget: {currencyCode*: enum (62 values - see ENUMS.md), ruleValue: number, value*: number}}}}, endDateTime*: string, flightId: string, name: string, startDateTime*: string}>
+- `campaigns[].frequencies`: array<{eventCount: integer, eventMaxCount*: integer, eventType: enum: IMPRESSION, extraFrequencyCapImpressionTypes: array<enum: LinearTVImpression>, frequencyTargetingSetting*: enum: HOUSEHOLD | USER, timeCount*: integer, timeUnit*: enum: DAYS | HOURS | MINUTES}>
+- `campaigns[].marketplaceConfigurations`: array<{marketplace*: enum (23 values - see ENUMS.md), overrides*: {endDateTime: string, name: string, optimizations: {bidSettings: {bidAdjustments: {audienceBidAdjustments: array<object>, creativeBidAdjustments: array<object>, placementBidAdjustments: array<object>, shopperSegmentBidAdjustments: array<object>}, bidStrategy: enum: MANUAL | NEW_TO_BRAND | PRIORITIZE_KPI_TARGET | RULE_BASED | SALES_DOWN_ONLY | SALES_UP_AND_DOWN | SPEND_BUDGET_IN_FULL | USE_CAMPAIGN_STRATEGY}, budgetSettings: {budgetAllocation: enum: AUTO | MANUAL, flightBudgetRolloverStrategy: enum: CUMULATIVE_BUDGET_ROLLOVER | NO_ROLLOVER | PRIOR_BUDGET_ROLLOVER, offAmazonBudgetControlStrategy: enum: MAXIMIZE_REACH | MINIMIZE_SPEND}, conversionSettings: {viewWeight*: number}, goalSettings: {kpi: enum (33 values - see ENUMS.md), kpiValue: number}, primaryInventoryTypes: array<enum: AUDIO | DISPLAY | VIDEO_OLV | VIDEO_STV>}, startDateTime: string, state: enum: ARCHIVED | DRAFT | ENABLED | PAUSED | PROPOSED, tags: array<{key*: string, value*: string}>}}>
 - `campaigns[].marketplaceScope`: enum: GLOBAL | SINGLE_MARKETPLACE
 - `campaigns[].marketplaces`: array<enum (23 values - see ENUMS.md)>
 - `campaigns[].name` **REQUIRED**: string
-- `campaigns[].optimizations`: {bidSettings: {bidAdjustments: {audienceBidAdjustments: array<{audienceId*: string, percentage*: integer}>, creativeBidAdjustments: array<{creativeType: enum: SPOTLIGHT, percentage*: integer}>, placementBidAdjustments: array<{percentage*: integer, placement*: enum: HOME_PAGE | PRODUCT_PAGE | REST_OF_SEARCH | SITE_AMAZON_BUSINESS | TOP_OF_SEARCH}>, shopperSegmentBidAdjustments: array<object>}, bidStrategy: enum: MANUAL | NEW_TO_BRAND | PRIORITIZE_KPI_TARGET | RULE_BASED | SALES_DOWN_ONLY | SALES_UP_AND_DOWN | SPEND_BUDGET_IN_FULL | USE_CAMPAIGN_STRATEGY}, budgetSettings: {budgetAllocation: enum: AUTO | MANUAL, flightBudgetRolloverStrategy: enum: CUMULATIVE_BUDGET_ROLLOVER | NO_ROLLOVER | PRIOR_BUDGET_ROLLOVER, offAmazonBudgetControlStrategy: enum: MAXIMIZE_REACH | MINIMIZE_SPEND}, goalSettings: {kpi*: enum (32 values - see ENUMS.md), kpiValue: number}, primaryInventoryTypes: array<enum: AUDIO | DISPLAY | VIDEO_OLV | VIDEO_STV>}
+- `campaigns[].optimizations`: {bidSettings: {bidAdjustments: {audienceBidAdjustments: array<{audienceId*: string, percentage: integer}>, creativeBidAdjustments: array<{creativeType: enum: SPOTLIGHT, percentage*: integer}>, placementBidAdjustments: array<{percentage*: integer, placement*: enum: HOME_PAGE | PRODUCT_PAGE | REST_OF_BROWSE | REST_OF_SEARCH | SITE_AMAZON_BUSINESS | TOP_OF_BROWSE | TOP_OF_SEARCH}>, shopperSegmentBidAdjustments: array<object>}, bidStrategy: enum: MANUAL | NEW_TO_BRAND | PRIORITIZE_KPI_TARGET | RULE_BASED | SALES_DOWN_ONLY | SALES_UP_AND_DOWN | SPEND_BUDGET_IN_FULL | USE_CAMPAIGN_STRATEGY}, budgetSettings: {budgetAllocation: enum: AUTO | MANUAL, flightBudgetRolloverStrategy: enum: CUMULATIVE_BUDGET_ROLLOVER | NO_ROLLOVER | PRIOR_BUDGET_ROLLOVER, offAmazonBudgetControlStrategy: enum: MAXIMIZE_REACH | MINIMIZE_SPEND}, conversionSettings: {viewWeight*: number}, goalSettings: {kpi: enum (33 values - see ENUMS.md), kpiValue: number}, primaryInventoryTypes: array<enum: AUDIO | DISPLAY | VIDEO_OLV | VIDEO_STV>}
 - `campaigns[].portfolioId`: string
 - `campaigns[].purchaseOrderNumber`: string
+- `campaigns[].retailerScope`: enum: AMAZON | OTHER_RETAILERS
 - `campaigns[].salesChannel`: enum: AMAZON | OFF_AMAZON
 - `campaigns[].siteRestrictions`: array<enum: AMAZON_BUSINESS | AMAZON_HAUL>
 - `campaigns[].skanAppId`: string
 - `campaigns[].startDateTime`: string
-- `campaigns[].state` **REQUIRED**: enum: ENABLED | PAUSED
+- `campaigns[].state` **REQUIRED**: enum: DRAFT | ENABLED | PAUSED | PROPOSED
 - `campaigns[].tags`: array<{key*: string, value*: string}>
 - `campaigns[].targetedPGDealId`: string
 
@@ -49,24 +51,24 @@ field name = required within its object. Enums >15 values: ENUMS.md.
 - `campaigns[]`: array of objects REQUIRED
 - `campaigns[].adProduct`: enum: AMAZON_DSP | SPONSORED_BRANDS | SPONSORED_DISPLAY | SPONSORED_PRODUCTS | SPONSORED_TELEVISION
 - `campaigns[].adomains`: array<string>
-- `campaigns[].budgets`: array<{budgetType*: enum: MONETARY, budgetValue*: oneOf: monetaryBudgetValue{monetaryBudgetValue: {marketplaceSettings: array<{marketplace*: enum (23 values - see ENUMS.md), monetaryBudget*: object}>, monetaryBudget: {value*: number}}}, recurrenceTimePeriod*: enum: DAILY | LIFETIME | MONTHLY}>
+- `campaigns[].budgets`: array<{budgetType*: enum: MONETARY, budgetValue*: oneOf: monetaryBudgetValue{monetaryBudgetValue: {marketplaceSettings: array<{marketplace*: enum (23 values - see ENUMS.md), monetaryBudget*: object}>, monetaryBudget: {currencyCode*: enum (62 values - see ENUMS.md), ruleValue: number, value*: number}}}, recurrenceTimePeriod*: enum: DAILY | LIFETIME | MONTHLY}>
 - `campaigns[].campaignId` **REQUIRED**: string
 - `campaigns[].costType`: enum: CPC | CPM | FIXED_PRICE | VCPM
-- `campaigns[].countries`: array<enum (75 values - see ENUMS.md)>
+- `campaigns[].countries`: array<enum (252 values - see ENUMS.md)>
 - `campaigns[].endDateTime`: string
 - `campaigns[].fees`: array<{feeType*: enum: AGENCY, feeValue*: number, feeValueType*: enum: PERCENTAGE_OF_BUDGET}>
-- `campaigns[].flights`: array<{budget*: {budgetType*: enum: MONETARY, budgetValue*: oneOf: monetaryBudgetValue{monetaryBudgetValue: {marketplaceSettings: array<object>, monetaryBudget: {value*: number}}}}, endDateTime*: string, flightId: string, name: string, startDateTime*: string}>
-- `campaigns[].frequencies`: array<{eventMaxCount*: integer, frequencyTargetingSetting*: enum: HOUSEHOLD | USER, timeCount*: integer, timeUnit*: enum: DAYS | HOURS | MINUTES}>
-- `campaigns[].marketplaceConfigurations`: array<{marketplace*: enum (23 values - see ENUMS.md), overrides*: {endDateTime: string, name: string, optimizations: {bidSettings: {bidAdjustments: {audienceBidAdjustments: array<object>, creativeBidAdjustments: array<object>, placementBidAdjustments: array<object>, shopperSegmentBidAdjustments: array<object>}, bidStrategy: enum: MANUAL | NEW_TO_BRAND | PRIORITIZE_KPI_TARGET | RULE_BASED | SALES_DOWN_ONLY | SALES_UP_AND_DOWN | SPEND_BUDGET_IN_FULL | USE_CAMPAIGN_STRATEGY}, budgetSettings: {budgetAllocation: enum: AUTO | MANUAL, flightBudgetRolloverStrategy: enum: CUMULATIVE_BUDGET_ROLLOVER | NO_ROLLOVER | PRIOR_BUDGET_ROLLOVER, offAmazonBudgetControlStrategy: enum: MAXIMIZE_REACH | MINIMIZE_SPEND}, goalSettings: {kpi*: enum (32 values - see ENUMS.md), kpiValue: number}, primaryInventoryTypes: array<enum: AUDIO | DISPLAY | VIDEO_OLV | VIDEO_STV>}, startDateTime: string, state: enum: ARCHIVED | ENABLED | PAUSED, tags: array<{key*: string, value*: string}>}}>
+- `campaigns[].flights`: array<{budget*: {budgetType*: enum: MONETARY, budgetValue*: oneOf: monetaryBudgetValue{monetaryBudgetValue: {marketplaceSettings: array<object>, monetaryBudget: {currencyCode*: enum (62 values - see ENUMS.md), ruleValue: number, value*: number}}}}, endDateTime*: string, flightId: string, name: string, startDateTime*: string}>
+- `campaigns[].frequencies`: array<{eventCount: integer, eventMaxCount*: integer, eventType: enum: IMPRESSION, extraFrequencyCapImpressionTypes: array<enum: LinearTVImpression>, frequencyTargetingSetting*: enum: HOUSEHOLD | USER, timeCount*: integer, timeUnit*: enum: DAYS | HOURS | MINUTES}>
+- `campaigns[].marketplaceConfigurations`: array<{marketplace*: enum (23 values - see ENUMS.md), overrides*: {endDateTime: string, name: string, optimizations: {bidSettings: {bidAdjustments: {audienceBidAdjustments: array<object>, creativeBidAdjustments: array<object>, placementBidAdjustments: array<object>, shopperSegmentBidAdjustments: array<object>}, bidStrategy: enum: MANUAL | NEW_TO_BRAND | PRIORITIZE_KPI_TARGET | RULE_BASED | SALES_DOWN_ONLY | SALES_UP_AND_DOWN | SPEND_BUDGET_IN_FULL | USE_CAMPAIGN_STRATEGY}, budgetSettings: {budgetAllocation: enum: AUTO | MANUAL, flightBudgetRolloverStrategy: enum: CUMULATIVE_BUDGET_ROLLOVER | NO_ROLLOVER | PRIOR_BUDGET_ROLLOVER, offAmazonBudgetControlStrategy: enum: MAXIMIZE_REACH | MINIMIZE_SPEND}, conversionSettings: {viewWeight*: number}, goalSettings: {kpi: enum (33 values - see ENUMS.md), kpiValue: number}, primaryInventoryTypes: array<enum: AUDIO | DISPLAY | VIDEO_OLV | VIDEO_STV>}, startDateTime: string, state: enum: ARCHIVED | DRAFT | ENABLED | PAUSED | PROPOSED, tags: array<{key*: string, value*: string}>}}>
 - `campaigns[].marketplaces`: array<enum (23 values - see ENUMS.md)>
 - `campaigns[].name`: string
-- `campaigns[].optimizations`: {bidSettings: {bidAdjustments: {audienceBidAdjustments: array<{audienceId*: string, percentage*: integer}>, creativeBidAdjustments: array<{creativeType: enum: SPOTLIGHT, percentage*: integer}>, placementBidAdjustments: array<{percentage*: integer, placement*: enum: HOME_PAGE | PRODUCT_PAGE | REST_OF_SEARCH | SITE_AMAZON_BUSINESS | TOP_OF_SEARCH}>, shopperSegmentBidAdjustments: array<object>}, bidStrategy: enum: MANUAL | NEW_TO_BRAND | PRIORITIZE_KPI_TARGET | RULE_BASED | SALES_DOWN_ONLY | SALES_UP_AND_DOWN | SPEND_BUDGET_IN_FULL | USE_CAMPAIGN_STRATEGY}, budgetSettings: {budgetAllocation: enum: AUTO | MANUAL, flightBudgetRolloverStrategy: enum: CUMULATIVE_BUDGET_ROLLOVER | NO_ROLLOVER | PRIOR_BUDGET_ROLLOVER, offAmazonBudgetControlStrategy: enum: MAXIMIZE_REACH | MINIMIZE_SPEND}, goalSettings: {kpi: enum (32 values - see ENUMS.md), kpiValue: number}, primaryInventoryTypes: array<enum: AUDIO | DISPLAY | VIDEO_OLV | VIDEO_STV>}
+- `campaigns[].optimizations`: {bidSettings: {bidAdjustments: {audienceBidAdjustments: array<{audienceId*: string, percentage: integer}>, creativeBidAdjustments: array<{creativeType: enum: SPOTLIGHT, percentage*: integer}>, placementBidAdjustments: array<{percentage*: integer, placement*: enum: HOME_PAGE | PRODUCT_PAGE | REST_OF_BROWSE | REST_OF_SEARCH | SITE_AMAZON_BUSINESS | TOP_OF_BROWSE | TOP_OF_SEARCH}>, shopperSegmentBidAdjustments: array<object>}, bidStrategy: enum: MANUAL | NEW_TO_BRAND | PRIORITIZE_KPI_TARGET | RULE_BASED | SALES_DOWN_ONLY | SALES_UP_AND_DOWN | SPEND_BUDGET_IN_FULL | USE_CAMPAIGN_STRATEGY}, budgetSettings: {budgetAllocation: enum: AUTO | MANUAL, flightBudgetRolloverStrategy: enum: CUMULATIVE_BUDGET_ROLLOVER | NO_ROLLOVER | PRIOR_BUDGET_ROLLOVER, offAmazonBudgetControlStrategy: enum: MAXIMIZE_REACH | MINIMIZE_SPEND}, conversionSettings: {viewWeight: number}, goalSettings: {kpi: enum (33 values - see ENUMS.md), kpiValue: number}, primaryInventoryTypes: array<enum: AUDIO | DISPLAY | VIDEO_OLV | VIDEO_STV>}
 - `campaigns[].portfolioId`: string
 - `campaigns[].purchaseOrderNumber`: string
 - `campaigns[].siteRestrictions`: array<enum: AMAZON_BUSINESS | AMAZON_HAUL>
 - `campaigns[].skanAppId`: string
 - `campaigns[].startDateTime`: string
-- `campaigns[].state`: enum: ENABLED | PAUSED
+- `campaigns[].state`: enum: DRAFT | ENABLED | PAUSED | PROPOSED
 - `campaigns[].tags`: array<{key*: string, value*: string}>
 - `campaigns[].targetedPGDealId`: string
 
@@ -82,6 +84,7 @@ field name = required within its object. Enums >15 values: ENUMS.md.
 - `nameFilter`: {include*: array<string>, queryTermMatchType*: enum: BROAD_MATCH | EXACT_MATCH}
 - `nextToken`: string
 - `portfolioIdFilter`: {include*: array<string>}
+- `retailerScopeFilter`: {include*: array<enum: AMAZON | OTHER_RETAILERS>}
 - `stateFilter`: {include*: array<enum: ARCHIVED | ENABLED | PAUSED>}
 
 ## SPONSORED_PRODUCTS - CREATE
@@ -95,8 +98,9 @@ field name = required within its object. Enums >15 values: ENUMS.md.
 - `campaigns[].marketplaceScope` **REQUIRED**: enum: SINGLE_MARKETPLACE
 - `campaigns[].marketplaces`: array<enum (23 values - see ENUMS.md)>
 - `campaigns[].name` **REQUIRED**: string
-- `campaigns[].optimizations`: {bidSettings: {bidAdjustments: {audienceBidAdjustments: array<{audienceId*: string, percentage*: integer}>, creativeBidAdjustments: array<{creativeType: enum: SPOTLIGHT, percentage*: integer}>, placementBidAdjustments: array<{percentage*: integer, placement*: enum: PRODUCT_PAGE | REST_OF_SEARCH | SITE_AMAZON_BUSINESS | TOP_OF_SEARCH}>}, bidStrategy: enum: MANUAL | RULE_BASED | SALES_DOWN_ONLY | SALES_UP_AND_DOWN}, budgetSettings: {offAmazonBudgetControlStrategy: enum: MAXIMIZE_REACH | MINIMIZE_SPEND}}
+- `campaigns[].optimizations`: {bidSettings: {bidAdjustments: {audienceBidAdjustments: array<{audienceId*: string, percentage: integer}>, creativeBidAdjustments: array<{creativeType: enum: SPOTLIGHT, percentage*: integer}>, placementBidAdjustments: array<{percentage*: integer, placement*: enum: PRODUCT_PAGE | REST_OF_BROWSE | REST_OF_SEARCH | SITE_AMAZON_BUSINESS | TOP_OF_BROWSE | TOP_OF_SEARCH}>}, bidStrategy: enum: MANUAL | RULE_BASED | SALES_DOWN_ONLY | SALES_UP_AND_DOWN}, budgetSettings: {offAmazonBudgetControlStrategy: enum: MAXIMIZE_REACH | MINIMIZE_SPEND}}
 - `campaigns[].portfolioId`: string
+- `campaigns[].retailerScope`: enum: AMAZON | OTHER_RETAILERS
 - `campaigns[].siteRestrictions`: array<enum: AMAZON_BUSINESS | AMAZON_HAUL>
 - `campaigns[].startDateTime` **REQUIRED**: string
 - `campaigns[].state` **REQUIRED**: enum: ENABLED | PAUSED
@@ -109,7 +113,7 @@ field name = required within its object. Enums >15 values: ENUMS.md.
 - `campaigns[].campaignId` **REQUIRED**: string
 - `campaigns[].endDateTime`: string
 - `campaigns[].name`: string
-- `campaigns[].optimizations`: {bidSettings: {bidAdjustments: {audienceBidAdjustments: array<{audienceId*: string, percentage*: integer}>, creativeBidAdjustments: array<{creativeType: enum: SPOTLIGHT, percentage*: integer}>, placementBidAdjustments: array<{percentage*: integer, placement*: enum: PRODUCT_PAGE | REST_OF_SEARCH | SITE_AMAZON_BUSINESS | TOP_OF_SEARCH}>}, bidStrategy: enum: MANUAL | RULE_BASED | SALES_DOWN_ONLY | SALES_UP_AND_DOWN}, budgetSettings: {offAmazonBudgetControlStrategy: enum: MAXIMIZE_REACH | MINIMIZE_SPEND}}
+- `campaigns[].optimizations`: {bidSettings: {bidAdjustments: {audienceBidAdjustments: array<{audienceId*: string, percentage: integer}>, creativeBidAdjustments: array<{creativeType: enum: SPOTLIGHT, percentage*: integer}>, placementBidAdjustments: array<{percentage*: integer, placement*: enum: PRODUCT_PAGE | REST_OF_BROWSE | REST_OF_SEARCH | SITE_AMAZON_BUSINESS | TOP_OF_BROWSE | TOP_OF_SEARCH}>}, bidStrategy: enum: MANUAL | RULE_BASED | SALES_DOWN_ONLY | SALES_UP_AND_DOWN}, budgetSettings: {offAmazonBudgetControlStrategy: enum: MAXIMIZE_REACH | MINIMIZE_SPEND}}
 - `campaigns[].portfolioId`: string
 - `campaigns[].siteRestrictions`: array<enum: AMAZON_BUSINESS | AMAZON_HAUL>
 - `campaigns[].startDateTime`: string
@@ -144,7 +148,7 @@ field name = required within its object. Enums >15 values: ENUMS.md.
 - `campaigns[].marketplaceScope` **REQUIRED**: enum: SINGLE_MARKETPLACE
 - `campaigns[].marketplaces`: array<enum (23 values - see ENUMS.md)>
 - `campaigns[].name` **REQUIRED**: string
-- `campaigns[].optimizations`: {bidSettings: {bidAdjustments: {audienceBidAdjustments: array<{audienceId*: string, percentage*: integer}>, placementBidAdjustments: array<{percentage*: integer, placement*: enum: HOME_PAGE | PRODUCT_PAGE | REST_OF_SEARCH | TOP_OF_SEARCH}>, shopperSegmentBidAdjustments: array<object>}, bidStrategy: enum: MANUAL | SALES_UP_AND_DOWN}, goalSettings: {kpi*: enum: CLICKS | TOP_OF_SEARCH_IMPRESSION_SHARE}}
+- `campaigns[].optimizations`: {bidSettings: {bidAdjustments: {audienceBidAdjustments: array<{audienceId*: string, percentage: integer}>, placementBidAdjustments: array<{percentage*: integer, placement*: enum: HOME_PAGE | PRODUCT_PAGE | REST_OF_SEARCH | TOP_OF_SEARCH}>, shopperSegmentBidAdjustments: array<object>}, bidStrategy: enum: MANUAL | SALES_UP_AND_DOWN}, goalSettings: {kpi*: enum: CLICKS | TOP_OF_SEARCH_IMPRESSION_SHARE}}
 - `campaigns[].portfolioId`: string
 - `campaigns[].salesChannel`: enum: AMAZON | OFF_AMAZON
 - `campaigns[].siteRestrictions`: array<enum: AMAZON_BUSINESS>
@@ -160,7 +164,7 @@ field name = required within its object. Enums >15 values: ENUMS.md.
 - `campaigns[].campaignId` **REQUIRED**: string
 - `campaigns[].endDateTime`: string
 - `campaigns[].name`: string
-- `campaigns[].optimizations`: {bidSettings: {bidAdjustments: {audienceBidAdjustments: array<{audienceId*: string, percentage*: integer}>, placementBidAdjustments: array<{percentage*: integer, placement*: enum: HOME_PAGE | PRODUCT_PAGE | REST_OF_SEARCH | TOP_OF_SEARCH}>, shopperSegmentBidAdjustments: array<object>}, bidStrategy: enum: MANUAL | SALES_UP_AND_DOWN}}
+- `campaigns[].optimizations`: {bidSettings: {bidAdjustments: {audienceBidAdjustments: array<{audienceId*: string, percentage: integer}>, placementBidAdjustments: array<{percentage*: integer, placement*: enum: HOME_PAGE | PRODUCT_PAGE | REST_OF_SEARCH | TOP_OF_SEARCH}>, shopperSegmentBidAdjustments: array<object>}, bidStrategy: enum: MANUAL | SALES_UP_AND_DOWN}}
 - `campaigns[].portfolioId`: string
 - `campaigns[].startDateTime`: string
 - `campaigns[].state`: enum: ENABLED | PAUSED
@@ -252,7 +256,7 @@ field name = required within its object. Enums >15 values: ENUMS.md.
 - `campaignIdFilter`: {include*: array<string>}
 - `maxResults`: integer
 - `nextToken`: string
-- `stateFilter`: {include*: array<enum: ARCHIVED | ENABLED | PAUSED>}
+- `stateFilter`: {include*: array<enum: ARCHIVED | DRAFT | ENABLED | PAUSED | PROPOSED>}
 
 ## AMAZON_DSP - CREATE
 
@@ -260,31 +264,31 @@ field name = required within its object. Enums >15 values: ENUMS.md.
 - `campaigns[].adProduct` **REQUIRED**: enum: AMAZON_DSP
 - `campaigns[].adomains`: array<string>
 - `campaigns[].autoCreationSettings`: {autoManageCampaign: boolean}
-- `campaigns[].budgets`: array<{budgetType*: enum: MONETARY, budgetValue*: oneOf: monetaryBudgetValue{monetaryBudgetValue: {monetaryBudget: {value*: number}}}, recurrenceTimePeriod*: enum: DAILY | LIFETIME | MONTHLY}>
-- `campaigns[].countries`: array<enum (74 values - see ENUMS.md)>
+- `campaigns[].budgets`: array<{budgetType*: enum: MONETARY, budgetValue*: oneOf: monetaryBudgetValue{monetaryBudgetValue: {monetaryBudget: {currencyCode*: enum (59 values - see ENUMS.md), ruleValue: number, value*: number}}}, recurrenceTimePeriod*: enum: DAILY | LIFETIME | MONTHLY}>
+- `campaigns[].countries`: array<enum (86 values - see ENUMS.md)>
 - `campaigns[].fees`: array<{feeType*: enum: AGENCY, feeValue*: number, feeValueType*: enum: PERCENTAGE_OF_BUDGET}>
-- `campaigns[].flights` **REQUIRED**: array<{budget*: {budgetType*: enum: MONETARY, budgetValue*: oneOf: monetaryBudgetValue{monetaryBudgetValue: {monetaryBudget: {value*: number}}}}, endDateTime*: string, flightId: string, name: string, startDateTime*: string}>
-- `campaigns[].frequencies`: array<{eventMaxCount*: integer, frequencyTargetingSetting*: enum: HOUSEHOLD | USER, timeCount*: integer, timeUnit*: enum: DAYS | HOURS | MINUTES}>
-- `campaigns[].marketplaces`: array<enum (17 values - see ENUMS.md)>
+- `campaigns[].flights` **REQUIRED**: array<{budget*: {budgetType*: enum: MONETARY, budgetValue*: oneOf: monetaryBudgetValue{monetaryBudgetValue: {monetaryBudget: {currencyCode*: enum (59 values - see ENUMS.md), ruleValue: number, value*: number}}}}, endDateTime*: string, flightId: string, name: string, startDateTime*: string}>
+- `campaigns[].frequencies`: array<{eventCount: integer, eventMaxCount*: integer, eventType: enum: IMPRESSION, extraFrequencyCapImpressionTypes: array<enum: LinearTVImpression>, frequencyTargetingSetting*: enum: HOUSEHOLD | USER, timeCount*: integer, timeUnit*: enum: DAYS | HOURS | MINUTES}>
+- `campaigns[].marketplaces`: array<enum (23 values - see ENUMS.md)>
 - `campaigns[].name` **REQUIRED**: string
-- `campaigns[].optimizations` **REQUIRED**: {bidSettings*: {bidStrategy*: enum: PRIORITIZE_KPI_TARGET | SPEND_BUDGET_IN_FULL | USE_CAMPAIGN_STRATEGY}, budgetSettings: {budgetAllocation: enum: AUTO | MANUAL, flightBudgetRolloverStrategy: enum: CUMULATIVE_BUDGET_ROLLOVER | NO_ROLLOVER | PRIOR_BUDGET_ROLLOVER}, goalSettings: {kpi*: enum (19 values - see ENUMS.md), kpiValue: number}, primaryInventoryTypes: array<enum: AUDIO | DISPLAY | VIDEO_OLV | VIDEO_STV>}
+- `campaigns[].optimizations` **REQUIRED**: {bidSettings*: {bidStrategy*: enum: PRIORITIZE_KPI_TARGET | SPEND_BUDGET_IN_FULL | USE_CAMPAIGN_STRATEGY}, budgetSettings: {budgetAllocation: enum: AUTO | MANUAL, flightBudgetRolloverStrategy: enum: CUMULATIVE_BUDGET_ROLLOVER | NO_ROLLOVER | PRIOR_BUDGET_ROLLOVER}, conversionSettings: {viewWeight*: number}, goalSettings: {kpi*: enum (20 values - see ENUMS.md), kpiValue: number}, primaryInventoryTypes: array<enum: AUDIO | DISPLAY | VIDEO_OLV | VIDEO_STV>}
 - `campaigns[].purchaseOrderNumber`: string
 - `campaigns[].skanAppId`: string
-- `campaigns[].state` **REQUIRED**: enum: ENABLED | PAUSED
+- `campaigns[].state` **REQUIRED**: enum: DRAFT | ENABLED | PAUSED | PROPOSED
 - `campaigns[].tags`: array<{key*: string, value*: string}>
 
 ## AMAZON_DSP - UPDATE
 
 - `campaigns[]`: array of objects REQUIRED
 - `campaigns[].adomains`: array<string>
-- `campaigns[].budgets`: array<{budgetType*: enum: MONETARY, budgetValue*: oneOf: monetaryBudgetValue{monetaryBudgetValue: {monetaryBudget: {value*: number}}}, recurrenceTimePeriod*: enum: DAILY | LIFETIME | MONTHLY}>
+- `campaigns[].budgets`: array<{budgetType*: enum: MONETARY, budgetValue*: oneOf: monetaryBudgetValue{monetaryBudgetValue: {monetaryBudget: {currencyCode*: enum (59 values - see ENUMS.md), ruleValue: number, value*: number}}}, recurrenceTimePeriod*: enum: DAILY | LIFETIME | MONTHLY}>
 - `campaigns[].campaignId` **REQUIRED**: string
 - `campaigns[].fees`: array<{feeType*: enum: AGENCY, feeValue*: number, feeValueType*: enum: PERCENTAGE_OF_BUDGET}>
-- `campaigns[].flights`: array<{budget*: {budgetType*: enum: MONETARY, budgetValue*: oneOf: monetaryBudgetValue{monetaryBudgetValue: {monetaryBudget: {value*: number}}}}, endDateTime*: string, flightId: string, name: string, startDateTime*: string}>
-- `campaigns[].frequencies`: array<{eventMaxCount*: integer, frequencyTargetingSetting*: enum: HOUSEHOLD | USER, timeCount*: integer, timeUnit*: enum: DAYS | HOURS | MINUTES}>
+- `campaigns[].flights`: array<{budget*: {budgetType*: enum: MONETARY, budgetValue*: oneOf: monetaryBudgetValue{monetaryBudgetValue: {monetaryBudget: {currencyCode*: enum (59 values - see ENUMS.md), ruleValue: number, value*: number}}}}, endDateTime*: string, flightId: string, name: string, startDateTime*: string}>
+- `campaigns[].frequencies`: array<{eventCount: integer, eventMaxCount*: integer, eventType: enum: IMPRESSION, extraFrequencyCapImpressionTypes: array<enum: LinearTVImpression>, frequencyTargetingSetting*: enum: HOUSEHOLD | USER, timeCount*: integer, timeUnit*: enum: DAYS | HOURS | MINUTES}>
 - `campaigns[].name`: string
-- `campaigns[].optimizations`: {bidSettings: {bidStrategy: enum: PRIORITIZE_KPI_TARGET | SPEND_BUDGET_IN_FULL | USE_CAMPAIGN_STRATEGY}, budgetSettings: {budgetAllocation: enum: AUTO | MANUAL, flightBudgetRolloverStrategy: enum: CUMULATIVE_BUDGET_ROLLOVER | NO_ROLLOVER | PRIOR_BUDGET_ROLLOVER}, goalSettings: {kpi: enum (19 values - see ENUMS.md), kpiValue: number}, primaryInventoryTypes: array<enum: AUDIO | DISPLAY | VIDEO_OLV | VIDEO_STV>}
+- `campaigns[].optimizations`: {bidSettings: {bidStrategy: enum: PRIORITIZE_KPI_TARGET | SPEND_BUDGET_IN_FULL | USE_CAMPAIGN_STRATEGY}, budgetSettings: {budgetAllocation: enum: AUTO | MANUAL, flightBudgetRolloverStrategy: enum: CUMULATIVE_BUDGET_ROLLOVER | NO_ROLLOVER | PRIOR_BUDGET_ROLLOVER}, conversionSettings: {viewWeight: number}, goalSettings: {kpi: enum (20 values - see ENUMS.md), kpiValue: number}, primaryInventoryTypes: array<enum: AUDIO | DISPLAY | VIDEO_OLV | VIDEO_STV>}
 - `campaigns[].purchaseOrderNumber`: string
 - `campaigns[].skanAppId`: string
-- `campaigns[].state`: enum: ENABLED | PAUSED
+- `campaigns[].state`: enum: DRAFT | ENABLED | PAUSED | PROPOSED
 - `campaigns[].tags`: array<{key*: string, value*: string}>

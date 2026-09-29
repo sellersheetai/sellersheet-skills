@@ -18,9 +18,13 @@
 #   3. Mirrors it into versions.json (marketplace_version + every skill), each
 #      skills/*/SKILL.md frontmatter, install.sh VERSION, README.md, and the
 #      WorkBuddy connector-meta.json (via sync_workbuddy.py)
+#   5c. OPT-IN: with SS_TOOLS_JSON=<path>, refreshes .maintainers/tool-names.txt
+#       (the live tool-name allowlist lint.sh checks skills/** against) from that
+#       mcp-tools.json. Unset (the default) leaves the committed list untouched —
+#       there is no safe default path to guess (see the comment at the step).
 #   4. Verifies CHANGELOG.md has a '## [<new-version>]' entry (you write the notes)
 #   5. Runs lint.sh
-#   5b. Runs `claude plugin eval` on evals/ (--threshold 0.8) — refuses the release
+#   7b. Runs `claude plugin eval` on evals/ (--threshold 0.8) — refuses the release
 #       if any case scores below it. See .maintainers/README.md for cost + how to
 #       run one case; skip with SS_SKIP_PLUGIN_EVAL=1, cap spend with
 #       SS_PLUGIN_EVAL_MAX_COST_USD.
@@ -93,6 +97,25 @@ run "sed -i '' -E 's/\| v[0-9]+\.[0-9]+\.x \|/| v$MAJOR_MINOR.x |/' README.md"
 
 # 5b. WorkBuddy connector files (connector-meta.json version + derived SKILL.md keys)
 run "python3 .maintainers/sync_workbuddy.py"
+
+# 5c. Live tool-name allowlist (.maintainers/tool-names.txt) — names only, one per
+# line, read by lint.sh's backticked-tool-name check (any `ads_…`/`noon_…`/`sp_api_…`
+# name in skills/** must be in this list, so a rename or retirement in the main
+# monorepo can't silently ship a dead name in the public docs). OPT-IN ONLY: set
+# SS_TOOLS_JSON to the path of a main-repo checkout's marketing-site/src/_data/
+# mcp-tools.json that is ACTUALLY AT the commit this release's skill text matches —
+# there is no safe default path to guess, because a sibling checkout that merely
+# EXISTS can be on an older commit with stale (pre-rename) names, which would
+# silently overwrite a correct, hand-verified list with a wrong one and then fail
+# lint for the wrong reason (this happened once — see the 0.13.0 release notes).
+# Leave SS_TOOLS_JSON unset to keep the committed list as-is (the default and the
+# safe choice for a routine release with no tool-name changes).
+if [[ -n "${SS_TOOLS_JSON:-}" ]]; then
+  [[ -f "$SS_TOOLS_JSON" ]] || err "SS_TOOLS_JSON='$SS_TOOLS_JSON' does not exist"
+  run "python3 -c \"import json,sys; names=sorted(t['name'] for t in json.load(open('$SS_TOOLS_JSON'))); open('.maintainers/tool-names.txt','w').write('\\n'.join(names) + '\\n')\""
+else
+  log "Keeping the committed .maintainers/tool-names.txt as-is (set SS_TOOLS_JSON=<path to mcp-tools.json AT THE MATCHING COMMIT> to refresh it)"
+fi
 
 # 6. CHANGELOG must have an entry — the maintainer writes the notes
 if [[ $DRY_RUN -eq 0 ]] && ! grep -qE "^## \[$NEW\]" CHANGELOG.md; then

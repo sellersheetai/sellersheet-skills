@@ -1,8 +1,13 @@
+---
+last_updated: 2026-06-30
+origin: live-verified against Amazon's Ads Reporting API v3 createReport
+---
+
 # Ads Reporting v3 — Request Configurations (offline report bodies)
 
 Real Amazon Ads **Reporting API v3** `createReport` request bodies, one JSON file per
 report type. Use these as copy-paste templates for the `body` argument of
-`ads_create_report` (Recipe G). Each file is the exact `{name, startDate, endDate,
+`ads_create_async_report` (Recipe G). Each file is the exact `{name, startDate, endDate,
 configuration}` shape Amazon expects, with the **full, authoritative `columns` list**,
 correct `reportTypeId`, `groupBy`, `timeUnit`, and `filters` for that report.
 
@@ -11,13 +16,13 @@ How to use:
 2. Copy its `configuration` (keep `reportTypeId`, `groupBy`, `timeUnit`, `filters`).
 3. Trim `columns` to the metrics you actually want (fewer columns = smaller report), or keep all.
 4. Set your own `name`, `startDate`, `endDate` (`YYYY-MM-DD`).
-5. Pass as `body` to `ads_create_report`.
+5. Pass as `body` to `ads_create_async_report`.
 
-**These are request specs, not response rows.** The response (after `ads_get_report`
+**These are request specs, not response rows.** The response (after `ads_get_async_report`
 COMPLETES) is a list of row dicts keyed by the `columns` you requested.
 
 > Prefer `query_report_data` on the synced `rpt_*` tables for everyday analysis — it is
-> instant. Reach for `ads_create_report` + these configs only when you need a
+> instant. Reach for `ads_create_async_report` + these configs only when you need a
 > column/grain/report type the synced tables don't cover (DSP, Sponsored TV,
 > gross-and-invalid traffic, placement breakdowns, custom column sets), and you can wait
 > 30 min–several hours.

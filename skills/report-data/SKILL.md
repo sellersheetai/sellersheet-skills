@@ -4,9 +4,10 @@ description_zh: "亚马逊报告数据、库存报告、补货需求、订单、
 description_en: "Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules,…"
 author: SellerSheet AI
 description: >-
-  Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules, requesting on-demand reports, polling for completion, downloading a finished report document from its presigned URL, or analyzing any report table. Covers inventory, listings, orders, financial, brand analytics, and ad report (SP/SB/SD) tables.
+  Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules, requesting on-demand reports, polling for completion, downloading a finished report document from its presigned URL, or analyzing any report table. Covers inventory, listings, orders, financial, brand analytics, and ad report (SP/SB/SD) tables. Do NOT use for noon.com data (use noon-report-data) or when you don't yet know a report's exact schema — read amazon-report or data-kiosk first, then come back here for the sync/poll/download mechanics.
   中文触发词：亚马逊报告数据、库存报告、补货需求、订单、退货、结算、搜索词、listing 状态、rpt_ 数据仓库查询、报告同步计划、按需报告下载。
-version: 0.12.4
+version: 0.13.0
+metadata: {apis: [data, sp_api_reports], pattern: Pipeline}
 ---
 
 # Report Data
@@ -122,7 +123,7 @@ filter than reverse-mapping `profile_id`.
 
 `rpt_sp_*` / `rpt_sb_*` / `rpt_sd_*` are **DAILY PERFORMANCE rows** — only campaigns with
 delivery in the window appear (live count 47 ENABLED vs 21 in the warehouse, observed). For a
-complete campaign inventory or count, use the live `ads_campaigns` API instead
+complete campaign inventory or count, use the live `ads_query_campaign` API instead
 (with `adProductFilter` set to `SPONSORED_PRODUCTS` /
 `SPONSORED_BRANDS` / `SPONSORED_DISPLAY`). Also: `report_date='latest'` pins to the newest **single**
 probed-date value, which is often a zero-spend partial day — for any cost or performance

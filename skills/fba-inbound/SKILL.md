@@ -3,13 +3,16 @@ name: fba-inbound
 description_zh: "创建FBA货件、入库计划、发货到亚马逊、补货、STA表、分仓方案、运输方案、箱标、装箱单、上传物流单号、货件状态、取消计划、刷美西仓（刷仓换低运费）——无论是否使用 SellerSheet FBA 表格。"
 description_en: "Use when a user wants stock sent to Amazon FBA — \"create FBA shipment\", \"inbound plan\", \"send to Amazon\",…"
 author: SellerSheet AI
-version: 0.12.4
+version: 0.13.0
+metadata: {apis: [fba], pattern: Gate}
 description: >-
   Use when a user wants stock sent to Amazon FBA — "create FBA shipment", "inbound plan",
   "send to Amazon", "restock FBA", "STA sheet", "placement options", "transport options",
   "FBA box labels", "packing list", "upload tracking", "shipment status", "cancel plan",
   "get a US-West warehouse" — whether or not they use the SellerSheet FBA spreadsheet,
-  including "just do the whole thing" and "pick the cheapest for me" requests.
+  including "just do the whole thing" and "pick the cheapest for me" requests. Do NOT use
+  for Amazon Advertising campaigns or budgets (use amazon-ads) or for warehouse-synced
+  inventory/order reporting (use report-data).
   中文触发词：创建FBA货件、入库计划、发货到亚马逊、补货、STA表、分仓方案、运输方案、箱标、装箱单、上传物流单号、货件状态、取消计划、刷美西仓（刷仓换低运费）——无论是否使用 SellerSheet FBA 表格。
 ---
 
@@ -27,8 +30,23 @@ the ONE mode reference that applies. Run the standard preflight in
   rule the user named under autopilot (§3) — and then you say which rule chose.
 - **Intake before Amazon.** Nothing is created (`create_sta_sheet`, `orchestrate_fba_packing`)
   while a REQUIRED intake line is ✗. "Just do it" is not an answer to a missing address.
-- **Confirm is irreversible** on Amazon's side. Cancel (`cancel_inbound_plan`) only when the
-  user says "cancel".
+- **Confirm is irreversible** on Amazon's side, and so is cancel — both end the plan.
+- **Cancel is a commit, not an approve.** Interactive: restate exactly what
+  `cancel_inbound_plan` will cancel, then end that message with a literal question asking the
+  user to confirm — e.g. "Cancel plan wf-abc and every shipment in it — are you sure?" — never
+  a bare instruction like "reply CONFIRM" with no question in the message. Wait for the reply
+  to be the literal word `CONFIRM` before calling it. Autopilot: proceed only when the user's own instruction
+  already covered this exact cancel (e.g. the warehouse-fishing loop in §4b, where
+  cancelling the losing plans is part of what they asked for) — a bare "do the whole thing"
+  does not by itself authorize a cancel. Before cancelling, check the void window: SPD
+  shipments can be voided free within 24 hours of transportation confirmation, LTL/FTL
+  within 1 hour — after that, cancelling still stops the plan but may not release money
+  already committed to the carrier, so say so.
+- **Carrier mixing.** One shipping plan may mix Amazon-partnered-carrier and your-own-carrier
+  shipments only when every shipment uses a DIFFERENT shipping mode AND every shipment is
+  individually eligible for the partnered-carrier program — Amazon rejects a plan that mixes
+  carriers within the same mode. A plan needing both gets separate shipments/modes, never one
+  mixed shipment.
 - **Ids come from tool results only** — box ids, FBA ids, reference ids, option ids are never
   typed from memory or invented.
 - Indian (IN) stores are read-only. Amazon writes need SP write access on the key; a
@@ -97,6 +115,22 @@ whose `startDate` is on or after the user's Delivery Window Start Date (a window
 already begun qualifies only if that date falls inside it). Partnered: windows are bundled
 into the transport option. Note `get_labels` takes `inbound_plan_id` where every other tool
 takes `plan_id`.
+
+## 4a. Bounded polling — only if you call the granular Amazon operations directly
+
+The chain above (`orchestrate_fba_packing`, `generate_shipment_transport_options`,
+`confirm_fba_placement`, `cancel_inbound_plan`) already waits on the server for Amazon's
+async operation to finish before it returns to you — there is nothing to poll for those.
+
+If you instead call one of the granular, single-step operations
+(`create_inbound_plan`, `generate_placement_options`, `generate_packing_options`,
+`generate_transportation_options`, `generate_delivery_window_options`) — for example on the
+legacy path where packing/placement options are generated separately — it returns
+immediately with an `operationId` while Amazon is still working. Poll
+`get_inbound_operation_status` yourself, bounded: first check after 10–15 seconds, then back
+off (roughly double the wait each time), at most 3 checks total. If it is still
+`IN_PROGRESS` after that, stop polling and hand the operation id back to the user instead of
+looping forever, so they know what to ask you to check next.
 
 ## 4b. Use case — fishing for a warehouse (刷仓 / 刷美西仓) — `references/WAREHOUSE_FISHING.md`
 

@@ -1,3 +1,8 @@
+---
+last_updated: 2026-09-29
+origin: observed on live Amazon FBA inbound plans (placement-option regeneration, capacity limits, placement fees)
+---
+
 # Fishing for a warehouse — 刷仓 / 刷美西仓
 
 **Goal.** The user ships with their own carrier and wants Amazon to route the whole plan to

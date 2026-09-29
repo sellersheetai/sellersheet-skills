@@ -11,7 +11,7 @@ Works in Claude Code, Claude Desktop, Codex, Tencent CodeBuddy Code, Gemini CLI,
 
 **Author**: [sellersheetai.com](https://sellersheetai.com)
 **License**: Apache-2.0
-**Latest release**: v0.12.4 ([changelog](./CHANGELOG.md))
+**Latest release**: v0.13.0 ([changelog](./CHANGELOG.md))
 
 ## What you can do
 
@@ -235,7 +235,7 @@ Full mechanism: [docs/auto-update.md](./docs/auto-update.md).
 
 | Plugin release | SellerSheet MCP minimum | Agent compatibility |
 |---|---|---|
-| v0.12.x | 2025-Q4 build | Claude Code 1.0+, Claude Desktop 0.10+, Codex CLI any, CodeBuddy Code 2.151+, Gemini CLI 0.5+, Antigravity any |
+| v0.13.x | 2025-Q4 build | Claude Code 1.0+, Claude Desktop 0.10+, Codex CLI any, CodeBuddy Code 2.151+, Gemini CLI 0.5+, Antigravity any |
 
 The plugin ships as one bundle — all skills release together at the plugin version. Each `SKILL.md` frontmatter `version:` mirrors `.claude-plugin/plugin.json`.
 
@@ -252,6 +252,28 @@ The plugin ships as one bundle — all skills release together at the plugin ver
 - [Install on Openclaw / Hermes / generic agents](./docs/install-generic.md)
 - [SellerSheet MCP setup](./docs/setup-mcp.md)
 - [Auto-update](./docs/auto-update.md)
+
+## Data sent
+
+- **What is sent.** Each tool call sends the request that action needs — the operation
+  (list, create, update, …), identifiers (store ref, ASIN, SKU, campaign/plan id), and the
+  values you or the AI supply (a bid, a budget, an address, a spreadsheet/tab name) — from
+  your agent to the hosted SellerSheet MCP server, which calls Amazon's SP-API / Ads API,
+  noon's Partner API, and Google's Sheets/Drive APIs on your behalf.
+- **What comes back.** Amazon's, noon's, or Google Sheets' response — orders, listings, ad
+  performance rows, FBA plan state, generated images — written into your Google Sheet or
+  returned to your agent for the AI to summarize. Nothing goes to a third party beyond
+  Amazon, noon, Google, and, only for image/copy generation, the configured AI image/text
+  provider.
+- **Authorization and scope.** Every call runs under your own SellerSheet OAuth grant or
+  API key, scoped to the stores you connected and the marketplaces you authorized (Ads
+  calls additionally need Advertising authorized per store, under My Stores). A read-only
+  key can read but not write; a restricted key only sees the stores it was scoped to.
+- **What is never sent.** Your Amazon or Google password (SellerSheet uses OAuth — it never
+  sees credentials), payment details, or data from a store you have not connected. The
+  skill files themselves send nothing — they are instructions for your agent, not a data
+  channel.
+- **Full policy:** [sellersheetai.com/privacy-policy](https://sellersheetai.com/privacy-policy).
 
 ## Contributing
 

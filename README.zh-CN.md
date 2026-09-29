@@ -176,6 +176,14 @@ bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-sk
 - [SellerSheet MCP 设置](./docs/setup-mcp.md)
 - [自动更新](./docs/auto-update.md)
 
+## 数据发送说明
+
+- **发送了什么。** 每次调用工具时，只发送该动作需要的请求——操作类型（查询、创建、更新……）、标识符（店铺引用、ASIN、SKU、广告活动/计划 ID）、以及你或 AI 提供的值（出价、预算、地址、表格/标签页名称）——从你的智能体发往托管的 SellerSheet MCP 服务器，再由它代表你调用 Amazon 的 SP-API / Ads API、noon 的 Partner API 和 Google 的 Sheets/Drive API。
+- **返回了什么。** Amazon、noon 或 Google Sheets 的响应——订单、Listing、广告表现数据、FBA 计划状态、生成的图片——被写入你的 Google 表格，或返回给你的智能体供 AI 总结。除 Amazon、noon、Google，以及仅在生成图片/文案时使用的 AI 图像/文本服务商外，不会发给任何第三方。
+- **授权与范围。** 每次调用都在你自己的 SellerSheet OAuth 授权或 API Key 下运行，范围限定在你已连接的店铺和已授权的站点（广告相关调用还需要在"我的店铺"中单独授权广告）。只读 Key 只能读不能写；受限 Key 只能看到被授权的店铺。
+- **绝不会发送的内容。** 你的 Amazon 或 Google 密码（SellerSheet 使用 OAuth，从不接触凭证）、支付信息，或你未连接店铺的数据。技能文件本身不发送任何数据——它们只是给你的智能体看的说明，不是数据通道。
+- **完整政策：** [sellersheetai.com/privacy-policy](https://sellersheetai.com/privacy-policy)。
+
 ## 支持
 
 - Issues：[github.com/sellersheetai/sellersheet-skills/issues](https://github.com/sellersheetai/sellersheet-skills/issues)
