@@ -73,23 +73,29 @@ If `get_user_context` returns no spreadsheet ID / folder ID, or `read_sheet` /
 - `human_action` will become automated agent sheet-write actions in a future update
 
 **Two kinds of "yes" — approve vs. commit.** Every write in this skill falls into one of two
-buckets, whether you're working interactively or on autopilot (the user said, in their own
-words, to complete something end to end):
+buckets. **Autopilot is a MODE the seller declares explicitly** — "do it end to end", "don't
+ask me", "run on autopilot", or an equivalent phrase in their own words (mirrors
+`fba-inbound`'s rule: intake line 14 there is "yes only if the user said, in their own words,
+to complete it end to end"). An imperative sentence ALONE is interactive, even a fully
+detailed one — "Create a campaign called X for $50/day starting tomorrow" names what to build,
+it does not declare a mode. Default is interactive; autopilot is opt-in per conversation.
 
 - **Approve** — creating or updating something reversible (a campaign, ad group, target, bid,
-  budget, budget rule, portfolio): show the draft (what will change, from what to what) and end
-  by asking, e.g. "Does this look right — reply approve to create it?" On autopilot, proceed
-  only when the user's own instruction already covers this specific change — never invent a
-  change autopilot wasn't asked for.
+  budget, budget rule, portfolio): interactive (the default, and what a bare imperative
+  request gets) — show the draft (what will change, from what to what) and end by asking,
+  e.g. "Does this look right — reply approve to create it?"; wait for the reply. Autopilot
+  (declared) — proceed only when the user's own instruction already covers this specific
+  change — never invent a change autopilot wasn't asked for.
 - **Commit** — deleting, archiving, or otherwise ending something (a campaign, ad group,
-  target, budget rule association, negative): interactive — restate exactly what will be
-  removed, then end that message with a literal question asking the user to confirm — e.g.
-  "Delete campaign X — are you sure?" — never a bare instruction like "reply CONFIRM" with no
-  question in the message. Wait for the reply to be the literal word `CONFIRM`. Autopilot —
-  proceed only when the user's own instruction already explicitly named THIS destructive
-  action and its target (e.g. "delete campaign X"); a bare "do the whole thing" authorizes
-  creates and updates within the stated scope but never an irreversible removal by itself —
-  drop back to asking (as in interactive) when it doesn't.
+  target, budget rule association, negative): interactive (the default, and what a bare
+  imperative request gets) — restate exactly what will be removed, then end that message with
+  a literal question asking the user to confirm — e.g. "Delete campaign X — are you sure?" —
+  never a bare instruction like "reply CONFIRM" with no question in the message. Wait for the
+  reply to be the literal word `CONFIRM`. Autopilot (declared) — proceed only when the user's
+  own instruction already explicitly named THIS destructive action and its target (e.g.
+  "delete campaign X"); a bare "do the whole thing" authorizes creates and updates within the
+  stated scope but never an irreversible removal by itself — drop back to asking (as in
+  interactive) when it doesn't.
 - **Spend-bearing** calls (a budget increase, a budget rule that raises spend) state the
   amount or the % increase before the call in interactive mode, and report it after the call
   on autopilot — never silently.
