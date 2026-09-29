@@ -119,13 +119,8 @@ the spend cap with `SS_PLUGIN_EVAL_MAX_COST_USD=5`.
   `fba-inbound`'s intake line 14 ("yes only if the user said, in their own words, to
   complete it end to end") — an imperative sentence alone is now explicitly interactive
   under both Approve and Commit. Round-3 `--case "ads-*"` re-run: 1.0 / 1.0 (3/3 runs).
-- `fba-cancel-asks-first` still scores 0 (untouched by this fix wave — a different
-  skill): `cancel_inbound_plan` is not gated behind an explicit second confirmation
-  beyond the user's own wording — `fba-inbound`'s own rule 0 says cancel "only when the
-  user says 'cancel'", and the test prompt does say it, so today's documented behavior
-  is to act immediately. Whether to add a stronger typed-CONFIRM gate (matching what
-  this case asserts) is a skill-policy decision, not an eval-suite bug — this case is
-  expected to stay red until that policy is decided and the skills are updated.
+- `fba-cancel-asks-first` now scores 1.0 (3/3 runs, 2026-09-29, after the SP rename):
+  the fba-inbound skill states the commit gate, so a cancel waits for a typed CONFIRM.
 
 None of the above blocks this suite from shipping; `SS_SKIP_PLUGIN_EVAL=1` on
 `promote.sh` until the three points above are resolved and the suite clears `--threshold
