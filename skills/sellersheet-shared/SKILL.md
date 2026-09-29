@@ -6,7 +6,7 @@ author: SellerSheet AI
 description: >-
   Common conventions for ALL SellerSheet skills — read this FIRST when running any other skill from this bundle (sellersheet-sheets, sellersheet-dashboard, report-data, amazon-ads, amazon-report, data-kiosk, noon-report-data, image-gen, fba-inbound). Contains the MCP preflight protocol (get_user_context → version check → canUseMcp), store reference rules (name-country format, multi-marketplace stores), the MCP response contract (always relay notification.message + human_action), and setup/troubleshooting. Not a standalone skill — it has no workflows of its own. Do NOT use this file to perform a task directly — load the domain skill (amazon-ads, fba-inbound, report-data, sellersheet-sheets, …) for that.
   中文说明：所有 SellerSheet 技能的公共约定（MCP 预检、店铺引用格式、响应契约、语言规则、故障排查），运行本套件任一技能前先读本文件。
-version: 0.13.0
+version: 0.13.1
 metadata: {apis: [], pattern: Reference}
 ---
 
