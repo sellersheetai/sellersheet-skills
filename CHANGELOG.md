@@ -11,6 +11,17 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.13.2] — 2026-09-30
+
+### Limits — pace and concurrency
+
+- `sellersheet-shared` → new **Limits** section: each plan allows a fixed number of tool
+  calls at the same time (`get_user_context` → `subscriptionInfo.limits.concurrent_calls`).
+  Over it a call fails with `concurrency_limit_exceeded` and `retry_after` — retry after a
+  second and run calls one after another. `rate_limit_exceeded` is the per-minute pace.
+  Both carry `upgrades` and a ready-to-relay `human_action`.
+- Troubleshooting gains a `concurrency_limit_exceeded` row.
+
 ## [0.13.1] — 2026-09-30
 
 ### Working rules, each stated once
