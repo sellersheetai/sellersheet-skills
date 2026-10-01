@@ -25,7 +25,7 @@
    "label": {
     "kind": "payload",
     "column": "country",
-    "values": "iso2",
+    "values": "iso2_gb",
     "means": "marketplace",
     "nullable": false
    }
@@ -71,7 +71,7 @@
     "CA",
     "MX"
    ],
-   "note": "The row's marketplace as the payload ships it (our two-letter codes (UK, AE, …)). Auto-filtered from the store suffix; do not filter manually."
+   "note": "The row's marketplace as the payload ships it (Amazon's ISO spelling — 'GB' where SellerSheet says UK). Auto-filtered from the store suffix; do not filter manually."
   },
   {
    "db_column": "quantity_for_local_fulfillment",
@@ -97,7 +97,7 @@
   }
  ],
  "example_query": {
-  "store": "novaStore-UK",
+  "store": "myStore-UK",
   "tables": [
    "rpt_get_afn_inventory_data_by_country"
   ],

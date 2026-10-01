@@ -758,7 +758,7 @@
   }
  ],
  "example_query": {
-  "store": "novaStore-UK",
+  "store": "myStore-UK",
   "tables": [
    "rpt_get_fba_inventory_planning_data"
   ],
