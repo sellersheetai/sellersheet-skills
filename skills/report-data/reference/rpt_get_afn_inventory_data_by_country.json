@@ -26,7 +26,8 @@
     "kind": "payload",
     "column": "country",
     "values": "iso2",
-    "means": "marketplace"
+    "means": "marketplace",
+    "nullable": false
    }
   }
  },
@@ -69,7 +70,8 @@
     "US",
     "CA",
     "MX"
-   ]
+   ],
+   "note": "The row's marketplace as the payload ships it (our two-letter codes (UK, AE, …)). Auto-filtered from the store suffix; do not filter manually."
   },
   {
    "db_column": "quantity_for_local_fulfillment",

@@ -24,7 +24,8 @@
     "kind": "requested",
     "column": "profile_id",
     "values": null,
-    "means": "marketplace"
+    "means": "marketplace",
+    "nullable": false
    }
   }
  },
@@ -37,7 +38,8 @@
   {
    "db_column": "profile_id",
    "type": "str",
-   "comment": "Amazon Ads profile id."
+   "comment": "Amazon Ads profile id.",
+   "note": "Ads profile id (one per marketplace) — auto-filtered from the store suffix; do not filter manually."
   },
   {
    "db_column": "country_code",

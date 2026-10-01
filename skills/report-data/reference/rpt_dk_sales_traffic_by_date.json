@@ -23,7 +23,8 @@
     "kind": "requested",
     "column": "country_code",
     "values": null,
-    "means": "marketplace"
+    "means": "marketplace",
+    "nullable": false
    }
   }
  },
@@ -46,7 +47,8 @@
   {
    "db_column": "country_code",
    "type": "str",
-   "comment": "Marketplace (e.g. US, UK, DE). Defaults to '_primary_' on single-mkt stores. Always include in filters for multi-mkt stores."
+   "comment": "Marketplace (e.g. US, UK, DE). Defaults to '_primary_' on single-mkt stores. Always include in filters for multi-mkt stores.",
+   "note": "Marketplace code (UK/US/AE/...). Auto-filtered from the store suffix on per-marketplace tables."
   },
   {
    "db_column": "marketplace_id",

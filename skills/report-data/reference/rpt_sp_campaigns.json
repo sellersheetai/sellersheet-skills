@@ -24,7 +24,8 @@
     "kind": "requested",
     "column": "profile_id",
     "values": null,
-    "means": "marketplace"
+    "means": "marketplace",
+    "nullable": false
    }
   }
  },

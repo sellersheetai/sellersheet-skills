@@ -27,7 +27,8 @@
     "kind": "payload",
     "column": "country",
     "values": "iso2_gb",
-    "means": "marketplace"
+    "means": "marketplace",
+    "nullable": false
    }
   }
  },
@@ -75,7 +76,8 @@
   {
    "db_column": "country",
    "amazon_header": "country",
-   "type": "str"
+   "type": "str",
+   "note": "The row's marketplace as the payload ships it (Amazon's ISO spelling — 'GB' where SellerSheet says UK). Auto-filtered from the store suffix; do not filter manually."
   },
   {
    "db_column": "qty_charged",

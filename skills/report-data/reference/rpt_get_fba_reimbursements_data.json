@@ -25,7 +25,8 @@
     "kind": "none",
     "column": null,
     "values": null,
-    "means": "marketplace"
+    "means": "marketplace",
+    "nullable": false
    }
   }
  },

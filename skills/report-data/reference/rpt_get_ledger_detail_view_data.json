@@ -29,7 +29,8 @@
     "kind": "payload",
     "column": "country",
     "values": "iso2_gb",
-    "means": "location"
+    "means": "location",
+    "nullable": false
    }
   }
  },
@@ -92,7 +93,8 @@
   {
    "db_column": "country",
    "amazon_header": "\"Country\"",
-   "type": "str"
+   "type": "str",
+   "note": "Inventory location (fulfilment-centre country), not marketplace as the payload ships it (Amazon's ISO spelling — 'GB' where SellerSheet says UK). Auto-filtered from the store suffix; do not filter manually."
   },
   {
    "db_column": "reconciled_quantity",

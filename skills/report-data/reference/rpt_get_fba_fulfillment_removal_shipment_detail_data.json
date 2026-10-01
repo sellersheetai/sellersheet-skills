@@ -26,7 +26,8 @@
     "kind": "none",
     "column": null,
     "values": null,
-    "means": "marketplace"
+    "means": "marketplace",
+    "nullable": false
    }
   }
  },
@@ -47,7 +48,7 @@
    "db_column": "country_code",
    "amazon_header": "(infrastructure)",
    "type": "str",
-   "note": "Marketplace code (UK/US/AE/...). Auto-filtered from the store suffix on per-marketplace tables."
+   "note": "Not this table's marketplace: a legacy stamp of the requested marketplace, NULL on rows written since 2026-10-01. Do not filter on it — see _meta.marketplace."
   },
   {
    "db_column": "request_date",

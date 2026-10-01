@@ -29,7 +29,8 @@
     "kind": "payload",
     "column": "country_code",
     "values": "iso2",
-    "means": "marketplace"
+    "means": "marketplace",
+    "nullable": false
    }
   }
  },
@@ -57,7 +58,8 @@
   {
    "db_column": "country_code",
    "amazon_header": "country-code",
-   "type": "str"
+   "type": "str",
+   "note": "The row's marketplace as the payload ships it (our two-letter codes (UK, AE, …)). Auto-filtered from the store suffix; do not filter manually."
   },
   {
    "db_column": "longest_side",

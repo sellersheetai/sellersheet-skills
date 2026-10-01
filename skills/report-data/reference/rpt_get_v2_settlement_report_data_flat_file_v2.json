@@ -27,7 +27,8 @@
     "kind": "payload",
     "column": "marketplace_name",
     "values": "amazon_tld",
-    "means": "marketplace"
+    "means": "marketplace",
+    "nullable": true
    }
   }
  },
@@ -91,7 +92,8 @@
   {
    "db_column": "marketplace_name",
    "amazon_header": "marketplace-name",
-   "type": "str"
+   "type": "str",
+   "note": "The row's marketplace as the payload ships it ('Amazon.co.uk' style). Auto-filtered from the store suffix; do not filter manually. NULL on some rows — those are excluded by a marketplace filter."
   },
   {
    "db_column": "amount_type",

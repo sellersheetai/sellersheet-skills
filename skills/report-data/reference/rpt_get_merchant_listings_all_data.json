@@ -26,7 +26,8 @@
     "kind": "requested",
     "column": "country_code",
     "values": null,
-    "means": "marketplace"
+    "means": "marketplace",
+    "nullable": false
    }
   }
  },

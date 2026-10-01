@@ -25,7 +25,8 @@
     "kind": "payload",
     "column": "sales_channel",
     "values": "amazon_tld",
-    "means": "marketplace"
+    "means": "marketplace",
+    "nullable": false
    }
   }
  },
@@ -65,7 +66,8 @@
   {
    "db_column": "sales_channel",
    "amazon_header": "sales-channel",
-   "type": "str"
+   "type": "str",
+   "note": "The row's marketplace as the payload ships it ('Amazon.co.uk' style). Auto-filtered from the store suffix; do not filter manually."
   },
   {
    "db_column": "order_channel",

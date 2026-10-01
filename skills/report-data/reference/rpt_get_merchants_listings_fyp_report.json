@@ -28,7 +28,8 @@
     "kind": "requested",
     "column": "country_code",
     "values": null,
-    "means": "marketplace"
+    "means": "marketplace",
+    "nullable": false
    }
   }
  },
@@ -81,7 +82,8 @@
   {
    "db_column": "country_code",
    "amazon_header": "(injected by per_mkt fan-out)",
-   "type": "str"
+   "type": "str",
+   "note": "Marketplace code (UK/US/AE/...). Auto-filtered from the store suffix on per-marketplace tables."
   },
   {
    "db_column": "snapshot_date",
