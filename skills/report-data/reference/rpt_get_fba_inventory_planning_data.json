@@ -26,7 +26,16 @@
    "When recommended_order_quantity is NULL (Amazon didn't compute a recommendation), fall back to a computed suggestion (see sellersheet-dashboard restock fallback: MAX(0, ROUND(units_shipped_t30/30 × target_cover_days) − available − inbound)) and label it as computed, not Amazon's."
   ],
   "retention_days": 7,
-  "retention_note": "rows older than 7 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note"
+  "retention_note": "rows older than 7 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note",
+  "marketplace": {
+   "grain": "per_mkt",
+   "label": {
+    "kind": "requested",
+    "column": "country_code",
+    "values": null,
+    "means": "marketplace"
+   }
+  }
  },
  "columns": [
   {

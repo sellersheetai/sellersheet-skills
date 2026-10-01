@@ -20,7 +20,16 @@
   ],
   "cron": "17 */12 * * *",
   "date_column_nullable": true,
-  "date_column_note": "VENDOR TRUTH: ~12% of rows (97k of 790k) have NULL posted_date — settlement summary and fee/adjustment lines carry no posted-date in Amazon's file; settlement_start/end_date exist ONLY on the one summary row per settlement. For transaction-level temporal analysis filter {'op':'not_null'} on posted_date; to bound by settlement period, join via settlement_id to the summary row."
+  "date_column_note": "VENDOR TRUTH: ~12% of rows (97k of 790k) have NULL posted_date — settlement summary and fee/adjustment lines carry no posted-date in Amazon's file; settlement_start/end_date exist ONLY on the one summary row per settlement. For transaction-level temporal analysis filter {'op':'not_null'} on posted_date; to bound by settlement period, join via settlement_id to the summary row.",
+  "marketplace": {
+   "grain": "per_mkt",
+   "label": {
+    "kind": "payload",
+    "column": "marketplace_name",
+    "values": "amazon_tld",
+    "means": "marketplace"
+   }
+  }
  },
  "columns": [
   {

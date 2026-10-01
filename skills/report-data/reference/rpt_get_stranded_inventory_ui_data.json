@@ -21,7 +21,16 @@
   "cron": "30 */6 * * *",
   "calibration_note": "2026-07-11 triage: 5 columns are 0% populated everywhere (fulfillment_center_id, quantity, days_in_stranded_inventory, estimated_removal_cost, image) — Amazon stopped shipping them; kept for legacy reads, do not rely on them.",
   "retention_days": 7,
-  "retention_note": "rows older than 7 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note"
+  "retention_note": "rows older than 7 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note",
+  "marketplace": {
+   "grain": "account",
+   "label": {
+    "kind": "none",
+    "column": null,
+    "values": null,
+    "means": "marketplace"
+   }
+  }
  },
  "columns": [
   {

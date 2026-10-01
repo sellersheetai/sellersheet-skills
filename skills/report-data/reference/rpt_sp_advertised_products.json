@@ -22,7 +22,16 @@
    "Uses reportTypeId=spAdvertisedProduct with groupBy=[advertiser]."
   ],
   "retention_days": 400,
-  "retention_note": "rows older than 400 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note"
+  "retention_note": "rows older than 400 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note",
+  "marketplace": {
+   "grain": "per_mkt",
+   "label": {
+    "kind": "requested",
+    "column": "profile_id",
+    "values": null,
+    "means": "marketplace"
+   }
+  }
  },
  "columns": [
   {

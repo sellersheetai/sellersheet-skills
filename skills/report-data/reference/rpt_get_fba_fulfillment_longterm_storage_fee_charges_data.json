@@ -20,7 +20,16 @@
   ],
   "cron": "7 1 * * *",
   "date_column_nullable": true,
-  "date_column_note": "0 NULL rows live today; column stays nullable in schema for legacy compat only."
+  "date_column_note": "0 NULL rows live today; column stays nullable in schema for legacy compat only.",
+  "marketplace": {
+   "grain": "account",
+   "label": {
+    "kind": "payload",
+    "column": "country",
+    "values": "iso2_gb",
+    "means": "marketplace"
+   }
+  }
  },
  "columns": [
   {

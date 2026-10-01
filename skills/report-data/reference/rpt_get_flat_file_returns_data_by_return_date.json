@@ -19,7 +19,16 @@
   ],
   "cron": "1 1 * * *",
   "date_column_nullable": true,
-  "date_column_note": "0 NULL rows live today; column stays nullable in schema for legacy compat only."
+  "date_column_note": "0 NULL rows live today; column stays nullable in schema for legacy compat only.",
+  "marketplace": {
+   "grain": "region",
+   "label": {
+    "kind": "none",
+    "column": null,
+    "values": null,
+    "means": "marketplace"
+   }
+  }
  },
  "columns": [
   {
