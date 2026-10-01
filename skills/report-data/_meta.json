@@ -33,30 +33,32 @@
       "pii": false,
       "deprecated": false,
       "strategy": "request",
-      "description": "AFN sellable inventory snapshot per SKU/FNSKU.",
-      "key_columns": [
-        "seller_sku",
+      "unique_key": [
+        "store_id",
+        "snapshot_date",
         "fnsku",
-        "asin",
-        "snapshot_date"
+        "warehouse_condition_code",
+        "condition_type"
       ],
+      "description": "AFN sellable inventory snapshot per SKU/FNSKU.",
       "reference": "reference/rpt_get_afn_inventory_data.json"
     },
     {
       "table": "rpt_get_fba_estimated_fba_fees_txt_data",
       "report_type": "GET_FBA_ESTIMATED_FBA_FEES_TXT_DATA",
-      "is_snapshot": false,
+      "is_snapshot": true,
       "queryable": true,
       "pii": false,
       "deprecated": false,
       "strategy": "request",
-      "description": "Estimated FBA fee preview snapshots.",
-      "key_columns": [
+      "unique_key": [
+        "store_id",
+        "snapshot_date",
         "sku",
-        "fnsku",
         "asin",
-        "report_date"
+        "amazon_store"
       ],
+      "description": "Estimated FBA fee preview snapshots.",
       "reference": "reference/rpt_get_fba_estimated_fba_fees_txt_data.json"
     },
     {
@@ -67,13 +69,14 @@
       "pii": false,
       "deprecated": false,
       "strategy": "request",
-      "description": "Full FBA inventory snapshot (Manage Your Inventory) — afn-* quantity buckets, listing-exists flags, per-unit volume. Age buckets live in rpt_get_fba_inventory_planning_data, not here.",
-      "key_columns": [
+      "unique_key": [
+        "store_id",
+        "snapshot_date",
         "sku",
-        "fnsku",
-        "asin",
-        "snapshot_date"
+        "condition",
+        "country_code"
       ],
+      "description": "Full FBA inventory snapshot (Manage Your Inventory) — afn-* quantity buckets, listing-exists flags, per-unit volume. Age buckets live in rpt_get_fba_inventory_planning_data, not here.",
       "reference": "reference/rpt_get_fba_myi_all_inventory_data.json"
     },
     {
@@ -84,13 +87,13 @@
       "pii": false,
       "deprecated": false,
       "strategy": "request",
-      "description": "FBA reimbursement events and amounts.",
-      "key_columns": [
+      "unique_key": [
+        "store_id",
         "approval_date",
         "reimbursement_id",
-        "case_id",
-        "report_date"
+        "case_id"
       ],
+      "description": "FBA reimbursement events and amounts.",
       "reference": "reference/rpt_get_fba_reimbursements_data.json"
     },
     {
@@ -101,13 +104,14 @@
       "pii": false,
       "deprecated": false,
       "strategy": "request",
-      "description": "FBA customer return events by SKU and fulfillment center.",
-      "key_columns": [
+      "unique_key": [
+        "store_id",
         "return_date",
         "order_id",
         "sku",
-        "report_date"
+        "fulfillment_center_id"
       ],
+      "description": "FBA customer return events by SKU and fulfillment center.",
       "reference": "reference/rpt_get_fba_fulfillment_customer_returns_data.json"
     },
     {
@@ -118,13 +122,12 @@
       "pii": true,
       "deprecated": false,
       "strategy": "request",
-      "description": "Amazon-fulfilled shipment rows including encrypted buyer PII.",
-      "key_columns": [
-        "amazon_order_id",
-        "merchant_order_id",
+      "unique_key": [
+        "store_id",
         "shipment_id",
-        "report_date"
+        "shipment_item_id"
       ],
+      "description": "Amazon-fulfilled shipment rows including encrypted buyer PII.",
       "reference": "reference/rpt_fba_shipments.json"
     },
     {
@@ -135,10 +138,15 @@
       "pii": false,
       "deprecated": true,
       "strategy": "request",
-      "description": "Deprecated inventory adjustment feed retained for legacy data.",
-      "key_columns": [
-        "report_date"
+      "unique_key": [
+        "store_id",
+        "adjusted_date",
+        "sku",
+        "fnsku",
+        "fulfillment_center_id",
+        "reason"
       ],
+      "description": "Deprecated inventory adjustment feed retained for legacy data.",
       "reference": "reference/rpt_inventory_adjustments.json"
     },
     {
@@ -149,10 +157,14 @@
       "pii": false,
       "deprecated": true,
       "strategy": "request",
-      "description": "Deprecated aged inventory report retained for legacy data.",
-      "key_columns": [
-        "snapshot_date"
+      "unique_key": [
+        "store_id",
+        "snapshot_date",
+        "sku",
+        "condition",
+        "country_code"
       ],
+      "description": "Deprecated aged inventory report retained for legacy data.",
       "reference": "reference/rpt_inventory_age.json"
     },
     {
@@ -163,13 +175,15 @@
       "pii": false,
       "deprecated": false,
       "strategy": "request",
-      "description": "Inventory ledger events across fulfillment centers.",
-      "key_columns": [
+      "unique_key": [
+        "store_id",
         "date",
         "fnsku",
-        "asin",
-        "report_date"
+        "reference_id",
+        "event_type",
+        "fulfillment_center"
       ],
+      "description": "Inventory ledger events across fulfillment centers.",
       "reference": "reference/rpt_get_ledger_detail_view_data.json"
     },
     {
@@ -180,13 +194,14 @@
       "pii": false,
       "deprecated": false,
       "strategy": "request",
-      "description": "Daily all-listings snapshot for merchant catalog state. After each parse, new SKUs are automatically enriched into the listing_images table (fetch-once).",
-      "key_columns": [
+      "unique_key": [
+        "store_id",
+        "snapshot_date",
         "seller_sku",
-        "status",
-        "fulfillment_channel",
-        "snapshot_date"
+        "country_code",
+        "item_condition"
       ],
+      "description": "Daily all-listings snapshot for merchant catalog state. After each parse, new SKUs are automatically enriched into the listing_images table (fetch-once).",
       "reference": "reference/rpt_get_merchant_listings_all_data.json"
     },
     {
@@ -197,14 +212,12 @@
       "pii": false,
       "deprecated": false,
       "strategy": "enrichment",
-      "description": "Persistent listing image cache keyed by (store_id, country_code, seller_sku). Populated automatically after GET_MERCHANT_LISTINGS_ALL_DATA syncs — only new SKUs call ListingsItems API. No date in the unique key, so report_date='latest' applies no date filter here; never pin an explicit date.",
-      "key_columns": [
-        "seller_sku",
-        "asin",
-        "main_image_url",
-        "listing_status",
-        "fetched_at"
+      "unique_key": [
+        "store_id",
+        "country_code",
+        "seller_sku"
       ],
+      "description": "Persistent listing image cache keyed by (store_id, country_code, seller_sku). Populated automatically after GET_MERCHANT_LISTINGS_ALL_DATA syncs — only new SKUs call ListingsItems API. No date in the unique key, so report_date='latest' applies no date filter here; never pin an explicit date.",
       "reference": "reference/listing_images.json"
     },
     {
@@ -215,13 +228,15 @@
       "pii": false,
       "deprecated": false,
       "strategy": "request",
-      "description": "Long-term storage fee charge data.",
-      "key_columns": [
-        "snapshot_date",
-        "sku",
+      "unique_key": [
+        "store_id",
+        "report_date",
         "fnsku",
-        "report_date"
+        "sku",
+        "country",
+        "condition"
       ],
+      "description": "Long-term storage fee charge data.",
       "reference": "reference/rpt_get_fba_fulfillment_longterm_storage_fee_charges_data.json"
     },
     {
@@ -232,13 +247,14 @@
       "pii": false,
       "deprecated": false,
       "strategy": "request",
-      "description": "Per-country FBA inventory split for NARF sellers (UK->DE/FR/IT/ES/SE; US->CA/MX). Pairs with rpt_get_afn_inventory_data pool total.",
-      "key_columns": [
+      "unique_key": [
+        "store_id",
+        "snapshot_date",
         "fnsku",
         "country",
-        "condition_type",
-        "snapshot_date"
+        "condition_type"
       ],
+      "description": "Per-country FBA inventory split for NARF sellers (UK->DE/FR/IT/ES/SE; US->CA/MX). Pairs with rpt_get_afn_inventory_data pool total.",
       "reference": "reference/rpt_get_afn_inventory_data_by_country.json"
     },
     {
@@ -249,12 +265,12 @@
       "pii": false,
       "deprecated": false,
       "strategy": "request",
-      "description": "Per-marketplace daily snapshot of Amazon account health: AHR score+status, 9 performance rates with sub-counts, 12 policy-violation defects counts.",
-      "key_columns": [
+      "unique_key": [
         "store_id",
         "marketplace_id",
         "snapshot_date"
       ],
+      "description": "Per-marketplace daily snapshot of Amazon account health: AHR score+status, 9 performance rates with sub-counts, 12 policy-violation defects counts.",
       "reference": "reference/rpt_get_v2_seller_performance_report.json"
     },
     {
@@ -265,13 +281,13 @@
       "pii": false,
       "deprecated": false,
       "strategy": "request",
-      "description": "Order-level flat file report with item pricing and fulfillment details.",
-      "key_columns": [
+      "unique_key": [
+        "store_id",
         "amazon_order_id",
-        "merchant_order_id",
-        "purchase_date",
-        "report_date"
+        "sku",
+        "order_item_id"
       ],
+      "description": "Order-level flat file report with item pricing and fulfillment details.",
       "reference": "reference/rpt_orders.json"
     },
     {
@@ -282,13 +298,13 @@
       "pii": false,
       "deprecated": false,
       "strategy": "request",
-      "description": "FBA removal order events and quantity outcomes.",
-      "key_columns": [
-        "request_date",
+      "unique_key": [
+        "store_id",
         "order_id",
-        "order_source",
-        "report_date"
+        "sku",
+        "disposition"
       ],
+      "description": "FBA removal order events and quantity outcomes.",
       "reference": "reference/rpt_get_fba_fulfillment_removal_order_detail_data.json"
     },
     {
@@ -299,13 +315,15 @@
       "pii": false,
       "deprecated": false,
       "strategy": "request",
-      "description": "Restock recommendation snapshot from Amazon.",
-      "key_columns": [
-        "country",
-        "product_name",
+      "unique_key": [
+        "store_id",
+        "snapshot_date",
+        "sku",
         "fnsku",
-        "snapshot_date"
+        "country_code",
+        "condition"
       ],
+      "description": "Restock recommendation snapshot from Amazon.",
       "reference": "reference/rpt_get_fba_inventory_planning_data.json"
     },
     {
@@ -316,13 +334,14 @@
       "pii": false,
       "deprecated": false,
       "strategy": "request",
-      "description": "Merchant returns flat file with request and resolution details.",
-      "key_columns": [
+      "unique_key": [
+        "store_id",
+        "report_date",
         "order_id",
-        "order_date",
-        "return_request_date",
-        "report_date"
+        "merchant_sku",
+        "amazon_rma_id"
       ],
+      "description": "Merchant returns flat file with request and resolution details.",
       "reference": "reference/rpt_get_flat_file_returns_data_by_return_date.json"
     },
     {
@@ -333,12 +352,12 @@
       "pii": false,
       "deprecated": false,
       "strategy": "data_kiosk",
-      "description": "Store-level daily Sales & Traffic KPIs (one row per store/marketplace/day) from Amazon Data Kiosk analytics_salesAndTraffic_2024_04_24 — NOT the legacy GET_SALES_AND_TRAFFIC_REPORT. Nested Amount objects unwrapped to numeric + shared currency_code. unit_session_percentage = conversion rate; buy_box_percentage = buy-box win rate.",
-      "key_columns": [
+      "unique_key": [
         "store_id",
         "date",
         "country_code"
       ],
+      "description": "Store-level daily Sales & Traffic KPIs (one row per store/marketplace/day) from Amazon Data Kiosk analytics_salesAndTraffic_2024_04_24 — NOT the legacy GET_SALES_AND_TRAFFIC_REPORT. Nested Amount objects unwrapped to numeric + shared currency_code. unit_session_percentage = conversion rate; buy_box_percentage = buy-box win rate.",
       "reference": "reference/rpt_dk_sales_traffic_by_date.json"
     },
     {
@@ -349,14 +368,14 @@
       "pii": false,
       "deprecated": false,
       "strategy": "data_kiosk",
-      "description": "ASIN-level daily Sales & Traffic (one row per store/marketplace/day/child_asin/sku) from Amazon Data Kiosk analytics_salesAndTraffic_2024_04_24 — NOT the legacy GET_SALES_AND_TRAFFIC_REPORT. Nested Amount objects unwrapped to numeric + shared currency_code. unit_session_percentage = conversion rate; buy_box_percentage = buy-box win rate.",
-      "key_columns": [
+      "unique_key": [
         "store_id",
         "date",
         "child_asin",
         "sku",
         "country_code"
       ],
+      "description": "ASIN-level daily Sales & Traffic (one row per store/marketplace/day/child_asin/sku) from Amazon Data Kiosk analytics_salesAndTraffic_2024_04_24 — NOT the legacy GET_SALES_AND_TRAFFIC_REPORT. Nested Amount objects unwrapped to numeric + shared currency_code. unit_session_percentage = conversion rate; buy_box_percentage = buy-box win rate.",
       "reference": "reference/rpt_dk_sales_traffic_by_asin.json"
     },
     {
@@ -367,13 +386,12 @@
       "pii": true,
       "deprecated": false,
       "strategy": "request",
-      "description": "Seller feedback rows with encrypted rater email.",
-      "key_columns": [
-        "date",
-        "rating",
+      "unique_key": [
+        "store_id",
         "order_id",
-        "report_date"
+        "date"
       ],
+      "description": "Seller feedback rows with encrypted rater email.",
       "reference": "reference/rpt_seller_feedback.json"
     },
     {
@@ -384,13 +402,15 @@
       "pii": false,
       "deprecated": false,
       "strategy": "poll_only",
-      "description": "Settlement flat file rows from Amazon poll-only delivery.",
-      "key_columns": [
+      "unique_key": [
+        "store_id",
         "settlement_id",
-        "settlement_start_date",
-        "settlement_end_date",
+        "order_id",
+        "amount_type",
+        "amount_description",
         "posted_date"
       ],
+      "description": "Settlement flat file rows from Amazon poll-only delivery.",
       "reference": "reference/rpt_get_v2_settlement_report_data_flat_file_v2.json"
     },
     {
@@ -401,13 +421,15 @@
       "pii": false,
       "deprecated": false,
       "strategy": "request",
-      "description": "Monthly storage fee charge data.",
-      "key_columns": [
+      "unique_key": [
+        "store_id",
+        "report_date",
+        "month_of_charge",
         "asin",
         "fnsku",
-        "product_name",
-        "report_date"
+        "fulfillment_center"
       ],
+      "description": "Monthly storage fee charge data.",
       "reference": "reference/rpt_get_fba_storage_fee_charges_data.json"
     },
     {
@@ -418,13 +440,15 @@
       "pii": false,
       "deprecated": false,
       "strategy": "request",
-      "description": "Stranded inventory snapshot with removal actions.",
-      "key_columns": [
-        "primary_action",
-        "date_stranded",
-        "date_to_take_auto_removal",
-        "snapshot_date"
+      "unique_key": [
+        "store_id",
+        "snapshot_date",
+        "sku",
+        "fnsku",
+        "stranded_reason",
+        "condition"
       ],
+      "description": "Stranded inventory snapshot with removal actions.",
       "reference": "reference/rpt_get_stranded_inventory_ui_data.json"
     },
     {
@@ -435,349 +459,377 @@
       "pii": false,
       "deprecated": false,
       "strategy": "request",
-      "description": "Suppressed listings snapshot with issue reasons.",
-      "key_columns": [
-        "status",
-        "reason",
+      "unique_key": [
+        "store_id",
+        "snapshot_date",
         "sku",
-        "snapshot_date"
+        "asin",
+        "condition",
+        "issue_key",
+        "country_code"
       ],
+      "description": "Suppressed listings snapshot with issue reasons.",
       "reference": "reference/rpt_get_merchants_listings_fyp_report.json"
     },
     {
       "table": "rpt_sp_campaigns",
-      "report_type": "SP_CAMPAIGNS",
+      "report_type": "spCampaigns",
       "is_snapshot": false,
       "queryable": true,
       "pii": false,
       "deprecated": false,
       "strategy": "ad_cron",
-      "description": "Sponsored Products campaign-level daily performance.",
-      "key_columns": [
-        "campaign_id",
-        "campaign_name",
-        "spend",
-        "sales_14d",
-        "report_date"
+      "unique_key": [
+        "store_id",
+        "profile_id",
+        "report_date",
+        "campaign_id"
       ],
+      "description": "Sponsored Products campaign-level daily performance.",
       "reference": "reference/rpt_sp_campaigns.json"
     },
     {
       "table": "rpt_sp_campaign_placement",
-      "report_type": "spCampaigns (groupBy=campaignPlacement)",
+      "report_type": "spCampaignsByPlacement",
       "is_snapshot": false,
       "queryable": true,
       "pii": false,
       "deprecated": false,
       "strategy": "ad_cron",
-      "description": "SP campaign x placement performance (Top of Search / Detail Page / Other on-Amazon). top_of_search_impression_share populated only when Amazon has enough volume to disclose.",
-      "key_columns": [
+      "unique_key": [
+        "store_id",
         "profile_id",
         "report_date",
         "campaign_id",
         "placement_classification"
       ],
+      "description": "SP campaign x placement performance (Top of Search / Detail Page / Other on-Amazon). top_of_search_impression_share populated only when Amazon has enough volume to disclose.",
       "reference": "reference/rpt_sp_campaign_placement.json"
     },
     {
       "table": "rpt_sp_keywords",
-      "report_type": "SP_KEYWORDS",
+      "report_type": "spKeywords",
       "is_snapshot": false,
       "queryable": true,
       "pii": false,
       "deprecated": false,
       "strategy": "ad_cron",
-      "description": "Sponsored Products keyword-level daily performance.",
-      "key_columns": [
-        "keyword",
-        "match_type",
-        "spend",
-        "sales_14d",
-        "report_date"
+      "unique_key": [
+        "store_id",
+        "profile_id",
+        "report_date",
+        "campaign_id",
+        "ad_group_id",
+        "keyword_id",
+        "match_type"
       ],
+      "description": "Sponsored Products keyword-level daily performance.",
       "reference": "reference/rpt_sp_keywords.json"
     },
     {
       "table": "rpt_sp_targets",
-      "report_type": "SP_TARGETS",
+      "report_type": "spTargets",
       "is_snapshot": false,
       "queryable": true,
       "pii": false,
       "deprecated": false,
       "strategy": "ad_cron",
-      "description": "Sponsored Products target-level daily performance.",
-      "key_columns": [
-        "targeting_text",
-        "targeting_type",
-        "spend",
-        "sales_14d",
-        "report_date"
+      "unique_key": [
+        "store_id",
+        "profile_id",
+        "report_date",
+        "campaign_id",
+        "ad_group_id",
+        "target_id",
+        "keyword_id",
+        "match_type"
       ],
+      "description": "Sponsored Products target-level daily performance.",
       "reference": "reference/rpt_sp_targets.json"
     },
     {
       "table": "rpt_sp_search_terms",
-      "report_type": "SP_SEARCH_TERMS",
+      "report_type": "spSearchTerm",
       "is_snapshot": false,
       "queryable": true,
       "pii": false,
       "deprecated": false,
       "strategy": "ad_cron",
-      "description": "Sponsored Products search term report.",
-      "key_columns": [
-        "search_term",
-        "keyword",
-        "spend",
-        "purchases_14d",
-        "report_date"
+      "unique_key": [
+        "store_id",
+        "profile_id",
+        "report_date",
+        "campaign_id",
+        "ad_group_id",
+        "keyword_id",
+        "target_id",
+        "search_term"
       ],
+      "description": "Sponsored Products search term report.",
       "reference": "reference/rpt_sp_search_terms.json"
     },
     {
       "table": "rpt_sp_advertised_products",
-      "report_type": "SP_ADVERTISED_PRODUCTS",
+      "report_type": "spAdvertisedProduct",
       "is_snapshot": false,
       "queryable": true,
       "pii": false,
       "deprecated": false,
       "strategy": "ad_cron",
-      "description": "Sponsored Products advertised product daily performance.",
-      "key_columns": [
-        "advertised_sku",
-        "advertised_asin",
-        "spend",
-        "sales_14d",
-        "report_date"
+      "unique_key": [
+        "store_id",
+        "profile_id",
+        "report_date",
+        "campaign_id",
+        "ad_group_id",
+        "ad_id"
       ],
+      "description": "Sponsored Products advertised product daily performance.",
       "reference": "reference/rpt_sp_advertised_products.json"
     },
     {
       "table": "rpt_sp_purchased_products",
-      "report_type": "SP_PURCHASED_PRODUCTS",
+      "report_type": "spPurchasedProduct",
       "is_snapshot": false,
       "queryable": true,
       "pii": false,
       "deprecated": false,
       "strategy": "ad_cron",
-      "description": "Sponsored Products purchased products report.",
-      "key_columns": [
-        "advertised_sku",
-        "purchased_asin",
-        "purchases_14d",
-        "sales_14d",
-        "report_date"
+      "unique_key": [
+        "store_id",
+        "profile_id",
+        "report_date",
+        "campaign_id",
+        "ad_group_id",
+        "keyword_id",
+        "target_id",
+        "purchased_asin"
       ],
+      "description": "Sponsored Products purchased products report.",
       "reference": "reference/rpt_sp_purchased_products.json"
     },
     {
       "table": "rpt_sp_ad_groups",
-      "report_type": "SP_AD_GROUPS",
+      "report_type": "spAdGroups",
       "is_snapshot": false,
       "queryable": true,
       "pii": false,
       "deprecated": false,
       "strategy": "ad_cron",
-      "description": "Sponsored Products ad group daily performance.",
-      "key_columns": [
-        "campaign_name",
-        "ad_group_name",
-        "spend",
-        "sales_14d",
-        "report_date"
+      "unique_key": [
+        "store_id",
+        "profile_id",
+        "report_date",
+        "campaign_id",
+        "ad_group_id"
       ],
+      "description": "Sponsored Products ad group daily performance.",
       "reference": "reference/rpt_sp_ad_groups.json"
     },
     {
       "table": "rpt_sb_campaigns",
-      "report_type": "SB_CAMPAIGNS",
+      "report_type": "sbCampaigns",
       "is_snapshot": false,
       "queryable": true,
       "pii": false,
       "deprecated": false,
       "strategy": "ad_cron",
-      "description": "Sponsored Brands campaign-level daily performance.",
-      "key_columns": [
-        "campaign_id",
-        "campaign_name",
-        "cost",
-        "sales",
-        "report_date"
+      "unique_key": [
+        "store_id",
+        "profile_id",
+        "report_date",
+        "campaign_id"
       ],
+      "description": "Sponsored Brands campaign-level daily performance.",
       "reference": "reference/rpt_sb_campaigns.json"
     },
     {
       "table": "rpt_sb_keywords",
-      "report_type": "SB_KEYWORDS",
+      "report_type": "sbKeywords",
       "is_snapshot": false,
       "queryable": true,
       "pii": false,
       "deprecated": false,
       "strategy": "ad_cron",
-      "description": "Sponsored Brands keyword-level daily performance.",
-      "key_columns": [
-        "keyword",
-        "match_type",
-        "cost",
-        "sales",
-        "report_date"
+      "unique_key": [
+        "store_id",
+        "profile_id",
+        "report_date",
+        "campaign_id",
+        "ad_group_id",
+        "keyword_id",
+        "match_type"
       ],
+      "description": "Sponsored Brands keyword-level daily performance.",
       "reference": "reference/rpt_sb_keywords.json"
     },
     {
       "table": "rpt_sb_targets",
-      "report_type": "SB_TARGETS",
+      "report_type": "sbTargets",
       "is_snapshot": false,
       "queryable": true,
       "pii": false,
       "deprecated": false,
       "strategy": "ad_cron",
-      "description": "Sponsored Brands target-level daily performance.",
-      "key_columns": [
-        "targeting_text",
-        "cost",
-        "sales",
-        "report_date"
+      "unique_key": [
+        "store_id",
+        "profile_id",
+        "report_date",
+        "campaign_id",
+        "ad_group_id",
+        "target_id"
       ],
+      "description": "Sponsored Brands target-level daily performance.",
       "reference": "reference/rpt_sb_targets.json"
     },
     {
       "table": "rpt_sb_search_terms",
-      "report_type": "SB_SEARCH_TERMS",
+      "report_type": "sbSearchTerm",
       "is_snapshot": false,
       "queryable": true,
       "pii": false,
       "deprecated": false,
       "strategy": "ad_cron",
-      "description": "Sponsored Brands search term report.",
-      "key_columns": [
-        "search_term",
-        "keyword",
-        "cost",
-        "report_date"
+      "unique_key": [
+        "store_id",
+        "profile_id",
+        "report_date",
+        "campaign_id",
+        "ad_group_id",
+        "keyword_id",
+        "target_id",
+        "search_term"
       ],
+      "description": "Sponsored Brands search term report.",
       "reference": "reference/rpt_sb_search_terms.json"
     },
     {
       "table": "rpt_sb_advertised_products",
-      "report_type": "SB_ADVERTISED_PRODUCTS",
+      "report_type": "sbAdvertisedProduct",
       "is_snapshot": false,
       "queryable": true,
       "pii": false,
       "deprecated": false,
       "strategy": "ad_cron",
-      "description": "Sponsored Brands advertised product daily performance.",
-      "key_columns": [
-        "advertised_asin",
-        "cost",
-        "sales",
-        "report_date"
+      "unique_key": [
+        "store_id",
+        "profile_id",
+        "report_date",
+        "campaign_id",
+        "ad_group_id",
+        "ad_id"
       ],
+      "description": "Sponsored Brands advertised product daily performance.",
       "reference": "reference/rpt_sb_advertised_products.json"
     },
     {
       "table": "rpt_sb_purchased_products",
-      "report_type": "SB_PURCHASED_PRODUCTS",
+      "report_type": "sbPurchasedProduct",
       "is_snapshot": false,
       "queryable": true,
       "pii": false,
       "deprecated": false,
       "strategy": "ad_cron",
-      "description": "Sponsored Brands purchased products report.",
-      "key_columns": [
-        "purchased_asin",
-        "purchases",
-        "sales",
-        "report_date"
+      "unique_key": [
+        "store_id",
+        "profile_id",
+        "report_date",
+        "campaign_id",
+        "ad_group_id",
+        "purchased_asin"
       ],
+      "description": "Sponsored Brands purchased products report.",
       "reference": "reference/rpt_sb_purchased_products.json"
     },
     {
       "table": "rpt_sb_ad_groups",
-      "report_type": "SB_AD_GROUPS",
+      "report_type": "sbAdGroups",
       "is_snapshot": false,
       "queryable": true,
       "pii": false,
       "deprecated": false,
       "strategy": "ad_cron",
-      "description": "Sponsored Brands ad group daily performance.",
-      "key_columns": [
-        "campaign_name",
-        "ad_group_name",
-        "cost",
-        "sales",
-        "report_date"
+      "unique_key": [
+        "store_id",
+        "profile_id",
+        "report_date",
+        "campaign_id",
+        "ad_group_id"
       ],
+      "description": "Sponsored Brands ad group daily performance.",
       "reference": "reference/rpt_sb_ad_groups.json"
     },
     {
       "table": "rpt_sd_campaigns",
-      "report_type": "SD_CAMPAIGNS",
+      "report_type": "sdCampaigns",
       "is_snapshot": false,
       "queryable": true,
       "pii": false,
       "deprecated": false,
       "strategy": "ad_cron",
-      "description": "Sponsored Display campaign-level daily performance.",
-      "key_columns": [
-        "campaign_id",
-        "campaign_name",
-        "cost",
-        "sales",
-        "report_date"
+      "unique_key": [
+        "store_id",
+        "profile_id",
+        "report_date",
+        "campaign_id"
       ],
+      "description": "Sponsored Display campaign-level daily performance.",
       "reference": "reference/rpt_sd_campaigns.json"
     },
     {
       "table": "rpt_sd_targets",
-      "report_type": "SD_TARGETS",
+      "report_type": "sdTargets",
       "is_snapshot": false,
       "queryable": true,
       "pii": false,
       "deprecated": false,
       "strategy": "ad_cron",
-      "description": "Sponsored Display target-level daily performance.",
-      "key_columns": [
-        "targeting_text",
-        "cost",
-        "sales",
-        "report_date"
+      "unique_key": [
+        "store_id",
+        "profile_id",
+        "report_date",
+        "campaign_id",
+        "ad_group_id",
+        "target_id"
       ],
+      "description": "Sponsored Display target-level daily performance.",
       "reference": "reference/rpt_sd_targets.json"
     },
     {
       "table": "rpt_sd_advertised_products",
-      "report_type": "SD_ADVERTISED_PRODUCTS",
+      "report_type": "sdAdvertisedProduct",
       "is_snapshot": false,
       "queryable": true,
       "pii": false,
       "deprecated": false,
       "strategy": "ad_cron",
-      "description": "Sponsored Display advertised product daily performance.",
-      "key_columns": [
-        "asin",
-        "sku",
-        "cost",
-        "sales",
-        "report_date"
+      "unique_key": [
+        "store_id",
+        "profile_id",
+        "report_date",
+        "campaign_id",
+        "ad_group_id",
+        "ad_id"
       ],
+      "description": "Sponsored Display advertised product daily performance.",
       "reference": "reference/rpt_sd_advertised_products.json"
     },
     {
       "table": "rpt_sd_ad_groups",
-      "report_type": "SD_AD_GROUPS",
+      "report_type": "sdAdGroups",
       "is_snapshot": false,
       "queryable": true,
       "pii": false,
       "deprecated": false,
       "strategy": "ad_cron",
-      "description": "Sponsored Display ad group daily performance.",
-      "key_columns": [
-        "campaign_name",
-        "ad_group_name",
-        "cost",
-        "sales",
-        "report_date"
+      "unique_key": [
+        "store_id",
+        "profile_id",
+        "report_date",
+        "campaign_id",
+        "ad_group_id"
       ],
+      "description": "Sponsored Display ad group daily performance.",
       "reference": "reference/rpt_sd_ad_groups.json"
     },
     {
@@ -788,16 +840,13 @@
       "pii": false,
       "deprecated": false,
       "strategy": "ads_list",
-      "description": "Sponsored Products ad-group-level negative keywords. Daily snapshot. Use to filter search-term mining queries: LEFT JOIN ON (campaign_id, ad_group_id, lower(keyword_text)) WHERE state='ENABLED' AND r.keyword_id IS NULL surfaces terms not yet negated.",
-      "key_columns": [
-        "keyword_id",
-        "campaign_id",
-        "ad_group_id",
-        "keyword_text",
-        "match_type",
-        "state",
-        "snapshot_date"
+      "unique_key": [
+        "store_id",
+        "profile_id",
+        "snapshot_date",
+        "keyword_id"
       ],
+      "description": "Sponsored Products ad-group-level negative keywords. Daily snapshot. Use to filter search-term mining queries: LEFT JOIN ON (campaign_id, ad_group_id, lower(keyword_text)) WHERE state='ENABLED' AND r.keyword_id IS NULL surfaces terms not yet negated.",
       "reference": "reference/rpt_sp_negative_keywords.json"
     },
     {
@@ -808,15 +857,13 @@
       "pii": false,
       "deprecated": false,
       "strategy": "ads_list",
-      "description": "Sponsored Products campaign-level negative keywords (apply across every ad group within a campaign). Daily snapshot. Pair with rpt_sp_negative_keywords for full-coverage negation lookup.",
-      "key_columns": [
-        "keyword_id",
-        "campaign_id",
-        "keyword_text",
-        "match_type",
-        "state",
-        "snapshot_date"
+      "unique_key": [
+        "store_id",
+        "profile_id",
+        "snapshot_date",
+        "keyword_id"
       ],
+      "description": "Sponsored Products campaign-level negative keywords (apply across every ad group within a campaign). Daily snapshot. Pair with rpt_sp_negative_keywords for full-coverage negation lookup.",
       "reference": "reference/rpt_sp_campaign_negative_keywords.json"
     },
     {
@@ -827,16 +874,13 @@
       "pii": false,
       "deprecated": false,
       "strategy": "ads_list",
-      "description": "Sponsored Products ad-group-level negative product targets (ASIN / category exclusions). Daily snapshot. targeting_expression is a JSON-stringified Amazon clause array — parse to extract the negated ASIN(s) or category id(s).",
-      "key_columns": [
-        "target_id",
-        "campaign_id",
-        "ad_group_id",
-        "targeting_expression",
-        "expression_type",
-        "state",
-        "snapshot_date"
+      "unique_key": [
+        "store_id",
+        "profile_id",
+        "snapshot_date",
+        "target_id"
       ],
+      "description": "Sponsored Products ad-group-level negative product targets (ASIN / category exclusions). Daily snapshot. targeting_expression is a JSON-stringified Amazon clause array — parse to extract the negated ASIN(s) or category id(s).",
       "reference": "reference/rpt_sp_negative_targets.json"
     },
     {
@@ -847,15 +891,13 @@
       "pii": false,
       "deprecated": false,
       "strategy": "ads_list",
-      "description": "Sponsored Products campaign-level negative product targets. Daily snapshot. Campaign-scope negatives apply to every ad group within the campaign.",
-      "key_columns": [
-        "target_id",
-        "campaign_id",
-        "targeting_expression",
-        "expression_type",
-        "state",
-        "snapshot_date"
+      "unique_key": [
+        "store_id",
+        "profile_id",
+        "snapshot_date",
+        "target_id"
       ],
+      "description": "Sponsored Products campaign-level negative product targets. Daily snapshot. Campaign-scope negatives apply to every ad group within the campaign.",
       "reference": "reference/rpt_sp_campaign_negative_targets.json"
     },
     {
@@ -866,16 +908,13 @@
       "pii": false,
       "deprecated": false,
       "strategy": "ads_list",
-      "description": "Sponsored Brands negative keywords. Daily snapshot. Separate from SP — different keyword_id namespace, different Amazon endpoint.",
-      "key_columns": [
-        "keyword_id",
-        "campaign_id",
-        "ad_group_id",
-        "keyword_text",
-        "match_type",
-        "state",
-        "snapshot_date"
+      "unique_key": [
+        "store_id",
+        "profile_id",
+        "snapshot_date",
+        "keyword_id"
       ],
+      "description": "Sponsored Brands negative keywords. Daily snapshot. Separate from SP — different keyword_id namespace, different Amazon endpoint.",
       "reference": "reference/rpt_sb_negative_keywords.json"
     },
     {
@@ -886,16 +925,13 @@
       "pii": false,
       "deprecated": false,
       "strategy": "ads_list",
-      "description": "Sponsored Display negative targets. Daily snapshot. SD has only target-level negatives (no separate keyword negatives or campaign-level endpoint as of API v3).",
-      "key_columns": [
-        "target_id",
-        "campaign_id",
-        "ad_group_id",
-        "targeting_expression",
-        "expression_type",
-        "state",
-        "snapshot_date"
+      "unique_key": [
+        "store_id",
+        "profile_id",
+        "snapshot_date",
+        "target_id"
       ],
+      "description": "Sponsored Display negative targets. Daily snapshot. SD has only target-level negatives (no separate keyword negatives or campaign-level endpoint as of API v3).",
       "reference": "reference/rpt_sd_negative_targets.json"
     },
     {
@@ -905,7 +941,33 @@
       "queryable": true,
       "pii": false,
       "deprecated": false,
-      "summary": "Slim daily inventory series (derived rollup) — inventory history lives here; raw MYI keeps 7 days"
+      "strategy": "derived_rollup",
+      "unique_key": [
+        "store_id",
+        "snapshot_date",
+        "country_code",
+        "sku"
+      ],
+      "description": "Slim daily inventory series (derived rollup) — inventory history lives here; raw MYI keeps 7 days",
+      "reference": "reference/rpt_myi_daily_rollup.json"
+    },
+    {
+      "table": "rpt_get_fba_fulfillment_removal_shipment_detail_data",
+      "report_type": "GET_FBA_FULFILLMENT_REMOVAL_SHIPMENT_DETAIL_DATA",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "request",
+      "unique_key": [
+        "store_id",
+        "order_id",
+        "sku",
+        "tracking_number",
+        "shipment_date"
+      ],
+      "description": "FBA removal SHIPMENT events: what physically left the fulfilment centre against a removal order, with carrier and tracking. The sibling rpt_get_fba_fulfillment_removal_order_detail_data holds the ORDER side — requested vs cancelled vs disposed quantities. Join them on order_id to reconcile requested against shipped.",
+      "reference": "reference/rpt_get_fba_fulfillment_removal_shipment_detail_data.json"
     }
   ]
 }

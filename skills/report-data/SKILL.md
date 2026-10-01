@@ -199,7 +199,7 @@ Allowed ops: `sum`, `count`, `avg`, `min`, `max` — the key is **`op`** (not `f
 | `rpt_get_merchants_listings_fyp_report` | GET_MERCHANTS_LISTINGS_FYP_REPORT | suppressed SKUs; parser handles English + FR + lowercase header variants |
 | `listing_images` | (enriched from rpt_get_merchant_listings_all_data) | persistent image URL cache — see below |
 
-Full index: `_meta.json` in this skill's folder (51 entries; 2 marked deprecated). S&T now comes from Data Kiosk into `rpt_dk_sales_traffic_by_date` / `rpt_dk_sales_traffic_by_asin` (the old `rpt_sales_and_traffic` is retired); the exact Data Kiosk GraphQL query files ship in the `reference/` folder of the data-kiosk skill.
+Full index: `_meta.json` in this skill's folder — one entry per table with its `report_type`, `is_snapshot`, sync `strategy`, `unique_key` (one row per those columns) and a one-line description; retired tables carry `deprecated: true`. S&T now comes from Data Kiosk into `rpt_dk_sales_traffic_by_date` / `rpt_dk_sales_traffic_by_asin` (the old `rpt_sales_and_traffic` is retired); the exact Data Kiosk GraphQL query files ship in the `reference/` folder of the data-kiosk skill.
 
 **Brand Analytics has no synced table** (search terms, market basket, repeat purchase and demographics were retired from the warehouse on 2026-07-15 — nothing ever landed). Request those reports on-demand (Path 2 below; exact `reportOptions` and document schemas are in the `amazon-report` skill). They need Brand Registry.
 
