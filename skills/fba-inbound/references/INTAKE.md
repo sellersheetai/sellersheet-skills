@@ -2,7 +2,7 @@
 
 Print this checklist back to the user with ✓ (have it), ✗ (missing) or ? (unsure) per line.
 Any ✗ on a REQUIRED line stops the workflow until the user answers. Never fill a ✗ with a
-guess; never call `create_sta_sheet` or `orchestrate_fba_packing` with a ✗ outstanding.
+guess; never call `fbaInbound_create_sta_sheet` or `fbaInbound_orchestrate_packing` with a ✗ outstanding.
 
 | # | Field | Required | Mode A source (SellerSheet FBA spreadsheet) | Mode B source | Valid values |
 |---|---|---|---|---|---|

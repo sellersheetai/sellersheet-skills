@@ -9,7 +9,7 @@ A placement ships with ONE carrier type, so every placement gets two comparable 
 
 | Total | Formula | Inputs |
 |---|---|---|
-| Total (Partnered) | placement fee + Σ over shipments of the chosen partnered quote | `placementFee` from `orchestrate_fba_packing`; `partnered[].cost` from `generate_shipment_transport_options` (cheapest per shipment unless the user names a carrier) |
+| Total (Partnered) | placement fee + Σ over shipments of the chosen partnered quote | `placementFee` from `fbaInbound_orchestrate_packing`; `partnered[].cost` from `fbaInbound_generate_shipment_options` (cheapest per shipment unless the user names a carrier) |
 | Total (Own) | placement fee + Σ over shipments of (rate/kg × Weight (KG)) — or (rate/m³ × Volume (CBM)) when only a m³ rate is given | the user's own-carrier rates; `totals.weightKg` / `totals.volumeCbm` per shipment |
 
 Weight is KG, volume CBM (LB ÷ 2.20462; IN³ × 0.0000163871; CM³ × 0.000001).
@@ -37,7 +37,7 @@ price, never present an own-carrier "cost" Amazon did not return (own-carrier op
 ## Getting the numbers the rule needs
 
 "Cheapest total" needs a transport quote per placement, and quotes exist only after
-`generate_shipment_transport_options` for THAT placement (an Amazon write, ~20–60 s each).
+`fbaInbound_generate_shipment_options` for THAT placement (an Amazon write, ~20–60 s each).
 Under a rule: run it for every placement when there are ≤ 3, otherwise for the 3 lowest
 placement fees, then compare. Under "help me choose" without autopilot: show the placement
 table first (fees only), let the user shortlist, quote the shortlist. Mode A: pass

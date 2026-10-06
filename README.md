@@ -11,7 +11,7 @@ Works in Claude Code, Claude Desktop, Codex, Tencent CodeBuddy Code, Gemini CLI,
 
 **Author**: [sellersheetai.com](https://sellersheetai.com)
 **License**: Apache-2.0
-**Latest release**: v0.14.1 ([changelog](./CHANGELOG.md))
+**Latest release**: v0.15.0 ([changelog](./CHANGELOG.md))
 
 ## What you can do
 
@@ -235,7 +235,7 @@ Full mechanism: [docs/auto-update.md](./docs/auto-update.md).
 
 | Plugin release | SellerSheet MCP minimum | Agent compatibility |
 |---|---|---|
-| v0.14.x | 2025-Q4 build | Claude Code 1.0+, Claude Desktop 0.10+, Codex CLI any, CodeBuddy Code 2.151+, Gemini CLI 0.5+, Antigravity any |
+| v0.15.x | 2025-Q4 build | Claude Code 1.0+, Claude Desktop 0.10+, Codex CLI any, CodeBuddy Code 2.151+, Gemini CLI 0.5+, Antigravity any |
 
 The plugin ships as one bundle — all skills release together at the plugin version. Each `SKILL.md` frontmatter `version:` mirrors `.claude-plugin/plugin.json`.
 

@@ -11,6 +11,66 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.15.0] — 2026-10-06
+
+### Tool names: Amazon's name for an Amazon endpoint; SellerSheet workflows share the namespace
+
+Two naming rules now hold across the catalog. **A tool that wraps one Amazon endpoint takes
+Amazon's name**, even when it also polls that operation or downloads its document:
+
+`get_feed` → `feeds_getFeed`
+`submit_feed` → `feeds_createFeed`
+`sp_api_get_report` → `reports_getReport`
+`get_data_kiosk_query` → `dataKiosk_getQuery`
+`cancel_inbound_plan` → `fbaInbound_cancelInboundPlan`
+`confirm_placement_option` → `fbaInbound_confirmPlacementOption`
+`update_shipment_tracking_details` → `fbaInbound_updateShipmentTrackingDetails`
+`vendor_retail_submit_acknowledgement` → `vendorOrders_submitAcknowledgement`
+`vendor_retail_submit_invoices` → `vendorInvoices_submitInvoices`
+`vendor_retail_submit_shipments` → `vendorShipments_SubmitShipments`
+`vendor_retail_submit_shipment_confirmations` → `vendorShipments_SubmitShipmentConfirmations`
+
+The unpolled single-item `vendorShipments_SubmitShipmentConfirmations` is retired; the polled
+batch now carries that name. **A SellerSheet workflow over several operations keeps the
+namespace of the Amazon API area it serves and takes a snake_case tail** — no Amazon operation
+name has an underscore, so the tail alone tells you it is SellerSheet's own:
+
+`create_and_publish_aplus` → `aplusContent_create_and_publish`
+`list_aplus_sheet_rows` → `aplusContent_list_documents_detailed`
+`build_listing_payload` → `listings_build_payload`
+`parse_listing_amazon` → `listings_parse_payload`
+`parse_asin_to_sheet_format` → `listings_parse_asin_to_cells`
+`fetch_listing_attrs_by_asins` → `listings_fetch_attributes_by_asins`
+`fetch_listing_attrs_by_skus` → `listings_fetch_attributes_by_skus`
+`get_listing_attribute_guide` → `listings_get_attribute_guide`
+`prepare_publish_queue_template` → `listings_prepare_publish_queue_template`
+`submit_listing_feed` → `listings_submit_feed`
+`submit_listing_payload` → `listings_submit_items`
+`submit_listings_feed` → `listings_submit_feed_legacy`
+`validate_listings` → `listings_validate_rows`
+`poll_feed_status` → `listings_poll_feed_results`
+`confirm_fba_placement` → `fbaInbound_confirm_plan_options`
+`create_fba_packing_list` → `fbaInbound_create_packing_list`
+`generate_shipment_transport_options` → `fbaInbound_generate_shipment_options`
+`get_fba_plan_status` → `fbaInbound_get_plan_status`
+`get_labels` → `fbaInbound_get_labels`
+`orchestrate_fba_packing` → `fbaInbound_orchestrate_packing`
+`sync_fba_shipment_status` → `fbaInbound_sync_shipment_status`
+`create_sta_sheet` → `fbaInbound_create_sta_sheet`
+`insights_report` → `customerFeedback_insights_report`
+`insights_report_status` → `customerFeedback_insights_report_status`
+`noon_download_export` → `noon_impex_download_export`
+`noon_prepare_publish_queue_template` → `noon_content_prepare_publish_queue_template`
+`noon_load_publish_queue_content` → `noon_content_load_publish_queue_content`
+
+An old name answers "`X` was renamed on 2026-10-06. Use `Y` …" for 90 days — call `Y` with the
+same arguments. `listings_poll_feed_results` also changed shape: it takes the feed ids (and each
+row's SKUs cell) and returns the Submission Log cells for the AI to write with `write_sheet`; the
+server no longer reads or writes the sheet. `listings_validate_rows` and
+`listings_submit_feed_legacy` return the Submission Log row in `data.submissionLog` instead of
+appending it. The fba-inbound, report-data, data-kiosk, amazon-report and image-gen skills use the
+new names; the tool-name allowlist is refreshed from the live catalog.
+
 ## [0.14.1] — 2026-10-06
 
 ### `human_action` is for you

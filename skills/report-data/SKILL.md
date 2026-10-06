@@ -6,7 +6,7 @@ author: SellerSheet AI
 description: >-
   Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules, requesting on-demand reports, polling for completion, downloading a finished report document from its presigned URL, or analyzing any report table. Covers inventory, listings, orders, financial, and ad report (SP/SB/SD) tables; Brand Analytics has no synced table, so request it on-demand (schemas in amazon-report). Do NOT use for noon.com data (use noon-report-data) or when you don't yet know a report's exact schema — read amazon-report or data-kiosk first, then come back here for the sync/poll/download mechanics.
   中文触发词：亚马逊报告数据、库存报告、补货需求、订单、退货、结算、搜索词、listing 状态、rpt_ 数据仓库查询、报告同步计划、按需报告下载。
-version: 0.14.1
+version: 0.15.0
 metadata: {apis: [data, sp_api_reports], pattern: Pipeline}
 ---
 
@@ -33,7 +33,7 @@ Use this skill when the user asks for:
 | Path | Use For | Tools |
 |------|---------|-------|
 | **Cron sync (primary)** | Recurring daily/weekly data — query without hitting Amazon | `query_report_data`, `list_report_syncs` |
-| **Manual flow** | On-demand fresh report you download and process yourself; report type not in cron system | `reports_createReport`, `sp_api_get_report`, `reports_getReports` |
+| **Manual flow** | On-demand fresh report you download and process yourself; report type not in cron system | `reports_createReport`, `reports_getReport`, `reports_getReports` |
 
 **AI permissions:** Query and observe only. **Never call `enable_report_sync`, `trigger_report_sync`, or `disable_report_sync`** — those are admin operations managed server-side.
 
@@ -367,7 +367,7 @@ result = reports_getReports(store='myStore-AE',
                                pageSize=5)
 if result['data']['reports']:
     latest = result['data']['reports'][0]
-    # Use sp_api_get_report with latest['reportId'] — skip create
+    # Use reports_getReport with latest['reportId'] — skip create
 ```
 
 ### Step 4: Write Intent Row to Sheet FIRST
@@ -402,7 +402,7 @@ write_sheet(spreadsheetId, 'Store Reports!I{row}', [['IN_QUEUE']])
 
 ```
 while True:
-    result = sp_api_get_report(store='myStore-AE', reportId=report_id)
+    result = reports_getReport(store='myStore-AE', reportId=report_id)
     status = result['data']['processingStatus']
     write_sheet(spreadsheetId, 'Store Reports!I{row}', [[status]])
     if status == 'DONE':
@@ -414,7 +414,7 @@ while True:
 
 ### Step 8: Download the document yourself, then write the result
 
-**DONE gives you a link, not data.** `sp_api_get_report` never reads the report
+**DONE gives you a link, not data.** `reports_getReport` never reads the report
 body — report documents run to hundreds of MB and pulling one into the shared
 server takes the service down for every user on it. The DONE response is:
 
@@ -453,7 +453,7 @@ write_sheet(spreadsheetId, 'Store Reports!J{row}',
 **The URL carries `response-content-encoding=identity`**, so the bytes come back
 as **raw gzip** — your HTTP client will not decompress them for you.
 
-**Link expired?** Call `sp_api_get_report` again — Amazon re-mints the URL on
+**Link expired?** Call `reports_getReport` again — Amazon re-mints the URL on
 every call. Nothing is lost, no need to re-create the report.
 
 **No shell or fetch capability?** Say so and give the user the link. Do not ask
@@ -471,7 +471,7 @@ the server to send you the contents; it will not.
 
 ### No Drive copy on this path
 
-`sp_api_get_report` does not write anything to Drive — not for any report, not
+`reports_getReport` does not write anything to Drive — not for any report, not
 at any size, regardless of `storeReportsFolderId`. It hands you a download URL
 and you write the curated result yourself with `write_sheet`. (The SellerSheet
 **sidebar** still produces a Drive spreadsheet for reports small enough to fit

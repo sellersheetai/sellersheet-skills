@@ -3,7 +3,7 @@ name: fba-inbound
 description_zh: "创建FBA货件、入库计划、发货到亚马逊、补货、STA表、分仓方案、运输方案、箱标、装箱单、上传物流单号、货件状态、取消计划、刷美西仓（刷仓换低运费）——无论是否使用 SellerSheet FBA 表格。"
 description_en: "Use when a user wants stock sent to Amazon FBA — \"create FBA shipment\", \"inbound plan\", \"send to Amazon\",…"
 author: SellerSheet AI
-version: 0.14.1
+version: 0.15.0
 metadata: {apis: [fba], pattern: Gate}
 description: >-
   Use when a user wants stock sent to Amazon FBA — "create FBA shipment", "inbound plan",
@@ -28,11 +28,11 @@ the ONE mode reference that applies. Run the standard preflight in
 - **Never choose for the user.** Placement option, transportation option, delivery window,
   packing option: the server lists, the user picks, you record. The only exception is a
   rule the user named under autopilot (§3) — and then you say which rule chose.
-- **Intake before Amazon.** Nothing is created (`create_sta_sheet`, `orchestrate_fba_packing`)
+- **Intake before Amazon.** Nothing is created (`fbaInbound_create_sta_sheet`, `fbaInbound_orchestrate_packing`)
   while a REQUIRED intake line is ✗. "Just do it" is not an answer to a missing address.
 - **Confirm is irreversible** on Amazon's side, and so is cancel — both end the plan.
 - **Cancel is a commit, not an approve.** Interactive: restate exactly what
-  `cancel_inbound_plan` will cancel, then end that message with a literal question asking the
+  `fbaInbound_cancelInboundPlan` will cancel, then end that message with a literal question asking the
   user to confirm — e.g. "Cancel plan wf-abc and every shipment in it — are you sure?" — never
   a bare instruction like "reply CONFIRM" with no question in the message. Wait for the reply
   to be the literal word `CONFIRM` before calling it. Autopilot: proceed only when the user's own instruction
@@ -59,7 +59,7 @@ the ONE mode reference that applies. Run the standard preflight in
 | | Mode A — SellerSheet | Mode B — standalone |
 |---|---|---|
 | Condition | `get_user_context().data.workspace_config.userSettingBySpreadsheet.fbaSpreadsheetId` is set AND the user has not asked for another destination | no FBA spreadsheet id, OR the user said "no sheet" / keeps stock elsewhere / named another output (HTML, their own sheet, Excel) |
-| Where things live | the plan workbook `create_sta_sheet` builds (the sidebar's own); STA-Options, Inbound PL and the label links are rendered by the server when you pass `sta_spreadsheet_id`; Manage Shipments row; `_state` | wherever the user said: chat tables, an HTML page, their Google Sheet (`write_sheet`), a local `.xlsx`; labels as a file or Drive link |
+| Where things live | the plan workbook `fbaInbound_create_sta_sheet` builds (the sidebar's own); STA-Options, Inbound PL and the label links are rendered by the server when you pass `sta_spreadsheet_id`; Manage Shipments row; `_state` | wherever the user said: chat tables, an HTML page, their Google Sheet (`write_sheet`), a local `.xlsx`; labels as a file or Drive link |
 | Reference | `references/MODE_A_SELLERSHEET.md` | `references/MODE_B_STANDALONE.md` |
 
 State the mode in your first reply ("Mode A — I'll use your SellerSheet FBA spreadsheet" /
@@ -96,13 +96,13 @@ type, transportation mode, ship date, delivery-window start (own carrier), palle
 
 ```
 get_user_context → [inventory check, optional]
-→ create_sta_sheet (A only)
-→ orchestrate_fba_packing  → placement options            ← user picks (or rule)
-→ generate_shipment_transport_options → per shipment: partnered / own / windows  ← user picks
-→ confirm_fba_placement → FBA ids
-→ get_labels (+ label_size) → PDF   →   create_fba_packing_list → rows / Inbound PL
-→ update_shipment_tracking_details (own carrier, per shipment, all boxes in one call)
-→ sync_fba_shipment_status
+→ fbaInbound_create_sta_sheet (A only)
+→ fbaInbound_orchestrate_packing  → placement options            ← user picks (or rule)
+→ fbaInbound_generate_shipment_options → per shipment: partnered / own / windows  ← user picks
+→ fbaInbound_confirm_plan_options → FBA ids
+→ fbaInbound_get_labels (+ label_size) → PDF   →   fbaInbound_create_packing_list → rows / Inbound PL
+→ fbaInbound_updateShipmentTrackingDetails (own carrier, per shipment, all boxes in one call)
+→ fbaInbound_sync_shipment_status
 ```
 
 Mode A passes `sta_spreadsheet_id` to orchestrate, transport, confirm, labels and packing
@@ -113,13 +113,13 @@ never passes it and presents every result in the user's form.
 Own carrier: pick the earliest `deliveryWindows[]` entry with `availabilityType` AVAILABLE
 whose `startDate` is on or after the user's Delivery Window Start Date (a window that has
 already begun qualifies only if that date falls inside it). Partnered: windows are bundled
-into the transport option. Note `get_labels` takes `inbound_plan_id` where every other tool
+into the transport option. Note `fbaInbound_get_labels` takes `inbound_plan_id` where every other tool
 takes `plan_id`.
 
 ## 4a. Bounded polling — only if you call the granular Amazon operations directly
 
-The chain above (`orchestrate_fba_packing`, `generate_shipment_transport_options`,
-`confirm_fba_placement`, `cancel_inbound_plan`) already waits on the server for Amazon's
+The chain above (`fbaInbound_orchestrate_packing`, `fbaInbound_generate_shipment_options`,
+`fbaInbound_confirm_plan_options`, `fbaInbound_cancelInboundPlan`) already waits on the server for Amazon's
 async operation to finish before it returns to you — there is nothing to poll for those.
 
 If you instead call one of the granular, single-step operations

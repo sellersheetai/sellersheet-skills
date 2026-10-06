@@ -23,19 +23,19 @@ the item rows. Mixed boxes: one `boxes` entry listing every SKU in the box.
 
 ```
 get_user_context
-orchestrate_fba_packing(store, plan_name, source_address, items, boxes, msku_prep_details)
+fbaInbound_orchestrate_packing(store, plan_name, source_address, items, boxes, msku_prep_details)
    → placementOptions[{placementOptionId, placementFee, shipmentCount, shipments[{shipmentId, warehouseId, totals}], aiRank}]
    (requiresHumanSelection → show packingOptions, re-call with selected_packing_option_id)
-generate_shipment_transport_options(store, plan_id, placement_option_id, ship_date, pallet_info?)
+fbaInbound_generate_shipment_options(store, plan_id, placement_option_id, ship_date, pallet_info?)
    → per shipment partnered[] / ownCarrier[] / deliveryWindows[]
-confirm_fba_placement(store, plan_id, placement_option_id, [{shipmentId, transportOptionId, deliveryWindowOptionId?}])
+fbaInbound_confirm_plan_options(store, plan_id, placement_option_id, [{shipmentId, transportOptionId, deliveryWindowOptionId?}])
    → confirmedShipments[{shipmentId, fbaId, referenceId, warehouseId, status}]
-get_labels(store, plan_id, shipment_id, page_type, label_type, number_of_packages, page_size, label_size)
+fbaInbound_get_labels(store, plan_id, shipment_id, page_type, label_type, number_of_packages, page_size, label_size)
    → labelData (base64 PDF), pageCount
-create_fba_packing_list(store, plan_id, '', confirmed_shipments)
+fbaInbound_create_packing_list(store, plan_id, '', confirmed_shipments)
    → amazonBoxes[{amazonBoxId, shipmentId, boxName, msku, fnsku, asin, qty, labelOwner, boxDimensions, dimUnit, boxWeight, weightUnit, itemsInBox}]
-update_shipment_tracking_details(store, plan_id, shipment_id, spd_tracking_items=[{boxId, trackingId}])
-sync_fba_shipment_status(store, plan_id, shipment_id)
+fbaInbound_updateShipmentTrackingDetails(store, plan_id, shipment_id, spd_tracking_items=[{boxId, trackingId}])
+fbaInbound_sync_shipment_status(store, plan_id, shipment_id)
 ```
 
 ## Presenting each result (same columns as the SellerSheet tabs, so nothing is lost)
@@ -78,6 +78,6 @@ directory the user is working in, or a Doc/Sheet they named. Rewritten after eve
 
 ## What mode B never does
 
-- `create_sta_sheet`, `sta_spreadsheet_id`, writes to a SellerSheet FBA spreadsheet.
+- `fbaInbound_create_sta_sheet`, `sta_spreadsheet_id`, writes to a SellerSheet FBA spreadsheet.
 - Guess a box spec, an address or a SKU from an Excel column name — ask.
 - Pick an option without a user-named rule under autopilot (SKILL.md §3).

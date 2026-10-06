@@ -6,7 +6,7 @@ author: SellerSheet AI
 description: >-
   Use when authoring or running an Amazon SP-API Data Kiosk GraphQL query — Sales & Traffic (by date / by ASIN / trends), Economics (per-unit fees, cost, margin, preview, simulation), or Vendor Analytics (manufacturing/sourcing view). Provides the exact versioned root query type, dataset fields, required arguments, enums (DateGranularity/AsinGranularity), and per-field @resultRetention so you write a valid query instead of guessing. Do NOT use for the synced rpt_dk_* warehouse — use report-data instead.
   中文触发词：Data Kiosk、GraphQL 查询、销售与流量数据、经济性数据（费用、成本、利润）、Vendor 分析。
-version: 0.14.1
+version: 0.15.0
 metadata: {apis: [data_kiosk], pattern: Reference}
 ---
 
@@ -58,7 +58,7 @@ When unsure whether it's synced, check `report-data`'s `_meta.json` / `list_repo
 1. Pick area + version from _meta.json   →  get the analytics_<area>_<version> root + dataset
 2. read reference/<schema>.graphql        →  confirm dataset args, enums, field names, retention
 3. dataKiosk_createQuery(query)         →  returns data.result.queryId
-4. get_data_kiosk_query(queryId)          →  poll until processingStatus == DONE
+4. dataKiosk_getQuery(queryId)          →  poll until processingStatus == DONE
 5. read result.dataDocumentId             →  (field is dataDocumentId, NOT dataDocument; errorDocumentId on FATAL)
 6. dataKiosk_getDocument(documentId)    →  fetch the NDJSON/JSON result rows
 ```

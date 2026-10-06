@@ -29,7 +29,7 @@ LAX/ONT/SBD/LGB/SMF/GYR/PHX/LAS/SNA 开头——由用户给出想要的仓代�
    another warehouse code). 换一个发货地址也会得到不同的分仓。
 4. **Every ACTIVE plan reserves inbound capacity.** Amazon limits what a seller can have in
    flight (Seller Central inbound / storage capacity). When capacity allows, several plans
-   can exist at once and be compared; when it does not, `orchestrate_fba_packing` fails or
+   can exist at once and be compared; when it does not, `fbaInbound_orchestrate_packing` fails or
    offers nothing useful, so the loop becomes create → check → cancel → create.
    每个未取消的计划都占用仓容：仓容够时可以一次建多个计划再比较；仓容不够时只能建一个、看结果、
    取消、再建。
@@ -51,15 +51,15 @@ LAX/ONT/SBD/LGB/SMF/GYR/PHX/LAS/SNA 开头——由用户给出想要的仓代�
 ```
 draws = []
 for draw in 1..N (one at a time unless the user allowed several in flight):
-    plan = orchestrate_fba_packing(plan_name = "<name>", source_address = <address for this draw>, …)
+    plan = fbaInbound_orchestrate_packing(plan_name = "<name>", source_address = <address for this draw>, …)
            # mode A: same workbook, pass sta_spreadsheet_id — the server re-renders STA-Options for this draw
     offered = plan.placementOptions[].shipments[].warehouseId
     hit = a placement with ONE shipment whose warehouseId matches the wanted list
     draws.append(draw, plan.planId, offered, hit)
     if hit: break
-    if plans_in_flight == allowed: cancel_inbound_plan(plan.planId)     # part of the user's instruction
+    if plans_in_flight == allowed: fbaInbound_cancelInboundPlan(plan.planId)     # part of the user's instruction
 after the loop:
-    cancel_inbound_plan on EVERY draw that is not the hit and is still active (parallel mode)
+    fbaInbound_cancelInboundPlan on EVERY draw that is not the hit and is still active (parallel mode)
     the hit continues the normal chain (write the "2." pick, transport → confirm → …)
 ```
 
@@ -69,7 +69,7 @@ after the loop:
 - Present every draw's placement table (SKILL.md §4 shape) so the user sees what Amazon offered
   even when it did not match; a partial match (2 shipments, one in the wanted FC) is shown, not
   silently taken.
-- Mode A, one workbook: `create_sta_sheet` once with the user's plan name; every draw uses that
+- Mode A, one workbook: `fbaInbound_create_sta_sheet` once with the user's plan name; every draw uses that
   name and that `sta_spreadsheet_id`, so STA-Options always shows the latest draw. Write the
   stepper (`1a.` id, `2.` pick) and Manage Shipments `planId` only for the hit; the losing draws
   live in the handover text ("draw 2: wf… offered ABE8/FTW1/SCK4 — no match — cancelled").

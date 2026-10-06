@@ -77,8 +77,8 @@ See MODE_A_SELLERSHEET.md "The plan workbook" for rows 1–14. Cell contract for
 
 ## STA-Options (rendered by the SERVER in mode A; read by header name)
 
-`orchestrate_fba_packing(sta_spreadsheet_id=…)` renders it, `generate_shipment_transport_options`
-fills the picked block's dropdowns, `confirm_fba_placement` writes the choices, `get_labels`
+`fbaInbound_orchestrate_packing(sta_spreadsheet_id=…)` renders it, `fbaInbound_generate_shipment_options`
+fills the picked block's dropdowns, `fbaInbound_confirm_plan_options` writes the choices, `fbaInbound_get_labels`
 turns the FBA ID cell into the PDF link. Same layout as the sidebar's "2. Gen Placement Opts.":
 
 Summary table rows 1..N+1: `Placement Option: | Number of Shipments | Placement Fee |
@@ -108,7 +108,7 @@ header + column header + one row per shipment + blank):
 
 ## Inbound PL (the FINAL packing list, written by the server in mode A)
 
-`create_fba_packing_list(sta_spreadsheet_id=…)` writes it and removes a stale `STA-PL`.
+`fbaInbound_create_packing_list(sta_spreadsheet_id=…)` writes it and removes a stale `STA-PL`.
 Row 1 headers (navy band, frozen): `Image | Box ID | Template | FNSKU | MSKU | ASIN | Quantity |
 Weight | Weight Unit | Dimensions | Unit of Measurement`; one row per box × SKU, sorted by Box
 ID, Template, MSKU; A1 holds the Image array formula over Product Info. No shipment column —
@@ -116,7 +116,7 @@ tracking lives in Manage Shipments. Mode B presents the same 11 columns in the u
 
 ## Label links (mode A, written by the server)
 
-`get_labels(sta_spreadsheet_id=…)` saves `<FBA id>.pdf` into the plan folder (the workbook's
+`fbaInbound_get_labels(sta_spreadsheet_id=…)` saves `<FBA id>.pdf` into the plan folder (the workbook's
 parent) and writes `=HYPERLINK(pdf, "<FBA id>")` into the STA-Options FBA ID cell and the
 Manage Shipments `fbaId` cell, and `=HYPERLINK(pdf, "<FBA id>.pdf")` into `fbaLabel`. A linked
 FBA ID is the sidebar's "label already fetched" gate.

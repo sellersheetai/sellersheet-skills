@@ -44,7 +44,7 @@ comparison chart, supply clean product thumbnails and fill the matrix in the edi
 A standard (Basic) A+ document is **one or more `Standard*` modules in sequence** (the
 canonical Amazon example uses 5; there is no hard published max — Amazon's editor caps
 it, typically 5–7). These are the module-type names + image sizes the API
-(`create_and_publish_aplus` / `aplusContent_postContentDocumentApprovalSubmission`) expects. The px below are the
+(`aplusContent_create_and_publish` / `aplusContent_postContentDocumentApprovalSubmission`) expects. The px below are the
 **minimums** — generate at the ratio and ≥ the module px, then resize to exact on
 upload (Amazon also resizes to the module).
 
