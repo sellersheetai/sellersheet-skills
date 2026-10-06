@@ -6,7 +6,7 @@ author: SellerSheet AI
 description: >-
   Use when working with noon.com (noon Partners) report data that SellerSheet ingests on a schedule — querying noon orders, finance/transactions, FBN inventory aging, product-views & sales, or the FBN catalog (titles and images) for a connected noon store. Covers the 5 rpt_noon_* warehouse tables, their schedules, grain, and the query nuances (project-scoped, marketplace semantics, snapshot vs incremental). Do NOT use for Amazon SP-API or Ads report data — use report-data / amazon-report / amazon-ads instead.
   中文触发词：noon 订单、noon 财务/交易明细、FBN 库存账龄、noon 商品浏览与销量、noon 店铺报表。
-version: 0.13.2
+version: 0.14.0
 metadata: {apis: [data], pattern: Reference}
 ---
 

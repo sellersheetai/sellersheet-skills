@@ -11,6 +11,28 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.14.0] — 2026-10-06
+
+### noon tools renamed to noon's own operation names
+
+Every one-operation noon tool is now `noon_<section>_<Operation>`, in the words noon's own
+API reference uses — the section from the page address and the operation exactly as noon
+writes it: `noon_get_stock` → `noon_stock_GetStock`, `noon_inbound_create_shipment` →
+`noon_inbound_CreateShipment`, `noon_create_export` → `noon_impex_CreateExport`,
+`noon_list_warehouses` → `noon_warehouse_platform_ListWarehouses`. The three workflow tools
+(`noon_download_export`, `noon_prepare_publish_queue_template`,
+`noon_load_publish_queue_content`) keep their names. An old name answers "`X` was renamed on
+2026-10-06. Use `Y` …" for 90 days — call `Y` with the same arguments. The tool-name
+allowlist (`.maintainers/tool-names.txt`) is refreshed from the live catalog.
+
+### Failed calls are errors
+
+A call that could not be carried out — a noon outage, a missing argument, a product type
+Amazon does not know — now arrives as a tool error (`message [error_code]`, then Amazon's
+full error list), not as a normal result that only said so in its text. A deleted API key
+is refused with HTTP 401, so the client asks you to reconnect instead of failing on every
+call. Results are compact JSON.
+
 ## [0.13.2] — 2026-09-30
 
 ### Limits — pace and concurrency
