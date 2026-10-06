@@ -6,7 +6,7 @@ author: SellerSheet AI
 description: >-
   Common conventions for ALL SellerSheet skills — read this FIRST when running any other skill from this bundle (sellersheet-sheets, sellersheet-dashboard, report-data, amazon-ads, amazon-report, data-kiosk, noon-report-data, image-gen, fba-inbound). Contains the MCP preflight protocol (get_user_context → version check → canUseMcp), store reference rules (name-country format, multi-marketplace stores), the MCP response contract (always relay notification.message + human_action), and setup/troubleshooting. Not a standalone skill — it has no workflows of its own. Do NOT use this file to perform a task directly — load the domain skill (amazon-ads, fba-inbound, report-data, sellersheet-sheets, …) for that.
   中文说明：所有 SellerSheet 技能的公共约定（MCP 预检、店铺引用格式、响应契约、语言规则、故障排查），运行本套件任一技能前先读本文件。
-version: 0.14.0
+version: 0.14.1
 metadata: {apis: [], pattern: Reference}
 ---
 
@@ -40,7 +40,7 @@ Then apply the skill's own **extra auth** notes (if any) and proceed.
 
 - **Reply in the user's language.** A user who writes in Chinese gets Chinese explanations, summaries, and questions (用户用中文提问就用中文回答); a user who writes in English gets English. The skill files are written in English — that is not a signal to answer in English.
 - **Keep the machine-facing parts in English, unchanged:** MCP tool names (`get_user_context`, `query_report_data`), store refs (`myStore-US`), table and column names (`rpt_*`), Amazon nouns (SKU, ASIN, FBA, A+, Buy Box, PPC), report and enum values, and every Google Sheet tab name and header. The server reads sheets by their English header names — a translated header breaks the workflow.
-- **Relay `notification.message` and `human_action` verbatim** (they arrive in English), then add a one-line explanation in the user's language when it helps.
+- **Relay `notification.message` verbatim, and `human_action` when it is present** (they arrive in English), then add a one-line explanation in the user's language when it helps.
 
 ## Store references
 
@@ -52,7 +52,7 @@ Then apply the skill's own **extra auth** notes (if any) and proceed.
 
 Every SellerSheet MCP tool returns `{notification, data, human_action}`:
 
-- **Always relay `notification.message` and `human_action` to the user** — they carry Amazon's actual outcome and the expected next step.
+- **Always relay `notification.message` to the user** — it carries Amazon's actual outcome. `human_action`, when present, is something only the user can do — pass it on. What to call next is in each tool's description, not in the response.
 - `notification.type: "error"` with a 4xx-style message is usually user-fixable (permissions, bad store ref, missing auth) — surface it, don't retry blindly.
 
 ## Limits — pace and concurrency

@@ -11,6 +11,18 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.14.1] — 2026-10-06
+
+### `human_action` is for you
+
+A tool result's `human_action` now appears only when there is something you yourself must
+do — approve, pick an option, fix an input. What the AI should call next is in each tool's
+description instead, so the `sellersheet-shared` contract reads: relay `notification.message`
+always, and `human_action` when it is present. Eleven more routes answer a refused call with
+the proper error (an empty validation, a patch without patches, an unknown copy or insights
+job, a foreign image on confirm, a job that could not be queued — nothing charged) instead
+of a success that only said so in its text. No tool was renamed.
+
 ## [0.14.0] — 2026-10-06
 
 ### noon tools renamed to noon's own operation names

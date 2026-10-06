@@ -6,7 +6,7 @@ author: SellerSheet AI
 description: >-
   Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules, requesting on-demand reports, polling for completion, downloading a finished report document from its presigned URL, or analyzing any report table. Covers inventory, listings, orders, financial, and ad report (SP/SB/SD) tables; Brand Analytics has no synced table, so request it on-demand (schemas in amazon-report). Do NOT use for noon.com data (use noon-report-data) or when you don't yet know a report's exact schema — read amazon-report or data-kiosk first, then come back here for the sync/poll/download mechanics.
   中文触发词：亚马逊报告数据、库存报告、补货需求、订单、退货、结算、搜索词、listing 状态、rpt_ 数据仓库查询、报告同步计划、按需报告下载。
-version: 0.14.0
+version: 0.14.1
 metadata: {apis: [data, sp_api_reports], pattern: Pipeline}
 ---
 
