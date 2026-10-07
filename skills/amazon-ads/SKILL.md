@@ -478,11 +478,11 @@ run without a prompt; every write asks._
 
 | Tools | Cross-cutting notes |
 |---|---|
-| `ads_query_campaign` · `ads_create_campaign` · `ads_update_campaign` · `ads_delete_campaign` | Query requires `adProductFilter`; paginate by resending the SAME filters + `nextToken`. SP create requires `marketplaceScope`, `marketplaces`, `startDateTime`, `autoCreationSettings`, `budgets`; budget nests `budgetValue.monetaryBudgetValue.monetaryBudget.value` |
+| `ads_query_campaign` · `ads_create_campaign` · `ads_update_campaign` · `ads_delete_campaign` | Query requires `adProductFilter`; paginate by resending the SAME filters + `nextToken`. SP create requires `marketplaceScope`, `marketplaces` ('GB' for a UK profile), `startDateTime`, `autoCreationSettings`, `budgets`; budget nests `budgetValue.monetaryBudgetValue.monetaryBudget.value` |
 | `ads_query_ad_group` · `ads_create_ad_group` · `ads_update_ad_group` · `ads_delete_ad_group` | |
 | `ads_query_ad` · `ads_create_ad` · `ads_update_ad` · `ads_delete_ad` | SP creative: `productIdType` = `SKU` (sellers) / `ASIN` (vendors). A schema-valid create can still fail per-index `PRODUCT_INELIGIBLE` |
 | `ads_query_target` · `ads_create_target` · `ads_update_target` · `ads_delete_target` | Keywords, product/category targets, AND all negatives in one resource (`negative` flag; campaign-level negative = `campaignId` without `adGroupId`). `productTarget.product` is an OBJECT `{productId}`. An SP ad group cannot mix keyword and product targets. Bid update = `ads_update_target` with `{targetId, bid: {bid}}` |
-| `ads_update_campaign_budget` · `ads_update_campaign_state` · `ads_update_target_bid` | Narrow one-entity writes (Amazon Ads' own tool names): a budget amount + `recurrenceTimePeriod` (DAILY \| LIFETIME \| MONTHLY), a state (ENABLED \| PAUSED \| ARCHIVED), or one target's bid. Prefer them for these three changes — smaller body, easier approval; the same gates apply (ARCHIVED is irreversible) |
+| `ads_update_campaign_budget` · `ads_update_campaign_state` · `ads_update_target_bid` | Narrow one-entity writes (Amazon Ads' own tool names): a budget amount + `recurrenceTimePeriod` (DAILY \| LIFETIME \| MONTHLY), a state (ENABLED \| PAUSED — archive with `ads_delete_campaign`), or one target's bid. Prefer them for these three changes — smaller body, easier approval; the same gates apply |
 | `ads_query_ad_association` · `ads_create_ad_association` · `ads_update_ad_association` · `ads_delete_ad_association` | Amazon DSP only — sponsored-ads profiles get 401 |
 
 Shared v1 gotchas: mutations return 207 `{success[], partialSuccess[], error[]}`
@@ -511,7 +511,7 @@ ads) is the Unified v1 table above — there are no per-product CRUD tools._
 |---|---|---|
 | `ads_campaign_export` · `ads_ad_group_export` · `ads_target_export` · `ads_ad_export` · `ads_get_export` | — | Async: submit → poll `ads_get_export`. When COMPLETED, `data.result.exportData` auto-downloaded. typeExport: "campaigns"\|"adGroups"\|"targets"\|"ads" |
 | `ads_get_history` | — (single call) | `eventTypes` must be object `{"CAMPAIGN": true}` not array. Dates in ms (13 digits). Max 90 days |
-| `ads_insights_get_audiences_overlapping_audiences` | — | Requires adType=SD/DSP — may return "Unsupported Media Type" for SP-only accounts |
+| `ads_insights_get_audiences_overlapping_audiences` | — | `ad_type` SD \| DSP is required; DSP also needs `advertiserId` (from `ads_dsp_advertisers`) |
 | `ads_generate_brand_metrics_report` · `ads_get_brand_metrics_report` | post / get+download | Async. Not supported in all marketplaces (e.g. AE) |
 | `ads_search_optimization_rules` · `ads_sp_create_optimization_rules` · `ads_sp_update_optimization_rules` · `ads_associate_optimization_rules_to_campaign` | — | List first (`ads_search_optimization_rules`) to see existing rules. There is no pause and no delete tool — to stop a rule send `status: PAUSED` yourself via `ads_sp_update_optimization_rules`; Amazon refuses `ARCHIVED`/`ENDED`. A rule does nothing until `ads_associate_optimization_rules_to_campaign` (with `campaignId`) |
 | `ads_get_optimization_rule_eligibility` · `ads_get_rule_notification` · `ads_get_campaign_optimization_rule` · `ads_create_optimization_rule` · `ads_update_optimization_rule` · `ads_delete_campaign_optimization_rule` | — | Rule-based bidding under a ROAS guardrail. Always run `ads_get_optimization_rule_eligibility` before create; poll `ads_get_rule_notification` daily |

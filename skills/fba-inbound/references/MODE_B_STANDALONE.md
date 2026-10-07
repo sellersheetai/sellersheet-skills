@@ -25,7 +25,8 @@ the item rows. Mixed boxes: one `boxes` entry listing every SKU in the box.
 get_user_context
 fbaInbound_orchestrate_packing(store, plan_name, source_address, items, boxes, msku_prep_details)
    → placementOptions[{placementOptionId, placementFee, shipmentCount, shipments[{shipmentId, warehouseId, totals}], aiRank}]
-   (requiresHumanSelection → show packingOptions, re-call with selected_packing_option_id)
+   (requiresHumanSelection → show packingOptions, re-call with selected_packing_option_id and
+   plan_id = data.planId, same items/boxes; the plan is continued, not re-created)
 fbaInbound_generate_shipment_options(store, plan_id, placement_option_id, ship_date, pallet_info?)
    → per shipment partnered[] / ownCarrier[] / deliveryWindows[]
 fbaInbound_confirm_plan_options(store, plan_id, placement_option_id, [{shipmentId, transportOptionId, deliveryWindowOptionId?}])

@@ -60,7 +60,8 @@ Translation table for users coming from openpyxl, Excel macros, or Google Apps S
 |---|---|
 | `wb.add_image(Image('logo.png'), 'A1')` | `write_sheet_formula(... "=IMAGE(\"https://...\")")` (Sheets-native — URL required, not local file) |
 | `cell.comment = Comment("...", "author")` | `update_sheet_note(spreadsheet_id, range_, "...")` |
-| `sheet.auto_filter.ref = "A1:E20"` | `set_sheet_basic_filter(spreadsheet_id, "Sheet!A1:E20")` or `create_sheet_filter(...)` |
+| `sheet.auto_filter.ref = "A1:E20"` | `set_sheet_basic_filter(spreadsheet_id, "Sheet!A1:E20")` |
+| (no openpyxl equivalent) saved filter view | `create_sheet_filter(spreadsheet_id, "Sheet!A1:E20", "Needs review")` — a named view under Data > Filter views; the basic filter is left alone |
 | Defined name | `add_sheet_named_range(spreadsheet_id, name, range_)` |
 
 ## Reading / verification

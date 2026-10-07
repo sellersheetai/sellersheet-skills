@@ -36,7 +36,7 @@ user     | edited 2026-05-08 by phone.w10
 raw      | pull_run=abc123 | 2026-05-11T08:15Z   (only on A1 of each raw tab — see below)
 ```
 
-A weekly sweeper agent can run `get_sheet_notes` across the workbook and regex-match `^(agent|formula|config|user|raw)\s\|`. Any cell whose visual tint doesn't match its note prefix surfaces drift — the sweep is a built-in lint.
+A weekly sweeper agent can run `get_sheet_notes` across the workbook and regex-match each entry's `.note` against `^(agent|formula|config|user|raw)\s\|`. Every entry names its cell (`sheet`, 0-based `row` / `col`), so a cell whose visual tint doesn't match its note prefix can be read back and flagged — the sweep is a built-in lint.
 
 ## Don't carpet-note raw data
 

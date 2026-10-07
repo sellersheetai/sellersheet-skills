@@ -62,7 +62,7 @@ written it, append it with `write_sheet` by those keys (row 1 = keys, data from 
 ```
 fbaInbound_create_sta_sheet(store, plan_name, skus, warehouse_code, ship_date,
                  delivery_window_start_date, case_packed, fulfillment_split,
-                 shipping_solution, shipping_mode, preferred_carrier,
+                 shipping_mode, preferred_carrier,
                  fnsku_label_size, fba_box_label_size)
 → data.staSpreadsheetId, spreadsheetUrl, tabName, planFolderId, planFolderName,
   manageShipmentsFormulas {planFolder, planName}, addressKeyKnown
@@ -88,7 +88,8 @@ fbaInbound_orchestrate_packing(store, plan_name, source_address, items, boxes,
 `source_address` = the Shipment Setting row (keys `name, addressLine1, addressLine2, city,
 stateOrProvinceCode, countryCode, postalCode, phoneNumber, companyName`). If
 `requiresHumanSelection` is true, show `packingOptions`, let the user pick, re-call with
-`selected_packing_option_id`. Write the stepper: `1a.` DONE + planId, `1b.` DONE +
+`selected_packing_option_id` and `plan_id` = data.planId (same items/boxes); the plan is
+continued, not re-created. Write the stepper: `1a.` DONE + planId, `1b.` DONE +
 packingOptionId, `1c.` DONE + packingGroupId, `2.` READY; Manage Shipments `planId`.
 `_state.stage = PACKING_GENERATED`. STA-Options is now in the workbook (server).
 
@@ -147,7 +148,8 @@ spd_tracking_items=[{boxId: amazonBoxId, trackingId}, …])` (LTL:
 
 ### Status
 `fbaInbound_sync_shipment_status(store, plan_id, shipment_id)` per shipment; write `status` to
-Manage Shipments and row 12; terminal (CLOSED / SHIPPED / RECEIVED / CANCELLED) →
+Manage Shipments and row 12; terminal (CLOSED / CANCELLED / ABANDONED / DELETED; SHIPPED and the in-transit states are
+not — poll again later) →
 `_state.stage = COMPLETE`.
 
 ### Cancel

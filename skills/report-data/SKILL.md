@@ -67,10 +67,16 @@ list_report_syncs(store='myStore-AE')
 | disabled_reason | What it means | What to tell the user |
 |---|---|---|
 | `null` + `is_enabled=true` | Healthy — running on schedule | nothing |
-| `consecutive_failures` | Too many failures in a row, scheduler backed off | Mention the schedule is paused; ops will look at it |
-| `auth_revoked` | LWA refresh_token rejected by Amazon (Phase 1 auto-disable) | **User must re-OAuth the store via the OAuth flow** before any `rpt_*` data refreshes. Re-OAuth automatically clears this. |
-| `unsupported` | Report type genuinely unavailable for this account (e.g. SP seller reports on a vendor account) | Permanent — will not run. Don't ask ops to retry. |
-| `account_suspended` | Whole seller account suspended on Amazon side | User must resolve with Amazon Seller Performance |
+| `auth_revoked` | Amazon rejected the store's authorization | **User must re-authorize the store** before any `rpt_*` data refreshes. Re-authorizing clears this. |
+| `auto_disabled:<category>` | Too many failures in a row of one kind (the category names it); the sync backed off | Mention the schedule is paused; support will look at it |
+| `amazon_refused` | Amazon refuses this report for this account / marketplace | Permanent unless Amazon's eligibility changes — don't ask for retries |
+| `no_brand_registry` | The report needs Brand Registry, which this account lacks | Enrol in Brand Registry to get this report |
+| `unsupported` | Report type genuinely unavailable for this account (e.g. seller reports on a vendor account) | Permanent — will not run. Don't ask for a retry. |
+| `backfill_complete` | A one-shot history backfill finished | Nothing — the regular schedule carries on |
+| `paused_by_parent` | Every marketplace of the store is inactive on the plan | Upgrade, or free a slot under My Stores → Edit Marketplaces |
+| `pending_delete` / `force_cancelled_by_delete` | The store is being removed | Nothing to fix |
+| `scheduler_tick_error:<exception>` | The scheduler hit an internal error on this schedule | Mention it; support will look at it |
+| `consecutive_failures` | Legacy rows only — the older form of `auto_disabled:<category>` | Same as `auto_disabled` |
 
 If `disabled_reason='auth_revoked'`, the data in `rpt_*` tables will be **stale from the moment of revocation**. Always cite the staleness explicitly: "Last successful sync was YYYY-MM-DD; the auth has since been revoked, so anything since then is missing."
 
