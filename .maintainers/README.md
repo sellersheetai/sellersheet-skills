@@ -98,6 +98,20 @@ the spend cap with `SS_PLUGIN_EVAL_MAX_COST_USD=5`.
   failed run tripped `preflight-context` (the agent skipped calling `get_user_context`
   before listing) — an unrelated, pre-existing source of flakiness, still comfortably
   above the 0.8 release gate.
+- `fba-autopilot-cheapest` / `fba-autopilot-tie-stops` (2026-10-08, the 0.15.1 gate — a suite
+  gap, not a skill regression): since 0.15.0 the `fba-inbound` skill's standalone chain is
+  `fbaInbound_orchestrate_packing` → `fbaInbound_generate_shipment_options` →
+  `fbaInbound_confirm_plan_options`, but these two cases mock only the raw tools
+  (`fbaInbound_createInboundPlan` / `generatePlacementOptions` / `listPlacementOptions` /
+  `confirmPlacementOption`), so the agent cannot call the tool the skill prescribes: the good
+  runs do create → generate → list and then stall at confirm (0.8), the others give up early.
+  Scored 0.60 / 0.78 twice with the graders and mock files already on the live raw names (the
+  same day's first finding: graders and mocks still carried `confirm_placement_option` /
+  `cancel_inbound_plan`, so one case could never pass and `fba-cancel-asks-first` passed
+  vacuously — `lint.sh` now checks every tool name and mock file name under `evals/**`).
+  0.15.1 was released with `SS_SKIP_PLUGIN_EVAL=1` on the strength of the other six cases at
+  1.0 (all four ads cases cover the skill that release edited). TODO: re-model the two cases'
+  mocks and graders on the workflow chain (fixtures from a real TEST run), then drop this note.
 - `ads-delete-is-commit` (fixed, re-run 2026-09-29): previously scored 0 — the skill did
   not gate `ads_delete_campaign` behind an explicit second confirmation beyond the
   user's own wording. The operation-registry fix wave (2026-09-29) aligned the
