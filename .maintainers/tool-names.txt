@@ -124,7 +124,6 @@ apply_doc_bullets
 apply_sheet_table_style
 autofit_sheet_columns
 catalogItems_getCatalogItem
-catalogItems_listCatalogCategories
 catalogItems_searchCatalogItems
 check_image_job
 check_image_jobs

@@ -444,11 +444,13 @@ Use when you need a full snapshot of campaign structure — IDs, states, budgets
 
 ### I. Change History Audit
 
-1. `ads_get_history` — body: `{"fromDate": <ms>, "toDate": <ms>, "eventTypes": {"CAMPAIGN": true, "KEYWORD": true}}`
-   - `eventTypes` must be an object `{"TYPE": true}`, NOT an array
+1. List the entities to audit first (`ads_query_campaign`, `ads_query_ad_group`, `ads_query_target`, …) — the history call needs their ids.
+2. `ads_get_history` — body: `{"fromDate": <ms>, "toDate": <ms>, "eventTypes": {"CAMPAIGN": {"eventTypeIds": ["<campaignId>", …]}, "TARGET": {"eventTypeIds": ["<targetId>", …]}}}`
+   - `eventTypes` is an object keyed by entity type; **every entry needs `eventTypeIds`, the ids of the entities to audit**. Without them Amazon answers 0 events (not an error), so the server refuses the call before it is made.
    - Dates are millisecond Unix timestamps (13 digits); range must be within last 90 days
-2. Write history to sheet; filter for unexpected state changes or bid changes
-3. Cross-reference with `rpt_sp_campaigns` performance to correlate changes with metrics
+   - Pages by `pageOffset` (0-based) + `count`; there is no `nextToken` on this call
+3. Write history to sheet; filter for unexpected state changes or bid changes
+4. Cross-reference with `rpt_sp_campaigns` performance to correlate changes with metrics
 
 ### J. Campaign Optimization Recommendations
 
@@ -510,7 +512,7 @@ ads) is the Unified v1 table above — there are no per-product CRUD tools._
 | Tool | Operations | Cross-cutting notes |
 |---|---|---|
 | `ads_campaign_export` · `ads_ad_group_export` · `ads_target_export` · `ads_ad_export` · `ads_get_export` | — | Async: submit → poll `ads_get_export`. When COMPLETED, `data.result.exportData` auto-downloaded. typeExport: "campaigns"\|"adGroups"\|"targets"\|"ads" |
-| `ads_get_history` | — (single call) | `eventTypes` must be object `{"CAMPAIGN": true}` not array. Dates in ms (13 digits). Max 90 days |
+| `ads_get_history` | — (single call) | `eventTypes` is an object keyed by entity type and every entry needs `eventTypeIds` — the ids to audit, listed first; without ids Amazon answers 0 events, so the call is refused. Dates in ms (13 digits). Max 90 days. Pages by `pageOffset` + `count`, no `nextToken` |
 | `ads_insights_get_audiences_overlapping_audiences` | — | `ad_type` SD \| DSP is required; DSP also needs `advertiserId` (from `ads_dsp_advertisers`) |
 | `ads_generate_brand_metrics_report` · `ads_get_brand_metrics_report` | post / get+download | Async. Not supported in all marketplaces (e.g. AE) |
 | `ads_search_optimization_rules` · `ads_sp_create_optimization_rules` · `ads_sp_update_optimization_rules` · `ads_associate_optimization_rules_to_campaign` | — | List first (`ads_search_optimization_rules`) to see existing rules. There is no pause and no delete tool — to stop a rule send `status: PAUSED` yourself via `ads_sp_update_optimization_rules`; Amazon refuses `ARCHIVED`/`ENDED`. A rule does nothing until `ads_associate_optimization_rules_to_campaign` (with `campaignId`) |
