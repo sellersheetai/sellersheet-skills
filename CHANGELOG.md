@@ -11,6 +11,15 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.16.2] — 2026-10-08
+
+### fba-inbound: the same page, shorter
+
+- `SKILL.md` says the same things in fewer words: the rules, the two first-reply choices, the
+  intake lines, the chain table, how to read the options, the confirm gate, bounded polling, the
+  per-carrier follow-up and the done checklist; Mode B presentation now points at
+  `SHEET_LAYOUT.md` for the column sets instead of repeating them.
+
 ## [0.16.1] — 2026-10-08
 
 ### fba-inbound: Shipping Solution and Shipping Mode are honoured
