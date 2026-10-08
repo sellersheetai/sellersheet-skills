@@ -1,7 +1,7 @@
 {
   "name": "sellersheet-skills",
   "description": "Run your Amazon business by talking to your AI — no ERP. Pull orders and settlements, bulk-edit listings, build FBA shipments, tune SP/SB/SD bids and budgets, query inventory and search-term reports, and generate compliant listing images and A+ — across multiple stores and marketplaces, with every result written to Google Sheets for you to review. 不用 ERP，对 AI 说需求就能运营亚马逊店铺：查订单和结算、批量改 Listing、建 FBA 货件、调广告出价预算、拉库存与搜索词报表、生成合规主图与 A+；支持多店铺多站点，结果写进 Google 表格供你审核。",
-  "version": "0.15.0",
+  "version": "0.15.1",
   "author": {
     "name": "SellerSheet AI",
     "email": "support@sellersheetai.com"
