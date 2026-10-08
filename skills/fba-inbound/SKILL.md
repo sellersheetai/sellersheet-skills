@@ -39,8 +39,7 @@ spreadsheet, with the compound tools or the granular Amazon operations. Prefligh
 - **Carrier mixing:** partnered and own-carrier shipments in one plan only on DIFFERENT
   shipping modes with every shipment partnered-eligible; otherwise Amazon refuses
   (`FBA_INB_0354`).
-- **Ids come from tool results only.** Indian (IN) stores are read-only; a read-only key stops
-  at listing and says so.
+- **Ids come from tool results only.** A read-only key stops at listing and says so.
 - Mode B never touches the SellerSheet FBA spreadsheet or a plan workbook; Mode A never builds
   a parallel sheet. Never mix modes in one plan.
 

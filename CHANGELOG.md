@@ -11,6 +11,13 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.16.3] — 2026-10-08
+
+### fba-inbound: no special rule for Indian stores
+
+- Removed the sentence that called Indian (IN) stores read-only. SellerSheet treats an IN store
+  like any other marketplace; only a read-only API key limits what a store can do.
+
 ## [0.16.2] — 2026-10-08
 
 ### fba-inbound: the same page, shorter
