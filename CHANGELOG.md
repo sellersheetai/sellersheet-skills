@@ -18,6 +18,7 @@ Planned for upcoming releases (under review):
 - `amazon-ads`: the change-history recipe (`ads_get_history`) now says what Amazon requires — every `eventTypes` entry carries `eventTypeIds`, the ids of the entities to audit (list them first). Without ids Amazon answers 0 events, so the server now refuses the call before it is made. Paging is by `pageOffset` + `count`; there is no `nextToken`.
 - Tool list refreshed: `catalogItems_listCatalogCategories` is retired (Amazon shut Catalog Items v0 for sellers on 2026-03-31); read a category hierarchy with `catalogItems_getCatalogItem` and `includedData: ["classifications"]`.
 - The seven FBA tools that took a `marketplace_id` override (prep details, compliance, item labels, inventory summaries, eligibility) take the store ref alone — the ref names the marketplace.
+- Eval graders named three tools by their pre-0.15.0 names (`confirm_placement_option`, `cancel_inbound_plan`), so two FBA cases could not pass and one passed vacuously; renamed, and `lint.sh` now checks every tool name in `evals/**` against the live list.
 - Skill text synced to the 2026-10-07 fixes: the inbound orchestrate re-call continues the plan (`plan_id`), terminal shipment statuses, `disabled_reason` values, campaign state `ENABLED | PAUSED`, audience-overlap `ad_type`, the GB marketplace, sheet notes carry cell positions, one filter tool.
 
 ## [0.15.0] — 2026-10-06

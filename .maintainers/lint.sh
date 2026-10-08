@@ -223,6 +223,13 @@ else
     [[ -z "$name" ]] && continue
     grep -qxF "$name" "$TOOL_NAMES_FILE" || err "skills/** references \`$name\`, which is not in $TOOL_NAMES_FILE — renamed or retired upstream? update the skill text (see the old->new map if this is a rename)"
   done < <(grep -rhoE '`(ads|noon|sp_api)_[a-z0-9_]+`' skills/ 2>/dev/null | tr -d '`' | sort -u)
+  # Eval graders and mocks name tools through the plugin's MCP prefix; a rename upstream
+  # otherwise leaves a grader that can never pass (an `after:` tool nobody calls) or passes
+  # vacuously (a `max: 0` on a name nobody calls) — three did on 2026-10-08.
+  while IFS= read -r name; do
+    [[ -z "$name" ]] && continue
+    grep -qxF "$name" "$TOOL_NAMES_FILE" || err "evals/** references \`$name\` (as mcp__plugin_sellersheet-skills_sellersheet__$name), which is not in $TOOL_NAMES_FILE — renamed or retired upstream? update the grader or mock"
+  done < <(grep -rhoE 'mcp__plugin_sellersheet-skills_sellersheet__[A-Za-z0-9_]+' evals/ --exclude-dir=results 2>/dev/null | sed 's/^mcp__plugin_sellersheet-skills_sellersheet__//' | sort -u)
 fi
 
 # ---------- summary ----------
