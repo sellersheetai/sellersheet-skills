@@ -154,6 +154,7 @@ Server-side `read_sheet` cannot verify:
 | All formulas evaluate without error | `read_sheet` whole tab, scan for `#REF!` / `#ERROR!` / `#VALUE!` / `#N/A` |
 | `=SQL(` cells are pending, not broken | `get_sheet_cell` on the cell; confirm formula starts with `=SQL(` and `effective_value.error.type` is `NAME` not `REF` |
 | Number formats applied | `get_sheet_cell` on sample cells; check `effective_format.numberFormat.pattern` |
+| Dropdowns in place, values valid | `get_sheet_cell(..., include=['value', 'dropdown'])` on the row; each `dropdown` is `{values, strict}` (or `{source_range, strict}`) and each filled `value` is one of `dropdown.values` — a write is never checked against the list |
 | Header rows have navy bg | `get_sheet_cell` on header cell; check `effective_format.backgroundColor` ≈ [0.1569, 0.2, 0.3099] |
 | Spills don't collide with footers/sections | spill anchor cell's `effective_value` is non-error; `effective_value.error.message` if present mentions specific overflow cell |
 | Open ranges grow correctly | append one test row to `_raw_*`; re-read visible tab |

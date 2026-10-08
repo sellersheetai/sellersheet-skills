@@ -11,6 +11,18 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.16.4] — 2026-10-09
+
+### sellersheet-sheets: one dropdown tool, read back with get_sheet_cell
+
+- `add_sheet_dropdown` is the one dropdown tool: `values` for a list, `source_range` for options
+  kept in cells, `values=[]` to remove; its reply echoes the rule as written.
+  `add_sheet_data_validation` is retired.
+- `get_sheet_cell(..., include=['value', 'dropdown'])` reads each cell's dropdown in the same
+  shape; added to the verify-after-write cheat sheet.
+- A value written with `write_sheet` is not checked against a dropdown's list, even a strict
+  one — write one of the listed values verbatim.
+
 ## [0.16.3] — 2026-10-08
 
 ### fba-inbound: no special rule for Indian stores

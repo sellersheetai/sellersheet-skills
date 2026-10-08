@@ -1,6 +1,5 @@
 add_sheet_chart
 add_sheet_conditional_format
-add_sheet_data_validation
 add_sheet_dropdown
 add_sheet_named_range
 add_sheet_tab

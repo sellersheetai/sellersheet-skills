@@ -83,7 +83,7 @@ These don't have direct MCP endpoints yet — work around or check your MCP vers
 | Cell borders | partial (depends on MCP version; `set_sheet_borders` may exist) | Use `format_sheet_range` with bg color as visual border surrogate |
 | Bulk paste with inline format | 2 calls | `write_sheet` then `format_sheet_range` — trivial overhead |
 | Auto-fit columns | `autofit_sheet_columns(spreadsheet_id, sheet, start_col, end_col)` — wraps Sheets' native `autoResizeDimensions` | Measures real rendered glyphs server-side (CJK/RTL/bold, any language), beating a `len × px` estimate. But it's a **final polish for short/structured columns only** — run it LAST, **after `set_sheet_basic_filter`** (it doesn't reserve room for the filter arrow, so autofit-before-filter clips headers), and **never on column A or long free-text columns** (keep those fixed). Fixed widths are the safer default. See `reference/brand-standards.md` |
-| Data validation (dropdowns) | `add_sheet_data_validation` / `add_sheet_dropdown` (where available) | Use those when present |
+| Data validation (dropdowns) | `add_sheet_dropdown(spreadsheet_id, range_, values=[...])` — or `source_range=` for options kept in cells, `values=[]` to remove | Read it back with `get_sheet_cell(..., include=['value', 'dropdown'])` |
 | Protected ranges | `protect_sheet_range(spreadsheet_id, range_)` | Lock headers + config |
 | Group / collapse rows | `group_sheet_rows_cols` | Use for collapsible sections |
 | Hide / show rows | `hide_sheet_rows` | Hide raw tabs from operators (also: just leave them un-hidden — they're prefixed `_raw_*` so they sort to the bottom anyway) |

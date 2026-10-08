@@ -258,7 +258,11 @@ function setDropdown(sheet, range, values) {
 
 // MCP equivalent
 add_sheet_dropdown(spreadsheet_id, "Vendor Orders!F4",
-  ["New", "Acknowledged", "Closed"], strict=false)
+  values=["New", "Acknowledged", "Closed"], strict=false)
+// options kept in other cells: source_range="Lists!A2:A30"; remove: values=[]
+// The reply's data.dropdown is the rule as written — no second read needed.
+// To fill the cell, write_sheet one of the values exactly as listed: a write
+// is NOT checked against the list (even a strict one), it is only marked invalid.
 ```
 
 ### Where dropdowns go
@@ -392,7 +396,7 @@ Removing columns from an action sheet has more residue than adding:
 
 1. **Clear the now-orphaned column range** — old values stay in cols R/S/T after you shrink to col Q. `clear_sheet_range(spreadsheet_id, 'Sheet!R1:T1000')`.
 2. **Delete orphaned conditional format rules** — chip rules on `Q5:Q` and `R5:R` continue to exist and apply to whatever new content occupies those columns. They won't match the new data so they silently no-op, but cosmetically they're cruft. Use `sheet_batch_update` with `deleteConditionalFormatRule` requests to remove them.
-3. **Delete orphaned dropdown rules** — `add_sheet_dropdown` rules persist after column removal. Same as above — silently no-op on numeric data but cruft. Use `set_sheet_data_validation` with an empty rule, or `sheet_batch_update` with `setDataValidation` clearing the range.
+3. **Delete orphaned dropdown rules** — `add_sheet_dropdown` rules persist after column removal. Same as above — silently no-op on numeric data but cruft. Remove them with `add_sheet_dropdown(spreadsheet_id, range_, values=[])`.
 
 Steps 2 and 3 are cosmetic if the orphaned rules can never match the new content. Skip them on a deadline; clean them when polishing.
 
