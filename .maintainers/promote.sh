@@ -9,8 +9,8 @@
 #   ./.maintainers/promote.sh <new-version>            # e.g. 0.4.0
 #   ./.maintainers/promote.sh <new-version> --dry-run
 #
-#   SS_SKIP_PLUGIN_EVAL=1 ./.maintainers/promote.sh <new-version>   # skip the eval gate
-#   SS_PLUGIN_EVAL_MAX_COST_USD=5 ./.maintainers/promote.sh <new-version>   # lower the cap
+#   SS_RUN_PLUGIN_EVAL=1 ./.maintainers/promote.sh <new-version>    # ALSO run the eval gate (opt-in)
+#   SS_PLUGIN_EVAL_MAX_COST_USD=5 ./.maintainers/promote.sh <new-version>   # lower its cap
 #
 # What it does:
 #   1. Validates <new-version> is semver and greater than the current version
@@ -24,9 +24,10 @@
 #       there is no safe default path to guess (see the comment at the step).
 #   4. Verifies CHANGELOG.md has a '## [<new-version>]' entry (you write the notes)
 #   5. Runs lint.sh
-#   7b. Runs `claude plugin eval` on evals/ (--threshold 0.8) — refuses the release
-#       if any case scores below it. See .maintainers/README.md for cost + how to
-#       run one case; skip with SS_SKIP_PLUGIN_EVAL=1, cap spend with
+#   7b. OPT-IN (SS_RUN_PLUGIN_EVAL=1): runs `claude plugin eval` on evals/ (--threshold 0.8)
+#       and refuses the release if any case scores below it. Off by default since
+#       2026-10-08 (operator ruling: the ~50 agent runs draw on the account's usage);
+#       see .maintainers/README.md for cost + how to run one case; cap spend with
 #       SS_PLUGIN_EVAL_MAX_COST_USD.
 #   6. Commits "Release v<new-version>" (push manually; CI auto-tags from plugin.json)
 #
@@ -131,21 +132,22 @@ else
 fi
 
 # 7b. plugin evals (evals/ — amazon-ads + fba-inbound routing/safety/autopilot suites).
-# SS_SKIP_PLUGIN_EVAL=1 skips this step (offline machine, no model credentials, or a
-# maintainer who already ran it separately); SS_PLUGIN_EVAL_MAX_COST_USD caps the
+# OPT-IN since 2026-10-08: runs only with SS_RUN_PLUGIN_EVAL=1 (the operator ruled the
+# ~50 agent runs per gate are not worth the usage on every release — run it when a skill's
+# behaviour changed, not for text syncs); SS_PLUGIN_EVAL_MAX_COST_USD caps the
 # list-price spend (default 20 — see .maintainers/README.md for the per-run cost and
 # how to run a single case). Refuses the release on a non-zero exit.
 EVAL_MAX_COST="${SS_PLUGIN_EVAL_MAX_COST_USD:-20}"
-if [[ "${SS_SKIP_PLUGIN_EVAL:-0}" == "1" ]]; then
-  log "Skipping plugin evals (SS_SKIP_PLUGIN_EVAL=1)."
+if [[ "${SS_RUN_PLUGIN_EVAL:-0}" != "1" || "${SS_SKIP_PLUGIN_EVAL:-0}" == "1" ]]; then
+  log "Skipping plugin evals (opt-in: SS_RUN_PLUGIN_EVAL=1 runs them)."
 elif [[ $DRY_RUN -eq 1 ]]; then
   echo "  DRY: claude plugin eval . --trust-plugin --json evals/results/promote-gate.json --threshold 0.8 --no-publish --max-cost-usd $EVAL_MAX_COST"
 else
-  log "Running plugin evals (max-cost-usd \$$EVAL_MAX_COST — set SS_PLUGIN_EVAL_MAX_COST_USD to change, SS_SKIP_PLUGIN_EVAL=1 to skip)..."
-  command -v claude >/dev/null || err "claude CLI not found — required for the plugin-eval gate (or set SS_SKIP_PLUGIN_EVAL=1)"
+  log "Running plugin evals (max-cost-usd \$$EVAL_MAX_COST — set SS_PLUGIN_EVAL_MAX_COST_USD to change)..."
+  command -v claude >/dev/null || err "claude CLI not found — required for the plugin-eval gate (unset SS_RUN_PLUGIN_EVAL to skip it)"
   claude plugin eval . --trust-plugin --json evals/results/promote-gate.json \
     --threshold 0.8 --no-publish --max-cost-usd "$EVAL_MAX_COST" \
-    || err "plugin evals scored below threshold (or failed to run) — see evals/results/promote-gate.json. Fix the regression, or SS_SKIP_PLUGIN_EVAL=1 if you already verified this separately."
+    || err "plugin evals scored below threshold (or failed to run) — see evals/results/promote-gate.json. Fix the regression, or release without SS_RUN_PLUGIN_EVAL if you verified it separately."
 fi
 
 if [[ $DRY_RUN -eq 1 ]]; then

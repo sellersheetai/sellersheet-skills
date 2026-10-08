@@ -4,7 +4,7 @@ Maintenance scripts for the public `sellersheet-skills` repo. Committed since v0
 
 | File | Purpose |
 |---|---|
-| `promote.sh` | Release a new version: bump the canonical version in `plugin.json` and fan it out to `versions.json`, every `SKILL.md`, `install.sh`, and `README.md`; optionally refresh `tool-names.txt`; verify the `CHANGELOG.md` entry; run lint; run the plugin-eval gate; commit. |
+| `promote.sh` | Release a new version: bump the canonical version in `plugin.json` and fan it out to `versions.json`, every `SKILL.md`, `install.sh`, and `README.md`; optionally refresh `tool-names.txt`; verify the `CHANGELOG.md` entry; run lint; run the plugin-eval gate only with `SS_RUN_PLUGIN_EVAL=1`; commit. |
 | `lint.sh` | Local mirror of `.github/workflows/lint.yml` — JSON validity, SKILL.md frontmatter, version-consistency, marketplace ↔ repo sync, tool-name allowlist, privacy + ASIN scan. Run before pushing. |
 | `tool-names.txt` | The live MCP tool catalog (names only, one per line) — `lint.sh` fails on any backticked `` `ads_*` ``/`` `noon_*` ``/`` `sp_api_*` `` name in `skills/**` that isn't in this list, so a rename or retirement upstream can't silently leave a stale tool name in the public docs. **`promote.sh` step 5c only touches it when you pass `SS_TOOLS_JSON=<path to a main-repo checkout's marketing-site/src/_data/mcp-tools.json, AT THE COMMIT this release's skill text actually matches>`** — there is no safe default to guess, because a sibling checkout that merely exists can be on an older commit with stale names (this bit the 0.13.0 release: a sibling checkout existed but predated the rename, and blindly refreshing from it overwrote a correct list with a stale one and failed lint for the wrong reason). Leave it unset for a routine release; regenerate by hand (sorted names from the live tool catalog, one per line) when a rename or retirement actually ships. |
 
@@ -69,11 +69,12 @@ claude plugin eval . --case ads-list-campaigns-routes --runs 1 --ablation none \
   --trust-plugin --max-cost-usd 2
 ```
 
-`promote.sh` runs the full-suite command above as a release gate (step 5b) and refuses to
-commit the release if any case scores below `--threshold 0.8` or the command errors.
-Skip it with `SS_SKIP_PLUGIN_EVAL=1 ./.maintainers/promote.sh X.Y.Z` (e.g. no model
-credentials on this machine, or you already ran it separately on the same content); lower
-the spend cap with `SS_PLUGIN_EVAL_MAX_COST_USD=5`.
+`promote.sh` runs the full-suite command above as a release gate (step 5b) **only when asked**:
+`SS_RUN_PLUGIN_EVAL=1 ./.maintainers/promote.sh X.Y.Z` — and then refuses to commit the
+release if any case scores below `--threshold 0.8` or the command errors. It is OFF by default
+since 2026-10-08 (operator ruling: a full gate is ~50 agent runs, roughly $7 at list price,
+drawn from the account's usage — run it when a skill's behaviour changed, not for a text
+sync); lower the spend cap with `SS_PLUGIN_EVAL_MAX_COST_USD=5`.
 
 **Known findings below threshold (2026-09-29 exploratory run — real, not suite bugs):**
 
@@ -185,5 +186,5 @@ chmod +x .git/hooks/pre-commit
 - `jq` (`brew install jq` / `apt install jq`)
 - `bash` 4+
 - `sed` (BSD/macOS — `promote.sh` uses `sed -i ''`)
-- `claude` CLI ≥ 2.1.269 + model credentials, for the plugin-eval gate (skip with
-  `SS_SKIP_PLUGIN_EVAL=1` if unavailable on this machine)
+- `claude` CLI ≥ 2.1.269 + model credentials, only for the opt-in plugin-eval gate
+  (`SS_RUN_PLUGIN_EVAL=1`)
