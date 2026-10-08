@@ -230,6 +230,12 @@ else
     [[ -z "$name" ]] && continue
     grep -qxF "$name" "$TOOL_NAMES_FILE" || err "evals/** references \`$name\` (as mcp__plugin_sellersheet-skills_sellersheet__$name), which is not in $TOOL_NAMES_FILE — renamed or retired upstream? update the grader or mock"
   done < <(grep -rhoE 'mcp__plugin_sellersheet-skills_sellersheet__[A-Za-z0-9_]+' evals/ --exclude-dir=results 2>/dev/null | sed 's/^mcp__plugin_sellersheet-skills_sellersheet__//' | sort -u)
+  # A mock file IS the tool the mocked server registers (evals/**/mocks/sellersheet/<tool>.md), so a
+  # stale file name hides the live tool from the agent under test.
+  while IFS= read -r name; do
+    [[ -z "$name" ]] && continue
+    grep -qxF "$name" "$TOOL_NAMES_FILE" || err "evals/**/mocks/sellersheet/$name.md mocks a tool that is not in $TOOL_NAMES_FILE — renamed or retired upstream? rename the mock file"
+  done < <(find evals -path '*/results' -prune -o -path '*/mocks/sellersheet/*.md' -print 2>/dev/null | sed -E 's#.*/##; s#\.md$##' | sort -u)
 fi
 
 # ---------- summary ----------
