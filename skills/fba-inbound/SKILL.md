@@ -81,9 +81,10 @@ bounded (§4b). Say which you are using when it is not the default.
 
 Print the 16-line checklist with ✓ / ✗ / ? per line in the first reply, after the mode.
 REQUIRED: store, ship-from address (every field, phone included), MSKUs + units, box spec
-per MSKU (Box First), carrier type, shipping mode, ship date, delivery-window start (own
-carrier), pallet details (LTL / FTL). Optional: preferred carrier, preferred warehouse ids,
-own-carrier rates, label sizes. Ask for every ✗ REQUIRED line in ONE message, then stop.
+per MSKU (Box First), ship date, delivery-window start (own carrier), pallet details (LTL /
+FTL). Optional: Shipping Solution (AMAZON_PARTNERED_CARRIER | USE_YOUR_OWN_CARRIER) and
+Shipping Mode (a GROUP: SPD | LTL / FTL — ocean counts as LTL / FTL) — blank lists every
+option; preferred carrier, preferred warehouse ids, own-carrier rates, label sizes. Ask for every ✗ REQUIRED line in ONE message, then stop.
 Lines 14 (autopilot) and 15 (help me choose) are asked once, in that same message, unless the
 user's words already answered them. Mode A: a missing Shipment Setting row or Product Info
 row is an intake ✗ — ask, do not invent; `fbaInbound_create_sta_sheet` refuses an unknown or
@@ -107,10 +108,10 @@ incomplete warehouse code before it creates anything and names the codes that ex
 
 | Stage | Compound tool (default) | Granular Amazon operations (poll each write, §4b) | Mode A: what you write (`SHEET_LAYOUT.md`) |
 |---|---|---|---|
-| Plan workbook (A only) | `fbaInbound_create_sta_sheet(store, plan_name, skus, warehouse_code, ship_date, …)` → `staSpreadsheetId`, `planFolderId`, `manageShipmentsFormulas` | — | Manage Shipments row (`planFolder`, `planName` formulas); Box No. ✎ per item row (Split First: Total Qty ✎); `_state` = STA_CREATED |
+| Plan workbook (A only) | `fbaInbound_create_sta_sheet(store, plan_name, skus, warehouse_code, ship_date, shipping_solution?, shipping_mode?, …)` → `staSpreadsheetId`, `planFolderId`, `manageShipmentsFormulas` | — | Manage Shipments row (`planFolder`, `planName` formulas); Box No. ✎ per item row (Split First: Total Qty ✎); `_state` = STA_CREATED |
 | Plan + packing + placement options | `fbaInbound_orchestrate_packing(store, plan_name, source_address, items, boxes, msku_prep_details, sta_spreadsheet_id?)` ~40–60 s → `planId`, `placementOptions[{placementOptionId, placementFee, shipmentCount, shipments[{shipmentId, warehouseId, destination, totals}]}]`; `requiresHumanSelection` → show `packingOptions`, re-call with `selected_packing_option_id` + `plan_id` (the plan continues) | `fbaInbound_setPrepDetails` → `fbaInbound_createInboundPlan` → `fbaInbound_generatePackingOptions` → `fbaInbound_listPackingOptions` → `fbaInbound_confirmPackingOption` → `fbaInbound_setPackingInformation` → `fbaInbound_generatePlacementOptions` → `fbaInbound_listPlacementOptions` | chips `1a.` `1b.` `1c.` DONE + ids, `2.` READY; Manage Shipments `planId`; `_state` = PACKING_GENERATED; STA-Options rendered by the server |
 | **User picks a placement** | show the table: placement, shipments, warehouses (code + city, state), fee; aiRank 1 = lowest fee, say so | same | chip `2.` row 6 = `<placementOptionId> (<fee> USD · <warehouseIds>)`; `_state` = PLACEMENT_SELECTED |
-| Transport + delivery windows | `fbaInbound_generate_shipment_options(store, plan_id, placement_option_id, ship_date, pallet_info?, limit=3, shipping_solution?, sta_spreadsheet_id?)` ~20–60 s → `placementFee`; per shipment `partnered[]` (the 3 cheapest per shipping mode), `ownCarrier[]`, `deliveryWindows[]` | `fbaInbound_generateTransportationOptions` → `fbaInbound_listTransportationOptions`; own carrier: `fbaInbound_generateDeliveryWindowOptions` → `fbaInbound_listDeliveryWindowOptions` | STA-Options block dropdowns (server); `_state` = OPTIONS_LISTED |
+| Transport + delivery windows | `fbaInbound_generate_shipment_options(store, plan_id, placement_option_id, ship_date, pallet_info?, limit=3, shipping_solution?, shipping_mode?, sta_spreadsheet_id?)` ~20–60 s → `placementFee`; per shipment `partnered[]` (the 3 cheapest per shipping mode), `ownCarrier[]`, `deliveryWindows[]` | `fbaInbound_generateTransportationOptions` → `fbaInbound_listTransportationOptions`; own carrier: `fbaInbound_generateDeliveryWindowOptions` → `fbaInbound_listDeliveryWindowOptions` | STA-Options block dropdowns (server); `_state` = OPTIONS_LISTED |
 | **User picks per shipment** | ONE `transportationOptionId` and, own carrier, ONE `deliveryWindowOptionId` | same | chips `3.` / `3b.` row 6 ids; `_state.selections` |
 | Confirm (§4a) | `fbaInbound_confirm_plan_options(store, plan_id, placement_option_id, [{shipmentId, transportOptionId, deliveryWindowOptionId?}], sta_spreadsheet_id?)` → `confirmedShipments[{shipmentId, fbaId, referenceId, warehouseId, status}]` | `fbaInbound_confirmPlacementOption` → own carrier: `fbaInbound_confirmDeliveryWindowOptions` → `fbaInbound_confirmTransportationOptions` (a window BEFORE transport for own carrier) | row 12 by label (Status, FBA ID, Reference ID, Warehouse ID); chip `4.` DONE; Manage Shipments one row per shipment; `_state` = CONFIRMED |
 | Labels | `fbaInbound_get_labels(store, inbound_plan_id, shipment_id, page_type, label_type, number_of_packages, page_size, label_size, sta_spreadsheet_id?)` — note `inbound_plan_id`, not `plan_id` | same tool | A: the server saves `<FBA id>.pdf` into the plan folder and links it (nothing to write); B: decode `labelData` where the user said; `_state` = LABELS_DOWNLOADED |
@@ -123,8 +124,10 @@ Reading the options:
 - **Partnered**: `partnered[]` is a view — the 3 cheapest options of each shipping mode per
   shipment, cheapest first, with `data.counts` carrying Amazon's totals. Raise `limit` (0 =
   all) or read `fbaInbound_listTransportationOptions(placement_option_id, shipment_id)` when
-  the carrier the user wants is not among them. Pass `shipping_solution` as the intake's
-  carrier type so the answer carries one list; partnered-only also skips the delivery windows.
+  the carrier the user wants is not among them. Pass `shipping_solution` and `shipping_mode`
+  (SPD | LTL / FTL) from the plan workbook's row 9 or the intake so the answer carries one
+  list — partnered-only also skips the delivery windows; a shipment with no match keeps its
+  full list and the notification names it.
 - **Own carrier**: `ownCarrier[]` has no price — Amazon does not quote your own carrier; every
   own-carrier choice needs a delivery window confirmed BEFORE transport. `Other` is Amazon's
   catch-all for a carrier not on its list.

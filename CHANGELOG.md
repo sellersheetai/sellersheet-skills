@@ -11,6 +11,20 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.16.1] — 2026-10-08
+
+### fba-inbound: Shipping Solution and Shipping Mode are honoured
+
+- Manage Shipments' `Shipping Solution ✎` and `Shipping Mode ✎` are dropdowns now (both optional)
+  and are copied to the plan workbook's row 9, where they replace `Preferred Trans. Mode`
+  (the two label-size cells moved right). Shipping Mode is a GROUP — `SPD` (ground / air small
+  parcel) or `LTL / FTL` (LTL, FTL, ocean LCL / FCL) — never one of Amazon's eight values.
+- The sidebar's transport step and `fbaInbound_generate_shipment_options` (new `shipping_mode`
+  beside `shipping_solution`) list only the options matching them; a shipment with no match
+  keeps its full list and the notification names it. `fbaInbound_create_sta_sheet` takes
+  `shipping_solution` and a group for `shipping_mode`.
+- Intake lines 6 and 7 are these two cells, optional; blank lists every option.
+
 ## [0.16.0] — 2026-10-08
 
 ### fba-inbound: one page, one chain, with or without the sheet

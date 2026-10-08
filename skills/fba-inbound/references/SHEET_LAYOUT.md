@@ -20,8 +20,8 @@ one row per plan until confirmation, then one row per shipment.
 | status | Status | WORKING / SHIPPED / … / CANCELLED |
 | notes | Notes ✎ | free text |
 | skus | MSKUs ✎ | one per line |
-| shippingSolution | Shipping Solution | AMAZON_PARTNERED_CARRIER / USE_YOUR_OWN_CARRIER |
-| shippingMode | Shipping Mode | GROUND_SMALL_PARCEL / FREIGHT_LTL / … |
+| shippingSolution | Shipping Solution ✎ | dropdown, optional: AMAZON_PARTNERED_CARRIER / USE_YOUR_OWN_CARRIER — copied to the plan workbook's row 9; narrows the Transportation Option dropdown |
+| shippingMode | Shipping Mode ✎ | dropdown, optional, a GROUP: SPD / LTL / FTL (ocean counts as LTL / FTL) — copied to row 9; narrows the Transportation Option dropdown; a shipment with no match shows every option and the notification says so |
 | preferedCarrier | Prefered Carrier | free text |
 | fulfillmentSplit | Fulfillment Split | "Box First, Split Later" / "Split First (Only for truckload)" |
 | casePacked | Case Packed | YES / NO |
@@ -76,7 +76,7 @@ row-13 display header — except the stepper, which the sidebar anchors on `A3 =
 | 4 | stepper chips — Box First: `1a. Plan · 1b. Packing · 1c. Pack Info · 2. Placement · 3. Transport · 3b. Delivery Win · 4. Confirm`; Split First: `1. Plan · 2. Placement · 3. Pack Info · 4. Transport · 5. Delivery Win · 6. Confirm` |
 | 5 | per-chip status: `DONE` / `READY` / `CANCELLED` / blank |
 | 6 | per-chip id: plan id under `1a.`, packing option under `1b.`, packing group under `1c.`, the placement pick under `2.`, transport id under `3.`, window id under `3b.`, FBA id under `4.` |
-| 8 / 9 | inputs, label → value: `Store ✎, Plan Name ✎, Ship Date ✎, Send From Address ✎ (<store>-<CC>-<warehouseCode>), Delivery Window Start Date, Case Packed, Pallet Packed, Weight Unit, Dimension Unit, Preferred Carrier, Preferred Trans. Mode, FNSKU Label Size, FBA Box Label Size` |
+| 8 / 9 | inputs, label → value: `Store ✎, Plan Name ✎, Ship Date ✎, Send From Address ✎ (<store>-<CC>-<warehouseCode>), Delivery Window Start Date, Case Packed, Pallet Packed, Weight Unit, Dimension Unit, Preferred Carrier, Shipping Solution, Shipping Mode, FNSKU Label Size, FBA Box Label Size` (a workbook built before 2026-10-08 carries `Preferred Trans. Mode` instead of the two Shipping cells — every reader goes by label) |
 | 11 / 12 | status, label → value: `Status, FBA ID, Fulfillment Split, Reference ID, Warehouse ID, Total QTY, Total Boxes, Total Weight, Total Volume` |
 | 13 | display headers of the item table |
 | 14+ | items — Box First: `Box No. ✎` (`1` or `2~4`) and `MSKU ✎`; Image/FNSKU/Description/ASIN and (Case Packed = YES) Qty/Box, Box Dimensions, Box Weight, Label/Prep Owner, Prep Category, Prep Type spill from Product Info. Split First: `MSKU ✎` and `Total Qty ✎` |

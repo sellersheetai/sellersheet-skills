@@ -11,8 +11,8 @@ guess; never call `fbaInbound_create_sta_sheet` or `fbaInbound_orchestrate_packi
 | 3 | Products: MSKU + total units | always | `Product Info` row per MSKU (same store): seller-sku, asin, fnsku | ask, or the user's sheet / xlsx | MSKU must exist on the store (`listings_getListingsItem` / `listings_searchListingsItems` if unsure) |
 | 4 | Box spec per MSKU: units/box, L×W×H, weight, units | Box First (default) | `Product Info` qtyPerBox, boxDimensions "LxWxH", boxWeight + the row-9 Weight/Dimension Unit | ask | units KG/LB, CM/IN; a box ≤ 25 in / 63.5 cm on every side and ≤ 50 lb / 22.7 kg unless the user says the product is oversize |
 | 5 | Prep / label owner | default if not given | `Product Info` labelOwner, prepOwner, prepCategory, prepTypes | state the default SELLER / SELLER / NONE in the reply; never a blocking ✗ | AMAZON or SELLER |
-| 6 | Carrier type | always | Manage Shipments `shippingSolution` | ask | AMAZON_PARTNERED_CARRIER or USE_YOUR_OWN_CARRIER |
-| 7 | Transportation mode | always | `shippingMode` | ask | GROUND_SMALL_PARCEL, FREIGHT_LTL, FREIGHT_FTL_PALLET, FREIGHT_FTL_NONPALLET, OCEAN_LCL, OCEAN_FCL, AIR_SMALL_PARCEL, AIR_SMALL_PARCEL_EXPRESS |
+| 6 | Shipping Solution | optional (blank = both) | Manage Shipments `shippingSolution` → the plan workbook's row 9 | ask | AMAZON_PARTNERED_CARRIER or USE_YOUR_OWN_CARRIER — narrows the transport list to that program |
+| 7 | Shipping Mode | optional (blank = every mode) | `shippingMode` → row 9 | ask | a GROUP, never one of Amazon's modes: `SPD` (ground / air small parcel: box labels, no pallet data) or `LTL / FTL` (LTL, FTL, ocean LCL / FCL: pallets + the freight trio + a BOL; goes with Pallet Packed = YES) |
 | 8 | Preferred carrier | optional | `preferedCarrier` | ask once | free text; used to sort, never to filter |
 | 9 | Ship date | always | `shipDate` | ask | `YYYY-MM-DD`, today or later |
 | 10 | Delivery window start | own carrier | `deliveryWindowStartDate` | ask | `YYYY-MM-DD` ≥ ship date |
