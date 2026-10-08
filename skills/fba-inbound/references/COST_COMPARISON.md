@@ -38,6 +38,8 @@ price, never present an own-carrier "cost" Amazon did not return (own-carrier op
 
 "Cheapest total" needs a transport quote per placement, and quotes exist only after
 `fbaInbound_generate_shipment_options` for THAT placement (an Amazon write, ~20–60 s each).
+Pass `shipping_solution` as the intake's carrier type; the default `limit` (the 3 cheapest
+partnered options per shipping mode) is all the rule needs.
 Under a rule: run it for every placement when there are ≤ 3, otherwise for the 3 lowest
 placement fees, then compare. Under "help me choose" without autopilot: show the placement
 table first (fees only), let the user shortlist, quote the shortlist. Mode A: pass

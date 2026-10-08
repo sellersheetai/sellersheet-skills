@@ -63,15 +63,59 @@ Qty/Box, Box Dimensions ("LxWxH"), Box Weight and the prep block from it.
 
 ---
 
-## Plan workbook — STA-BoxFirst / STA-SplitFirst
+## Plan workbook — STA-BoxFirst / STA-SplitFirst (the stepper console)
 
-See MODE_A_SELLERSHEET.md "The plan workbook" for rows 1–14. Cell contract for the MCP path:
+The MCP path and the sidebar share ONE plan workbook (`fbaInbound_create_sta_sheet`, identical
+to the sidebar's "Create STA SS"). Address cells by their row-1 machine key, row-8 label or
+row-13 display header — except the stepper, which the sidebar anchors on `A3 = PROGRESS`.
+
+| Rows | Content |
+|---|---|
+| 1 | hidden machine keys of the item table: Box First `boxNo, msku, image, fnsku, title, asin, qtyPerBox, boxDimensions, boxWeight, boxes, quantity, expiration, labelOwner, prepOwner, prepCategory, prepTypes`; Split First `msku, image, fnsku, title, asin, totalQty, expiration, labelOwner, prepOwner, prepCategory, prepTypes` |
+| 3 | `A3 = PROGRESS` (anchor), `B3` next-step formula, `D3` the Product Info "Allow access" chip (the human clicks it once; the server cannot) |
+| 4 | stepper chips — Box First: `1a. Plan · 1b. Packing · 1c. Pack Info · 2. Placement · 3. Transport · 3b. Delivery Win · 4. Confirm`; Split First: `1. Plan · 2. Placement · 3. Pack Info · 4. Transport · 5. Delivery Win · 6. Confirm` |
+| 5 | per-chip status: `DONE` / `READY` / `CANCELLED` / blank |
+| 6 | per-chip id: plan id under `1a.`, packing option under `1b.`, packing group under `1c.`, the placement pick under `2.`, transport id under `3.`, window id under `3b.`, FBA id under `4.` |
+| 8 / 9 | inputs, label → value: `Store ✎, Plan Name ✎, Ship Date ✎, Send From Address ✎ (<store>-<CC>-<warehouseCode>), Delivery Window Start Date, Case Packed, Pallet Packed, Weight Unit, Dimension Unit, Preferred Carrier, Preferred Trans. Mode, FNSKU Label Size, FBA Box Label Size` |
+| 11 / 12 | status, label → value: `Status, FBA ID, Fulfillment Split, Reference ID, Warehouse ID, Total QTY, Total Boxes, Total Weight, Total Volume` |
+| 13 | display headers of the item table |
+| 14+ | items — Box First: `Box No. ✎` (`1` or `2~4`) and `MSKU ✎`; Image/FNSKU/Description/ASIN and (Case Packed = YES) Qty/Box, Box Dimensions, Box Weight, Label/Prep Owner, Prep Category, Prep Type spill from Product Info. Split First: `MSKU ✎` and `Total Qty ✎` |
+
+Building the Amazon inputs from rows 14+ (by the row-1 keys): `items` = plan totals per MSKU;
+`boxes` = one spec per distinct box shape and contents, `quantity` = boxes of that spec; boxNo
+`1` → one box, `2~4` → boxes 2, 3, 4, several rows with the same boxNo → one mixed box;
+`msku_prep_details` from the prep columns; `source_address` = the Shipment Setting row (keys
+`name, addressLine1, addressLine2, city, stateOrProvinceCode, countryCode, postalCode,
+phoneNumber, companyName`). Mode B builds the same three from the user's table.
+
+### `_state` (one cell)
+
+`_state!A1` is one JSON string: `stage, planId, packingOptionId, packingGroupId,
+selectedPlacementOptionId, selections, confirmedShipments, labels, packingList, tracking`.
+`fbaInbound_create_sta_sheet` creates the tab (stage STA_CREATED); rewrite it with
+`write_sheet(staSpreadsheetId, '_state!A1', [[json_string]])`. Stages: `STA_CREATED →
+PACKING_GENERATED → PLACEMENT_SELECTED → OPTIONS_LISTED → CONFIRMED → LABELS_DOWNLOADED →
+PACKING_LIST_WRITTEN → TRACKING_UPLOADED → COMPLETE` (`CANCELLED` from anywhere). Before
+acting, read `_state`, then confirm with Amazon (`fbaInbound_get_plan_status` before
+confirmation, `fbaInbound_sync_shipment_status` after). If the stepper (rows 5/6) says the
+sidebar went further than `_state`, trust the sheet and Amazon, update `_state`, tell the user.
+
+### Picking up a plan the sidebar started
+
+Read row 6 under `1a.` (plan id) and `2.` (placement pick — the id before the first space),
+row 12 (FBA ID = confirmed), STA-Options by header names (`Shipment ID`, `Transportation
+Option`, `Delivery Window Option`, `FBA ID`, `Reference ID`, `Warehouse ID`, `Status`; ids are
+the text before the first space). Confirm the state with Amazon before continuing; write the
+handover file before doing anything else.
+
+Cell contract for the MCP path:
 
 | What | Where | Value |
 |---|---|---|
 | plan id | row 6 under chip `1a.` (Split First `1.`) | `wf…`; row 5 `DONE` |
 | packing option / group | row 6 under `1b.` / `1c.` | `po…` / `pg…`; row 5 `DONE` |
 | placement pick | row 6 under `2.` | `<placementOptionId> (<fee> USD · <warehouseIds>)`; row 5 `READY` until confirmed |
+| transport / window picks | row 6 under `3.` / `3b.` | the chosen ids |
 | confirmation | row 12 by label | `Status`=CONFIRMED, `FBA ID`, `Reference ID`, `Warehouse ID`; chip `4.` (`6.`) `DONE` |
 | cancel | row 5 all chips, row 12 `Status` | `CANCELLED` |
 
@@ -100,7 +144,7 @@ header + column header + one row per shipment + blank):
   `Transportation Fee` = the cost parsed from the chosen transport text; `Est.` = rate × kg / m³.
   Weight is KG (LB ÷ 2.20462), volume CBM (IN³ × 0.0000163871, CM³ × 0.000001).
 - The `Warehouse ID` cell keeps the bare FC code (every reader keys on it) and carries a
-  NOTE `City, ST · Region (中文)` — city/state from Amazon's shipment destination, the
+  NOTE `City, ST ZIP · Region (中文)` — city/state/zip from Amazon's shipment destination, the
   region only when the FC is in the known table (East / Central / West as Seller Central
   groups them); an unknown FC shows no region rather than a guess.
 - The sidebar's Confirm reads the ids as the text before the first space; the AI never

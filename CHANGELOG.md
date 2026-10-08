@@ -11,6 +11,31 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.16.0] — 2026-10-08
+
+### fba-inbound: one page, one chain, with or without the sheet
+
+- `SKILL.md` is now the whole workflow: the two choices stated in the first reply (where things
+  live — the SellerSheet FBA spreadsheet or not — and which tools — the compound tools or the
+  granular Amazon operations), the intake lines inline, ONE chain table (compound tool · granular
+  equivalent · what mode A writes), and what the user does after confirmation per carrier type.
+  `MODE_A_SELLERSHEET.md` and `MODE_B_STANDALONE.md` folded into it and into `SHEET_LAYOUT.md`
+  (plan-workbook rows, `_state`, picking up a sidebar plan).
+- **The confirm gate.** Confirming a placement charges the placement fee and locks the carrier at
+  the quoted price with no undo: the fee and every quote are restated in money and the user's
+  explicit go-ahead is required — under autopilot only when a named rule picked every option.
+- **Transport options are a view.** `fbaInbound_generate_shipment_options` lists the 3 cheapest
+  partnered options per shipping mode per shipment (`limit`, 0 = all) and one carrier type when
+  `shipping_solution` names it; `data.counts` carries Amazon's totals and
+  `fbaInbound_listTransportationOptions` shows every option. Identical entries are collapsed and
+  constant fields dropped; `placementFee` travels with the answer.
+- **Delivery windows.** Amazon lists windows that start before the ship date — even ones already
+  begun — as AVAILABLE; the skill offers only windows on or after the delivery-window start.
+- `fbaInbound_create_sta_sheet` refuses an unknown or incomplete warehouse code before it creates
+  anything, naming the codes on the Shipment Setting sheet; its plan folder is created per call
+  (two plans created in the same minute no longer share one). The Warehouse ID note in
+  STA-Options now carries the zip code.
+
 ## [0.15.1] — 2026-10-08
 
 ### Synced to the 2026-10-07 backend changes
