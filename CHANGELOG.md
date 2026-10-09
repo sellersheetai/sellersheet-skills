@@ -11,10 +11,22 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
-Ready for the next release:
-- `fbn-inbound` (new) — noon FBN inbound shipments (ASN) with the MCP tools only: eligible SKUs,
-  create, items, seal, the user's slot pick, schedule, reschedule, cancel; the same step gates the
-  SellerSheet sheet runs; stops on noon's 403 "only available to global sellers".
+## [0.16.5] — 2026-10-09
+
+### fbn-inbound: new skill — noon FBN inbound shipments (ASN)
+
+- Builds a noon FBN inbound shipment with the MCP tools alone, no spreadsheet needed at any
+  step: list the eligible SKUs, create the ASN, push items, seal, show the warehouse slots for
+  the user to pick, schedule, and later reschedule or cancel.
+- noon holds the state: every step reads the ASN back first and runs the same step gates as the
+  SellerSheet sheet (no items before create, no slots before seal, one slot picked to schedule),
+  so a step out of order is explained instead of sent.
+- Never picks a slot or a quantity for the user; every write waits for their approval; cancel is
+  final.
+- Slot dates and times are the warehouse's local (marketplace) time, quoted exactly as noon gives
+  them.
+- noon's inbound API is for global (cross-border) sellers: a 403 "only available to global
+  sellers" is relayed as noon's answer and the skill stops instead of retrying.
 
 ## [0.16.4] — 2026-10-09
 

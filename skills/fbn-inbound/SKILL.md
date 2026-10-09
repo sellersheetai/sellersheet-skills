@@ -3,7 +3,7 @@ name: fbn-inbound
 description_zh: "noon 入仓、FBN 发货、创建 ASN、加商品到 ASN、封箱、预约送仓时段、重新预约、取消 ASN、noon 货件状态。"
 description_en: "Use when a user wants stock sent into noon's fulfilment centres (FBN, Fulfilled by noon) — \"create a noon…"
 author: SellerSheet AI
-version: 0.16.4
+version: 0.16.5
 metadata: {apis: [noon], pattern: Gate}
 description: >-
   Use when a user wants stock sent into noon's fulfilment centres (FBN, Fulfilled by noon) —
@@ -86,7 +86,10 @@ lines from step 3.
 time slots. Summarise it (warehouses, first and last date, slots per day) rather than dumping
 every row, let the user pick one warehouse + date + slot, then call
 `noon_inbound_ScheduleShipment` with `dst_warehouse_code`, `schedule_date` (`YYYY-MM-DD`) and
-`schedule_slot` (`{start, end}` as `HH:MM`) exactly as listed.
+`schedule_slot` (`{start, end}` as `HH:MM`) exactly as listed. The dates and times are the
+warehouse's local (marketplace) time with no zone: quote them as given, never convert them to
+the user's time zone, and say they are the marketplace's time. When recording them in a sheet,
+write them as text so the sheet does not turn them into date values.
 
 **Anytime.** `noon_inbound_GetShipment` (status, booked slot, `qty_received` / `qty_putaway`
 once receiving starts), `noon_inbound_ListShipments` (find a draft or audit history; filter by
