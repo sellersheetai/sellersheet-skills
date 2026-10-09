@@ -30,7 +30,7 @@ npx skills add sellersheetai/sellersheet-skills -a codex
 
 `npx skills` discovers every skill in the repo's `skills/` directory —
 `sellersheet-sheets`, `sellersheet-dashboard`, `report-data`, `image-gen`,
-`noon-report-data`, `amazon-ads`, `amazon-report`, `data-kiosk`, plus the
+`noon-report-data`, `amazon-ads`, `amazon-report`, `data-kiosk`, `fba-inbound`, `fbn-inbound`, plus the
 `sellersheet-shared` companion — and installs each as a `SKILL.md` skill folder
 into your agent's skill path. **Install the whole bundle, not a subset** — the
 skills reference `sellersheet-shared` for the common preflight and conventions.

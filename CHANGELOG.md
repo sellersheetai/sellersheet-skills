@@ -11,6 +11,11 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+Ready for the next release:
+- `fbn-inbound` (new) — noon FBN inbound shipments (ASN) with the MCP tools only: eligible SKUs,
+  create, items, seal, the user's slot pick, schedule, reschedule, cancel; the same step gates the
+  SellerSheet sheet runs; stops on noon's 403 "only available to global sellers".
+
 ## [0.16.4] — 2026-10-09
 
 ### sellersheet-sheets: one dropdown tool, read back with get_sheet_cell

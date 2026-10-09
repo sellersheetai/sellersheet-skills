@@ -69,6 +69,12 @@
       "latest_version": "0.16.4",
       "path": "skills/fba-inbound",
       "description": "FBA inbound shipments end to end — intake checklist, plan + packing + placement options, the user's transport and delivery-window pick, confirmation, box labels, packing list, tracking, status, and warehouse fishing (刷仓). Mode A mirrors the SellerSheet sidebar's plan workbook (server-rendered STA-Options / Inbound PL / label links); Mode B works without a SellerSheet spreadsheet."
+    },
+    {
+      "name": "fbn-inbound",
+      "latest_version": "0.16.4",
+      "path": "skills/fbn-inbound",
+      "description": "noon FBN inbound shipments (ASN) end to end with the MCP tools only — eligible SKUs, create, items, seal, the user's slot pick, schedule, reschedule and cancel — with the same step gates the SellerSheet sheet runs and no spreadsheet during the steps. noon offers the inbound API to global sellers only."
     }
   ],
   "install_commands": {

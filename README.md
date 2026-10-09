@@ -48,7 +48,7 @@ failed action is refunded.
 
 ## Skills in this bundle
 
-Nine skills that teach your agent how to use the SellerSheet MCP well. More skills coming after their reviews complete.
+Ten skills that teach your agent how to use the SellerSheet MCP well. More skills coming after their reviews complete.
 
 | Skill | What it does |
 |---|---|
@@ -61,6 +61,7 @@ Nine skills that teach your agent how to use the SellerSheet MCP well. More skil
 | **amazon-report** | Amazon SP-API on-demand report documents — the exact `reportType`, required `reportOptions` enums, and full JSON field tree for 22 reports (Brand Analytics, Sales & Traffic, Promotion/Coupon, Vendor, account health), so agents request the right report and parse fields by their real names. NOT for the synced `rpt_*` warehouse — that's `report-data`. |
 | **data-kiosk** | Amazon SP-API Data Kiosk GraphQL authoring — versioned root query types, dataset fields, required arguments, enums, and per-field `@resultRetention` for Sales & Traffic, Economics, and Vendor Analytics, so agents write a valid `createQuery` instead of guessing. |
 | **fba-inbound** | FBA inbound shipments end to end — intake checklist, plan + packing + placement options, the user's transport / delivery-window pick, confirmation, box labels, packing list, tracking, status, plus a warehouse-fishing loop (刷美西仓). Mode A works on the SellerSheet FBA spreadsheet and the sidebar's own plan workbook (the server renders STA-Options, Inbound PL and the label links); Mode B needs no SellerSheet spreadsheet and delivers to chat, HTML, your own sheet or Excel. Never picks an option for you unless you name the rule. |
+| **fbn-inbound** | noon FBN inbound shipments (ASN) end to end — eligible SKUs, create, add the lines, seal, your pick of warehouse / date / slot, schedule, reschedule and cancel — with the MCP tools only and no spreadsheet during the steps. Every step checks the ASN status first and says why when it must not run. noon offers the inbound API to global sellers only. |
 
 Plus **`sellersheet-shared`**, a small companion skill every other skill references — the MCP preflight protocol, store-reference rules, response contract, and troubleshooting live there once instead of being copied into each skill. It installs automatically with the bundle.
 
