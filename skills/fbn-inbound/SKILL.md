@@ -3,7 +3,7 @@ name: fbn-inbound
 description_zh: "noon 入仓、FBN 发货、创建 ASN、加商品到 ASN、封箱、预约送仓时段、重新预约、取消 ASN、noon 货件状态。"
 description_en: "Use when a user wants stock sent into noon's fulfilment centres (FBN, Fulfilled by noon) — \"create a noon…"
 author: SellerSheet AI
-version: 0.16.5
+version: 0.16.6
 metadata: {apis: [noon], pattern: Gate}
 description: >-
   Use when a user wants stock sent into noon's fulfilment centres (FBN, Fulfilled by noon) —
@@ -28,6 +28,12 @@ create the ASN, add the lines, seal it, book a delivery slot. Everything runs th
 `get_user_context().data.noonAccountInfo.accounts[].store_refs` — `<account>-<CC>`, e.g.
 `myNoon-AE`. The `-CC` is the destination country of the ASN. No connected noon account → the
 user connects one on the SellerSheet dashboard first.
+
+**The ASN page on noon.** Every ASN has a page in noon's seller portal:
+`https://fbn-inbound.noon.partners/en-<cc>/asn/<asn_nr>?project=<project_code>` — `<cc>` is the
+store ref's country in lower case (`ae`, `sa`, `eg`), `<project_code>` is the `project_code` of
+the same account in `get_user_context().data.noonAccountInfo.accounts[]`. Give the ASN number
+as this link after Create and again after Schedule, so the user can open the shipment on noon.
 
 ## 0. Rules
 
@@ -125,9 +131,12 @@ means the booked slot passed unused — create a new ASN. Report `qty_received` 
 
 ## 4. Autopilot ("just do the whole thing")
 
-Run the stages in order and stop at the first gate that refuses. Pick a slot only by a rule the
-user stated ("earliest date", "Dubai only", "mornings") and say which rule picked it. Without a
-rule, stop at step 5 with the summary and ask.
+Run the stages in order and stop at the first gate that refuses. The SKUs and quantities the
+request names are the user's confirmation of the lines (step 3, the Seal gate) once
+`noon_inbound_ListShipmentItems` shows exactly those; any difference stops for the user. Pick a
+slot only by a rule the user stated ("earliest date", "Dubai only", "warehouse RUH07",
+"mornings") and say which rule picked it. Without a rule, stop at step 5 with the summary and
+ask. Finish with the progress line and the ASN page link.
 
 ## 5. Errors
 
@@ -155,4 +164,5 @@ User: "Send 48 black and 48 white bottles and 24 green ones to noon UAE, PO-2026
 5. `noon_inbound_GetSlotAvailability` → "2 warehouses (Abu Dhabi, Dubai), 5 days from Sunday,
    4 slots a day — which one?" → the user picks Dubai, Monday 12:00–14:00 →
    `noon_inbound_ScheduleShipment` → SCHEDULED.
-   Line: `1. Prepare ✓ · 2. Create ✓ A0XXXXXXXPN · 3. Items ✓ 3 SKU · 120 units · 4. Seal ✓ · 5. Schedule ✓ Dubai Mon 12:00–14:00`.
+   Line: `1. Prepare ✓ · 2. Create ✓ A0XXXXXXXPN · 3. Items ✓ 3 SKU · 120 units · 4. Seal ✓ · 5. Schedule ✓ Dubai Mon 12:00–14:00`,
+   then the ASN page: `https://fbn-inbound.noon.partners/en-ae/asn/A0XXXXXXXPN?project=<project_code>`.

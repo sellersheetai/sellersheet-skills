@@ -11,7 +11,7 @@ Works in Claude Code, Claude Desktop, Codex, Tencent CodeBuddy Code, Gemini CLI,
 
 **Author**: [sellersheetai.com](https://sellersheetai.com)
 **License**: Apache-2.0
-**Latest release**: v0.16.5 ([changelog](./CHANGELOG.md))
+**Latest release**: v0.16.6 ([changelog](./CHANGELOG.md))
 
 ## What you can do
 

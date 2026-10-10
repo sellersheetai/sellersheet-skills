@@ -11,6 +11,18 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.16.6] — 2026-10-11
+
+### fbn-inbound: the ASN page link, and one-sentence autopilot
+
+- After Create and after Schedule, the ASN number is given as a link to its page in noon's
+  seller portal (`https://fbn-inbound.noon.partners/en-<cc>/asn/<asn_nr>?project=<project_code>`,
+  the project code from `get_user_context`), so the user opens the shipment on noon in one click.
+- Autopilot: the SKUs and quantities named in the request count as the confirmed lines once the
+  ASN shows exactly those, so "create the ASN for SKU X × 50 and book the earliest slot" runs
+  through seal and schedule without a second question; any difference still stops. A named
+  warehouse is a slot rule like "earliest date".
+
 ## [0.16.5] — 2026-10-09
 
 ### fbn-inbound: new skill — noon FBN inbound shipments (ASN)
