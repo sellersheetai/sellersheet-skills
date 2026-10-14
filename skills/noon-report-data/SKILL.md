@@ -1,190 +1,115 @@
 ---
 name: noon-report-data
-description_zh: "noon 订单、noon 财务/交易明细、FBN 库存账龄、noon 商品浏览与销量、noon 店铺报表。"
+description_zh: "noon 订单、noon 财务/交易明细、FBN 库存账龄、noon 商品浏览与销量、noon 商品目录（价格/库存/在售状态）、noon 店铺报表。"
 description_en: "Use when working with noon.com (noon Partners) report data that SellerSheet ingests on a schedule — querying…"
 author: SellerSheet AI
 description: >-
-  Use when working with noon.com (noon Partners) report data that SellerSheet ingests on a schedule — querying noon orders, finance/transactions, FBN inventory aging, product-views & sales, or the FBN catalog (titles and images) for a connected noon store. Covers the 5 rpt_noon_* warehouse tables, their schedules, grain, and the query nuances (project-scoped, marketplace semantics, snapshot vs incremental). Do NOT use for Amazon SP-API or Ads report data — use report-data / amazon-report / amazon-ads instead.
-  中文触发词：noon 订单、noon 财务/交易明细、FBN 库存账龄、noon 商品浏览与销量、noon 店铺报表。
-version: 0.16.6
+  Use when working with noon.com (noon Partners) report data that SellerSheet ingests on a schedule — querying noon orders, finance transactions (Transaction View Report, Item Level), FBN inventory aging, product views & sales, the full noon catalog (every listing's prices, stock and live / not-live status) or the FBN catalog (titles and images) for a connected noon store. Covers the 6 rpt_noon_* warehouse tables, the store-ref rule (always myStore-AE), schedules, grain and the query nuances. Do NOT use for Amazon SP-API or Ads report data — use report-data / amazon-report / amazon-ads instead.
+  中文触发词：noon 订单、noon 财务/交易明细、FBN 库存账龄、noon 商品浏览与销量、noon 商品目录（价格/库存/在售状态）、noon 店铺报表。
+version: 0.16.7
 metadata: {apis: [data], pattern: Reference}
 ---
 
 # noon Report Data
 
-SellerSheet's reporting server ingests four noon Export-API reports on a
-twice-daily schedule plus a daily FBN **catalog pull** (images/titles) into
-warehouse tables (`rpt_noon_*`) you query with the **same `query_report_data`
-MCP tool** you use for Amazon — just point it at a noon store and a
-`rpt_noon_*` table.
+## When to use
 
-## Prerequisites
+Use this skill to read noon data that SellerSheet syncs on a schedule into six warehouse tables:
+orders, finance, FBN inventory aging, product views & sales, the catalog export and the FBN
+catalog. Read them with the same `query_report_data` tool you use for Amazon (one table per
+call, `joins` to add more); `get_table_schema(table_name)` lists the live columns. Run the
+preflight in [`sellersheet-shared`](../sellersheet-shared/SKILL.md) first. The user needs a
+connected noon account (dashboard → noon section → Connect noon); *"No connected noon account
+found"* means connect one first. The SellerSheet sidebar can also create any noon report on demand.
 
-Run the standard preflight in [`sellersheet-shared`](../sellersheet-shared/SKILL.md).
-**Extra auth for this skill:** a connected noon account — noon data is keyed to a noon
-*project*, not an Amazon store (dashboard → noon section → Connect noon). If
-`query_report_data` on a `rpt_noon_*` table returns *"No connected noon account
-found"*, tell the user to connect one first.
+## The store ref: always `myStore-AE`
 
-## How noon querying differs from Amazon
+Pass `store` as the noon store ref **with its marketplace**, e.g. `myStore-AE`, copied verbatim
+from `get_user_context`'s store refs, on every call. A ref without a marketplace (`myStore`) is
+refused, and so is a marketplace the account does not sell in; the refusal lists the refs that
+work. One ref covers one marketplace, so query several marketplaces with one call per ref.
 
-| | Amazon `rpt_*` | noon `rpt_noon_*` |
-|---|---|---|
-| Scope key | `store_id` | `project_code` (resolved from the caller's connected noon accounts — you never pass it) |
-| `store` arg | `myStore-AE` (Amazon store) | the **noon** store ref, e.g. `myStore-AE` (account name + CC). Bare name (`myStore`) or omitting it scopes to all your noon projects |
-| Access | ownership/share | ownership only (no noon sharing yet) |
+The ref's marketplace is added as a filter for you on every table that carries one:
 
-You do **not** pass `project_code` — the server resolves it from the `store` ref
-against your connected noon accounts and scopes the query for you. Marketplace
-filtering is **not** auto-injected for noon (unlike Amazon's `myStore-AE` suffix):
-add an explicit filter on `marketplace` / `country_code` when you want one
-marketplace (see per-table notes).
+- `country_code` on the catalog export, FBN aging, product views (one export per marketplace)
+  and finance (read from each row's contract title `NOON-AE`, else its currency);
+- `market_place_country_code` on orders (rows with a blank country cell are left out).
 
-Tools: `get_table_schema(table_name)` for live columns; `query_report_data(...)`
-to read. Single-table per call (use `joins` to add tables).
+Only the FBN catalog is account-wide and **not** filtered (the response says so): it has no
+marketplace column.
 
-## Schedule (twice daily at 04:00 + 16:00 UTC)
+## `report_date`: `'all'`, then filter the real date
 
-| Table | Report | Cron (UTC) | Lookback | Mode |
-|---|---|---|---|---|
-| `rpt_noon_orders` | OMS orders export | `0 4,16 * * *` (04:00, 16:00) | 7d, full re-pull each fire | incremental (UPSERT) |
-| `rpt_noon_finance` | Transaction view (item level) | `0 4,16 * * *` (04:00, 16:00) | 14d, full re-pull | incremental (UPSERT) |
-| `rpt_noon_fbn_aging` | FBN inventory v2 aging | `0 4,16 * * *` (04:00, 16:00) | — | **snapshot** (one full picture per `snapshot_date`) |
-| `rpt_noon_product_views` | Catalog product-views & sales | `0 4,16 * * *` (04:00, 16:00) | 14d, full re-pull | incremental (UPSERT) |
-| `rpt_noon_catalog` | FBN-eligible catalog items (paginated GET, not an Export) | `0 5 * * *` (daily 05:00) | — full catalog each fire | rolling UPSERT |
-
-The 3 time-based reports re-pull their whole lookback window every run (so late
-status/finance/analytics revisions are caught), then UPSERT — no duplicates.
-FBN aging is a snapshot: each `snapshot_date` is a complete inventory picture,
-and one pull carries ~a year of month-end snapshots. For "current stock" filter
-to the **latest `snapshot_date`** (see the `report_date` section) — not `report_date`.
-
-## `report_date` mode — ALWAYS use `'all'` for noon tables
-
-For every noon table, pass **`report_date='all'`** and filter the real date
-column yourself. Do **NOT** use `report_date='latest'` on noon tables — it keys
-off the injected `report_date` (the *ingestion* stamp), which is the same for
-every row in a pull and is **not** the data date you care about.
-
-- **`rpt_noon_fbn_aging` (snapshot) — the trap:** one FBN pull returns **many
-  historical `snapshot_date`s** (month-end snapshots going back a year), all
-  written with the same `report_date`. So `report_date='latest'` returns **every
-  snapshot at once** and summing it massively over-counts. For *current stock*
-  you must pick the **latest `snapshot_date`** explicitly:
-  1. Find it: query `rpt_noon_fbn_aging` with `aggregations:[{op:max,
-     column:rpt_noon_fbn_aging.snapshot_date,alias:d}]`, `report_date='all'`
-     (optionally filter `country_code`).
-  2. Then filter `snapshot_date = <that value>` with `report_date='all'`.
-  Never aggregate aging across snapshot_dates unless you explicitly want a
-  time series.
-- **orders / finance / product_views (incremental):** filter the **event date**
-  (`order_placed_at` / `transaction_date` / `visit_date`) with `report_date='all'`.
-
----
+Pass `report_date='all'` and filter the table's own date column: `order_placed_at`,
+`transaction_date`, `visit_date` or `snapshot_date`. On those tables `report_date` is the sync
+stamp, not the data date. The two catalogs are the exception. Their date IS `report_date`, so
+`report_date='latest'` returns the current copy (per marketplace for the catalog export).
 
 ## Tables
 
-### `rpt_noon_orders` — order items (project-wide, all marketplaces in one report)
-- **Grain:** one row per order item. **Key:** `project_code, marketplace, item_nr`.
-- **Marketplace:** filter on **`market_place_country_code`** = `AE`/`SA`/`EG` (the `marketplace` column holds the same value — either works).
-- **Event date:** `order_placed_at` (timestamptz). Use `report_date='all'` + a filter on `order_placed_at`.
-- **Columns:** `id_partner`, `partner_name`, `market_place` (always `noon`), `order_nr`, `market_place_country_code`, `destination_country_code`, `item_nr`, `sku`, `warehouse_code`, `order_placed_at`, `min_expected_delivery_at`, `max_expected_delivery_at`, `item_status` (`delivered`/`shipped`/`cancelled`/…), `shipment_nr`, `awb_nr` (airway bill / tracking), `is_fulfilled_by_noon` (bool — FBN vs partner-fulfilled). Plus injected `project_code`, `marketplace`, `report_date`.
+| Table | noon report | Grain | Schedule (UTC) | Kind |
+|---|---|---|---|---|
+| `rpt_noon_orders` | Orders Export (OMS) | one row per order item | 04:00 + 16:00, last 7 days re-pulled | incremental |
+| `rpt_noon_finance` | Transaction View Report (Item Level) | one row per transaction line of an item | 04:00 + 16:00, last 14 days re-pulled | incremental |
+| `rpt_noon_fbn_aging` | FBN Inventory Aging | one row per SKU × barcode × condition, per marketplace and snapshot date | 04:00 + 16:00 | snapshot |
+| `rpt_noon_product_views` | Product Views and Sales | one row per SKU, per marketplace and visit date | 04:00 + 16:00, last 14 days re-pulled | incremental |
+| `rpt_noon_catalog_export` | Catalog Export (live + not live) | one row per partner SKU, per marketplace and day | daily 03:00, marketplaces ~30 min apart | snapshot, 7 days kept |
+| `rpt_noon_catalog` | FBN catalog (inbound-eligible items) | one row per partner SKU | daily 05:00 | rolling current list |
 
-### `rpt_noon_finance` — finance transactions (item level; project-wide, all marketplaces in one report)
-- **Grain:** one row per transaction line. **Key:** `project_code, reference_nr, item_nr, transaction_type`.
-- **Marketplace:** the report is project-wide but each row carries its market in **`contract_title`** = `NOON-AE`/`NOON-SA`/`NOON-EG`. The `marketplace` column is derived from it (`NOON-AE` → `AE`), so filter `marketplace` = `AE`/`SA`/`EG` (or `contract_title` = `NOON-AE`). (`marketplace='ALL'` only appears on rows whose contract title couldn't be parsed.)
-- **Event date:** `transaction_date` (date). `order_date` is also present (NULL for non-order transactions). Use `report_date='all'` + filter `transaction_date`.
-- **Columns:** `contract`, `contract_title`, `reference_nr`, `order_nr`, `item_nr`, `order_date`, `transaction_date`, `title`, `skus`, `partner_skus`, `transaction_type` (`Sale`/`Refund`/`balance_transfer`/…), `currency`, and money fields **all VAT-inclusive** `numeric(16,2)`: `net_proceeds`, `referral_fee`, `fulfillment_logistics_fees`, `shipping_credits`, `other_order_fees`, `order_subsidies`, `non_order_fees`, `non_order_subsidies`, `others`, `total`. Sum `total` for net payout over a period.
+The incremental tables re-pull their whole window every run and upsert, so late revisions land
+without duplicates.
 
-### `rpt_noon_fbn_aging` — FBN inventory aging (SNAPSHOT; one report per marketplace)
-- **Grain:** one row per `snapshot_date, country, sku, partner_barcode, condition, qc_fail`. **Key:** `project_code, snapshot_date, country_code, sku, partner_barcode, inventory_condition, qc_fail_item_identifier` (NULLS NOT DISTINCT).
-- **`partner_barcode` is part of the key** — noon ships one row per barcode, so a single `sku` can have **multiple `partner_barcode`** rows, and `sku` can be **empty** while `partner_barcode='UNIDENTIFIED'`. Don't assume one row per sku; aggregate by sku (SUM the buckets) if you want a per-sku total.
-- **`marketplace`** and **`country_code`** both = the CC (each marketplace is exported separately). Filter `country_code` for one market.
-- **Current stock = the latest `snapshot_date` only.** Always `report_date='all'`; find MAX(`snapshot_date`) then filter to it (see the `report_date` section above). One pull contains ~a year of month-end snapshots, so summing without that filter over-counts ~10–20×.
-- **Aging buckets:** `gross_quantity`, `quantity_0_30d`, `quantity_31_60d`, `quantity_61_90d`, `quantity_91_180d`, **`quantity_181_365d`** (single bucket — there is NO 181_270/271_365 split), `quantity_366d`. Also `partner_sku`, `partner_barcode`, `inventory_condition` (`sellable`/`UNSALEABLE`/…), `qc_fail_item_identifier`, `first_received_date`, `last_movement_date`. High `quantity_366d` / `quantity_181_365d` = aged stock at risk.
+## Notes that change a query
 
-### `rpt_noon_product_views` — product views & sales (one report per marketplace)
-- **Grain:** one row per `visit_date, sku, country`. **Key:** `project_code, visit_date, sku, country_code`.
-- **`marketplace`** and **`country_code`** both = the CC (each marketplace is exported separately). Filter `country_code` for one market.
-- **Event date:** `visit_date` (date). Use `report_date='all'` + filter `visit_date`.
-- **Columns:** `partner_sku`, `mp_code`, `sku_config`, `sku`, `family`, `product_type`, `product_subtype`, `brand`, `currency_code`, `product_title`, `your_visitors`, `total_visitors`, `gross_units`, `shipped_units`, `cancelled_units`, `revenue_shipped`, `buy_box_visitor_percentage`, `conversion_visitors_percentage`, **`asp_shipped`**.
-- **Gotchas:** `asp_shipped` is the **average selling PRICE** (currency amount), NOT a percent despite noon's source header. `conversion_visitors_percentage` can exceed 100 (noon's definition). Sales columns (`gross_units`/`shipped_units`/`revenue_shipped`) are sparse — many view-only rows.
-
-### `rpt_noon_catalog` — FBN-eligible catalog items (image/title lookup; PROJECT-WIDE)
-- **Source:** `GET /fbn/inbound/v1/catalog/items` (paginated JSON, ≤1000/page) — the same
-  data the GAS sidebar's "List Eligible Items" button writes to the FBN Product tab.
-  NOT an Export report: no marketplace dimension (`marketplace` is a constant `'ALL'`).
-- **Grain:** one row per catalog item. **Key:** `project_code, partner_sku, sku`.
-- **Columns:** `partner_sku` (your SKU), `sku` (noon internal SKU, e.g. `N42555217A` —
-  matches the `sku` in the other rpt_noon tables), `title`, `storage_type`
-  (`STORAGE_TYPE_UNSPECIFIED|STANDARD|OVERSIZE|BULKY`), `image_url` (nooncdn CDN URL,
-  120px variant — render directly with `=IMAGE()`).
-- **Freshness semantics:** rolling UPSERT — every fire re-pulls the full catalog and
-  refreshes `report_date` on rows it sees. **Current catalog = `report_date = MAX(report_date)`**;
-  a row with an older `report_date` was delisted/removed from FBN eligibility.
-- **THE image pattern (mirrors the Amazon catalog pattern):** when building a noon sheet
-  with thumbnails, query this table for `sku, partner_sku, title, image_url`, write it to a
-  hidden `_raw_noon_catalog` helper tab, then put the thumbnail in column A of the visible
-  tab via the MAP/ARRAYFORMULA `IMAGE()` join keyed on `sku` — with IDENTICAL
-  WHERE/ORDER BY/LIMIT as the data spill so images stay row-aligned
-  (see `sellersheet-sheets` → `reference/image-pattern.md`).
-
----
+- **Catalog export.** This is the full catalog: every partner SKU, live and not live, with title,
+  brand, prices, sale window and stock. noon shares one listing across its marketplaces, but
+  prices and stock differ, so each marketplace has its own copy. A marketplace's newest
+  `report_date` is its current catalog, and 7 daily copies are kept (compare two days to see what
+  left). The status is `noon_status = 'live'` or `'not_live'`. On a not-live row, `offer_status_reason` says why
+  (`Content Issues`, `Invalid Price`, `Stock Issues`, `Deactivated SKU`; sometimes blank).
+  Skeleton rows exist: not-live SKUs with no family, brand or title. `noon_price_max = 99999`
+  means no cap, not a price.
+- **Orders.** The marketplace filter drops rows with a blank `market_place_country_code`.
+  `is_fulfilled_by_noon` separates FBN from partner-fulfilled.
+- **Finance (Transaction View Report, Item Level).** There is one row per transaction line:
+  `reference_nr` × `item_nr` × `transaction_type` (`Sale`, `Refund`, …). Every money column
+  includes VAT. Sum `total` for the net payout.
+- **FBN aging.** Current stock is the newest `snapshot_date` only: find it with a `max`
+  aggregation, then filter on it. The table holds several snapshot dates, so summing across them
+  over-counts. One SKU can have several `partner_barcode` rows, so sum per SKU. `sku` is empty
+  on `UNIDENTIFIED` barcode rows.
+- **Product views.** `asp_shipped` is the average selling price, not a percent.
+  `conversion_visitors_percentage` can exceed 100. The sales columns are empty on view-only rows.
+- **FBN catalog.** It lists FBN-eligible items only (the catalog export has every listing), with
+  `image_url` for `=IMAGE()` thumbnails (the `sellersheet-sheets` image pattern). Join other
+  tables on `sku`. A row older than the newest `report_date` has left FBN eligibility.
 
 ## Example queries
 
-Current FBN stock at risk (aged) in AE — **two steps**, latest snapshot only:
+Not-live listings in AE and why (current catalog):
 ```json
-// 1) find the latest snapshot_date
-{ "store": "myStore-AE", "tables": ["rpt_noon_fbn_aging"],
-  "columns": ["rpt_noon_fbn_aging.country_code"],
-  "aggregations": [{"op":"max","column":"rpt_noon_fbn_aging.snapshot_date","alias":"latest"}],
-  "filters": [{"column":"rpt_noon_fbn_aging.country_code","op":"eq","value":"AE"}],
-  "report_date": "all" }
-// 2) query that snapshot (e.g. latest = 2026-06-14)
-{ "store": "myStore-AE", "tables": ["rpt_noon_fbn_aging"],
-  "columns": ["rpt_noon_fbn_aging.sku","rpt_noon_fbn_aging.partner_barcode","rpt_noon_fbn_aging.gross_quantity","rpt_noon_fbn_aging.quantity_181_365d","rpt_noon_fbn_aging.quantity_366d"],
-  "filters": [{"column":"rpt_noon_fbn_aging.country_code","op":"eq","value":"AE"},
-              {"column":"rpt_noon_fbn_aging.snapshot_date","op":"eq","value":"2026-06-14"}],
-  "report_date": "all",
-  "order_by": [{"column":"rpt_noon_fbn_aging.quantity_366d","dir":"desc"}] }
+{ "store": "myStore-AE", "tables": ["rpt_noon_catalog_export"],
+  "columns": ["rpt_noon_catalog_export.partner_sku","rpt_noon_catalog_export.noon_title","rpt_noon_catalog_export.offer_status_reason","rpt_noon_catalog_export.price","rpt_noon_catalog_export.stock_fbn_net"],
+  "filters": [{"column":"rpt_noon_catalog_export.noon_status","op":"eq","value":"not_live"}],
+  "report_date": "latest", "limit": 200 }
 ```
 
-Net payout last 14 days by marketplace (finance — slice via the derived `marketplace`):
+Net payout in AE since a date (the ref filters finance to AE for you):
 ```json
-{ "store": "myStore", "tables": ["rpt_noon_finance"],
-  "aggregations": [{"op":"sum","column":"rpt_noon_finance.total","alias":"net_total"}],
-  "group_by": ["rpt_noon_finance.marketplace","rpt_noon_finance.currency"],
+{ "store": "myStore-AE", "tables": ["rpt_noon_finance"],
+  "aggregations": [{"op":"sum","column":"rpt_noon_finance.total","alias":"net_payout"}],
+  "group_by": ["rpt_noon_finance.currency"],
   "filters": [{"column":"rpt_noon_finance.transaction_date","op":"gte","value":"2026-06-01"}],
   "report_date": "all" }
 ```
 
-Cancelled order items in SA this month:
+Cancelled order items in AE since a date:
 ```json
-{ "store": "myStore-SA", "tables": ["rpt_noon_orders"],
+{ "store": "myStore-AE", "tables": ["rpt_noon_orders"],
   "columns": ["rpt_noon_orders.order_nr","rpt_noon_orders.sku","rpt_noon_orders.item_status","rpt_noon_orders.order_placed_at"],
-  "filters": [{"column":"rpt_noon_orders.marketplace","op":"eq","value":"SA"},
-              {"column":"rpt_noon_orders.item_status","op":"eq","value":"cancelled"},
+  "filters": [{"column":"rpt_noon_orders.item_status","op":"eq","value":"cancelled"},
               {"column":"rpt_noon_orders.order_placed_at","op":"gte","value":"2026-06-01"}],
   "report_date": "all" }
-```
-
-Catalog image/title lookup for a set of SKUs (thumbnail helper tab):
-```json
-{ "store": "myStore", "tables": ["rpt_noon_catalog"],
-  "columns": ["rpt_noon_catalog.partner_sku","rpt_noon_catalog.sku","rpt_noon_catalog.title","rpt_noon_catalog.storage_type","rpt_noon_catalog.image_url"],
-  "report_date": "all", "limit": 500 }
-// then in the sheet: =IMAGE(VLOOKUP($C2,'_raw_noon_catalog'!B:E,4,FALSE)) style join on sku
-```
-
-Top SKUs by visitors (product views) in AE for a date:
-```json
-{ "store": "myStore-AE", "tables": ["rpt_noon_product_views"],
-  "columns": ["rpt_noon_product_views.sku","rpt_noon_product_views.your_visitors","rpt_noon_product_views.conversion_visitors_percentage","rpt_noon_product_views.asp_shipped"],
-  "filters": [{"column":"rpt_noon_product_views.country_code","op":"eq","value":"AE"},
-              {"column":"rpt_noon_product_views.visit_date","op":"eq","value":"2026-06-15"}],
-  "report_date": "all",
-  "order_by": [{"column":"rpt_noon_product_views.your_visitors","dir":"desc"}], "limit": 50 }
 ```
 
 ## Always relay

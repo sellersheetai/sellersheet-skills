@@ -11,6 +11,17 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.16.7] — 2026-10-14
+
+- `noon-report-data` — rewritten, about half the length. Six tables: the new catalog export
+  (`rpt_noon_catalog_export`: every listing per marketplace per day, with prices, stock and live /
+  not-live status and why). One store-ref rule: always `myStore-AE`. A ref without a marketplace
+  is refused, and the ref's marketplace is filtered for you on every table that carries one —
+  finance included, on the country code read from each row's contract title (only the FBN
+  catalog is account-wide). Finance is named as noon's Transaction View Report (Item Level).
+- `report-data` — `listing_images` gains `parent_sku`, `parent_asin` and `parentage_fetched_at`
+  (variation parentage from the same ListingsItems call).
+
 ## [0.16.6] — 2026-10-11
 
 ### fbn-inbound: the ASN page link, and one-sentence autopilot

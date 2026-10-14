@@ -3,7 +3,7 @@
     "table": "listing_images",
     "report_type": null,
     "is_snapshot": false,
-    "description": "Persistent listing image cache. One row per (store_id, country_code, seller_sku). Populated automatically after GET_MERCHANT_LISTINGS_ALL_DATA syncs via ListingsItems API — fetch-once, only new SKUs trigger API calls. No date in the unique key, so report_date='latest' applies no date filter here (omitting it works too) — never pin an explicit date, which would return only the SKUs touched by the newest enrichment batch.",
+    "description": "Persistent listing image cache. One row per (store_id, country_code, seller_sku). Populated automatically after GET_MERCHANT_LISTINGS_ALL_DATA syncs via ListingsItems API — fetch-once, only new SKUs trigger API calls. Variation parentage (parent_sku, parent_asin) comes from the same call; group children under parent_sku to build families. No date in the unique key, so report_date='latest' applies no date filter here (omitting it works too) — never pin an explicit date, which would return only the SKUs touched by the newest enrichment batch.",
     "pii": false,
     "queryable": true,
     "deprecated": false,
@@ -51,6 +51,21 @@
       "db_column": "fetched_at",
       "type": "timestamp",
       "note": "Timestamp when this row was last fetched/inserted"
+    },
+    {
+      "db_column": "parent_sku",
+      "type": "str",
+      "note": "Variation parent's seller SKU for a child listing; the listing's own SKU for a parent; NULL for a standalone listing (from the ListingsItems relationships)"
+    },
+    {
+      "db_column": "parent_asin",
+      "type": "str",
+      "note": "The variation parent's ASIN when known (a parent's own; a child's once its parent's row is cached); NULL otherwise"
+    },
+    {
+      "db_column": "parentage_fetched_at",
+      "type": "timestamp",
+      "note": "When Amazon last answered this SKU's variation relationships; NULL = not asked yet (filled on a later enrichment pass)"
     }
   ],
   "example_query": {
