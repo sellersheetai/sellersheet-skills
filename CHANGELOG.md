@@ -11,7 +11,8 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
-Ready for the next release (patch):
+## [0.16.7] — 2026-10-14
+
 - `noon-report-data` — rewritten, about half the length. Six tables: the new catalog export
   (`rpt_noon_catalog_export`: every listing per marketplace per day, with prices, stock and live /
   not-live status and why). One store-ref rule: always `myStore-AE`. A ref without a marketplace
