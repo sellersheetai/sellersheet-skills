@@ -31,12 +31,12 @@ work. One ref covers one marketplace, so query several marketplaces with one cal
 
 The ref's marketplace is added as a filter for you on every table that carries one:
 
-- `country_code` on the catalog export, FBN aging and product views (one export per marketplace);
+- `country_code` on the catalog export, FBN aging, product views (one export per marketplace)
+  and finance (read from each row's contract title `NOON-AE`, else its currency);
 - `market_place_country_code` on orders (rows with a blank country cell are left out).
 
-Finance and the FBN catalog are account-wide and **not** filtered (the response says so).
-Filter finance on its `marketplace` column yourself: `AE` / `SA` / `EG`, read from the contract
-title (`NOON-AE`), or `ALL` when the title names none. The FBN catalog has no marketplace.
+Only the FBN catalog is account-wide and **not** filtered (the response says so): it has no
+marketplace column.
 
 ## `report_date`: `'all'`, then filter the real date
 
@@ -94,13 +94,12 @@ Not-live listings in AE and why (current catalog):
   "report_date": "latest", "limit": 200 }
 ```
 
-Net payout in AE since a date (finance is not auto-filtered, so filter `marketplace` yourself):
+Net payout in AE since a date (the ref filters finance to AE for you):
 ```json
 { "store": "myStore-AE", "tables": ["rpt_noon_finance"],
   "aggregations": [{"op":"sum","column":"rpt_noon_finance.total","alias":"net_payout"}],
   "group_by": ["rpt_noon_finance.currency"],
-  "filters": [{"column":"rpt_noon_finance.marketplace","op":"eq","value":"AE"},
-              {"column":"rpt_noon_finance.transaction_date","op":"gte","value":"2026-06-01"}],
+  "filters": [{"column":"rpt_noon_finance.transaction_date","op":"gte","value":"2026-06-01"}],
   "report_date": "all" }
 ```
 

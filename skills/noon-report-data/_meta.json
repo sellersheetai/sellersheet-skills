@@ -36,7 +36,7 @@
       "strategy": "noon_export",
       "lookback_days": 14,
       "report_date_mode": "all",
-      "marketplace_column": "marketplace (derived per row from contract_title NOON-XX; NOT auto-filtered — filter it yourself)",
+      "marketplace_column": "country_code (derived per row from contract_title NOON-XX, else the currency; auto-filtered from the ref's marketplace — rows naming none are left out)",
       "event_date_column": "transaction_date",
       "key_columns": [
         "project_code",
