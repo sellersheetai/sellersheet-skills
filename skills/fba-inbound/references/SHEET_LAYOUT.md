@@ -119,11 +119,14 @@ Cell contract for the MCP path:
 | confirmation | row 12 by label | `Status`=CONFIRMED, `FBA ID`, `Reference ID`, `Warehouse ID`; chip `4.` (`6.`) `DONE` |
 | cancel | row 5 all chips, row 12 `Status` | `CANCELLED` |
 
-## STA-Options (rendered by the SERVER in mode A; read by header name)
+## STA-Options (read by header name; drawn by the SERVER only in mode A)
+
+When you drive the plan through the tools (mode A) the server draws this tab. When the seller uses the
+sidebar, the add-on draws it itself ("2. Gen Placement Opts.") — same layout, so read it the same way.
 
 `fbaInbound_orchestrate_packing(sta_spreadsheet_id=…)` renders it, `fbaInbound_generate_shipment_options`
 fills the picked block's dropdowns, `fbaInbound_confirm_plan_options` writes the choices, `fbaInbound_get_labels`
-turns the FBA ID cell into the PDF link. Same layout as the sidebar's "2. Gen Placement Opts.":
+turns the FBA ID cell into the PDF link. Layout:
 
 Summary table rows 1..N+1: `Placement Option: | Number of Shipments | Placement Fee |
 Total Transportation Fee | Freight Est. | Total (Partnered) | Total (Own)` — D/E read the block
