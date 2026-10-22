@@ -49,7 +49,7 @@ Claude should call `get_user_context`, then `query_report_data` via the `report-
 ## Update
 
 ```bash
-git clone https://github.com/sellersheetai/sellersheet-skills.git   # once; read install.sh before you run it
+git -C sellersheet-skills pull || git clone https://github.com/sellersheetai/sellersheet-skills.git   # latest installer first
 bash sellersheet-skills/install.sh --target claude-desktop --update
 ```
 

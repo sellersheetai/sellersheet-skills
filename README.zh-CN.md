@@ -155,7 +155,7 @@ bash sellersheet-skills/install.sh --target <agent>
 **其他智能体**：
 
 ```bash
-git clone https://github.com/sellersheetai/sellersheet-skills.git   # 只需一次；运行前可先阅读 install.sh
+git -C sellersheet-skills pull || git clone https://github.com/sellersheetai/sellersheet-skills.git   # 先取最新的安装脚本
 bash sellersheet-skills/install.sh --update   # 重新安装到最新版
 bash sellersheet-skills/install.sh --check    # 只比较版本，不做改动
 ```

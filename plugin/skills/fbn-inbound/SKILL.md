@@ -3,7 +3,7 @@ name: fbn-inbound
 description_zh: "noon 入仓、FBN 发货、创建 ASN、加商品到 ASN、封箱、预约送仓时段、重新预约、取消 ASN、noon 货件状态。"
 description_en: "Use when a user wants stock sent into noon's fulfilment centres (FBN, Fulfilled by noon) — \"create a noon…"
 author: SellerSheet AI
-version: 0.17.0
+version: 0.17.1
 metadata: {apis: [noon], pattern: Gate}
 description: >-
   Use when a user wants stock sent into noon's fulfilment centres (FBN, Fulfilled by noon) —

@@ -48,7 +48,7 @@ Trigger any sellersheet skill via a natural-language phrase ("build me an operat
 ## Update
 
 ```bash
-git clone https://github.com/sellersheetai/sellersheet-skills.git   # once; read install.sh before you run it
+git -C sellersheet-skills pull || git clone https://github.com/sellersheetai/sellersheet-skills.git   # latest installer first
 bash sellersheet-skills/install.sh --target antigravity --update
 ```
 

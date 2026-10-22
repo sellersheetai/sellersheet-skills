@@ -66,14 +66,14 @@ Run `/reload-plugins` afterwards to activate the new version in the current sess
 These agents install skills via `install.sh`, which clones this repo into `~/.cache/sellersheet-skills` and copies the skill folders. Re-run with `--update`:
 
 ```bash
-git clone https://github.com/sellersheetai/sellersheet-skills.git   # once; read install.sh before you run it
+git -C sellersheet-skills pull || git clone https://github.com/sellersheetai/sellersheet-skills.git   # latest installer first
 bash sellersheet-skills/install.sh --update
 ```
 
 Check what's installed vs. the latest published version without changing anything:
 
 ```bash
-git clone https://github.com/sellersheetai/sellersheet-skills.git   # once; read install.sh before you run it
+git -C sellersheet-skills pull || git clone https://github.com/sellersheetai/sellersheet-skills.git   # latest installer first
 bash sellersheet-skills/install.sh --check
 ```
 

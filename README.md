@@ -11,7 +11,7 @@ Works in Claude Code, Claude Desktop, Codex, Tencent CodeBuddy Code, Gemini CLI,
 
 **Author**: [sellersheetai.com](https://sellersheetai.com)
 **License**: Apache-2.0
-**Latest release**: v0.17.0 ([changelog](./CHANGELOG.md))
+**Latest release**: v0.17.1 ([changelog](./CHANGELOG.md))
 
 ## What you can do
 
@@ -227,7 +227,7 @@ Same plugin manager, same commands: `/plugin marketplace update sellersheet-mark
 
 ```bash
 # Re-install at current latest
-git clone https://github.com/sellersheetai/sellersheet-skills.git   # once; read install.sh before you run it
+git -C sellersheet-skills pull || git clone https://github.com/sellersheetai/sellersheet-skills.git   # latest installer first
 bash sellersheet-skills/install.sh --update
 
 # Check installed vs latest without changing anything

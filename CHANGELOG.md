@@ -11,6 +11,19 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.17.1] — 2026-10-22
+
+### The root `skills` link is gone; `install.sh` updates pull first
+
+- The `skills → plugin/skills` compatibility link announced in 0.17.0 is removed (the
+  "kept until 2027-01-20" note there no longer applies). Plugin and `npx skills` users: nothing
+  to do.
+- **`install.sh` users:** update by pulling your clone first, then re-running the installer —
+  `git -C sellersheet-skills pull || git clone https://github.com/sellersheetai/sellersheet-skills.git`,
+  then `bash sellersheet-skills/install.sh --update` (every update command in the docs now
+  starts this way). An installer from before 0.17.0 run without the pull stops with
+  `cd: …/skills: No such file or directory`; the pull fixes it.
+
 ## [0.17.0] — 2026-10-22
 
 ### The plugin now lives in `plugin/`

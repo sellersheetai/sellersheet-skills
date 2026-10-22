@@ -60,7 +60,7 @@ Restart so it scans the skill directory and registers the new skills.
 ## Update
 
 ```bash
-git clone https://github.com/sellersheetai/sellersheet-skills.git   # once; read install.sh before you run it
+git -C sellersheet-skills pull || git clone https://github.com/sellersheetai/sellersheet-skills.git   # latest installer first
 bash sellersheet-skills/install.sh --target openclaw --path /opt/openclaw/skills --update
 ```
 

@@ -167,9 +167,7 @@ for e in .claude-plugin/plugin.json .mcp.json skills README.md LICENSE NOTICE; d
 done
 cmp -s LICENSE plugin/LICENSE || err "plugin/LICENSE differs from the root LICENSE"
 cmp -s NOTICE plugin/NOTICE   || err "plugin/NOTICE differs from the root NOTICE"
-# Compat link for install.sh copies from before 0.17.0 (they read <clone>/skills). Remove in
-# the first release after 2027-01-20, together with this check.
-[[ -L skills && "$(readlink skills)" == "plugin/skills" ]] || err "root 'skills' must be a symlink to plugin/skills (install.sh compat until 2027-01-20)"
+[[ -e skills || -L skills ]] && err "no root skills/ — the skills live in plugin/skills (0.17.0)" || true
 
 # ---------- 4b. skills_catalog contract (consumed by MCP get_user_context) ----------
 log "Checking skills_catalog contract..."
