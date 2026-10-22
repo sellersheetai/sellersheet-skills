@@ -11,6 +11,14 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.17.2] — 2026-10-22
+
+- The plugin carries its listing icon: `plugin/.claude-plugin/icon.png` (1024 × 1024 PNG of the
+  SellerSheet mark, the same artwork as the repo's `icon.svg`).
+- `fbn-inbound`: the ASN page link says plainly that `project_code` is noon's public identifier
+  for the seller account (it picks the account in noon's portal), not a key, and that the user
+  opens the link in their own browser — the skill never requests it.
+
 ## [0.17.1] — 2026-10-22
 
 ### The root `skills` link is gone; `install.sh` updates pull first

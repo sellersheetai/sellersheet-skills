@@ -3,7 +3,7 @@ name: fbn-inbound
 description_zh: "noon 入仓、FBN 发货、创建 ASN、加商品到 ASN、封箱、预约送仓时段、重新预约、取消 ASN、noon 货件状态。"
 description_en: "Use when a user wants stock sent into noon's fulfilment centres (FBN, Fulfilled by noon) — \"create a noon…"
 author: SellerSheet AI
-version: 0.17.1
+version: 0.17.2
 metadata: {apis: [noon], pattern: Gate}
 description: >-
   Use when a user wants stock sent into noon's fulfilment centres (FBN, Fulfilled by noon) —
@@ -32,8 +32,11 @@ user connects one on the SellerSheet dashboard first.
 **The ASN page on noon.** Every ASN has a page in noon's seller portal:
 `https://fbn-inbound.noon.partners/en-<cc>/asn/<asn_nr>?project=<project_code>` — `<cc>` is the
 store ref's country in lower case (`ae`, `sa`, `eg`), `<project_code>` is the `project_code` of
-the same account in `get_user_context().data.noonAccountInfo.accounts[]`. Give the ASN number
-as this link after Create and again after Schedule, so the user can open the shipment on noon.
+the same account in `get_user_context().data.noonAccountInfo.accounts[]` — noon's own public
+identifier for the seller account (it selects the account in noon's portal), not a key or a
+secret. Give the ASN number as this link after Create and again after Schedule, so the user can
+open the shipment on noon in their own browser, signed in to noon as usual. The skill never
+requests this URL itself and sends nothing to it.
 
 ## 0. Rules
 

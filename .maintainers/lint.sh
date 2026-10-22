@@ -168,6 +168,17 @@ done
 cmp -s LICENSE plugin/LICENSE || err "plugin/LICENSE differs from the root LICENSE"
 cmp -s NOTICE plugin/NOTICE   || err "plugin/NOTICE differs from the root NOTICE"
 [[ -e skills || -L skills ]] && err "no root skills/ — the skills live in plugin/skills (0.17.0)" || true
+# Listing icon (plugin directory rule): a square PNG, 512–2048 px a side, under 2 MB, at
+# plugin/.claude-plugin/icon.png. Rendered from the root icon.svg (the same brand mark).
+python3 - plugin/.claude-plugin/icon.png <<'PY' || err "plugin/.claude-plugin/icon.png must be a square PNG, 512-2048 px, under 2 MB"
+import os, struct, sys
+p = sys.argv[1]
+with open(p, 'rb') as f:
+    head = f.read(24)
+ok = head[:8] == b'\x89PNG\r\n\x1a\n'
+w, h = struct.unpack('>II', head[16:24]) if ok else (0, 0)
+sys.exit(0 if ok and w == h and 512 <= w <= 2048 and os.path.getsize(p) < 2 * 1024 * 1024 else 1)
+PY
 
 # ---------- 4b. skills_catalog contract (consumed by MCP get_user_context) ----------
 log "Checking skills_catalog contract..."
