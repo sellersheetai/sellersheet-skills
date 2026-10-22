@@ -11,6 +11,14 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.17.4] — 2026-10-22
+
+- `report-data`: date-grain tables name their exact date column (`report_date` on the Ads
+  dailies, `date` on the Data Kiosk dailies, `snapshot_date` on the bulk snapshots).
+- `report-data`: `rpt_orders` explains Multi-Channel Fulfillment rows (`sales_channel`
+  `Non-Amazon…`, never priced) and which filter answers which question; the store ref drops
+  them only on a multi-marketplace store.
+
 ## [0.17.3] — 2026-10-22
 
 - `fbn-inbound`: the ASN-link note is one short sentence again.

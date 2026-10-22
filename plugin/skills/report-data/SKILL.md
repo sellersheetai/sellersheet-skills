@@ -6,7 +6,7 @@ author: SellerSheet AI
 description: >-
   Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules, requesting on-demand reports, polling for completion, downloading a finished report document from its presigned URL, or analyzing any report table. Covers inventory, listings, orders, financial, and ad report (SP/SB/SD) tables; Brand Analytics has no synced table, so request it on-demand (schemas in amazon-report). Do NOT use for noon.com data (use noon-report-data) or when you don't yet know a report's exact schema — read amazon-report or data-kiosk first, then come back here for the sync/poll/download mechanics.
   中文触发词：亚马逊报告数据、库存报告、补货需求、订单、退货、结算、搜索词、listing 状态、rpt_ 数据仓库查询、报告同步计划、按需报告下载。
-version: 0.17.3
+version: 0.17.4
 metadata: {apis: [data, sp_api_reports], pattern: Pipeline}
 ---
 
@@ -137,6 +137,23 @@ analysis just add a date filter (which auto-switches 'latest' to 'all' — see Q
 pass `report_date='all'` explicitly. The same daily-grain semantics apply to the Data Kiosk
 tables `rpt_dk_sales_traffic_by_date` / `rpt_dk_sales_traffic_by_asin`.
 
+#### `rpt_orders`: Amazon sales vs Multi-Channel Fulfillment rows
+
+`sales_channel` holds one of two kinds of row:
+
+- `Amazon.<tld>` (`Amazon.com`, `Amazon.sa`, …): a customer order on that Amazon marketplace, priced in its currency.
+- `Non-Amazon`, `Non-Amazon US`, `Non-Amazon CA`, …: a **Multi-Channel Fulfillment** order. FBA stock was shipped for a sale the seller made elsewhere (own website, another marketplace). Order ids start `S0…`, `merchant_order_id` is the seller's own reference, and `fulfillment_channel` is `Amazon`. `item_price`, `currency` and every price column are **always NULL**: Amazon never saw the sale.
+
+Choose by question, and always say it in the query:
+
+| Question | Filter |
+|---|---|
+| Amazon sales, revenue, order count, AOV | `{"column": "rpt_orders.sales_channel", "op": "contains", "value": "Amazon."}` |
+| Units leaving FBA stock (velocity, days of cover, restock) | none: keep both kinds |
+| MCF shipments alone | `{"column": "rpt_orders.sales_channel", "op": "contains", "value": "Non-Amazon"}` |
+
+The store ref adds `sales_channel = 'Amazon.<tld>'` **only for a multi-marketplace store**. That drops MCF rows, which belong to no marketplace. A single-marketplace store gets no filter, so MCF rows come back mixed in. Sum `item_price` without the `Amazon.` filter and you get units with no revenue; count orders without it and you overstate Amazon orders.
+
 **Just pass `store='myStore-US'`. Don't filter on the marketplace column directly** — the column name differs per table (`sales_channel` / `country_code` / `marketplace_id` / `profile_id` / `country` / `amazon_store`) and not every table exposes `country_code` (e.g. `rpt_orders` uses `sales_channel='Amazon.com'`, no `country_code` column).
 
 ### Aggregations — get totals, not raw rows
@@ -180,7 +197,7 @@ Allowed ops: `sum`, `count`, `avg`, `min`, `max` — the key is **`op`** (not `f
     - `"all"` → no date filter. Right for **ID-based lookups** on incremental tables (find a specific `amazon_order_id`, `settlement_id`, `asin`, etc.) where you don't know which date the row was last touched — mandatory for `rpt_orders`, `rpt_get_v2_settlement_report_data_flat_file_v2`, `rpt_get_flat_file_returns_data_by_return_date`, `rpt_get_fba_fulfillment_removal_order_detail_data`, `rpt_get_ledger_detail_view_data`, `rpt_get_fba_reimbursements_data` lookups by primary key — **and for every date-range pull on a date-grain table** (ads dailies, `rpt_dk_*`).
     - `"YYYY-MM-DD"` → exact-date match. Right for **historical analysis** ("what was inventory on 2026-04-15?").
     - **AUTO-OVERRIDE**: when any filter targets a Date/DateTime column of the primary table, `"latest"` automatically behaves as `"all"` — your explicit temporal filter wins over the implicit newest-day pin. The response flags this in `data.report_date_note`. So a natural range query (`date >= '2026-06-10'`) just works without remembering to set `report_date`; pass an explicit `"YYYY-MM-DD"` to pin a specific day regardless.
-- **Date-grain tables** — anything with a business `date` column (`rpt_sp_*`/`rpt_sb_*`/`rpt_sd_*` dailies, `rpt_dk_sales_traffic_by_date`/`_by_asin`): one row per entity per day. These are **facts, not snapshots**, so `"latest"` keeps its scalar meaning here and pins to the newest **probed-date value** — newest-row-per-entity would mix dates across entities (a campaign that stopped 30 days ago sitting next to today's rows) and any SUM off it would be silently incoherent. That scalar date is often a partial day or one ingest batch, so rankings and totals off it are meaningless — always query these with a date filter (auto-override kicks in) or `report_date='all'`. `get_table_schema` flags these tables in its `notes` field.
+- **Date-grain tables** — one row per entity per day, keyed by a business-date column: `report_date` on the `rpt_sp_*`/`rpt_sb_*`/`rpt_sd_*` dailies, `date` on `rpt_dk_sales_traffic_by_date`/`_by_asin` (the bulk-snapshot Ads tables use `snapshot_date`). Filter on that exact name; `get_table_schema` lists the columns. These are **facts, not snapshots**, so `"latest"` keeps its scalar meaning here and pins to the newest **probed-date value** — newest-row-per-entity would mix dates across entities (a campaign that stopped 30 days ago sitting next to today's rows) and any SUM off it would be silently incoherent. That scalar date is often a partial day or one ingest batch, so rankings and totals off it are meaningless — always query these with a date filter (auto-override kicks in) or `report_date='all'`. `get_table_schema` flags these tables in its `notes` field.
 - **Efficiency shape** (`(store_id, date)` composite indexes exist on all the big tables): `'all'` + a date-range filter is index-served and cheap; an **unbounded** `'all'` (no date filter, no eq/in filter) scans the store's full history and the response nudges you via `data.report_date_note` — allowed, but prefer a date range, or `aggregations` for summaries (one indexed scan beats paging raw rows). When paging, the exact count runs on **page 1 only** — later pages return `total_count: null` automatically (you already have the total); pass `count='exact'` explicitly if you need a recount.
 - `listing_images` has no date in its unique key, so `"latest"` applies **no date filter at all** there — one row per SKU already IS current state. Omitting `report_date` works too; what you must not do is pin a date, which would return only the SKUs touched by the newest enrichment batch and drop the rest.
 - PII tables are not queryable: `rpt_fba_shipments`, `rpt_seller_feedback`.
