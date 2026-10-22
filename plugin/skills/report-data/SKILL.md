@@ -6,7 +6,7 @@ author: SellerSheet AI
 description: >-
   Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules, requesting on-demand reports, polling for completion, downloading a finished report document from its presigned URL, or analyzing any report table. Covers inventory, listings, orders, financial, and ad report (SP/SB/SD) tables; Brand Analytics has no synced table, so request it on-demand (schemas in amazon-report). Do NOT use for noon.com data (use noon-report-data) or when you don't yet know a report's exact schema — read amazon-report or data-kiosk first, then come back here for the sync/poll/download mechanics.
   中文触发词：亚马逊报告数据、库存报告、补货需求、订单、退货、结算、搜索词、listing 状态、rpt_ 数据仓库查询、报告同步计划、按需报告下载。
-version: 0.17.4
+version: 0.17.5
 metadata: {apis: [data, sp_api_reports], pattern: Pipeline}
 ---
 
@@ -137,22 +137,24 @@ analysis just add a date filter (which auto-switches 'latest' to 'all' — see Q
 pass `report_date='all'` explicitly. The same daily-grain semantics apply to the Data Kiosk
 tables `rpt_dk_sales_traffic_by_date` / `rpt_dk_sales_traffic_by_asin`.
 
-#### `rpt_orders`: Amazon sales vs Multi-Channel Fulfillment rows
+#### `rpt_orders`: three kinds of row, told apart by `sales_channel`
 
-`sales_channel` holds one of two kinds of row:
+- `Amazon.<tld>` (`Amazon.com`, `Amazon.sa`, …) is a **customer order** on that Amazon marketplace, priced in its currency.
+- `Non-Amazon US`, `Non-Amazon CA`, … (a country after the space) is a **Multi-Channel Fulfillment** order: FBA stock shipped for a sale the seller made elsewhere (own website, another shop). `merchant_order_id` is that shop's reference.
+- `Non-Amazon` (bare) is almost always a **removal order**: stock the seller asked Amazon to return, dispose of or liquidate. `merchant_order_id` is the removal order id, as in `rpt_get_fba_fulfillment_removal_order_detail_data.order_id`, which holds its type and fee. It is not a sale.
 
-- `Amazon.<tld>` (`Amazon.com`, `Amazon.sa`, …): a customer order on that Amazon marketplace, priced in its currency.
-- `Non-Amazon`, `Non-Amazon US`, `Non-Amazon CA`, …: a **Multi-Channel Fulfillment** order. FBA stock was shipped for a sale the seller made elsewhere (own website, another marketplace). Order ids start `S0…`, `merchant_order_id` is the seller's own reference, and `fulfillment_channel` is `Amazon`. `item_price`, `currency` and every price column are **always NULL**: Amazon never saw the sale.
+Both `Non-Amazon` kinds have ids starting `S0…`, `fulfillment_channel = 'Amazon'`, and **every price column NULL**: Amazon never saw a sale.
 
 Choose by question, and always say it in the query:
 
-| Question | Filter |
+| Question | Filter on `rpt_orders.sales_channel` |
 |---|---|
-| Amazon sales, revenue, order count, AOV | `{"column": "rpt_orders.sales_channel", "op": "contains", "value": "Amazon."}` |
-| Units leaving FBA stock (velocity, days of cover, restock) | none: keep both kinds |
-| MCF shipments alone | `{"column": "rpt_orders.sales_channel", "op": "contains", "value": "Non-Amazon"}` |
+| Amazon sales, revenue, order count, AOV | `{"op": "contains", "value": "Amazon."}` |
+| Customer demand across channels (velocity, days of cover, restock) | `{"op": "neq", "value": "Non-Amazon"}`: Amazon plus MCF, without removals |
+| MCF orders alone | `{"op": "contains", "value": "Non-Amazon "}` (with the trailing space) |
+| Removal shipments | `{"op": "eq", "value": "Non-Amazon"}`, or query the removal table itself |
 
-The store ref adds `sales_channel = 'Amazon.<tld>'` **only for a multi-marketplace store**. That drops MCF rows, which belong to no marketplace. A single-marketplace store gets no filter, so MCF rows come back mixed in. Sum `item_price` without the `Amazon.` filter and you get units with no revenue; count orders without it and you overstate Amazon orders.
+The store ref adds `sales_channel = 'Amazon.<tld>'` **only for a multi-marketplace store**, which drops both `Non-Amazon` kinds. A single-marketplace store gets no filter, so all three kinds come back mixed. Unfiltered, a sum of `item_price` silently ignores the unpriced rows, while a count of orders or units overstates sales.
 
 **Just pass `store='myStore-US'`. Don't filter on the marketplace column directly** — the column name differs per table (`sales_channel` / `country_code` / `marketplace_id` / `profile_id` / `country` / `amazon_store`) and not every table exposes `country_code` (e.g. `rpt_orders` uses `sales_channel='Amazon.com'`, no `country_code` column).
 

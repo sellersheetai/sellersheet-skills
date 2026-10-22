@@ -11,6 +11,12 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.17.5] — 2026-10-22
+
+- `report-data`: `rpt_orders` correction. A bare `Non-Amazon` sales channel is a removal order
+  (return, disposal, liquidation), not a Multi-Channel Fulfillment sale; MCF rows carry a
+  country (`Non-Amazon US`). Demand and velocity queries now exclude removals.
+
 ## [0.17.4] — 2026-10-22
 
 - `report-data`: date-grain tables name their exact date column (`report_date` on the Ads
