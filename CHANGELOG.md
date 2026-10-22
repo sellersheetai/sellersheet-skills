@@ -11,6 +11,10 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.17.3] — 2026-10-22
+
+- `fbn-inbound`: the ASN-link note is one short sentence again.
+
 ## [0.17.2] — 2026-10-22
 
 - The plugin carries its listing icon: `plugin/.claude-plugin/icon.png` (1024 × 1024 PNG of the
