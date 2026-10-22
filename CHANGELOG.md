@@ -11,6 +11,27 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.17.0] — 2026-10-22
+
+### The plugin now lives in `plugin/`
+
+The installable plugin moved from the repo root into `plugin/` (`.claude-plugin/plugin.json`,
+`.mcp.json`, `skills/`, a short `README.md`, `LICENSE`, `NOTICE`), and the marketplace entry
+points there (`"source": "./plugin"`). Claude Code, Codex and CodeBuddy Code now install only
+that folder: the release tooling, evals, docs and this changelog stay in the repo and no longer
+land on your machine. Skill content is unchanged.
+
+- **Plugin users (Claude Code, Codex, CodeBuddy Code): nothing to do.** Update as usual
+  (`/plugin marketplace update sellersheet-marketplace` then `/plugin update sellersheet-skills`);
+  the update moves to the new folder by itself.
+- **`npx skills`: nothing to do** — it finds the skills under `plugin/skills/`.
+- **`install.sh` users:** the new installer reads `plugin/skills/`. An `install.sh` from an older
+  clone keeps working on `--update` through a `skills → plugin/skills` link at the repo root,
+  kept until 2027-01-20. On Windows without symlink support, re-clone the repo and run the new
+  `install.sh`. Manual installs copy `sellersheet-skills/plugin/skills/*`.
+- `versions.json` stays at the repo root; each skill's `path` is now `plugin/skills/<name>`.
+- The WorkBuddy connector zip is unchanged (`skills/` at the zip root).
+
 ## [0.16.8] — 2026-10-22
 
 ### Install commands no longer pipe a download into a shell

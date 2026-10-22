@@ -6,14 +6,15 @@ Maintenance scripts for the public `sellersheet-skills` repo. Committed since v0
 |---|---|
 | `promote.sh` | Release a new version: bump the canonical version in `plugin.json` and fan it out to `versions.json`, every `SKILL.md`, `install.sh`, and `README.md`; optionally refresh `tool-names.txt`; verify the `CHANGELOG.md` entry; run lint; run the plugin-eval gate only with `SS_RUN_PLUGIN_EVAL=1`; commit. |
 | `lint.sh` | Local mirror of `.github/workflows/lint.yml` — JSON validity, SKILL.md frontmatter, version-consistency, marketplace ↔ repo sync, tool-name allowlist, privacy + ASIN scan. Run before pushing. |
+| `eval.sh` | Runs `claude plugin eval` on `plugin/` with the root `evals/` suite — assembles a temp copy so the evals never ship (cases must sit inside the plugin folder). |
 | `tool-names.txt` | The live MCP tool catalog (names only, one per line) — `lint.sh` fails on any backticked `` `ads_*` ``/`` `noon_*` ``/`` `sp_api_*` `` name in `skills/**` that isn't in this list, so a rename or retirement upstream can't silently leave a stale tool name in the public docs. **`promote.sh` step 5c only touches it when you pass `SS_TOOLS_JSON=<path to a main-repo checkout's marketing-site/src/_data/mcp-tools.json, AT THE COMMIT this release's skill text actually matches>`** — there is no safe default to guess, because a sibling checkout that merely exists can be on an older commit with stale names (this bit the 0.13.0 release: a sibling checkout existed but predated the rename, and blindly refreshing from it overwrote a correct list with a stale one and failed lint for the wrong reason). Leave it unset for a routine release; regenerate by hand (sorted names from the live tool catalog, one per line) when a rename or retirement actually ships. |
 
 ## Architecture: single-plugin model
 
-The whole repo is **one Claude Code plugin** (`sellersheet-skills`). Skills are auto-discovered from `skills/*/SKILL.md` — there is no per-skill plugin entry. `.claude-plugin/marketplace.json` has exactly one plugin entry with `"source": "./"`.
+The repo is a marketplace with **one Claude Code plugin** (`sellersheet-skills`) in `plugin/` (since 0.17.0). `.claude-plugin/marketplace.json` has exactly one plugin entry with `"source": "./plugin"`. Every channel installs — and the Claude plugin directory reviews — ONLY that folder, so it holds what users run and nothing else: `.claude-plugin/plugin.json`, `.mcp.json`, `skills/`, `README.md`, `LICENSE`, `NOTICE` (`lint.sh` refuses anything more). Maintainer tooling, `evals/`, `docs/`, the CHANGELOG and the WorkBuddy connector files stay at the repo root. Skills are auto-discovered from `plugin/skills/*/SKILL.md`. The root `skills` symlink → `plugin/skills` exists only so an `install.sh` from before 0.17.0 still works on `--update`; remove it (and its lint check) in the first release after 2027-01-20. `versions.json` stays at the root (the MCP server and the docs site fetch it from `main`), and its `skills[].path` names the real folder `plugin/skills/<name>`.
 
-**Versioning** — the single source of truth is `.claude-plugin/plugin.json` `version`. Every other version string mirrors it:
-`versions.json` (`marketplace_version` + each `skills[].latest_version`), each `skills/*/SKILL.md` frontmatter `version:`, `install.sh` `VERSION`, and the `README.md` "Latest release" line + compat table. `lint.sh` and CI fail if any of these drift.
+**Versioning** — the single source of truth is `plugin/.claude-plugin/plugin.json` `version`. Every other version string mirrors it:
+`versions.json` (`marketplace_version` + each `skills[].latest_version`), each `plugin/skills/*/SKILL.md` frontmatter `version:`, `install.sh` `VERSION`, and the `README.md` "Latest release" line + compat table. `lint.sh` and CI fail if any of these drift.
 
 Claude Code reads `plugin.json` `version` for update detection — **pushing content without bumping it does nothing for installed users.**
 
@@ -52,10 +53,15 @@ picking one). Each case mocks the `sellersheet` MCP server from `evals/mocks/sel
 [code.claude.com/docs/en/plugin-evals.md](https://code.claude.com/docs/en/plugin-evals.md)
 (requires Claude Code ≥ 2.1.269).
 
+`claude plugin eval` reads cases only from inside the plugin folder, and `evals/` stays at the
+repo root so it never ships — so run it through `./.maintainers/eval.sh`, which copies
+`plugin/` + `evals/` into a temp folder, runs the eval there with your arguments, and copies the
+output back into `evals/results/`.
+
 Run the whole suite the way CI/`promote.sh` do:
 
 ```bash
-claude plugin eval . --trust-plugin --json evals/results/local.json \
+./.maintainers/eval.sh --trust-plugin --json evals/results/local.json \
   --threshold 0.8 --no-publish --max-cost-usd 20
 ```
 
@@ -65,7 +71,7 @@ budget a few dollars at list price per full run; `--max-cost-usd` is a hard ceil
 estimate. To iterate on ONE case cheaply while writing or fixing a grader:
 
 ```bash
-claude plugin eval . --case ads-list-campaigns-routes --runs 1 --ablation none \
+./.maintainers/eval.sh --case ads-list-campaigns-routes --runs 1 --ablation none \
   --trust-plugin --max-cost-usd 2
 ```
 
@@ -161,7 +167,7 @@ None of the above blocks this suite from shipping; `SS_SKIP_PLUGIN_EVAL=1` on
 
 ### Add a new skill to the bundle
 
-1. Drop the skill folder into `skills/<name>/` with a `SKILL.md` (frontmatter: `name` matching the folder, `description`, `version`).
+1. Drop the skill folder into `plugin/skills/<name>/` with a `SKILL.md` (frontmatter: `name` matching the folder, `description`, `version`).
 2. Add it to `versions.json` `.skills[]`.
 3. Move it from "Coming soon" to the "What's in here" table in `README.md`.
 4. Cut a release with `promote.sh` (step above).

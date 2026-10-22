@@ -75,11 +75,12 @@ MCP = {
 
 # The connector zip = the files WorkBuddy reads, nothing developer-facing.
 ZIP_FILES = ('connector-meta.json', 'mcp.json', 'icon.svg', 'LICENSE')
-ZIP_DIRS = ('skills',)
+# (source folder, folder name inside the zip) — WorkBuddy reads skills/ at the zip root.
+ZIP_DIRS = (('plugin/skills', 'skills'),)
 
 
 def plugin_version():
-    with open(os.path.join(REPO, '.claude-plugin', 'plugin.json'), encoding='utf-8') as f:
+    with open(os.path.join(REPO, 'plugin', '.claude-plugin', 'plugin.json'), encoding='utf-8') as f:
         return json.load(f)['version']
 
 
@@ -148,7 +149,7 @@ def with_derived(fm, derived):
 
 
 def skill_paths():
-    root = os.path.join(REPO, 'skills')
+    root = os.path.join(REPO, 'plugin', 'skills')
     for name in sorted(os.listdir(root)):
         p = os.path.join(root, name, 'SKILL.md')
         if os.path.isfile(p):
@@ -218,14 +219,15 @@ def make_zip():
     with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as z:
         for rel in ZIP_FILES:
             z.write(os.path.join(REPO, rel), rel)
-        for d in ZIP_DIRS:
-            for dirpath, dirnames, filenames in os.walk(os.path.join(REPO, d)):
+        for d, arc in ZIP_DIRS:
+            src = os.path.join(REPO, d)
+            for dirpath, dirnames, filenames in os.walk(src):
                 dirnames[:] = [x for x in dirnames if x not in ('__pycache__',)]
                 for fn in filenames:
                     if fn == '.DS_Store':
                         continue
                     full = os.path.join(dirpath, fn)
-                    z.write(full, os.path.relpath(full, REPO))
+                    z.write(full, os.path.join(arc, os.path.relpath(full, src)))
     print(out)
 
 

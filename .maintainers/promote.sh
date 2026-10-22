@@ -3,7 +3,7 @@
 #
 # Single-plugin model: the whole repo is ONE plugin. Skills are auto-discovered
 # from skills/*/. A release is just a version bump fanned out to every file that
-# mirrors the canonical version in .claude-plugin/plugin.json.
+# mirrors the canonical version in plugin/.claude-plugin/plugin.json.
 #
 # Usage:
 #   ./.maintainers/promote.sh <new-version>            # e.g. 0.4.0
@@ -61,7 +61,7 @@ command -v git >/dev/null || err "git is required"
 
 [[ "$NEW" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || err "'$NEW' is not semver (X.Y.Z)"
 
-CUR=$(jq -r '.version' .claude-plugin/plugin.json)
+CUR=$(jq -r '.version' plugin/.claude-plugin/plugin.json)
 log "Current version: $CUR"
 log "New version:     $NEW"
 if [[ "$CUR" == "$NEW" || "$(printf '%s\n%s\n' "$CUR" "$NEW" | sort -V | tail -1)" != "$NEW" ]]; then
@@ -73,14 +73,14 @@ MAJOR_MINOR="${NEW%.*}"
 log "Bumping version across all files..."
 
 # 1. plugin.json (canonical)
-run "jq --arg v '$NEW' '.version = \$v' .claude-plugin/plugin.json > .claude-plugin/plugin.json.tmp && mv .claude-plugin/plugin.json.tmp .claude-plugin/plugin.json"
+run "jq --arg v '$NEW' '.version = \$v' plugin/.claude-plugin/plugin.json > plugin/.claude-plugin/plugin.json.tmp && mv plugin/.claude-plugin/plugin.json.tmp plugin/.claude-plugin/plugin.json"
 
 # 2. versions.json
 TODAY=$(date -u +%Y-%m-%d)
 run "jq --arg v '$NEW' --arg d '$TODAY' '.marketplace_version = \$v | .updated_at = \$d | .skills = [.skills[] | .latest_version = \$v]' versions.json > versions.json.tmp && mv versions.json.tmp versions.json"
 
 # 3. each SKILL.md frontmatter
-for d in skills/*/; do
+for d in plugin/skills/*/; do
   f="${d}SKILL.md"
   if grep -qE '^version:' "$f"; then
     run "sed -i '' -E 's/^version:.*/version: $NEW/' '$f'"
@@ -141,11 +141,11 @@ EVAL_MAX_COST="${SS_PLUGIN_EVAL_MAX_COST_USD:-20}"
 if [[ "${SS_RUN_PLUGIN_EVAL:-0}" != "1" || "${SS_SKIP_PLUGIN_EVAL:-0}" == "1" ]]; then
   log "Skipping plugin evals (opt-in: SS_RUN_PLUGIN_EVAL=1 runs them)."
 elif [[ $DRY_RUN -eq 1 ]]; then
-  echo "  DRY: claude plugin eval . --trust-plugin --json evals/results/promote-gate.json --threshold 0.8 --no-publish --max-cost-usd $EVAL_MAX_COST"
+  echo "  DRY: ./.maintainers/eval.sh --trust-plugin --json evals/results/promote-gate.json --threshold 0.8 --no-publish --max-cost-usd $EVAL_MAX_COST"
 else
   log "Running plugin evals (max-cost-usd \$$EVAL_MAX_COST — set SS_PLUGIN_EVAL_MAX_COST_USD to change)..."
   command -v claude >/dev/null || err "claude CLI not found — required for the plugin-eval gate (unset SS_RUN_PLUGIN_EVAL to skip it)"
-  claude plugin eval . --trust-plugin --json evals/results/promote-gate.json \
+  ./.maintainers/eval.sh --trust-plugin --json evals/results/promote-gate.json \
     --threshold 0.8 --no-publish --max-cost-usd "$EVAL_MAX_COST" \
     || err "plugin evals scored below threshold (or failed to run) — see evals/results/promote-gate.json. Fix the regression, or release without SS_RUN_PLUGIN_EVAL if you verified it separately."
 fi

@@ -1,6 +1,6 @@
 name: auto-tag
 
-# Tags a release whenever the canonical version in .claude-plugin/plugin.json
+# Tags a release whenever the canonical version in plugin/.claude-plugin/plugin.json
 # changes on main. The tag keeps the marketplace's release history aligned with
 # the version Claude Code reads for update detection.
 
@@ -8,7 +8,7 @@ on:
   push:
     branches: [main]
     paths:
-      - '.claude-plugin/plugin.json'
+      - 'plugin/.claude-plugin/plugin.json'
 
 permissions:
   contents: write
@@ -28,7 +28,7 @@ jobs:
       - name: Read plugin version
         id: ver
         run: |
-          version=$(jq -r '.version' .claude-plugin/plugin.json)
+          version=$(jq -r '.version' plugin/.claude-plugin/plugin.json)
           if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "::error::plugin.json version '$version' is not semver"; exit 1
           fi

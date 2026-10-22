@@ -11,7 +11,7 @@ Works in Claude Code, Claude Desktop, Codex, Tencent CodeBuddy Code, Gemini CLI,
 
 **Author**: [sellersheetai.com](https://sellersheetai.com)
 **License**: Apache-2.0
-**Latest release**: v0.16.8 ([changelog](./CHANGELOG.md))
+**Latest release**: v0.17.0 ([changelog](./CHANGELOG.md))
 
 ## What you can do
 
@@ -158,7 +158,7 @@ npx skills add sellersheetai/sellersheet-skills -a codex   # target a specific a
 npx skills add sellersheetai/sellersheet-skills -g         # user-level (global) instead of per-project
 ```
 
-The skills ship as **one bundle, always installed together** — they cross-reference [`sellersheet-shared`](./skills/sellersheet-shared/SKILL.md) (common preflight, store-reference rules, response contract), so partial installs aren't supported.
+The skills ship as **one bundle, always installed together** — they cross-reference [`sellersheet-shared`](./plugin/skills/sellersheet-shared/SKILL.md) (common preflight, store-reference rules, response contract), so partial installs aren't supported.
 
 Skills are a separate artifact from the MCP server — you still register the SellerSheet MCP server for your agent (see [docs/setup-mcp.md](./docs/setup-mcp.md)). Full guide: [docs/install-npx-skills.md](./docs/install-npx-skills.md).
 
@@ -185,7 +185,7 @@ For any agent that scans a directory for skill folders (each containing a `SKILL
 
 ```bash
 git clone https://github.com/sellersheetai/sellersheet-skills.git
-cp -r sellersheet-skills/skills/* <your-agent-skills-directory>/
+cp -r sellersheet-skills/plugin/skills/* <your-agent-skills-directory>/
 ```
 
 ## Update & auto-update
@@ -240,7 +240,7 @@ Full mechanism: [docs/auto-update.md](./docs/auto-update.md).
 
 | Plugin release | SellerSheet MCP minimum | Agent compatibility |
 |---|---|---|
-| v0.16.x | 2025-Q4 build | Claude Code 1.0+, Claude Desktop 0.10+, Codex CLI any, CodeBuddy Code 2.151+, Gemini CLI 0.5+, Antigravity any |
+| v0.17.x | 2025-Q4 build | Claude Code 1.0+, Claude Desktop 0.10+, Codex CLI any, CodeBuddy Code 2.151+, Gemini CLI 0.5+, Antigravity any |
 
 The plugin ships as one bundle — all skills release together at the plugin version. Each `SKILL.md` frontmatter `version:` mirrors `.claude-plugin/plugin.json`.
 

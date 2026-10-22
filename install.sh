@@ -13,7 +13,7 @@ set -euo pipefail
 
 REPO_URL="https://github.com/sellersheetai/sellersheet-skills.git"
 REPO_RAW="https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main"
-VERSION="0.16.8"
+VERSION="0.17.0"
 
 # ---------- args ----------
 TARGET=""
@@ -145,7 +145,7 @@ if [[ $CHECK -eq 1 ]]; then
     dir=$(default_path_for_target "$default_target" 2>/dev/null)
     [[ -z "$dir" ]] && continue
     [[ ! -d "$dir" ]] && continue
-    for skill_dir in "$CACHE_DIR/skills"/*/; do
+    for skill_dir in "$CACHE_DIR/plugin/skills"/*/; do
       name=$(basename "$skill_dir")
       latest=$(read_skill_version "$skill_dir")
       installed=$(read_skill_version "$dir/$name")
@@ -198,7 +198,7 @@ else
 fi
 
 # ---------- determine skills to install (always the full bundle) ----------
-SKILLS=$(cd "$CACHE_DIR/skills" && ls -d */ 2>/dev/null | sed 's:/::g' | tr '\n' ' ')
+SKILLS=$(cd "$CACHE_DIR/plugin/skills" && ls -d */ 2>/dev/null | sed 's:/::g' | tr '\n' ' ')
 log "Installing all skills: $SKILLS"
 
 # ---------- install ----------
@@ -207,7 +207,7 @@ INSTALL_COUNT=0
 SKIP_COUNT=0
 
 for s in $SKILLS; do
-  SRC="$CACHE_DIR/skills/$s"
+  SRC="$CACHE_DIR/plugin/skills/$s"
   DEST="$SKILLS_DIR/$s"
   if [[ ! -d "$SRC" ]]; then
     warn "Skill '$s' not found in repo, skipping."

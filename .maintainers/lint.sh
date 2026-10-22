@@ -16,13 +16,13 @@ command -v jq >/dev/null || { echo "jq required (brew install jq / apt install j
 
 # ---------- 1. manifests are valid JSON ----------
 log "Validating JSON manifests..."
-for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json versions.json docs/mcp-config/sellersheet.json .mcp.json; do
+for f in plugin/.claude-plugin/plugin.json .claude-plugin/marketplace.json versions.json docs/mcp-config/sellersheet.json plugin/.mcp.json; do
   jq empty "$f" 2>/dev/null || err "$f is not valid JSON"
 done
 
 # ---------- 2. SKILL.md frontmatter ----------
 log "Checking SKILL.md frontmatter..."
-for d in skills/*/; do
+for d in plugin/skills/*/; do
   name="$(basename "$d")"
   f="${d}SKILL.md"
   [[ -f "$f" ]] || { err "$d missing SKILL.md"; continue; }
@@ -47,7 +47,7 @@ fi
 if [[ -z "$YAML_CMD" ]]; then
   err "no strict YAML parser available (need python3+PyYAML or node/npx for js-yaml)"
 else
-  for d in skills/*/; do
+  for d in plugin/skills/*/; do
     f="${d}SKILL.md"
     [[ -f "$f" ]] || continue
     awk '/^---$/{c++; next} c==1{print}' "$f" > /tmp/ss-fm.yaml
@@ -69,7 +69,7 @@ while IFS= read -r line; do
   link="${line#*:}"
   link="${link#](}"; link="${link%)}"
   [[ -e "$(dirname "$src")/$link" ]] || err "$src links to missing $link"
-done < <(grep -rHoE '\]\(\.\./[a-z-]+/SKILL\.md\)' skills/*/SKILL.md 2>/dev/null)
+done < <(grep -rHoE '\]\(\.\./[a-z-]+/SKILL\.md\)' plugin/skills/*/SKILL.md 2>/dev/null)
 
 # ---------- 2d. stale/forbidden strings (docs drift guard) ----------
 log "Stale-string guard..."
@@ -113,18 +113,18 @@ else
   done <<< "$SS_INTERNAL_STRINGS"
 fi
 for pattern in "${FORBIDDEN[@]}"; do
-  H=$(grep -rFn "$pattern" skills/ docs/ README.md README.zh-CN.md install.sh 2>/dev/null || true)
+  H=$(grep -rFn "$pattern" plugin/skills/ plugin/README.md docs/ README.md README.zh-CN.md install.sh 2>/dev/null || true)
   [[ -z "$H" ]] || { err "forbidden stale string \"$pattern\":"; echo "$H" | head -5 >&2; }
 done
 
 # ---------- 3. version unified across every file ----------
 log "Checking version is unified..."
-PV=$(jq -r '.version' .claude-plugin/plugin.json)
+PV=$(jq -r '.version' plugin/.claude-plugin/plugin.json)
 [[ "$PV" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || err "plugin.json version '$PV' is not semver"
 if [[ "$(jq -r '.plugins[0] | has("version")' .claude-plugin/marketplace.json)" == "true" ]]; then
   err "marketplace.json plugin entry has a 'version' field — remove it; plugin.json is the single source of truth"
 fi
-for d in skills/*/; do
+for d in plugin/skills/*/; do
   sv=$(awk '/^---$/{c++; if(c==2)exit; next} c==1 && /^version:/{sub(/^version:[ \t]*/,""); gsub(/['\''" ]/,""); print; exit}' "${d}SKILL.md")
   [[ "$sv" == "$PV" ]] || err "${d}SKILL.md version '$sv' != plugin.json '$PV'"
 done
@@ -141,11 +141,35 @@ grep -qE "^## \[$PV\]" CHANGELOG.md || err "CHANGELOG.md has no '## [$PV]' entry
 log "Checking marketplace.json..."
 [[ "$(jq '.plugins | length' .claude-plugin/marketplace.json)" == "1" ]] || err "expected exactly 1 plugin entry"
 [[ "$(jq -r '.plugins[0].name' .claude-plugin/marketplace.json)" == "sellersheet-skills" ]] || err "plugin entry name != sellersheet-skills"
-[[ "$(jq -r '.plugins[0].source' .claude-plugin/marketplace.json)" == "./" ]] || err "plugin source != ./"
-[[ "$(jq -r '.name' .claude-plugin/plugin.json)" == "sellersheet-skills" ]] || err "plugin.json name != sellersheet-skills"
+[[ "$(jq -r '.plugins[0].source' .claude-plugin/marketplace.json)" == "./plugin" ]] || err "plugin source != ./plugin"
+[[ "$(jq -r '.name' plugin/.claude-plugin/plugin.json)" == "sellersheet-skills" ]] || err "plugin.json name != sellersheet-skills"
 vj=$(jq -r '.skills[].name' versions.json | sort | tr '\n' ' ')
-fs=$(ls -1 skills/ | sort | tr '\n' ' ')
+fs=$(ls -1 plugin/skills/ | sort | tr '\n' ' ')
 [[ "$vj" == "$fs" ]] || err "versions.json skills ($vj) != skills/ folder ($fs)"
+# The docs site fetches <tag>/<path>/SKILL.md from raw.githubusercontent.com, which serves a
+# symlink as its target text — so every path must name the real folder, never the root link.
+while read -r p; do
+  [[ "$p" == plugin/skills/* && -f "$p/SKILL.md" ]] || err "versions.json path '$p' is not plugin/skills/<name> with a SKILL.md"
+done < <(jq -r '.skills[].path' versions.json)
+
+# ---------- 4a. the installed plugin is plugin/ and nothing else ----------
+# Every channel installs (and the plugin directory reviews) ONLY the marketplace source
+# folder. Maintainer tooling, evals, docs and the changelog stay at the repo root (0.17.0).
+log "Checking the plugin/ folder holds only what users run..."
+ALLOWED=" .claude-plugin .mcp.json skills README.md LICENSE NOTICE "
+for p in plugin/* plugin/.[!.]*; do
+  [[ -e "$p" || -L "$p" ]] || continue
+  e="${p#plugin/}"
+  [[ "$ALLOWED" == *" $e "* ]] || err "plugin/$e is not allowed — plugin/ ships to every user; keep tooling, evals and docs at the repo root"
+done
+for e in .claude-plugin/plugin.json .mcp.json skills README.md LICENSE NOTICE; do
+  [[ -e "plugin/$e" ]] || err "plugin/$e missing"
+done
+cmp -s LICENSE plugin/LICENSE || err "plugin/LICENSE differs from the root LICENSE"
+cmp -s NOTICE plugin/NOTICE   || err "plugin/NOTICE differs from the root NOTICE"
+# Compat link for install.sh copies from before 0.17.0 (they read <clone>/skills). Remove in
+# the first release after 2027-01-20, together with this check.
+[[ -L skills && "$(readlink skills)" == "plugin/skills" ]] || err "root 'skills' must be a symlink to plugin/skills (install.sh compat until 2027-01-20)"
 
 # ---------- 4b. skills_catalog contract (consumed by MCP get_user_context) ----------
 log "Checking skills_catalog contract..."
@@ -165,21 +189,21 @@ jq -e '[.skills[] | select((.description // "") == "")] | length == 0' versions.
 # plugins use; both loaders verified live 2026-07-16 (wrapped also parses, but
 # flat is the convention we standardize on).
 log "Checking plugin .mcp.json contract..."
-[[ "$(jq -r '.sellersheet.type' .mcp.json)" == "http" ]]  || err ".mcp.json sellersheet type must be http (remote — never a local command)"
-[[ "$(jq -r '.sellersheet.url' .mcp.json)" == "https://sellersheetai.com/mcp" ]] || err ".mcp.json sellersheet url drifted"
-[[ "$(jq -r '.sellersheet | has("command")' .mcp.json)" == "false" ]] || err ".mcp.json must not bundle a local command (the 0.5.0 lesson)"
-[[ "$(jq -r 'has("mcpServers")' .mcp.json)" == "false" ]] || err ".mcp.json must be the FLAT plugin shape — no mcpServers wrapper"
-grep -qiE "bearer|api_key|token" .mcp.json && err ".mcp.json must stay keyless (OAuth on first use)" || true
+[[ "$(jq -r '.sellersheet.type' plugin/.mcp.json)" == "http" ]]  || err ".mcp.json sellersheet type must be http (remote — never a local command)"
+[[ "$(jq -r '.sellersheet.url' plugin/.mcp.json)" == "https://sellersheetai.com/mcp" ]] || err ".mcp.json sellersheet url drifted"
+[[ "$(jq -r '.sellersheet | has("command")' plugin/.mcp.json)" == "false" ]] || err ".mcp.json must not bundle a local command (the 0.5.0 lesson)"
+[[ "$(jq -r 'has("mcpServers")' plugin/.mcp.json)" == "false" ]] || err ".mcp.json must be the FLAT plugin shape — no mcpServers wrapper"
+grep -qiE "bearer|api_key|token" plugin/.mcp.json && err ".mcp.json must stay keyless (OAuth on first use)" || true
 
 # ---------- 5. privacy + ASIN scan ----------
 log "Privacy + ASIN scan..."
 if [[ -z "${SS_PRIVACY_PATTERNS:-}" ]]; then
   err "SS_PRIVACY_PATTERNS not set — create $PRIVATE_LOCAL (see .maintainers/README.md) or the CI secret"
 else
-  HITS=$(grep -rEn "$SS_PRIVACY_PATTERNS" skills/ docs/ README.md README.zh-CN.md CHANGELOG.md 2>/dev/null || true)
+  HITS=$(grep -rEn "$SS_PRIVACY_PATTERNS" plugin/skills/ plugin/README.md docs/ README.md README.zh-CN.md CHANGELOG.md 2>/dev/null || true)
   [[ -z "$HITS" ]] || { err "private identifiers detected:"; echo "$HITS" | head -20 >&2; }
 fi
-ASIN=$(grep -rEn '\bB0[A-Z0-9]{8}\b' skills/ docs/ README.md CHANGELOG.md 2>/dev/null | grep -vE '(B0ABCDEFGH|B0ABCDEFG[0-9]|B0XXXXXXXX)' || true)
+ASIN=$(grep -rEn '\bB0[A-Z0-9]{8}\b' plugin/skills/ docs/ README.md CHANGELOG.md 2>/dev/null | grep -vE '(B0ABCDEFGH|B0ABCDEFG[0-9]|B0XXXXXXXX)' || true)
 [[ -z "$ASIN" ]] || { err "real-looking ASINs detected (use B0ABCDEFGH):"; echo "$ASIN" | head -10 >&2; }
 
 # ---------- 6. Tencent WorkBuddy connector files (dual-format root) ----------
@@ -198,7 +222,7 @@ done
 [[ "$(jq -r '.mcpServers.sellersheet.type' mcp.json)" == "streamableHttp" ]] || err "mcp.json type must be streamableHttp"
 [[ "$(jq -r '.mcpServers.sellersheet.url' mcp.json)" == "https://sellersheetai.com/mcp" ]] || err "mcp.json url drifted"
 grep -qiE "bearer|api_key|token" mcp.json && err "mcp.json must stay keyless (WorkBuddy runs the OAuth flow)" || true
-for d in skills/*/; do
+for d in plugin/skills/*/; do
   fm=$(awk '/^---$/{c++; next} c==1{print}' "${d}SKILL.md")
   for k in description_zh description_en author; do
     echo "$fm" | grep -q "^$k:" || err "${d}SKILL.md frontmatter missing '$k:' (WorkBuddy requires it — run sync_workbuddy.py)"
@@ -222,7 +246,7 @@ else
   while IFS= read -r name; do
     [[ -z "$name" ]] && continue
     grep -qxF "$name" "$TOOL_NAMES_FILE" || err "skills/** references \`$name\`, which is not in $TOOL_NAMES_FILE — renamed or retired upstream? update the skill text (see the old->new map if this is a rename)"
-  done < <(grep -rhoE '`(ads|noon|sp_api)_[a-z0-9_]+`' skills/ 2>/dev/null | tr -d '`' | sort -u)
+  done < <(grep -rhoE '`(ads|noon|sp_api)_[a-z0-9_]+`' plugin/skills/ 2>/dev/null | tr -d '`' | sort -u)
   # Eval graders and mocks name tools through the plugin's MCP prefix; a rename upstream
   # otherwise leaves a grader that can never pass (an `after:` tool nobody calls) or passes
   # vacuously (a `max: 0` on a name nobody calls) — three did on 2026-10-08.
