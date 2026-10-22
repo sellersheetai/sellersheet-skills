@@ -309,7 +309,7 @@
    "db_column": "ingested_at",
    "amazon_header": "(infrastructure)",
    "type": "timestamptz",
-   "note": "Row ingest timestamp (UTC). Bookkeeping, not business data. UTC instant (timestamptz). Serialized without offset in query responses — treat as UTC."
+   "note": "Row ingest timestamp (UTC). Bookkeeping, not business data. UTC instant (timestamptz). Query results show it in the store ref's marketplace local time, without an offset; a bare date in a filter is that marketplace's midnight."
   },
   {
    "db_column": "extra",

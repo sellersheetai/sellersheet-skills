@@ -55,7 +55,7 @@
    "db_column": "request_date",
    "amazon_header": "(see parser KNOWN_COLUMNS)",
    "type": "timestamptz",
-   "note": "UTC instant (timestamptz). Serialized without offset in query responses — treat as UTC."
+   "note": "UTC instant (timestamptz). Query results show it in the store ref's marketplace local time, without an offset; a bare date in a filter is that marketplace's midnight."
   },
   {
    "db_column": "order_id",
@@ -66,7 +66,7 @@
    "db_column": "shipment_date",
    "amazon_header": "(see parser KNOWN_COLUMNS)",
    "type": "timestamptz",
-   "note": "UTC instant (timestamptz). Serialized without offset in query responses — treat as UTC."
+   "note": "UTC instant (timestamptz). Query results show it in the store ref's marketplace local time, without an offset; a bare date in a filter is that marketplace's midnight."
   },
   {
    "db_column": "sku",
@@ -118,7 +118,7 @@
    "db_column": "ingested_at",
    "amazon_header": "(infrastructure)",
    "type": "timestamptz",
-   "note": "Row ingest timestamp (UTC). Bookkeeping, not business data. UTC instant (timestamptz). Serialized without offset in query responses — treat as UTC."
+   "note": "Row ingest timestamp (UTC). Bookkeeping, not business data. UTC instant (timestamptz). Query results show it in the store ref's marketplace local time, without an offset; a bare date in a filter is that marketplace's midnight."
   }
  ]
 }

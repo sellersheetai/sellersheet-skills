@@ -11,6 +11,13 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.17.7] — 2026-10-22
+
+- `report-data`: days and times are the marketplace's, everywhere, as Seller Central shows them.
+  Timestamps come back in the store's marketplace local time (US/CA Pacific); day buckets and a
+  bare date in a filter use that marketplace's midnight. The 0.17.6 `day_boundary` option is gone.
+- `report-data`: every timestamp column's reference note says so.
+
 ## [0.17.6] — 2026-10-22
 
 - `report-data`: every `rpt_orders` row now says what it is — `order_kind` (`amazon`, `mcf`,

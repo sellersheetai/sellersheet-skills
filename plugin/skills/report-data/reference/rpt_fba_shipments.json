@@ -52,25 +52,25 @@
    "db_column": "purchase_date",
    "amazon_header": "purchase-date",
    "type": "timestamptz",
-   "note": "UTC instant (timestamptz). Serialized without offset in query responses — treat as UTC."
+   "note": "UTC instant (timestamptz). Query results show it in the store ref's marketplace local time, without an offset; a bare date in a filter is that marketplace's midnight."
   },
   {
    "db_column": "payments_date",
    "amazon_header": "payments-date",
    "type": "timestamptz",
-   "note": "UTC instant (timestamptz). Serialized without offset in query responses — treat as UTC."
+   "note": "UTC instant (timestamptz). Query results show it in the store ref's marketplace local time, without an offset; a bare date in a filter is that marketplace's midnight."
   },
   {
    "db_column": "shipment_date",
    "amazon_header": "shipment-date",
    "type": "timestamptz",
-   "note": "UTC instant (timestamptz). Serialized without offset in query responses — treat as UTC."
+   "note": "UTC instant (timestamptz). Query results show it in the store ref's marketplace local time, without an offset; a bare date in a filter is that marketplace's midnight."
   },
   {
    "db_column": "reporting_date",
    "amazon_header": "reporting-date",
    "type": "timestamptz",
-   "note": "UTC instant (timestamptz). Serialized without offset in query responses — treat as UTC."
+   "note": "UTC instant (timestamptz). Query results show it in the store ref's marketplace local time, without an offset; a bare date in a filter is that marketplace's midnight."
   },
   {
    "db_column": "sku",

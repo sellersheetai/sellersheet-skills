@@ -111,7 +111,7 @@
    "db_column": "date_and_time",
    "amazon_header": "\"Date and Time\"",
    "type": "timestamptz",
-   "note": "TIMESTAMPTZ since 2026-08-20 (was raw str). Stored UTC; Amazon ships ISO-8601 with numeric offset, colon-less (e.g. '2026-08-20T00:00:00-0700'). For the marketplace-LOCAL day use the `date` column — an evening local event has a different UTC date (e.g. IN local midnight = 18:30Z prior day)."
+   "note": "TIMESTAMPTZ since 2026-08-20 (was raw str). Stored UTC; Amazon ships ISO-8601 with numeric offset, colon-less (e.g. '2026-08-20T00:00:00-0700'). For the marketplace-LOCAL day use the `date` column — an evening local event has a different UTC date (e.g. IN local midnight = 18:30Z prior day). UTC instant (timestamptz). Query results show it in the store ref's marketplace local time, without an offset; a bare date in a filter is that marketplace's midnight."
   },
   {
    "db_column": "amazon_store",

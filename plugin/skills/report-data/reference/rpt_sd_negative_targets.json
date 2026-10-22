@@ -57,7 +57,7 @@
    "db_column": "ingested_at",
    "type": "timestamptz",
    "comment": "Server-side timestamp the row was UPSERTed.",
-   "note": "UTC instant (timestamptz). Serialized without offset in query responses — treat as UTC."
+   "note": "UTC instant (timestamptz). Query results show it in the store ref's marketplace local time, without an offset; a bare date in a filter is that marketplace's midnight."
   },
   {
    "db_column": "target_id",

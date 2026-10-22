@@ -36,7 +36,7 @@
    "db_column": "request_date",
    "amazon_header": "request-date",
    "type": "timestamptz",
-   "note": "UTC instant (timestamptz). Serialized without offset in query responses — treat as UTC."
+   "note": "UTC instant (timestamptz). Query results show it in the store ref's marketplace local time, without an offset; a bare date in a filter is that marketplace's midnight."
   },
   {
    "db_column": "order_id",
@@ -67,7 +67,7 @@
    "db_column": "last_updated_date",
    "amazon_header": "last-updated-date",
    "type": "timestamptz",
-   "note": "UTC instant (timestamptz). Serialized without offset in query responses — treat as UTC."
+   "note": "UTC instant (timestamptz). Query results show it in the store ref's marketplace local time, without an offset; a bare date in a filter is that marketplace's midnight."
   },
   {
    "db_column": "sku",

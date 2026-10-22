@@ -6,7 +6,7 @@ author: SellerSheet AI
 description: >-
   Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules, requesting on-demand reports, polling for completion, downloading a finished report document from its presigned URL, or analyzing any report table. Covers inventory, listings, orders, financial, and ad report (SP/SB/SD) tables; Brand Analytics has no synced table, so request it on-demand (schemas in amazon-report). Do NOT use for noon.com data (use noon-report-data) or when you don't yet know a report's exact schema — read amazon-report or data-kiosk first, then come back here for the sync/poll/download mechanics.
   中文触发词：亚马逊报告数据、库存报告、补货需求、订单、退货、结算、搜索词、listing 状态、rpt_ 数据仓库查询、报告同步计划、按需报告下载。
-version: 0.17.6
+version: 0.17.7
 metadata: {apis: [data, sp_api_reports], pattern: Pipeline}
 ---
 
@@ -185,7 +185,7 @@ Allowed ops: `sum`, `count`, `avg`, `min`, `max` — the key is **`op`** (not `f
 - **Sort groups by an aggregation alias**: `order_by: [{"column": "revenue", "dir": "desc"}]` (bare alias, no `table.` prefix). An unknown alias is a 400 listing the known ones.
 - **`having`** filters on aggregation results (SQL HAVING): `having: [{"column": "revenue", "op": "gt", "value": 1000}]` — `column` must be an aggregation alias.
 - **Date bucketing** in `group_by`: append `:day|week|month|quarter|year` to a temporal ref — `"rpt_orders.purchase_date:month"`.
-- **Whose day:** timestamps (`purchase_date`, …) are UTC, so days and bare-date filters start at UTC midnight. Pass `day_boundary: "marketplace"` to start them at the store's marketplace midnight, as Seller Central counts days. Date columns (`report_date`) are already marketplace days.
+- **Days and times are the marketplace's**, as Seller Central shows them: timestamps (`purchase_date`, …) come back in the store ref's marketplace local time (US/CA Pacific), and day buckets and a bare date or time in a filter use that marketplace's midnight. Add `Z` or an offset to a filter value for an exact instant. Date columns are already marketplace days.
 - Numeric results arrive as clean fixed-point strings (max 6 decimal places, no scientific notation) — `AVG()` returns `"60.896256"`, not `"60.8962557077625571"`.
 
 ### Query Rules

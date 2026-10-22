@@ -53,7 +53,7 @@
    "db_column": "deposit_date",
    "amazon_header": "deposit-date",
    "type": "timestamptz",
-   "note": "UTC instant (timestamptz). Serialized without offset in query responses — treat as UTC."
+   "note": "UTC instant (timestamptz). Query results show it in the store ref's marketplace local time, without an offset; a bare date in a filter is that marketplace's midnight."
   },
   {
    "db_column": "total_amount",
@@ -206,7 +206,7 @@
    "db_column": "posted_at",
    "amazon_header": "(derived from posted-date-time)",
    "type": "timestamptz",
-   "note": "Typed UTC twin of posted_date_time (added + fully backfilled 2026-08-20; count-parity verified on prod). Use THIS for time filtering/sorting; posted_date stays the DATE-grain key column."
+   "note": "Typed UTC twin of posted_date_time (added + fully backfilled 2026-08-20; count-parity verified on prod). Use THIS for time filtering/sorting; posted_date stays the DATE-grain key column. UTC instant (timestamptz). Query results show it in the store ref's marketplace local time, without an offset; a bare date in a filter is that marketplace's midnight."
   },
   {
    "db_column": "store_id",
