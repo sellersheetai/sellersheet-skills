@@ -25,7 +25,8 @@ SellerSheet MCP is a hosted remote server — nothing to install locally. Antigr
 ## Step 2: Install the skills
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --target antigravity
+git clone https://github.com/sellersheetai/sellersheet-skills.git   # once; read install.sh before you run it
+bash sellersheet-skills/install.sh --target antigravity
 ```
 
 This copies skills to `~/.antigravity/skills/`.
@@ -33,7 +34,7 @@ This copies skills to `~/.antigravity/skills/`.
 If Antigravity uses a different path, override:
 
 ```bash
-bash <(curl -fsSL ...install.sh) --target antigravity --path /your/path
+bash sellersheet-skills/install.sh --target antigravity --path /your/path
 ```
 
 ## Step 3: Restart Antigravity
@@ -47,7 +48,8 @@ Trigger any sellersheet skill via a natural-language phrase ("build me an operat
 ## Update
 
 ```bash
-bash <(curl -fsSL ...install.sh) --target antigravity --update
+git clone https://github.com/sellersheetai/sellersheet-skills.git   # once; read install.sh before you run it
+bash sellersheet-skills/install.sh --target antigravity --update
 ```
 
 ## Notes

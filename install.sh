@@ -3,16 +3,17 @@
 # https://github.com/sellersheetai/sellersheet-skills
 #
 # Usage:
-#   bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh)
-#   bash <(curl -fsSL ...) --target claude-code
-#   bash <(curl -fsSL ...) --target openclaw --path /your/openclaw/skills
-#   bash <(curl -fsSL ...) --update
+#   git clone https://github.com/sellersheetai/sellersheet-skills.git
+#   bash sellersheet-skills/install.sh
+#   bash sellersheet-skills/install.sh --target claude-code
+#   bash sellersheet-skills/install.sh --target openclaw --path /your/openclaw/skills
+#   bash sellersheet-skills/install.sh --update
 
 set -euo pipefail
 
 REPO_URL="https://github.com/sellersheetai/sellersheet-skills.git"
 REPO_RAW="https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main"
-VERSION="0.16.7"
+VERSION="0.16.8"
 
 # ---------- args ----------
 TARGET=""

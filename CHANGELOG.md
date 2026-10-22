@@ -11,6 +11,23 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.16.8] — 2026-10-22
+
+### Install commands no longer pipe a download into a shell
+
+- `install.sh` is now run from a local clone: `git clone https://github.com/sellersheetai/sellersheet-skills.git`,
+  read `install.sh`, then `bash sellersheet-skills/install.sh --target <agent>` (also `--update` /
+  `--check`). Every `bash <(curl … install.sh)` line in the READMEs, the per-agent install guides,
+  `docs/auto-update.md`, `docs/setup-mcp.md` and the installer's own usage header is replaced.
+  What the installer does is unchanged.
+- `report-data`: the report-document download example is a short Python snippet (download, decompress
+  only when `compressionAlgorithm` is `GZIP`, save) instead of `curl` + `gunzip`.
+
+### fba-inbound
+
+- `SHEET_LAYOUT.md`: STA-Options is drawn by the server only in mode A; on the sidebar path the add-on
+  draws it itself ("2. Gen Placement Opts.") with the same layout, so it is read the same way.
+
 ## [0.16.7] — 2026-10-14
 
 - `noon-report-data` — rewritten, about half the length. Six tables: the new catalog export
@@ -649,8 +666,8 @@ automations, or scripts that call these tools by name.
 ### Changed
 
 - `plugin.json` declares `privacyPolicyUrl` (https://sellersheetai.com/privacy-policy).
-- `report-data`: the report-document download is two steps (save, then `gunzip`) instead of a
-  `curl | gunzip` pipe.
+- `report-data`: the report-document download is two steps (save, then decompress) instead of
+  one piped command.
 - Maintainer lint: a loop variable renamed for clarity (no behaviour change).
 
 ## [0.12.1] — 2026-09-25

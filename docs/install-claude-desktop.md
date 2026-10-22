@@ -16,7 +16,8 @@ SellerSheet MCP is a hosted remote server — nothing to install locally.
 ## Step 2: Install the skills
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --target claude-desktop
+git clone https://github.com/sellersheetai/sellersheet-skills.git   # once; read install.sh before you run it
+bash sellersheet-skills/install.sh --target claude-desktop
 ```
 
 This auto-detects the skills directory:
@@ -48,7 +49,8 @@ Claude should call `get_user_context`, then `query_report_data` via the `report-
 ## Update
 
 ```bash
-bash <(curl -fsSL ...install.sh) --target claude-desktop --update
+git clone https://github.com/sellersheetai/sellersheet-skills.git   # once; read install.sh before you run it
+bash sellersheet-skills/install.sh --target claude-desktop --update
 ```
 
 ## Troubleshooting

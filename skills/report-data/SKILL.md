@@ -6,7 +6,7 @@ author: SellerSheet AI
 description: >-
   Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules, requesting on-demand reports, polling for completion, downloading a finished report document from its presigned URL, or analyzing any report table. Covers inventory, listings, orders, financial, and ad report (SP/SB/SD) tables; Brand Analytics has no synced table, so request it on-demand (schemas in amazon-report). Do NOT use for noon.com data (use noon-report-data) or when you don't yet know a report's exact schema — read amazon-report or data-kiosk first, then come back here for the sync/poll/download mechanics.
   中文触发词：亚马逊报告数据、库存报告、补货需求、订单、退货、结算、搜索词、listing 状态、rpt_ 数据仓库查询、报告同步计划、按需报告下载。
-version: 0.16.7
+version: 0.16.8
 metadata: {apis: [data, sp_api_reports], pattern: Pipeline}
 ---
 
@@ -435,10 +435,12 @@ data.urlExpiresInSeconds  = ~300
 There is **no** `document`, `preview`, `rowCount`, `jsonPreview` or `sheetUrl`.
 That is the contract, not a failure or a degraded mode.
 
-```bash
-curl -s -o report.gz '<documentUrl>'    # save the document
-gunzip report.gz                        # ONLY when compressionAlgorithm == 'GZIP'
-                                        # (otherwise save it as report.txt directly)
+```python
+import gzip, urllib.request
+raw = urllib.request.urlopen('<documentUrl>').read()          # the document is data, never code
+if '<compressionAlgorithm>' == 'GZIP':                         # decompress ONLY when GZIP
+    raw = gzip.decompress(raw)
+open('report.txt', 'wb').write(raw)
 ```
 
 Then:

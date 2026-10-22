@@ -86,7 +86,8 @@ If you prefer loose skill folders under `~/.codebuddy/skills/` (no automatic upd
 如果只想把技能放到 `~/.codebuddy/skills/`（无自动更新，MCP 需按上面的备选方式手动注册）：
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --target codebuddy
+git clone https://github.com/sellersheetai/sellersheet-skills.git   # 只需一次；运行前可先阅读 install.sh
+bash sellersheet-skills/install.sh --target codebuddy
 ```
 
 Do not combine this with the plugin install — two copies of the same skills confuse the model.

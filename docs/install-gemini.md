@@ -25,7 +25,8 @@ SellerSheet MCP is a hosted remote server — nothing to install locally. Add to
 ## Step 2: Install the skills
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --target gemini
+git clone https://github.com/sellersheetai/sellersheet-skills.git   # once; read install.sh before you run it
+bash sellersheet-skills/install.sh --target gemini
 ```
 
 This copies skills to `~/.gemini/skills/`.
@@ -55,7 +56,8 @@ Should include `sellersheet-sheets`, `sellersheet-dashboard`, and `report-data`.
 ## Update
 
 ```bash
-bash <(curl -fsSL ...install.sh) --target gemini --update
+git clone https://github.com/sellersheetai/sellersheet-skills.git   # once; read install.sh before you run it
+bash sellersheet-skills/install.sh --target gemini --update
 ```
 
 ## Troubleshooting

@@ -117,7 +117,8 @@ codex mcp login sellersheet     # 浏览器 OAuth，无需 API key
 2. 安装技能：
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --target claude-desktop
+git clone https://github.com/sellersheetai/sellersheet-skills.git   # 只需一次；运行前可先阅读 install.sh
+bash sellersheet-skills/install.sh --target claude-desktop
 ```
 
 ### Cursor、Gemini 及 50+ 其他智能体 —— `npx skills`
@@ -134,7 +135,8 @@ npx skills add sellersheetai/sellersheet-skills -g         # 用户级（全局�
 ### 没有 Node.js —— `install.sh`
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --target <agent>
+git clone https://github.com/sellersheetai/sellersheet-skills.git   # 只需一次；运行前可先阅读 install.sh
+bash sellersheet-skills/install.sh --target <agent>
 ```
 
 `<agent>` 可为 `gemini`、`antigravity`、`codebuddy`（仅技能，MCP 需手动注册）。Openclaw / Hermes / 自定义智能体加 `--path <目录>` 指向其技能扫描目录。Claude Code、Codex、CodeBuddy Code 用户请使用上面的插件方式，它自带更新机制。
@@ -153,8 +155,9 @@ bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-sk
 **其他智能体**：
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --update   # 重新安装到最新版
-bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --check    # 只比较版本，不做改动
+git clone https://github.com/sellersheetai/sellersheet-skills.git   # 只需一次；运行前可先阅读 install.sh
+bash sellersheet-skills/install.sh --update   # 重新安装到最新版
+bash sellersheet-skills/install.sh --check    # 只比较版本，不做改动
 ```
 
 机制详解：[docs/auto-update.md](./docs/auto-update.md)。

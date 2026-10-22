@@ -32,15 +32,16 @@ SellerSheet MCP is a hosted remote server (streamable HTTP) — nothing to insta
 ## Step 2: Install the skills to your agent's path
 
 ```bash
+git clone https://github.com/sellersheetai/sellersheet-skills.git   # once; read install.sh before you run it
 # Openclaw example
-bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) \
+bash sellersheet-skills/install.sh \
   --target openclaw --path /opt/openclaw/skills
 
 # Hermes example
-bash <(curl -fsSL ...install.sh) --target hermes --path /srv/hermes/skills
+bash sellersheet-skills/install.sh --target hermes --path /srv/hermes/skills
 
 # Any directory
-bash <(curl -fsSL ...install.sh) --target generic --path /your/custom/path
+bash sellersheet-skills/install.sh --target generic --path /your/custom/path
 ```
 
 This copies all skills in the bundle to the specified directory. Each lands as its own folder:
@@ -59,7 +60,8 @@ Restart so it scans the skill directory and registers the new skills.
 ## Update
 
 ```bash
-bash <(curl -fsSL ...install.sh) --target openclaw --path /opt/openclaw/skills --update
+git clone https://github.com/sellersheetai/sellersheet-skills.git   # once; read install.sh before you run it
+bash sellersheet-skills/install.sh --target openclaw --path /opt/openclaw/skills --update
 ```
 
 Updates re-pull the latest from GitHub and overwrite the installed skill folders.

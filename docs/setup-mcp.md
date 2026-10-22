@@ -46,7 +46,7 @@ Skills are a separate artifact from the MCP server. Pick the path that fits your
 | **Claude Code** | `/plugin marketplace add sellersheetai/sellersheet-skills` then `/plugin install sellersheet-skills@sellersheet-marketplace` (one bundle, all skills) |
 | **Codex CLI / ChatGPT desktop** | `codex plugin marketplace add sellersheetai/sellersheet-skills` then `codex plugin add sellersheet-skills@sellersheet-marketplace` — Codex reads the same marketplace format, so one repo serves both |
 | **CodeBuddy Code (腾讯云 CodeBuddy)** | `/plugin marketplace add sellersheetai/sellersheet-skills` then `/plugin install sellersheet-skills@sellersheet-marketplace` — CodeBuddy accepts the `.claude-plugin/` layout; see [install-codebuddy.md](./install-codebuddy.md) (中英双语) |
-| **Other agents** | `npx skills add sellersheetai/sellersheet-skills` — recommended; see [install-npx-skills.md](./install-npx-skills.md). No-Node fallback: `bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --target <agent>` |
+| **Other agents** | `npx skills add sellersheetai/sellersheet-skills` — recommended; see [install-npx-skills.md](./install-npx-skills.md). No-Node fallback: `git clone https://github.com/sellersheetai/sellersheet-skills.git`, read `install.sh`, then `bash sellersheet-skills/install.sh --target <agent>` |
 
 After both MCP and skills are installed, restart your agent.
 
@@ -73,8 +73,9 @@ Or update on demand: `/plugin marketplace update sellersheet-marketplace` then `
 **Other agents** — re-run the installer with `--update`, or `--check` to compare installed vs latest:
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --update
-bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --check
+git clone https://github.com/sellersheetai/sellersheet-skills.git   # once; read install.sh before you run it
+bash sellersheet-skills/install.sh --update
+bash sellersheet-skills/install.sh --check
 ```
 
 The full mechanism — version resolution, the `extraKnownMarketplaces` snippet, and the maintainer release flow — is in [auto-update.md](./auto-update.md).

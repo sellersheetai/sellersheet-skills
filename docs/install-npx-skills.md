@@ -69,7 +69,8 @@ npx skills remove report-data  # or remove one at a time
 If Node.js isn't available, the repo's bundled installer does the same job:
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --target <agent>
+git clone https://github.com/sellersheetai/sellersheet-skills.git   # once; read install.sh before you run it
+bash sellersheet-skills/install.sh --target <agent>
 ```
 
 See the per-agent guides — [Codex](./install-codex.md), [Gemini](./install-gemini.md),

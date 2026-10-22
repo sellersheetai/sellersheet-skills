@@ -11,7 +11,7 @@ Works in Claude Code, Claude Desktop, Codex, Tencent CodeBuddy Code, Gemini CLI,
 
 **Author**: [sellersheetai.com](https://sellersheetai.com)
 **License**: Apache-2.0
-**Latest release**: v0.16.7 ([changelog](./CHANGELOG.md))
+**Latest release**: v0.16.8 ([changelog](./CHANGELOG.md))
 
 ## What you can do
 
@@ -143,7 +143,8 @@ Antigravity uses [its own plugin format](https://antigravity.google/docs/plugins
 2. Install skills:
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --target claude-desktop
+git clone https://github.com/sellersheetai/sellersheet-skills.git   # once; read install.sh before you run it
+bash sellersheet-skills/install.sh --target claude-desktop
 ```
 
 ### Cursor, Gemini & 50+ other agents — `npx skills` (recommended)
@@ -164,7 +165,8 @@ Skills are a separate artifact from the MCP server — you still register the Se
 ### No Node.js? — `install.sh` fallback
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --target <agent>
+git clone https://github.com/sellersheetai/sellersheet-skills.git   # once; read install.sh before you run it
+bash sellersheet-skills/install.sh --target <agent>
 ```
 
 Where `<agent>` is `gemini` or `antigravity`. (Claude Code, Codex and CodeBuddy Code users: use the plugin marketplace above instead — it has built-in updates.) The install script auto-detects the agent's skill directory; pass `--path <dir>` to override.
@@ -172,8 +174,9 @@ Where `<agent>` is `gemini` or `antigravity`. (Claude Code, Codex and CodeBuddy 
 ### Openclaw, Hermes, custom agents
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --target openclaw --path /your/openclaw/skills/dir
-bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --target hermes  --path /your/hermes/skills/dir
+git clone https://github.com/sellersheetai/sellersheet-skills.git   # once; read install.sh before you run it
+bash sellersheet-skills/install.sh --target openclaw --path /your/openclaw/skills/dir
+bash sellersheet-skills/install.sh --target hermes  --path /your/hermes/skills/dir
 ```
 
 For any agent that scans a directory for skill folders (each containing a `SKILL.md`), point `--path` at that directory.
@@ -224,10 +227,11 @@ Same plugin manager, same commands: `/plugin marketplace update sellersheet-mark
 
 ```bash
 # Re-install at current latest
-bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --update
+git clone https://github.com/sellersheetai/sellersheet-skills.git   # once; read install.sh before you run it
+bash sellersheet-skills/install.sh --update
 
 # Check installed vs latest without changing anything
-bash <(curl -fsSL https://raw.githubusercontent.com/sellersheetai/sellersheet-skills/main/install.sh) --check
+bash sellersheet-skills/install.sh --check
 ```
 
 Full mechanism: [docs/auto-update.md](./docs/auto-update.md).
