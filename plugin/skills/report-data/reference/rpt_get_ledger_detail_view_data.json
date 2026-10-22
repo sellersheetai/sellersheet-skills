@@ -30,7 +30,8 @@
     "column": "country",
     "values": "iso2_gb",
     "means": "location",
-    "nullable": false
+    "nullable": false,
+    "null_means": "unplaced"
    }
   }
  },

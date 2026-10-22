@@ -11,6 +11,15 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.17.6] — 2026-10-22
+
+- `report-data`: every `rpt_orders` row now says what it is — `order_kind` (`amazon`, `mcf`,
+  `removal`) and `marketplace`. A store ref returns all three kinds for every store; filter on
+  `order_kind` (FBA sales of a marketplace = `amazon`).
+- `report-data`: `query_report_data` takes `day_boundary: "marketplace"` to count days from the
+  marketplace's midnight, as Seller Central does.
+- `report-data`: table references carry each label's `null_means`.
+
 ## [0.17.5] — 2026-10-22
 
 - `report-data`: `rpt_orders` correction. A bare `Non-Amazon` sales channel is a removal order

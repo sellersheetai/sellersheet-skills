@@ -27,7 +27,8 @@
     "column": null,
     "values": null,
     "means": "marketplace",
-    "nullable": false
+    "nullable": false,
+    "null_means": "unplaced"
    }
   }
  },

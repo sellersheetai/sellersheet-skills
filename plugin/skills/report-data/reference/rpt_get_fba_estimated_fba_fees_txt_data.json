@@ -28,7 +28,8 @@
     "column": "amazon_store",
     "values": "iso2_gb",
     "means": "marketplace",
-    "nullable": false
+    "nullable": false,
+    "null_means": "unplaced"
    }
   }
  },

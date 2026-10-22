@@ -6,7 +6,7 @@ author: SellerSheet AI
 description: >-
   Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules, requesting on-demand reports, polling for completion, downloading a finished report document from its presigned URL, or analyzing any report table. Covers inventory, listings, orders, financial, and ad report (SP/SB/SD) tables; Brand Analytics has no synced table, so request it on-demand (schemas in amazon-report). Do NOT use for noon.com data (use noon-report-data) or when you don't yet know a report's exact schema — read amazon-report or data-kiosk first, then come back here for the sync/poll/download mechanics.
   中文触发词：亚马逊报告数据、库存报告、补货需求、订单、退货、结算、搜索词、listing 状态、rpt_ 数据仓库查询、报告同步计划、按需报告下载。
-version: 0.17.5
+version: 0.17.6
 metadata: {apis: [data, sp_api_reports], pattern: Pipeline}
 ---
 
@@ -137,26 +137,25 @@ analysis just add a date filter (which auto-switches 'latest' to 'all' — see Q
 pass `report_date='all'` explicitly. The same daily-grain semantics apply to the Data Kiosk
 tables `rpt_dk_sales_traffic_by_date` / `rpt_dk_sales_traffic_by_asin`.
 
-#### `rpt_orders`: three kinds of row, told apart by `sales_channel`
+#### `rpt_orders`: three kinds of row — filter on `order_kind`
 
-- `Amazon.<tld>` (`Amazon.com`, `Amazon.sa`, …) is a **customer order** on that Amazon marketplace, priced in its currency.
-- `Non-Amazon US`, `Non-Amazon CA`, … (a country after the space) is a **Multi-Channel Fulfillment** order: FBA stock shipped for a sale the seller made elsewhere (own website, another shop). `merchant_order_id` is that shop's reference.
-- `Non-Amazon` (bare) is almost always a **removal order**: stock the seller asked Amazon to return, dispose of or liquidate. `merchant_order_id` is the removal order id, as in `rpt_get_fba_fulfillment_removal_order_detail_data.order_id`, which holds its type and fee. It is not a sale.
+| `order_kind` | What it is | `marketplace` |
+|---|---|---|
+| `amazon` | A customer order on that Amazon marketplace (`sales_channel` `Amazon.<tld>`) | the marketplace |
+| `mcf` | A Multi-Channel Fulfillment order: FBA stock shipped for a sale made elsewhere (`Non-Amazon <CC>`); `merchant_order_id` is that shop's reference | the marketplace whose stock shipped |
+| `removal` | A removal shipment (return, disposal, liquidation; bare `Non-Amazon`); detail in `rpt_get_fba_fulfillment_removal_order_detail_data` by `merchant_order_id` = `order_id` | NULL — account-wide |
 
-Both `Non-Amazon` kinds have ids starting `S0…`, `fulfillment_channel = 'Amazon'`, and **every price column NULL**: Amazon never saw a sale.
+A store ref returns **all three kinds**: its marketplace's orders and MCF plus the account's removals. MCF and removal rows have every price column NULL. Always filter for the question:
 
-Choose by question, and always say it in the query:
-
-| Question | Filter on `rpt_orders.sales_channel` |
+| Question | Filter |
 |---|---|
-| Amazon sales, revenue, order count, AOV | `{"op": "contains", "value": "Amazon."}` |
-| Customer demand across channels (velocity, days of cover, restock) | `{"op": "neq", "value": "Non-Amazon"}`: Amazon plus MCF, without removals |
-| MCF orders alone | `{"op": "contains", "value": "Non-Amazon "}` (with the trailing space) |
-| Removal shipments | `{"op": "eq", "value": "Non-Amazon"}`, or query the removal table itself |
+| FBA sales of a marketplace: revenue, orders, units, AOV | `order_kind eq amazon` (MCF is not Amazon sales) |
+| Demand across channels (velocity, days of cover) | `order_kind in [amazon, mcf]` |
+| MCF orders / removal shipments | `order_kind eq mcf` / `order_kind eq removal` |
 
-The store ref adds `sales_channel = 'Amazon.<tld>'` **only for a multi-marketplace store**, which drops both `Non-Amazon` kinds. A single-marketplace store gets no filter, so all three kinds come back mixed. Unfiltered, a sum of `item_price` silently ignores the unpriced rows, while a count of orders or units overstates sales.
+Unfiltered, a sum of `item_price` silently skips the unpriced rows while a count overstates sales.
 
-**Just pass `store='myStore-US'`. Don't filter on the marketplace column directly** — the column name differs per table (`sales_channel` / `country_code` / `marketplace_id` / `profile_id` / `country` / `amazon_store`) and not every table exposes `country_code` (e.g. `rpt_orders` uses `sales_channel='Amazon.com'`, no `country_code` column).
+**Just pass `store='myStore-US'`. Don't filter on the marketplace column yourself** — it differs per table (`marketplace` / `country_code` / `marketplace_id` / `profile_id` / `country` / `amazon_store`) and the store ref applies it.
 
 ### Aggregations — get totals, not raw rows
 
@@ -186,6 +185,7 @@ Allowed ops: `sum`, `count`, `avg`, `min`, `max` — the key is **`op`** (not `f
 - **Sort groups by an aggregation alias**: `order_by: [{"column": "revenue", "dir": "desc"}]` (bare alias, no `table.` prefix). An unknown alias is a 400 listing the known ones.
 - **`having`** filters on aggregation results (SQL HAVING): `having: [{"column": "revenue", "op": "gt", "value": 1000}]` — `column` must be an aggregation alias.
 - **Date bucketing** in `group_by`: append `:day|week|month|quarter|year` to a temporal ref — `"rpt_orders.purchase_date:month"`.
+- **Whose day:** timestamps (`purchase_date`, …) are UTC, so days and bare-date filters start at UTC midnight. Pass `day_boundary: "marketplace"` to start them at the store's marketplace midnight, as Seller Central counts days. Date columns (`report_date`) are already marketplace days.
 - Numeric results arrive as clean fixed-point strings (max 6 decimal places, no scientific notation) — `AVG()` returns `"60.896256"`, not `"60.8962557077625571"`.
 
 ### Query Rules
@@ -216,7 +216,7 @@ Allowed ops: `sum`, `count`, `avg`, `min`, `max` — the key is **`op`** (not `f
 | `rpt_get_fba_myi_all_inventory_data` | GET_FBA_MYI_ALL_INVENTORY_DATA | full FBA inventory with afn-* quantity buckets, listing-exists flags, per-unit-volume |
 | `rpt_get_v2_seller_performance_report` | GET_V2_SELLER_PERFORMANCE_REPORT | per-marketplace daily AHR score + 9 performance rates + 12 violation defects counts (rewritten 2026-05-04) |
 | `rpt_get_fba_inventory_planning_data` | GET_FBA_INVENTORY_PLANNING_DATA | 60+ cols incl. AIS bucket schema, restock-plus, season trio, LTSF (NOT the retired GET_RESTOCK_INVENTORY_RECOMMENDATIONS_REPORT) |
-| `rpt_orders` | GET_FLAT_FILE_ALL_ORDERS_DATA_BY_LAST_UPDATE_GENERAL | **full history retained — never pruned** (append/UPSERT on `amazon_order_id`+`sku`, no rolling deletion). Onboard does a one-shot **30-day backfill**, then an hourly `LAST_UPDATE` incremental appends new orders + folds in status changes forever. So the earliest `purchase_date` reaches back ≈30 days before the store's onboard date — *not* all-time history, and *not* capped at 30 days of retention. Includes `is_business_order` + 6 B2B/locale cols (added 2026-05-04) |
+| `rpt_orders` | GET_FLAT_FILE_ALL_ORDERS_DATA_BY_LAST_UPDATE_GENERAL | **full history retained — never pruned** (UPSERT per order line — `amazon_order_id` + `sku` + `order_item_id` — no rolling deletion). Onboard does a one-shot **30-day backfill**, then an hourly `LAST_UPDATE` incremental appends new orders + folds in status changes forever. So the earliest `purchase_date` reaches back ≈30 days before the store's onboard date — *not* all-time history, and *not* capped at 30 days of retention. Includes `is_business_order` + 6 B2B/locale cols (added 2026-05-04) |
 | `rpt_get_fba_storage_fee_charges_data` | GET_FBA_STORAGE_FEE_CHARGES_DATA | monthly; `breakdown_incentive_fee_amount` is a colon-separated str — use derived `incentive_program` + `incentive_amount` |
 | `rpt_get_fba_fulfillment_customer_returns_data` | GET_FBA_FULFILLMENT_CUSTOMER_RETURNS_DATA | EU samples populate `status` ('Unit returned to inventory', etc.) |
 | `rpt_dk_sales_traffic_by_date` | Data Kiosk analytics_salesAndTraffic_2024_04_24 (byDate) | store-level daily KPIs; nested Amount objects unwrapped to numeric + shared `currency_code`; `unit_session_percentage` = conversion rate |

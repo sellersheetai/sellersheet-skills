@@ -28,7 +28,8 @@
     "column": "marketplace_name",
     "values": "amazon_tld",
     "means": "marketplace",
-    "nullable": true
+    "nullable": true,
+    "null_means": "unplaced"
    }
   }
  },

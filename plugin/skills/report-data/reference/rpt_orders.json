@@ -23,10 +23,11 @@
    "grain": "region",
    "label": {
     "kind": "payload",
-    "column": "sales_channel",
-    "values": "amazon_tld",
+    "column": "marketplace",
+    "values": "iso2",
     "means": "marketplace",
-    "nullable": false
+    "nullable": true,
+    "null_means": "account"
    }
   }
  },
@@ -413,6 +414,18 @@
    "db_column": "license_state",
    "amazon_header": "(see parser KNOWN_COLUMNS)",
    "type": "str"
+  },
+  {
+   "db_column": "order_kind",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str",
+   "note": "amazon (customer order) | mcf (Multi-Channel Fulfillment) | removal (removal shipment), derived from sales_channel. FBA sales of a marketplace = amazon."
+  },
+  {
+   "db_column": "marketplace",
+   "amazon_header": "(see parser KNOWN_COLUMNS)",
+   "type": "str",
+   "note": "The row's marketplace, derived from sales_channel (our two-letter codes (UK, AE, …)). Auto-filtered from the store suffix; do not filter manually. NULL on account-wide rows — those are shown under every marketplace of the store."
   }
  ],
  "example_query": {
