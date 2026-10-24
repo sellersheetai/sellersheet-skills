@@ -89,7 +89,6 @@
       "strategy": "request",
       "unique_key": [
         "store_id",
-        "approval_date",
         "reimbursement_id",
         "case_id"
       ],

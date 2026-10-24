@@ -114,9 +114,9 @@
   },
   {
    "db_column": "snapshot_date",
-   "amazon_header": "(infrastructure)",
-   "type": "date",
-   "note": "Worker-stamped snapshot date — report_date='latest' resolves on this."
+   "amazon_header": "snapshot-date",
+   "type": "timestamptz",
+   "note": "Amazon's snapshot moment — local midnight of the snapshot day (the 15th), not on every file. report_date='latest' resolves on report_date, not on this. UTC instant (timestamptz). Query results show it in the store ref's marketplace local time, without an offset; a bare date in a filter is that marketplace's midnight."
   },
   {
    "db_column": "extra",
