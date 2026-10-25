@@ -181,8 +181,8 @@
   {
    "db_column": "safet_claim_creation_time",
    "amazon_header": "SafeT claim creation time",
-   "type": "timestamptz",
-   "note": "TIMESTAMPTZ since 2026-08-20 (was raw str). Live values are DATE-only 'dd-MMM-yyyy' (e.g. '18-Aug-2026') stored as UTC midnight; populated only on SafeT-claim rows (rare — NULL elsewhere). UTC instant (timestamptz). Query results show it in the store ref's marketplace local time, without an offset; a bare date in a filter is that marketplace's midnight."
+   "type": "date",
+   "note": "The calendar date Amazon writes ('23-Oct-2026'), as written; populated only on SafeT-claim rows (rare — NULL elsewhere)."
   },
   {
    "db_column": "safet_claim_reimbursement_amount",
