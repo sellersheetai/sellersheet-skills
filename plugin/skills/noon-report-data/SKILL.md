@@ -49,7 +49,7 @@ stamp, not the data date. The two catalogs are the exception. Their date IS `rep
 
 | Table | noon report | Grain | Schedule (UTC) | Kind |
 |---|---|---|---|---|
-| `rpt_noon_orders` | Orders Export (OMS) | one row per order item | 04:00 + 16:00, last 7 days re-pulled | incremental |
+| `rpt_noon_orders` | Orders Export (OMS) | one row per order item (`delivered_at` is filled once the item is delivered) | 04:00 + 16:00, last 14 days re-pulled | incremental |
 | `rpt_noon_finance` | Transaction View Report (Item Level) | one row per transaction line of an item | 04:00 + 16:00, last 14 days re-pulled | incremental |
 | `rpt_noon_fbn_aging` | FBN Inventory Aging | one row per SKU × barcode × condition, per marketplace and snapshot date | 04:00 + 16:00 | snapshot |
 | `rpt_noon_product_views` | Product Views and Sales | one row per SKU, per marketplace and visit date | 04:00 + 16:00, last 14 days re-pulled | incremental |
