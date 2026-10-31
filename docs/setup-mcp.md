@@ -24,7 +24,7 @@ Per-agent registration:
 
 | Agent | How to register |
 |---|---|
-| Claude Desktop | Settings → Connectors → **Add custom connector** → URL `https://sellersheetai.com/mcp` (OAuth — no key needed) |
+| Claude (claude.ai and the desktop app) | **With the plugin** — connect it on the plugin's **Connectors** tab ([guide](./install-claude-desktop.md)). By hand: Customize → Connectors → **Add custom connector** → URL `https://sellersheetai.com/mcp` (OAuth — no key needed) |
 | Claude Code | **Automatic with the plugin** — authenticate via `/mcp`. Bearer alternative: `claude mcp add-json sellersheet '{"type":"http","url":"https://sellersheetai.com/mcp","headers":{"Authorization":"Bearer YOUR_API_KEY"}}'` |
 | Codex CLI / ChatGPT desktop | **Automatic with the plugin** — then `codex mcp login sellersheet`. Manual alternative: `codex mcp add sellersheet --url https://sellersheetai.com/mcp` (config.toml field is `http_headers`, not `headers`). |
 | CodeBuddy Code (腾讯云 CodeBuddy) | **Automatic with the plugin** — authenticate via `/mcp`. Bearer alternative: `codebuddy mcp add-json --scope user sellersheet '{"type":"http","url":"https://sellersheetai.com/mcp","headers":{"Authorization":"Bearer YOUR_API_KEY"}}'` |

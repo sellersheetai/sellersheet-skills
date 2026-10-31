@@ -1,60 +1,48 @@
-# Install on Claude Desktop
+# Install on Claude (claude.ai and the desktop app)
+
+The SellerSheet plugin gives Claude the skills **and** the MCP server in one step. Add it once in claude.ai or the Claude desktop app: it's saved to your Claude account, so Cowork and Claude Code get it too.
 
 ## Prerequisites
 
-- Claude Desktop 0.10+
-- A SellerSheet account with at least one Amazon store connected — no API key needed
+- A SellerSheet account with at least one store connected — no API key needed
+- A Claude account. On a Team or Enterprise plan, an Owner may need to add the connector for your organization first.
 
-## Step 1: Add the MCP server (custom connector)
+## Step 1: Add the plugin
 
-SellerSheet MCP is a hosted remote server — nothing to install locally.
+1. Open **Customize → Plugins**.
+2. Select **Add → Add marketplace** and enter the repository:
 
-1. Claude Desktop → **Settings → Connectors → Add custom connector**
-2. URL: `https://sellersheetai.com/mcp`
-3. Sign in via the OAuth prompt and approve — access is scoped to your stores.
+   ```text
+   sellersheetai/sellersheet-skills
+   ```
 
-## Step 2: Install the skills
+3. Find **SellerSheet Skills** among the plugins, open it and select **Add**.
 
-```bash
-git clone https://github.com/sellersheetai/sellersheet-skills.git   # once; read install.sh before you run it
-bash sellersheet-skills/install.sh --target claude-desktop
-```
+## Step 2: Connect SellerSheet
 
-This auto-detects the skills directory:
+Adding the plugin loads the skills but doesn't connect the server.
 
-| OS | Path |
-|---|---|
-| macOS | `~/Library/Application Support/Claude/skills/` |
-| Linux | `~/.config/Claude/skills/` |
-| Windows | `%APPDATA%/Claude/skills/` |
+1. Open the plugin's **Connectors** tab. SellerSheet shows **Not added**: add it, then select **Connect**.
+2. Your browser opens SellerSheet. Click **Allow**, and you're back in Claude. Access is scoped to your stores.
 
-## Step 3: Restart Claude Desktop
-
-Fully quit Claude Desktop (not just close the window) and relaunch.
+**Server only, by hand** (no skills): **Customize → Connectors → Add custom connector**, name it `SellerSheet`, paste `https://sellersheetai.com/mcp` as the server URL, select **Add**, then **Connect**.
 
 ## Verify
 
-In a new conversation, ask:
+Ask:
 
-> "What skills do you have available for Amazon ops?"
+> "Which stores can you see?"
 
-Claude should list `sellersheet-sheets`, `sellersheet-dashboard`, and `report-data`.
+Claude should call `get_user_context` and list your store refs (such as `myStore-US`) with your plan and each store's status. Type `/` in the message box to see the plugin's skills.
 
-Try a real test:
-
-> "Pull my inventory health for myStore-US and tell me which SKUs need restocking."
-
-Claude should call `get_user_context`, then `query_report_data` via the `report-data` skill.
+In Claude Code, the plugin downloads the next time you start a session signed in to the same account; run `/reload-plugins` to load it.
 
 ## Update
 
-```bash
-git -C sellersheet-skills pull || git clone https://github.com/sellersheetai/sellersheet-skills.git   # latest installer first
-bash sellersheet-skills/install.sh --target claude-desktop --update
-```
+In **Customize → Plugins**, turn on **Sync automatically** for the marketplace, or select **Check for updates** to pull the latest now.
 
 ## Troubleshooting
 
-- **MCP server not connecting**: remove and re-add the connector (Settings → Connectors), completing the OAuth sign-in.
-- **Skills don't appear**: confirm Claude Desktop scans the path above. Some Claude Desktop versions require enabling skills in Settings → Features → Skills.
-- **Connector authorization revoked**: re-add the connector, or manage access at [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → **MCP & API keys**.
+- **You can't add the marketplace or the connector**: on a Team or Enterprise plan, an Owner decides which sources members can add and adds custom connectors for the organization. Ask an Owner to add SellerSheet, then connect it with your own account.
+- **Skills work but tools don't**: the connector isn't **Connected** yet — finish Step 2.
+- **"Unauthorized" or access revoked**: select **Connect** again, or manage access at [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → **MCP & API keys**.

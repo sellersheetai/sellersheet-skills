@@ -81,7 +81,7 @@ Before installing, confirm:
 
 1. **A SellerSheet account** at [sellersheetai.com](https://sellersheetai.com).
 2. **At least one Amazon store connected** in your SellerSheet workspace.
-3. **The SellerSheet MCP server connected in your agent.** It's a hosted remote server at `https://sellersheetai.com/mcp` — nothing to install locally. **Plugin installs (Claude Code, Codex, CodeBuddy Code) register it automatically** — just sign in via OAuth on first use, no API key. Agents without a plugin system register it manually (OAuth connectors, or an API key from [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → **MCP & API keys** → **Create Key**). See [docs/setup-mcp.md](./docs/setup-mcp.md).
+3. **The SellerSheet MCP server connected in your agent.** It's a hosted remote server at `https://sellersheetai.com/mcp` — nothing to install locally. **The plugin carries it** — Claude Code, Codex and CodeBuddy Code register it on install; in Claude (claude.ai and the desktop app) you connect it from the plugin's **Connectors** tab. Either way you sign in via OAuth, no API key. Agents without a plugin system register it manually (OAuth connectors, or an API key from [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → **MCP & API keys** → **Create Key**). See [docs/setup-mcp.md](./docs/setup-mcp.md).
 
 For the dashboard skill specifically, if you want PPC tabs to populate with real data, the connected store needs **Amazon Advertising profile access** — [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → My Stores → **Authorize Ads** on the store's row. Without it, ad-related sections render as scaffolds.
 
@@ -136,16 +136,15 @@ openclaw mcp set sellersheet '{"url":"https://sellersheetai.com/mcp"}'
 
 Antigravity uses [its own plugin format](https://antigravity.google/docs/plugins) (a `plugin.json` manifest with `skills/` + `mcp_config.json`, placed under `~/.gemini/config/plugins/`), not the Claude layout — install the skills via `npx skills add sellersheetai/sellersheet-skills -a antigravity` and add the MCP server per [docs/setup-mcp.md](./docs/setup-mcp.md).
 
-### Claude Desktop
+### Claude (claude.ai and the desktop app)
 
-1. Register the MCP server: **Settings → Connectors → Add custom connector** → URL `https://sellersheetai.com/mcp`. Sign in via the OAuth prompt — no API key needed.
+The plugin carries the skills and the MCP server. In claude.ai or the Claude desktop app:
 
-2. Install skills:
+1. **Customize → Plugins → Add → Add marketplace**, enter `sellersheetai/sellersheet-skills`.
+2. Open **SellerSheet Skills** and select **Add**.
+3. On the plugin's **Connectors** tab, add SellerSheet, select **Connect**, and click **Allow** on the SellerSheet page that opens (OAuth — no API key).
 
-```bash
-git clone https://github.com/sellersheetai/sellersheet-skills.git   # once; read install.sh before you run it
-bash sellersheet-skills/install.sh --target claude-desktop
-```
+The plugin is saved to your Claude account, so Cowork and Claude Code get it too. Server only, by hand: **Customize → Connectors → Add custom connector** → URL `https://sellersheetai.com/mcp`, then **Connect**. Full guide: [docs/install-claude-desktop.md](./docs/install-claude-desktop.md).
 
 ### Cursor, Gemini & 50+ other agents — `npx skills` (recommended)
 
@@ -169,7 +168,7 @@ git clone https://github.com/sellersheetai/sellersheet-skills.git   # once; read
 bash sellersheet-skills/install.sh --target <agent>
 ```
 
-Where `<agent>` is `gemini` or `antigravity`. (Claude Code, Codex and CodeBuddy Code users: use the plugin marketplace above instead — it has built-in updates.) The install script auto-detects the agent's skill directory; pass `--path <dir>` to override.
+Where `<agent>` is `gemini` or `antigravity`. (Claude, Claude Code, Codex and CodeBuddy Code users: use the plugin marketplace above instead — it has built-in updates.) The install script auto-detects the agent's skill directory; pass `--path <dir>` to override.
 
 ### Openclaw, Hermes, custom agents
 
@@ -219,6 +218,10 @@ With auto-update on, Claude Code refreshes the marketplace at startup and update
 /plugin update sellersheet-skills
 ```
 
+### Claude (claude.ai and the desktop app)
+
+In **Customize → Plugins**, turn on **Sync automatically** for the marketplace, or select **Check for updates** to pull the latest now.
+
 ### CodeBuddy Code
 
 Same plugin manager, same commands: `/plugin marketplace update sellersheet-marketplace` then `/plugin update sellersheet-skills`, or turn on auto-update under `/plugin` → **Marketplaces** → **sellersheet-marketplace** → **Enable auto-update**.
@@ -248,7 +251,7 @@ The plugin ships as one bundle — all skills release together at the plugin ver
 
 - [Install via `npx skills` (Codex, Cursor, Gemini & 50+ agents)](./docs/install-npx-skills.md)
 - [Install on Claude Code](./docs/install-claude-code.md)
-- [Install on Claude Desktop](./docs/install-claude-desktop.md)
+- [Install on Claude (claude.ai and the desktop app)](./docs/install-claude-desktop.md)
 - [Install on Codex](./docs/install-codex.md)
 - [Install on CodeBuddy Code · 腾讯云 CodeBuddy 安装指南](./docs/install-codebuddy.md)
 - [Install on WorkBuddy · 腾讯 WorkBuddy 连接器](./docs/install-workbuddy.md)
