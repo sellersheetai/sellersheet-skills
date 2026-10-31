@@ -113,6 +113,6 @@ The skill files are written in English, but every skill follows the shared rule:
 
 ## WorkBuddy
 
-Tencent WorkBuddy (the desktop office agent) installs SellerSheet as a **connector** from its own marketplace, not through `/plugin`. See [install-workbuddy.md](./install-workbuddy.md).
+Tencent WorkBuddy (the desktop office agent) installs the same plugin from its own UI — 专家·技能·连接器 → 技能 → 套件 — not through `/plugin`. See [install-workbuddy.md](./install-workbuddy.md).
 
-腾讯 WorkBuddy（桌面办公智能体）通过其自带的连接器市场安装 SellerSheet，不走 `/plugin`。见 [install-workbuddy.md](./install-workbuddy.md)。
+腾讯 WorkBuddy（桌面办公智能体）在自己的界面里安装同一个套件（专家·技能·连接器 → 技能 → 套件），不走 `/plugin`。见 [install-workbuddy.md](./install-workbuddy.md)。

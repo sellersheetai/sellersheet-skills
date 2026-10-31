@@ -1,54 +1,54 @@
-# Install on Tencent WorkBuddy · 腾讯 WorkBuddy 连接器安装
+# Install on Tencent WorkBuddy · 腾讯 WorkBuddy 安装指南
 
-WorkBuddy is Tencent's desktop office agent. It does not read plugin marketplaces; SellerSheet is published to WorkBuddy's **connector marketplace**, so there is nothing to download and no command to run.
+WorkBuddy is Tencent's desktop office agent. It installs the SellerSheet plugin — the skills **and** the MCP server — from a plugin marketplace: add this GitHub repository as a marketplace, then install the plugin from it.
 
-WorkBuddy 是腾讯的桌面办公智能体，不读取插件市场。SellerSheet 以**连接器**形式发布在 WorkBuddy 连接器市场，无需下载文件、无需执行命令。
+WorkBuddy 是腾讯的桌面办公智能体。它从插件市场安装 SellerSheet 套件，技能**和** MCP 服务器一起装好：先把本 GitHub 仓库添加为市场，再从中安装套件。
 
 ## Prerequisites · 前置条件
 
-- WorkBuddy 4.24 or newer (macOS or Windows).
-- A [SellerSheet](https://sellersheetai.com) account with at least one Amazon store connected. Registration is with Google; afterwards you can sign in with Google **or** an email code.
+- The WorkBuddy desktop app (these steps were checked on 5.9.4).
+- A [SellerSheet](https://sellersheetai.com) account with at least one store connected.
 
-- WorkBuddy 4.24 及以上（macOS 或 Windows）。
-- 一个已连接至少一家亚马逊店铺的 [SellerSheet](https://sellersheetai.com) 账号。注册需使用 Google 登录一次，之后可用 Google **或** 邮箱验证码登录。
+- WorkBuddy 桌面客户端（以下步骤在 5.9.4 上核对过）。
+- 一个已连接至少一家店铺的 [SellerSheet](https://sellersheetai.com) 账号。
 
 ## Install · 安装
 
-1. In WorkBuddy open **专家·技能·连接器 → 连接器** (Experts · Skills · Connectors → Connectors).
-2. Find **SellerSheet** and click **连接 / Connect**.
-3. A browser window opens on sellersheetai.com. Sign in (Google, or email + the 6-digit code we send you), then click **Authorize**.
-4. Back in WorkBuddy the connector shows **已连接 / Connected**. The SellerSheet skills load with it.
+1. Open **专家·技能·连接器**, go to the **技能** tab and select **套件**.
+2. Click **+** (添加市场). As 市场源, enter `sellersheetai/sellersheet-skills` and click **提交**.
+3. **sellersheet-marketplace** now appears under 套件. Click **+** (安装) on **sellersheet-skills**.
 
-1. 在 WorkBuddy 中打开 **专家·技能·连接器 → 连接器**。
-2. 找到 **SellerSheet**，点击 **连接**。
-3. 浏览器会打开 sellersheetai.com，登录（Google，或邮箱 + 我们发送的 6 位验证码），然后点击 **Authorize**。
-4. 回到 WorkBuddy，连接器显示 **已连接**，SellerSheet 技能随之加载。
+1. 打开 **专家·技能·连接器**，进入 **技能** 标签页，选择 **套件**。
+2. 点击 **+**（添加市场），「市场源」填入 `sellersheetai/sellersheet-skills`，点击 **提交**。
+3. 套件下会出现 **sellersheet-marketplace**。在 **sellersheet-skills** 上点击 **+**（安装）。
+
+## Connect · 连接
+
+1. Go to the **连接器** tab and open **自定义连接器**. In the MCP list (MCP 服务管理), **sellersheet** shows "来自插件 sellersheet-skills" and 需要认证: click **连接**.
+2. Your browser opens SellerSheet. Sign in if asked, then click **Allow** (允许).
+
+1. 进入 **连接器** 标签页，打开 **自定义连接器**。MCP 服务管理列表里的 **sellersheet** 显示“来自插件 sellersheet-skills”和「需要认证」：点击 **连接**。
+2. 浏览器会打开 SellerSheet，按提示登录，然后点击「允许」。
 
 ## Verify · 验证
 
 Say to WorkBuddy · 对 WorkBuddy 说：
 
-> 显示我的 SellerSheet 用户信息。 / Show me my SellerSheet user context.
+> 你能看到哪些店铺？ / Which stores can you see?
 
-It should call `get_user_context` and list your stores and plan. Then try one of the marketplace examples, e.g. "查一下 myStore-US 上周的库存和补货需求".
+It should call `get_user_context` and list your store refs (such as `myStore-US`) with your plan and each store's status.
 
-它应调用 `get_user_context` 并列出你的店铺与套餐。然后可以试试示例，例如“查一下 myStore-US 上周的库存和补货需求”。
-
-## Update · 更新
-
-WorkBuddy notifies you when a new connector version is approved; update from the same connector page. The connector always ships the same skills as the plugin release of the same version.
-
-有新版本通过审核时 WorkBuddy 会提示，在同一连接器页面更新即可。连接器与同版本的插件发布始终包含同一套技能。
+它应调用 `get_user_context`，列出你的店铺标识（例如 `myStore-US`）、套餐和每个店铺的状态。
 
 ## Troubleshooting · 故障排查
 
 | Symptom · 现象 | Fix · 处理 |
 |---|---|
-| Connector not listed · 市场里没有 SellerSheet | Update WorkBuddy to 4.24+; the listing needs it. · 升级 WorkBuddy 到 4.24 及以上。 |
-| Browser sign-in says the email is not registered · 提示邮箱未注册 | Sign in with Google once to create the account, then retry. · 先用 Google 登录一次完成注册，再重试。 |
-| Connected but "no stores" · 已连接但没有店铺 | Connect an Amazon store: sellersheetai.com/dashboard → My Stores → Connect Amazon. · 在控制台 My Stores → Connect Amazon 连接店铺。 |
-| Authorization expired · 授权失效 | Click **连接** again; the browser sign-in repeats. · 再次点击 **连接** 重新授权。 |
+| No 套件 tab or no **+** to add a marketplace · 看不到「套件」或添加市场的 + | Update WorkBuddy to the latest version, then reopen 专家·技能·连接器 → 技能. · 把 WorkBuddy 升级到最新版本，再打开 专家·技能·连接器 → 技能。 |
+| 启用工具数量过多 (too many tools enabled) · 提示「启用工具数量过多」 | Shown above 80 enabled tools; the plugin brings more. It's advice, not an error — click **知道了**, or turn off tools you don't use under **sellersheet** in the MCP list. · 启用的工具超过 80 个时会提示，这是建议，不是错误：点 **知道了**，或在 MCP 列表里展开 **sellersheet** 关掉用不到的工具。 |
+| **sellersheet** still shows 需要认证 · 仍显示「需要认证」 | The sign-in didn't finish. Click **连接** again and **Allow** in the browser. · 登录没有完成，再点一次 **连接**，在浏览器里点「允许」。 |
+| Connected but "no stores" · 已连接但没有店铺 | Connect a store at [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → My Stores. · 在 [控制台](https://sellersheetai.com/dashboard) → My Stores 连接店铺。 |
 
 ## For maintainers · 维护者说明
 
-The package WorkBuddy reviews is this repository root: `connector-meta.json`, `mcp.json`, `icon.svg`, `skills/`. Run `python3 .maintainers/sync_workbuddy.py --zip` to build `dist/sellersheet-workbuddy-connector-<version>.zip` for submission at [open.workbuddy.cn](https://open.workbuddy.cn).
+The repository root also doubles as a WorkBuddy connector package: `connector-meta.json`, `mcp.json` and `icon.svg` at the root, plus the plugin's skills. Run `python3 .maintainers/sync_workbuddy.py --zip` to build `dist/sellersheet-workbuddy-connector-<version>.zip` for submission at [open.workbuddy.cn](https://open.workbuddy.cn).

@@ -70,7 +70,7 @@ AI 生图、生成文案和买家洞察按次从 SellerSheet 账户 Credits 扣�
 
 1. 一个 [sellersheetai.com](https://sellersheetai.com) 账号。
 2. 在 SellerSheet 工作区中至少连接一家亚马逊店铺。
-3. 在你的智能体中连接 **SellerSheet MCP 服务器**。它是托管的远程服务（`https://sellersheetai.com/mcp`），本地无需安装。**插件自带它**：Claude Code、Codex、CodeBuddy Code 安装插件时自动注册；Claude（claude.ai 与桌面版）在插件的 **Connectors** 标签页里连接。两种方式都通过浏览器 OAuth 登录，无需 API key。没有插件系统的智能体需手动注册（OAuth 连接器，或在 [控制台](https://sellersheetai.com/dashboard) → **MCP & API keys** → **Create Key** 创建密钥）。详见 [docs/setup-mcp.md](./docs/setup-mcp.md)。
+3. 在你的智能体中连接 **SellerSheet MCP 服务器**。它是托管的远程服务（`https://sellersheetai.com/mcp`），本地无需安装。**插件自带它**：Claude Code、Codex、CodeBuddy Code 安装插件时自动注册；Claude（claude.ai 与桌面版）在插件的 **Connectors** 标签页里连接，WorkBuddy 在 **连接器 → 自定义连接器** 里连接。几种方式都通过浏览器 OAuth 登录，无需 API key。没有插件系统的智能体需手动注册（OAuth 连接器，或在 [控制台](https://sellersheetai.com/dashboard) → **MCP & API keys** → **Create Key** 创建密钥）。详见 [docs/setup-mcp.md](./docs/setup-mcp.md)。
 
 如需看板中的广告（PPC）页签有真实数据，店铺还需授权亚马逊广告：[控制台](https://sellersheetai.com/dashboard) → My Stores → 店铺所在行的 **Authorize Ads**。未授权时广告相关区域只显示框架。
 
@@ -90,7 +90,13 @@ CodeBuddy Code 识别与 Claude Code 相同的插件目录结构，一步装好�
 
 ### 腾讯 WorkBuddy
 
-WorkBuddy 不读取插件市场，SellerSheet 以**连接器**形式发布到 WorkBuddy 连接器市场。在 WorkBuddy 内安装：专家·技能·连接器 → 连接器 → SellerSheet → 连接，按提示登录即可，无需下载任何文件。本仓库根目录同时就是 WorkBuddy 连接器包（`connector-meta.json`、`mcp.json`、`icon.svg` 与同一套 `skills/`），因此连接器与插件永远是同一版技能。详见 [docs/install-workbuddy.md](./docs/install-workbuddy.md)。
+WorkBuddy 从插件市场安装 SellerSheet 套件，技能和 MCP 服务器一起装好：
+
+1. **专家·技能·连接器 → 技能 → 套件 → +**（添加市场），「市场源」填入 `sellersheetai/sellersheet-skills`，点击 **提交**。
+2. 在 **sellersheet-marketplace** 下，对 **sellersheet-skills** 点击 **+**（安装）。
+3. **连接器 → 自定义连接器**：`sellersheet` 显示“来自插件 sellersheet-skills”和「需要认证」，点击 **连接**，在打开的 SellerSheet 页面点「允许」。
+
+启用的工具超过 80 个时 WorkBuddy 会提示「启用工具数量过多」，这是建议，不是错误：点 **知道了** 即可。本仓库根目录同时也是 WorkBuddy 连接器包（`connector-meta.json`、`mcp.json`、`icon.svg`），用的是同一套技能。详见 [docs/install-workbuddy.md](./docs/install-workbuddy.md)。
 
 ### Claude Code
 
@@ -139,7 +145,7 @@ git clone https://github.com/sellersheetai/sellersheet-skills.git   # 只需一�
 bash sellersheet-skills/install.sh --target <agent>
 ```
 
-`<agent>` 可为 `gemini`、`antigravity`、`codebuddy`（仅技能，MCP 需手动注册）。Openclaw / Hermes / 自定义智能体加 `--path <目录>` 指向其技能扫描目录。Claude、Claude Code、Codex、CodeBuddy Code 用户请使用上面的插件方式，它自带更新机制。
+`<agent>` 可为 `gemini`、`antigravity`、`codebuddy`（仅技能，MCP 需手动注册）。Openclaw / Hermes / 自定义智能体加 `--path <目录>` 指向其技能扫描目录。Claude、Claude Code、Codex、CodeBuddy Code、WorkBuddy 用户请使用上面的插件方式，它自带更新机制。
 
 ## 更新与自动更新
 
@@ -171,7 +177,7 @@ bash sellersheet-skills/install.sh --check    # 只比较版本，不做改动
 ## 文档
 
 - [在 CodeBuddy Code 上安装（中英双语）](./docs/install-codebuddy.md)
-- [在腾讯 WorkBuddy 中安装连接器](./docs/install-workbuddy.md)
+- [在腾讯 WorkBuddy 中安装](./docs/install-workbuddy.md)
 - [通过 `npx skills` 安装（Codex、Cursor、Gemini 等）](./docs/install-npx-skills.md)
 - [在 Claude Code 上安装](./docs/install-claude-code.md)
 - [在 Claude（claude.ai 与桌面版）上安装](./docs/install-claude-desktop.md)

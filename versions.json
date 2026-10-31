@@ -84,8 +84,8 @@
     "codex-update": "codex plugin marketplace upgrade sellersheet-marketplace",
     "codebuddy": "/plugin marketplace add sellersheetai/sellersheet-skills\n/plugin install sellersheet-skills@sellersheet-marketplace",
     "codebuddy-update": "/plugin marketplace update sellersheet-marketplace\n/plugin update sellersheet-skills",
-    "workbuddy": "Install inside Tencent WorkBuddy: 专家·技能·连接器 → 连接器 → SellerSheet → 连接 (sign in when prompted; nothing to download)",
-    "workbuddy-update": "Inside Tencent WorkBuddy: 连接器 → SellerSheet → 更新 (WorkBuddy notifies when a new connector version is approved)",
+    "workbuddy": "Inside Tencent WorkBuddy: 专家·技能·连接器 → 技能 → 套件 → + (添加市场) → 市场源 sellersheetai/sellersheet-skills → 提交; then + (安装) on sellersheet-skills; then 连接器 → 自定义连接器 → sellersheet → 连接 and 允许 in the browser",
+    "workbuddy-update": "Inside Tencent WorkBuddy: 专家·技能·连接器 → 技能 → 套件 → sellersheet-marketplace (the plugin installed from it)",
     "other": "npx skills add sellersheetai/sellersheet-skills",
     "other-update": "npx skills update",
     "update": "Pick the entry matching the user's agent: claude-code-update (Claude Code), codex-update (Codex / ChatGPT desktop), codebuddy-update (Tencent CodeBuddy Code / 腾讯云 CodeBuddy), workbuddy-update (Tencent WorkBuddy desktop), other-update (npx skills agents)."

@@ -81,7 +81,7 @@ Before installing, confirm:
 
 1. **A SellerSheet account** at [sellersheetai.com](https://sellersheetai.com).
 2. **At least one Amazon store connected** in your SellerSheet workspace.
-3. **The SellerSheet MCP server connected in your agent.** It's a hosted remote server at `https://sellersheetai.com/mcp` — nothing to install locally. **The plugin carries it** — Claude Code, Codex and CodeBuddy Code register it on install; in Claude (claude.ai and the desktop app) you connect it from the plugin's **Connectors** tab. Either way you sign in via OAuth, no API key. Agents without a plugin system register it manually (OAuth connectors, or an API key from [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → **MCP & API keys** → **Create Key**). See [docs/setup-mcp.md](./docs/setup-mcp.md).
+3. **The SellerSheet MCP server connected in your agent.** It's a hosted remote server at `https://sellersheetai.com/mcp` — nothing to install locally. **The plugin carries it** — Claude Code, Codex and CodeBuddy Code register it on install; in Claude (claude.ai and the desktop app) you connect it from the plugin's **Connectors** tab, in WorkBuddy under **连接器 → 自定义连接器**. Either way you sign in via OAuth, no API key. Agents without a plugin system register it manually (OAuth connectors, or an API key from [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → **MCP & API keys** → **Create Key**). See [docs/setup-mcp.md](./docs/setup-mcp.md).
 
 For the dashboard skill specifically, if you want PPC tabs to populate with real data, the connected store needs **Amazon Advertising profile access** — [sellersheetai.com/dashboard](https://sellersheetai.com/dashboard) → My Stores → **Authorize Ads** on the store's row. Without it, ad-related sections render as scaffolds.
 
@@ -119,7 +119,13 @@ Then `/reload-plugins`, and sign in to the `sellersheet` server via `/mcp` (OAut
 
 ### WorkBuddy (腾讯 WorkBuddy)
 
-WorkBuddy does not read plugin marketplaces; SellerSheet is published to its **connector marketplace** instead. Install it from inside WorkBuddy (专家·技能·连接器 → 连接器 → SellerSheet → 连接) and sign in when prompted — nothing to download. This repo root doubles as the WorkBuddy connector package (`connector-meta.json`, `mcp.json`, `icon.svg`, the same `skills/`), so the connector always ships the same skills as the plugin. Details: [docs/install-workbuddy.md](./docs/install-workbuddy.md).
+WorkBuddy installs the plugin — skills and MCP server — from a plugin marketplace:
+
+1. **专家·技能·连接器 → 技能 → 套件 → +** (添加市场), enter `sellersheetai/sellersheet-skills` as 市场源, then **提交**.
+2. Under **sellersheet-marketplace**, click **+** (安装) on **sellersheet-skills**.
+3. **连接器 → 自定义连接器**: `sellersheet` shows "来自插件 sellersheet-skills" and 需要认证 — click **连接**, then **Allow** (允许) on the SellerSheet page that opens.
+
+Above 80 enabled tools WorkBuddy shows 启用工具数量过多 — advice, not an error; click **知道了**. The repo root also doubles as a WorkBuddy connector package (`connector-meta.json`, `mcp.json`, `icon.svg`) built from the same skills. Bilingual walkthrough: [docs/install-workbuddy.md](./docs/install-workbuddy.md).
 
 ### OpenClaw
 
@@ -168,7 +174,7 @@ git clone https://github.com/sellersheetai/sellersheet-skills.git   # once; read
 bash sellersheet-skills/install.sh --target <agent>
 ```
 
-Where `<agent>` is `gemini` or `antigravity`. (Claude, Claude Code, Codex and CodeBuddy Code users: use the plugin marketplace above instead — it has built-in updates.) The install script auto-detects the agent's skill directory; pass `--path <dir>` to override.
+Where `<agent>` is `gemini` or `antigravity`. (Claude, Claude Code, Codex, CodeBuddy Code and WorkBuddy users: use the plugin marketplace above instead — it has built-in updates.) The install script auto-detects the agent's skill directory; pass `--path <dir>` to override.
 
 ### Openclaw, Hermes, custom agents
 
@@ -254,7 +260,7 @@ The plugin ships as one bundle — all skills release together at the plugin ver
 - [Install on Claude (claude.ai and the desktop app)](./docs/install-claude-desktop.md)
 - [Install on Codex](./docs/install-codex.md)
 - [Install on CodeBuddy Code · 腾讯云 CodeBuddy 安装指南](./docs/install-codebuddy.md)
-- [Install on WorkBuddy · 腾讯 WorkBuddy 连接器](./docs/install-workbuddy.md)
+- [Install on WorkBuddy · 腾讯 WorkBuddy 安装指南](./docs/install-workbuddy.md)
 - [Install on Gemini CLI](./docs/install-gemini.md)
 - [Install on Antigravity](./docs/install-antigravity.md)
 - [Install on Openclaw / Hermes / generic agents](./docs/install-generic.md)
