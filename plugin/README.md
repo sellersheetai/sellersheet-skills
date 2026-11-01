@@ -12,6 +12,8 @@ This plugin contains:
   remote server: nothing runs locally and no API key is stored. On first use your agent opens a
   browser sign-in (OAuth) to your SellerSheet account; access is limited to the stores you
   connected.
+- **`.codex-plugin/plugin.json`, `assets/icon.png`** — the plugin's name, description and icon in
+  the ChatGPT desktop app and Codex.
 
 Nothing in this plugin downloads or runs code on your machine.
 

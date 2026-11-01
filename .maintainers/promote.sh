@@ -15,9 +15,9 @@
 # What it does:
 #   1. Validates <new-version> is semver and greater than the current version
 #   2. Bumps .version in plugin.json
-#   3. Mirrors it into versions.json (marketplace_version + every skill), each
-#      skills/*/SKILL.md frontmatter, install.sh VERSION, README.md, and the
-#      WorkBuddy connector-meta.json (via sync_workbuddy.py)
+#   3. Mirrors it into the Codex manifest (plugin/.codex-plugin/plugin.json), versions.json
+#      (marketplace_version + every skill), each skills/*/SKILL.md frontmatter, install.sh
+#      VERSION, README.md, and the WorkBuddy connector-meta.json (via sync_workbuddy.py)
 #   5c. OPT-IN: with SS_TOOLS_JSON=<path>, refreshes .maintainers/tool-names.txt
 #       (the live tool-name allowlist lint.sh checks skills/** against) from that
 #       mcp-tools.json. Unset (the default) leaves the committed list untouched —
@@ -74,6 +74,9 @@ log "Bumping version across all files..."
 
 # 1. plugin.json (canonical)
 run "jq --arg v '$NEW' '.version = \$v' plugin/.claude-plugin/plugin.json > plugin/.claude-plugin/plugin.json.tmp && mv plugin/.claude-plugin/plugin.json.tmp plugin/.claude-plugin/plugin.json"
+
+# 1b. the Codex manifest (ChatGPT and Codex key their install cache on this version)
+run "jq --arg v '$NEW' '.version = \$v' plugin/.codex-plugin/plugin.json > plugin/.codex-plugin/plugin.json.tmp && mv plugin/.codex-plugin/plugin.json.tmp plugin/.codex-plugin/plugin.json"
 
 # 2. versions.json
 TODAY=$(date -u +%Y-%m-%d)
