@@ -11,6 +11,14 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.17.8] — 2026-11-02
+
+- The plugin now carries its listing for the ChatGPT desktop app and Codex: its name, description
+  and icon in `plugin/.codex-plugin/plugin.json`, the icon itself in `plugin/assets/icon.png`
+  (1024 × 1024 PNG of the SellerSheet app icon, with transparent corners). The plugin shipped only
+  a Claude manifest, so these apps found no listing and fell back to a generic icon. Already
+  installed? See "Update" in `docs/install-codex.md`.
+
 ## [0.17.7] — 2026-10-22
 
 - `report-data`: days and times are the marketplace's, everywhere, as Seller Central shows them.

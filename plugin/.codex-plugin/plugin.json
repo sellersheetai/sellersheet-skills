@@ -1,0 +1,46 @@
+{
+  "name": "sellersheet-skills",
+  "description": "Run your Amazon business by talking to your AI — no ERP. Pull orders and settlements, bulk-edit listings, build FBA shipments, tune SP/SB/SD bids and budgets, query inventory and search-term reports, and generate compliant listing images and A+ — across multiple stores and marketplaces, with every result written to Google Sheets for you to review. 不用 ERP，对 AI 说需求就能运营亚马逊店铺：查订单和结算、批量改 Listing、建 FBA 货件、调广告出价预算、拉库存与搜索词报表、生成合规主图与 A+；支持多店铺多站点，结果写进 Google 表格供你审核。",
+  "version": "0.17.8",
+  "author": {
+    "name": "SellerSheet AI",
+    "email": "support@sellersheetai.com"
+  },
+  "homepage": "https://github.com/sellersheetai/sellersheet-skills",
+  "repository": "https://github.com/sellersheetai/sellersheet-skills",
+  "license": "Apache-2.0",
+  "keywords": [
+    "amazon",
+    "sellers",
+    "sp-api",
+    "ads-api",
+    "google-sheets",
+    "dashboard",
+    "skills"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "SellerSheet",
+    "shortDescription": "Run your Amazon stores with AI",
+    "longDescription": "Run your Amazon business by talking to your AI — no ERP. Pull orders and settlements, bulk-edit listings, build FBA shipments, tune SP/SB/SD bids and budgets, query inventory and search-term reports, and generate compliant listing images and A+ — across multiple stores and marketplaces, with every result written to Google Sheets for you to review. 不用 ERP，对 AI 说需求就能运营亚马逊店铺：查订单和结算、批量改 Listing、建 FBA 货件、调广告出价预算、拉库存与搜索词报表、生成合规主图与 A+；支持多店铺多站点，结果写进 Google 表格供你审核。",
+    "developerName": "SellerSheet AI",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://sellersheetai.com",
+    "privacyPolicyURL": "https://sellersheetai.com/privacy-policy",
+    "termsOfServiceURL": "https://sellersheetai.com/terms-of-use",
+    "defaultPrompt": [
+      "List every SKU with less than 30 days of sellable inventory and suggest restock quantities",
+      "Show SP campaigns with ACoS above 40% and pull their keywords and bids",
+      "Pull the last 30 days of search-term data and find converting terms I am not targeting yet"
+    ],
+    "brandColor": "#0F9E70",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/icon.png"
+  }
+}

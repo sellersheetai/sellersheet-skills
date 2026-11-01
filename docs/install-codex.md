@@ -1,6 +1,6 @@
 # Install on Codex CLI / ChatGPT desktop
 
-Codex reads the same plugin marketplace format as Claude Code (`.claude-plugin/marketplace.json`), so the native plugin install is the recommended path — one repo serves both agents.
+Codex reads the same plugin marketplace format as Claude Code (`.claude-plugin/marketplace.json`), so the native plugin install is the recommended path — one repo serves both agents. The plugin's own listing for Codex and the ChatGPT app (name, description, icon) is `plugin/.codex-plugin/plugin.json`.
 
 ## Prerequisites
 
@@ -60,3 +60,4 @@ codex plugin marketplace upgrade sellersheet-marketplace
 - **`get_user_context` not found**: the MCP server isn't registered — re-run Step 2, then start a new session.
 - **Manual `config.toml` entry not picked up**: check you used `http_headers`, not `headers`.
 - **Plugin installed but skills don't trigger**: start a fresh session; plugins load at session start.
+- **Generic or blank icon in the ChatGPT app**: the plugin carries its icon since 0.17.8. Check your version with `codex plugin list`; if it is older, follow **Update** above, then restart the app.

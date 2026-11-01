@@ -16,7 +16,7 @@ command -v jq >/dev/null || { echo "jq required (brew install jq / apt install j
 
 # ---------- 1. manifests are valid JSON ----------
 log "Validating JSON manifests..."
-for f in plugin/.claude-plugin/plugin.json .claude-plugin/marketplace.json versions.json docs/mcp-config/sellersheet.json plugin/.mcp.json; do
+for f in plugin/.claude-plugin/plugin.json plugin/.codex-plugin/plugin.json .claude-plugin/marketplace.json versions.json docs/mcp-config/sellersheet.json plugin/.mcp.json; do
   jq empty "$f" 2>/dev/null || err "$f is not valid JSON"
 done
 
@@ -128,6 +128,7 @@ for d in plugin/skills/*/; do
   sv=$(awk '/^---$/{c++; if(c==2)exit; next} c==1 && /^version:/{sub(/^version:[ \t]*/,""); gsub(/['\''" ]/,""); print; exit}' "${d}SKILL.md")
   [[ "$sv" == "$PV" ]] || err "${d}SKILL.md version '$sv' != plugin.json '$PV'"
 done
+[[ "$(jq -r '.version' plugin/.codex-plugin/plugin.json 2>/dev/null)" == "$PV" ]] || err "plugin/.codex-plugin/plugin.json version != $PV"
 [[ "$(jq -r '.marketplace_version' versions.json)" == "$PV" ]] || err "versions.json marketplace_version != $PV"
 while read -r sv; do
   [[ "$sv" == "$PV" ]] || err "versions.json skill latest_version '$sv' != $PV"
@@ -156,13 +157,13 @@ done < <(jq -r '.skills[].path' versions.json)
 # Every channel installs (and the plugin directory reviews) ONLY the marketplace source
 # folder. Maintainer tooling, evals, docs and the changelog stay at the repo root (0.17.0).
 log "Checking the plugin/ folder holds only what users run..."
-ALLOWED=" .claude-plugin .mcp.json skills README.md LICENSE NOTICE "
+ALLOWED=" .claude-plugin .codex-plugin assets .mcp.json skills README.md LICENSE NOTICE "
 for p in plugin/* plugin/.[!.]*; do
   [[ -e "$p" || -L "$p" ]] || continue
   e="${p#plugin/}"
   [[ "$ALLOWED" == *" $e "* ]] || err "plugin/$e is not allowed — plugin/ ships to every user; keep tooling, evals and docs at the repo root"
 done
-for e in .claude-plugin/plugin.json .mcp.json skills README.md LICENSE NOTICE; do
+for e in .claude-plugin/plugin.json .codex-plugin/plugin.json assets/icon.png .mcp.json skills README.md LICENSE NOTICE; do
   [[ -e "plugin/$e" ]] || err "plugin/$e missing"
 done
 cmp -s LICENSE plugin/LICENSE || err "plugin/LICENSE differs from the root LICENSE"
@@ -178,6 +179,86 @@ with open(p, 'rb') as f:
 ok = head[:8] == b'\x89PNG\r\n\x1a\n'
 w, h = struct.unpack('>II', head[16:24]) if ok else (0, 0)
 sys.exit(0 if ok and w == h and 512 <= w <= 2048 and os.path.getsize(p) < 2 * 1024 * 1024 else 1)
+PY
+# ChatGPT / Codex listing: they read plugin/.codex-plugin/plugin.json INSTEAD of the Claude
+# manifest and take the plugin's name, logo and composer icon only from its `interface`; with none
+# the plugin shows a generated fallback icon (0.17.8). Limits: OpenAI's plugin submission rules.
+# The icon is SellerSheet's app icon, a brand asset copied in: replace the file, never re-render it
+# here. Its corners stay transparent: an opaque square shows as a block on the dark theme.
+python3 - plugin <<'PY' || err "plugin/.codex-plugin/plugin.json breaks the ChatGPT listing rules (listed above)"
+import json, os, re, struct, sys, zlib
+
+root = sys.argv[1]
+try:
+    codex = json.load(open(f'{root}/.codex-plugin/plugin.json'))
+    claude = json.load(open(f'{root}/.claude-plugin/plugin.json'))
+except (OSError, ValueError) as e:
+    print(f'[lint]   {e}', file=sys.stderr)
+    sys.exit(1)
+bad = []
+# Read in place of the Claude manifest, so it names the same plugin and declares the components.
+for k in ('name', 'description'):
+    if codex.get(k) != claude.get(k):
+        bad.append(f'{k} differs from .claude-plugin/plugin.json')
+if codex.get('skills') != './skills/':
+    bad.append("skills must be './skills/'")
+if codex.get('mcpServers') != './.mcp.json':
+    bad.append("mcpServers must be './.mcp.json'")
+ui = codex.get('interface') or {}
+for k, limit in (('displayName', 30), ('shortDescription', 30), ('longDescription', 4000),
+                 ('developerName', 80), ('category', 120)):
+    v = ui.get(k)
+    if not isinstance(v, str) or not v.strip() or len(v) > limit:
+        bad.append(f'interface.{k} must be 1-{limit} characters')
+caps = ui.get('capabilities')
+if not isinstance(caps, list) or len(caps) > 20 or any(len(c) > 120 for c in caps):
+    bad.append('interface.capabilities must be a list of at most 20 labels, 120 characters each')
+prompts = ui.get('defaultPrompt') or []
+if len(prompts) > 3 or len(set(prompts)) != len(prompts) or any(len(p) > 128 for p in prompts):
+    bad.append('interface.defaultPrompt must be at most 3 unique prompts, 128 characters each')
+for k in ('websiteURL', 'privacyPolicyURL', 'termsOfServiceURL'):
+    if not str(ui.get(k, '')).startswith('https://'):
+        bad.append(f'interface.{k} must be an https URL')
+colour = str(ui.get('brandColor', ''))
+if not re.fullmatch(r'#[0-9A-Fa-f]{6}', colour):
+    bad.append('interface.brandColor must be #RRGGBB')
+else:
+    def linear(c):
+        c /= 255
+        return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
+    r, g, b = (linear(int(colour[i:i + 2], 16)) for i in (1, 3, 5))
+    if 1.05 / (0.2126 * r + 0.7152 * g + 0.0722 * b + 0.05) < 2:
+        bad.append('interface.brandColor needs at least 2:1 contrast against white')
+
+def icon_problem(rel):
+    if not isinstance(rel, str) or not rel.startswith('./') or '..' in rel:
+        return 'must be a ./ path inside the plugin'
+    path = os.path.join(root, rel[2:])
+    if not os.path.isfile(path):
+        return f'{rel} does not exist'
+    data = open(path, 'rb').read()
+    if data[:8] != b'\x89PNG\r\n\x1a\n':
+        return f'{rel} must be a PNG'
+    w, h, depth, kind = struct.unpack('>IIBB', data[16:26])
+    if w != h or not 48 <= w <= 4096:
+        return f'{rel} must be square, 48-4096 px a side (is {w}x{h})'
+    if len(data) > 5 * 1024 * 1024:
+        return f'{rel} must be at most 5 MiB'
+    if depth != 8 or kind != 6:
+        return f'{rel} must be 8-bit RGBA'
+    at = data.index(b'IDAT')
+    size = struct.unpack('>I', data[at - 4:at])[0]
+    first = zlib.decompressobj().decompress(data[at + 4:at + 4 + size], 5)
+    # The first pixel of the first row is stored unfiltered whatever the row's filter type.
+    return f'{rel} must have transparent corners' if first[4] != 0 else None
+
+for k in ('logo', 'composerIcon'):
+    problem = icon_problem(ui.get(k))
+    if problem:
+        bad.append(f'interface.{k}: {problem}')
+for b in bad:
+    print(f'[lint]   {b}', file=sys.stderr)
+sys.exit(1 if bad else 0)
 PY
 
 # ---------- 4b. skills_catalog contract (consumed by MCP get_user_context) ----------
