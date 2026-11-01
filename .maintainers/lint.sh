@@ -183,8 +183,8 @@ PY
 # ChatGPT / Codex listing: they read plugin/.codex-plugin/plugin.json INSTEAD of the Claude
 # manifest and take the plugin's name, logo and composer icon only from its `interface`; with none
 # the plugin shows a generated fallback icon (0.17.8). Limits: OpenAI's plugin submission rules.
-# The icon is the bare brand mark rendered from the root icon.svg. Its corners stay transparent:
-# an opaque square shows as a block on the dark theme.
+# The icon is SellerSheet's app icon, a brand asset copied in: replace the file, never re-render it
+# here. Its corners stay transparent: an opaque square shows as a block on the dark theme.
 python3 - plugin <<'PY' || err "plugin/.codex-plugin/plugin.json breaks the ChatGPT listing rules (listed above)"
 import json, os, re, struct, sys, zlib
 

@@ -15,8 +15,8 @@ Planned for upcoming releases (under review):
 
 - The plugin now carries its listing for the ChatGPT desktop app and Codex: its name, description
   and icon in `plugin/.codex-plugin/plugin.json`, the icon itself in `plugin/assets/icon.png`
-  (1024 × 1024 PNG of the SellerSheet mark on a transparent background). The plugin shipped only a
-  Claude manifest, so these apps found no listing and fell back to a generic icon. Already
+  (1024 × 1024 PNG of the SellerSheet app icon, with transparent corners). The plugin shipped only
+  a Claude manifest, so these apps found no listing and fell back to a generic icon. Already
   installed? See "Update" in `docs/install-codex.md`.
 
 ## [0.17.7] — 2026-10-22
