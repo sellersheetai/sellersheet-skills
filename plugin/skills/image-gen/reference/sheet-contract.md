@@ -29,9 +29,12 @@ the conventions below exactly or you will fight the sidebar's conditional format
 
 - **ONE ROW PER SKU.** A variation family = N rows. The main image goes in that row's `s0_v1`.
 - **Slots = image ROLES of that SKU** (s0 main, s1.. secondary), NOT sibling colors.
-- **Image cells**: formula `=IMAGE("<thumbnail_url>")` + cell note `Full-res: <cdn_url>` —
-  exactly what the sidebar writes. CDN https URLs render directly; reading back, check the
-  formula first, then the note, then the raw value.
+- **Image cells**: formula `=IMAGE("<cdn_url>")` + cell note `Full-res: <cdn_url>` —
+  exactly what the sidebar writes. The cell holds the full image, never the resized
+  `thumbnail_url`: Sheets scales it to the cell, and the URL in a cell is the input of the
+  next run. Reading back, check the formula first, then the note, then the raw value; an
+  older cell may hold a resized URL (`https://<host>/cdn-cgi/image/<options>/<key>`) — use the
+  original behind it, `https://<host>/<key>`.
 - **V1–V3 are display cells, not the version ledger.** Fill the first empty of V1/V2/V3; when
   all three are full, overwrite V3 and append the replaced cell's URL to its note under
   `Replaced:`. The REAL version numbers are allocated server-side in the Image Library

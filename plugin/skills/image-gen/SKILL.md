@@ -126,7 +126,7 @@ contact-sheet preview.
 ## Phase 5 — Deliver & record
 Per image: open the returned `cdn_url` / `thumbnail_url` (curl the CDN URL if your harness needs
 a local copy to display), show it to the operator, then write the sheet cell —
-`=IMAGE("<thumbnail_url>")` + note `Full-res: <cdn_url>`, statuses in the sidebar's vocabulary
+`=IMAGE("<cdn_url>")` + note `Full-res: <cdn_url>`, statuses in the sidebar's vocabulary
 (`DONE`/`QUEUED job:`/`BLOCKED:`/`ERROR:` — see `reference/sheet-contract.md`). After each
 color/set, show a preview. Read back the row and scan for `#VALUE!/#REF!/#SPILL!` before
 reporting done. Close with a status summary.

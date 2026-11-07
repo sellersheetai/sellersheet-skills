@@ -46,7 +46,8 @@ Each arrow is one approved turn. `current` walks A→B→C→D. `D` is the final
 
 ## Gotchas
 - Chain input = the **full-res** `cdn_url`, NOT the `thumbnail_url`. The thumbnail
-  is only for sheet `IMAGE()` previews.
+  is only a small preview (in a chat or a web page); a sheet's `IMAGE()` cell holds the
+  `cdn_url` too.
 - A fan-out (family recolor) is the same chain branched from one approved master —
   one `edit_image` per color from the master's `cdn_url`, batch-poll with
   `check_image_jobs`. See Phase 4 + `gotchas.md`.
