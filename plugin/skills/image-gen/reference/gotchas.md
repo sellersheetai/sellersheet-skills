@@ -80,10 +80,12 @@
 
 ## Sheets
 
-- **Write image cells the way the sidebar does**: formula `=IMAGE("<thumbnail_url>")`
-  + a cell note `Full-res: <cdn_url>`. CDN https URLs render directly in `=IMAGE()`.
+- **Write image cells the way the sidebar does**: formula `=IMAGE("<cdn_url>")`
+  + a cell note `Full-res: <cdn_url>`. CDN https URLs render directly in `=IMAGE()`,
+  scaled to the cell, so a cell never needs the resized `thumbnail_url`.
   To read a URL back out of a cell: the `=IMAGE()` formula first, then a URL in the
-  note, then the raw value.
+  note, then the raw value; a resized URL (`/cdn-cgi/image/<options>/<key>`) stands for
+  the original at `/<key>`.
 - **Use the sidebar's status vocabulary** (`DONE` / `QUEUED job:<id>` / `BLOCKED:` /
   `ERROR:`) — the tab's conditional formatting and the sidebar poller key on it.
   See `sheet-contract.md`.
