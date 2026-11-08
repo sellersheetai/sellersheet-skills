@@ -14,7 +14,7 @@
 | D | `image_url` | URL from listing_images.main_image_url; blank if not yet enriched |
 | E | `product` | truncated display name, ~80 chars max |
 
-Refresh cadence: daily. Image enrichment in `listing_images` is itself a long-lived cache; the catalog inherits that stability.
+Refresh cadence: daily. `listing_images` is re-read within a day of the seller's own edit and within 30 days otherwise, so an image can change between refreshes; the catalog picks it up on its next daily refresh.
 
 ## Why single-source over duplication
 

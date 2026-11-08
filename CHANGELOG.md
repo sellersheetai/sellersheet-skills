@@ -11,6 +11,27 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.18.0] — 2026-11-09
+
+### listing-health: new skill
+
+- Audits a store's Amazon listings: counts suppressed, hidden and rejected listings from the
+  warehouse without calling Amazon, puts the work in the order that protects sales, confirms live,
+  agrees each change with the seller, applies it and re-reads. Also finds variation families with a
+  broken child.
+
+### report-data
+
+- `listing_images` now says what Amazon last reported about each listing: image, status, identity,
+  variation role and issues. Twelve new columns are documented, with how fresh each one is.
+- New recipes for listing issues and variation families.
+- Fixed: joining `rpt_orders` to `listing_images` needs the marketplace, or sums multiply.
+- Fixed: a NULL `main_image_url` means not read yet or no image, not "listed in the last 24 hours".
+
+### sellersheet-dashboard
+
+- The Listing Health tab reads Amazon's issues and variation role from `listing_images`.
+
 ## [0.17.8] — 2026-11-02
 
 - The plugin now carries its listing for the ChatGPT desktop app and Codex: its name, description

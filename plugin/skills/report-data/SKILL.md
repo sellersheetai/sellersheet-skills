@@ -250,9 +250,10 @@ Every **renamed** table's old name survives as a read-only compat `VIEW`, so pre
 ### Best Practice: Listings + Images (single LEFT JOIN)
 
 `rpt_get_merchant_listings_all_data` does **not** have `main_image_url` or `listing_status` — those live in
-`listing_images`. Pull both in **one query** by LEFT-JOINing `listing_images` on
-`(store_id, country_code, seller_sku)`. The image table is a long-lived cache (no `snapshot_date`),
-so the join survives across daily snapshots.
+`listing_images`, which holds what Amazon last said about each listing. Pull both in **one query** by
+LEFT-JOINing `listing_images` on `(store_id, country_code, seller_sku)`; it has no `snapshot_date`, so the
+join survives across daily snapshots. Start from the listings report: `listing_images` keeps rows for SKUs
+the seller no longer lists, so a count taken from it alone is too high.
 
 ```
 query_report_data(
@@ -271,14 +272,47 @@ query_report_data(
 )
 ```
 
-`main_image_url` is nullable — NULL means the SKU was first listed within the last 24h and
-the next listings cron tick (04:10 marketplace-local) will enqueue enrichment. Don't treat
-NULL as "broken"; treat it as "not enriched yet".
+`main_image_url` is nullable — NULL means Amazon has not been asked about the SKU yet (it is read
+after the next listings sync) or holds no image for it. Don't treat NULL as "broken".
 
 The same join works for any consumer that wants thumbnails next to listing-keyed data:
 - `tables=['rpt_get_fba_myi_all_inventory_data']` + join `listing_images on (store_id, country_code, sku→seller_sku)`
-- `tables=['rpt_orders']` + join `listing_images on (store_id, sku→seller_sku)` (orders is
-  cross-marketplace; the LEFT JOIN naturally drops country_code on cross-mkt stores)
+- `tables=['rpt_orders']` + join `listing_images on (store_id, sku→seller_sku, marketplace→country_code)`.
+  Without `marketplace` an order line matches its SKU in every marketplace of the store and sums
+  multiply. Account-wide rows (removal shipments, `marketplace` NULL) stay in the result with no image.
+
+### Best Practice: Listing issues and variation families
+
+`listing_images` says, per listing, what Amazon last reported:
+
+- `variation_role`: `parent`, `child` or `standalone` (NULL = not read yet). Children of one family
+  share `parent_sku`. Never group SKUs by how their names are spelled.
+- `issue_severity`: `ERROR`, `WARNING` or `NONE` (NULL = not read yet). `issue_enforcements` names what
+  Amazon did about it, `issues` holds up to 10 issues with Amazon's text.
+- Freshness: a listing is re-read within a day of the seller's own edit and within 30 days otherwise;
+  `fetched_at` and `issues_checked_at` say when. A later `last_event_at` means Amazon has reported a change
+  since then (not every store receives these notifications). Read a listing live before changing it.
+
+Errors by what Amazon did about them:
+
+```
+query_report_data(
+    store='myStore-AE',
+    tables=['rpt_get_merchant_listings_all_data'],
+    joins=[{'table': 'listing_images',
+            'on': {'store_id': 'store_id', 'country_code': 'country_code', 'seller_sku': 'seller_sku'}}],
+    columns=['listing_images.issue_enforcements'],
+    aggregations=[{'column': 'rpt_get_merchant_listings_all_data.seller_sku', 'op': 'count', 'alias': 'skus'}],
+    group_by=['listing_images.issue_enforcements'],
+    filters=[{'column': 'listing_images.issue_severity', 'op': 'eq', 'value': 'ERROR'}],
+    order_by=[{'column': 'skus', 'dir': 'desc'}],
+    report_date='latest',
+)
+```
+
+Families with a child in error: query `listing_images`, group by `listing_images.parent_sku`, and filter
+`variation_role` = `child` and `issue_severity` = `ERROR`. For what to do about each kind of issue, use
+[`listing-health`](../listing-health/SKILL.md).
 
 ### Best Practice: Restock gotchas (`rpt_get_fba_inventory_planning_data`)
 
@@ -579,7 +613,7 @@ the reports Amazon already holds for a store, and it needs a `reportType` (or a
 
 - Snapshot tables use `snapshot_date`; most date-range tables use `report_date`.
 - Legacy/deprecated tables remain in `_meta.json` with `deprecated: true`.
-- `listing_images` is a persistent cache — one row per `(store_id, country_code, seller_sku)`,
-  never reset by daily re-runs. `report_date='latest'` applies no date filter here (no date in
-  the unique key), so the default is safe; never pin an explicit date.
+- `listing_images` holds one row per `(store_id, country_code, seller_sku)`, updated in place.
+  `report_date='latest'` applies no date filter here (no date in the unique key), so the default
+  is safe; never pin an explicit date.
 - `rpt_get_merchant_listings_all_data` does not have `main_image_url` or `listing_status` — use `listing_images`.

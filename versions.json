@@ -75,6 +75,12 @@
       "latest_version": "0.17.8",
       "path": "plugin/skills/fbn-inbound",
       "description": "noon FBN inbound shipments (ASN) end to end with the MCP tools only — eligible SKUs, create, items, seal, the user's slot pick, schedule, reschedule and cancel — with the same step gates the SellerSheet sheet runs and no spreadsheet during the steps. noon offers the inbound API to global sellers only."
+    },
+    {
+      "name": "listing-health",
+      "latest_version": "0.17.8",
+      "path": "plugin/skills/listing-health",
+      "description": "Audit a store's Amazon listings: count suppressed, hidden and rejected listings from the warehouse without calling Amazon, fix what costs sales first, confirm live, agree each change with the seller, apply it and re-read. Also finds variation families with a broken child."
     }
   ],
   "install_commands": {
