@@ -11,6 +11,18 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.18.1] — 2026-11-09
+
+### report-data
+
+- New table `sp_listing_events`: Amazon's listing status, issue and brand-content events, one row
+  per event, so an AI can say when a listing was suppressed and whether that came before a sales
+  drop. A store's history starts the day it began receiving these notifications.
+
+### listing-health
+
+- A new section dates a suppression or an all-clear from that history.
+
 ## [0.18.0] — 2026-11-09
 
 ### listing-health: new skill

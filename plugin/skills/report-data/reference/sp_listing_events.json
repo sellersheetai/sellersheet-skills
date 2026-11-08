@@ -1,0 +1,99 @@
+{
+  "_meta": {
+    "table": "sp_listing_events",
+    "report_type": null,
+    "is_snapshot": false,
+    "description": "Amazon's listing status, issue and brand-content events, one row per event: the history behind listing_images, which holds only each listing's latest state. A store's history starts the day it began receiving these notifications, which for most stores is recent, and nothing earlier can be fetched, so no row does not prove nothing changed. Kept 400 days. report_date='latest' reads every event; a date is one marketplace day of event_time. A SKU can have several events on one day, so read this table on its own: joined to a daily table it multiplies the sums.",
+    "pii": false,
+    "queryable": true,
+    "deprecated": false,
+    "strategy": "notification",
+    "date_column": "event_time",
+    "unique_key": [],
+    "cron": "written as Amazon sends each notification"
+  },
+  "columns": [
+    {
+      "db_column": "store_id",
+      "type": "str",
+      "note": "The store's id; every query reads only the store ref's store."
+    },
+    {
+      "db_column": "country_code",
+      "type": "str",
+      "note": "The event's marketplace, spelled as the store is (UK where Amazon says GB). A multi-marketplace store ref (<store>-<CC>) filters on it."
+    },
+    {
+      "db_column": "type",
+      "type": "str",
+      "note": "LISTINGS_ITEM_STATUS_CHANGE fills status; LISTINGS_ITEM_ISSUES_CHANGE fills severities and enforcements; BRANDED_ITEM_CONTENT_CHANGE fills attributes_changed and brand_name. Columns of the other types are NULL on the row."
+    },
+    {
+      "db_column": "sku",
+      "type": "str",
+      "note": "Seller SKU. NULL on brand-content events: Amazon names only the ASIN, so filter those on asin."
+    },
+    {
+      "db_column": "asin",
+      "type": "str",
+      "note": "The ASIN Amazon named, or NULL when it named none."
+    },
+    {
+      "db_column": "event_time",
+      "type": "datetime",
+      "note": "Amazon's time for the event, shown in the store ref's marketplace local time; NULL when Amazon sent none."
+    },
+    {
+      "db_column": "status",
+      "type": "str",
+      "note": "Status events only: the listing's statuses after the change, sorted and comma-joined (BUYABLE, DISCOVERABLE, DELETED). An empty string means neither buyable nor discoverable."
+    },
+    {
+      "db_column": "severities",
+      "type": "str",
+      "note": "Issue events only: the severities of the listing's issues, sorted and comma-joined (ERROR, WARNING). NONE means every issue cleared."
+    },
+    {
+      "db_column": "enforcements",
+      "type": "str",
+      "note": "Issue events only: Amazon's enforcement actions, sorted and comma-joined, such as LISTING_SUPPRESSED or SEARCH_SUPPRESSED; an empty string means none. Amazon sends no issue text here: listing_images.issues has the latest."
+    },
+    {
+      "db_column": "attributes_changed",
+      "type": "str",
+      "note": "Brand-content events only: the attributes Amazon changed, in its order, comma-joined."
+    },
+    {
+      "db_column": "brand_name",
+      "type": "str",
+      "note": "Brand-content events only: the brand Amazon named."
+    }
+  ],
+  "example_query": {
+    "store": "myStore-AE",
+    "tables": [
+      "sp_listing_events"
+    ],
+    "columns": [
+      "sp_listing_events.event_time",
+      "sp_listing_events.type",
+      "sp_listing_events.status",
+      "sp_listing_events.severities",
+      "sp_listing_events.enforcements"
+    ],
+    "filters": [
+      {
+        "column": "sp_listing_events.sku",
+        "op": "eq",
+        "value": "MYSKU-001"
+      }
+    ],
+    "order_by": [
+      {
+        "column": "sp_listing_events.event_time",
+        "dir": "desc"
+      }
+    ],
+    "limit": 100
+  }
+}

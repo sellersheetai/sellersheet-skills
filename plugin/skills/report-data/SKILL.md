@@ -6,7 +6,7 @@ author: SellerSheet AI
 description: >-
   Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules, requesting on-demand reports, polling for completion, downloading a finished report document from its presigned URL, or analyzing any report table. Covers inventory, listings, orders, financial, and ad report (SP/SB/SD) tables; Brand Analytics has no synced table, so request it on-demand (schemas in amazon-report). Do NOT use for noon.com data (use noon-report-data) or when you don't yet know a report's exact schema — read amazon-report or data-kiosk first, then come back here for the sync/poll/download mechanics.
   中文触发词：亚马逊报告数据、库存报告、补货需求、订单、退货、结算、搜索词、listing 状态、rpt_ 数据仓库查询、报告同步计划、按需报告下载。
-version: 0.18.0
+version: 0.18.1
 metadata: {apis: [data, sp_api_reports], pattern: Pipeline}
 ---
 
@@ -223,6 +223,7 @@ Allowed ops: `sum`, `count`, `avg`, `min`, `max` — the key is **`op`** (not `f
 | `rpt_dk_sales_traffic_by_asin` | Data Kiosk analytics_salesAndTraffic_2024_04_24 (byAsin) | ASIN-level daily KPIs; same unwrap + conversion-rate semantics as by_date |
 | `rpt_get_merchants_listings_fyp_report` | GET_MERCHANTS_LISTINGS_FYP_REPORT | suppressed SKUs; parser handles English + FR + lowercase header variants |
 | `listing_images` | (enriched from rpt_get_merchant_listings_all_data) | what Amazon last said per listing: image, status, variation role, issues — see below |
+| `sp_listing_events` | (Amazon listing notifications) | one row per status, issue or brand-content event: when a listing changed — see below |
 
 Full index: `_meta.json` in this skill's folder — one entry per table with its `report_type`, `is_snapshot`, sync `strategy`, `unique_key` (one row per those columns) and a one-line description; retired tables carry `deprecated: true`. S&T now comes from Data Kiosk into `rpt_dk_sales_traffic_by_date` / `rpt_dk_sales_traffic_by_asin` (the old `rpt_sales_and_traffic` is retired); the exact Data Kiosk GraphQL query files ship in the `reference/` folder of the data-kiosk skill.
 
@@ -242,6 +243,7 @@ Most `rpt_*` tables are named after the Amazon report type that feeds them. Thes
 | `rpt_dk_*` | Data Kiosk GraphQL datasets, not SP-API report types. |
 | `rpt_noon_*` | noon.com, not Amazon. |
 | `listing_images` | Enrichment cache, not a report. |
+| `sp_listing_events` | Amazon's notifications, not a report. |
 | `rpt_inventory_age`, `rpt_inventory_adjustments`, `rpt_sales_and_traffic` | Retired — kept under legacy names for legacy reads only. |
 | `rpt_fba_shipments`, `rpt_seller_feedback` | PII, frozen — no writes, not renamed. |
 
@@ -313,6 +315,39 @@ query_report_data(
 Families with a child in error: query `listing_images`, group by `listing_images.parent_sku`, and filter
 `variation_role` = `child` and `issue_severity` = `ERROR`. For what to do about each kind of issue, use
 [`listing-health`](../listing-health/SKILL.md).
+
+### Best Practice: When did a listing change? (`sp_listing_events`)
+
+`listing_images` says what a listing is now. `sp_listing_events` says when it changed: one row per event
+Amazon sent, kept 400 days.
+
+**Coverage.** A store's history starts the day it began receiving these notifications, which for most stores
+is recent, and nothing earlier can be fetched. So no row does not prove nothing changed: say that instead of
+"the listing never changed".
+
+| `type` | Columns it fills | Values |
+|---|---|---|
+| `LISTINGS_ITEM_STATUS_CHANGE` | `status` | The statuses after the change, comma-joined: `BUYABLE`, `DISCOVERABLE`, `DELETED`. Empty means neither buyable nor discoverable |
+| `LISTINGS_ITEM_ISSUES_CHANGE` | `severities`, `enforcements` | `ERROR`, `WARNING`, or `NONE` when every issue cleared. `enforcements` such as `LISTING_SUPPRESSED`; empty means none. No issue text: read `listing_images.issues` |
+| `BRANDED_ITEM_CONTENT_CHANGE` | `attributes_changed`, `brand_name` | Amazon names only the ASIN, so `sku` is NULL: filter these on `asin` |
+
+```
+query_report_data(
+    store='myStore-AE',
+    tables=['sp_listing_events'],
+    columns=['sp_listing_events.event_time', 'sp_listing_events.type', 'sp_listing_events.status',
+             'sp_listing_events.severities', 'sp_listing_events.enforcements'],
+    filters=[{'column': 'sp_listing_events.sku', 'op': 'eq', 'value': 'MYSKU-001'}],
+    order_by=[{'column': 'sp_listing_events.event_time', 'dir': 'desc'}],
+)
+```
+
+Leave `report_date` out: `'latest'` reads every event, and a date is one marketplace day. `event_time` is the
+marketplace's local time, like the sales tables' `date`.
+
+To see whether a status change came before a sales drop, read `rpt_dk_sales_traffic_by_asin` for the ASIN in a
+second query (`child_asin` eq, `date` gte, `report_date='all'`) and compare the dates. Don't join the two: a SKU
+can have several events on one day, and the join multiplies the sales.
 
 ### Best Practice: Restock gotchas (`rpt_get_fba_inventory_planning_data`)
 

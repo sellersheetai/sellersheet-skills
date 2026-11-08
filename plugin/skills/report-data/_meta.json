@@ -9,6 +9,7 @@
       "rpt_dk_*": "Data Kiosk GraphQL datasets, not SP-API report types.",
       "rpt_noon_*": "noon.com, not Amazon.",
       "listing_images": "Enrichment cache, not a report.",
+      "sp_listing_events": "Amazon's notifications, not a report.",
       "rpt_inventory_age / rpt_inventory_adjustments / rpt_sales_and_traffic": "Retired — left under their legacy names for legacy reads only.",
       "rpt_fba_shipments / rpt_seller_feedback": "PII, frozen — no writes, no rename."
     },
@@ -218,6 +219,18 @@
       ],
       "description": "What Amazon last said about each listing (image, status, identity, variation role, issues), keyed by (store_id, country_code, seller_sku). Refreshed after each GET_MERCHANT_LISTINGS_ALL_DATA sync; every listing is re-read within 30 days. No date in the unique key, so report_date='latest' applies no date filter here; never pin an explicit date.",
       "reference": "reference/listing_images.json"
+    },
+    {
+      "table": "sp_listing_events",
+      "report_type": null,
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "notification",
+      "unique_key": [],
+      "description": "Amazon's listing status, issue and brand-content events, one row per event, kept 400 days. A store's history starts the day it began receiving these notifications, so no row does not prove nothing changed. report_date='latest' reads every event.",
+      "reference": "reference/sp_listing_events.json"
     },
     {
       "table": "rpt_get_fba_fulfillment_longterm_storage_fee_charges_data",
