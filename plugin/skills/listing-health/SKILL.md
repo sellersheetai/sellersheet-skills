@@ -57,6 +57,9 @@ A listing can carry several enforcements; take the first that applies.
 | empty, with `issue_severity` `ERROR` | A submitted value was refused | Fix at the next publish |
 | `issue_severity` `WARNING` | Advice | Mention the count; act only if asked |
 
+An issue with empty `attributeNames` usually has no value to change, such as "You need approval to list in
+this brand". Tell the seller what Amazon asks for instead of patching.
+
 Common codes (Amazon writes the text in the marketplace's language, and codes can change, so trust the text):
 
 | Code | Usually means | Fix |
@@ -67,7 +70,7 @@ Common codes (Amazon writes the text in the marketplace's language, and codes ca
 | 100476 | Title too long to use Item Highlights (over 75 characters) | Shorten the title |
 | 99300 | A field has promotional claims or external links | Rewrite the field the issue names |
 | 20000 | Amazon cannot fetch an image URL | Resubmit from a URL Amazon can reach |
-| 8541 | Offer details differ from the catalog | Make the identifiers match the catalog, or use the right ASIN |
+| 8541 | A listing value contradicts the catalog (the text names which, often brand) | Correct the value, or list under the right ASIN |
 
 ## 3. Confirm live before acting
 
