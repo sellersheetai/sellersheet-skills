@@ -106,6 +106,29 @@ work in a sheet, write this there. Change nothing until they approve it.
   which is a second offer outside the family. `catalogItems_getCatalogItem(store, asin, includedData=['relationships'])`
   shows the ASIN's parent.
 
+## When did it change?
+
+`listing_images` holds the current state. `sp_listing_events` holds each status, issue and brand-content event
+Amazon sent, so it can date a suppression:
+
+```
+query_report_data(
+    store='myStore-AE',
+    tables=['sp_listing_events'],
+    columns=['sp_listing_events.event_time', 'sp_listing_events.type', 'sp_listing_events.status',
+             'sp_listing_events.severities', 'sp_listing_events.enforcements'],
+    filters=[{'column': 'sp_listing_events.sku', 'op': 'eq', 'value': 'MYSKU-001'}],
+    order_by=[{'column': 'sp_listing_events.event_time', 'dir': 'desc'}],
+)
+```
+
+`enforcements` containing `LISTING_SUPPRESSED` dates the suppression, and `severities` = `NONE` dates the all-clear.
+To see whether it came before a sales drop, read `rpt_dk_sales_traffic_by_asin` for the ASIN in a second query and
+compare the dates; don't join them.
+
+A store's history starts the day it began receiving these notifications, which for most stores is recent, so no
+row does not prove nothing changed. [`report-data`](../report-data/SKILL.md) has the columns.
+
 ## Knowing sooner
 
 A listing is re-read within a day of the seller's own edit. For an alert when Amazon changes a listing's
