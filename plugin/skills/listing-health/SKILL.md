@@ -3,7 +3,7 @@ name: listing-health
 description_zh: "listing 被抑制、listing 健康检查、商品不可售、搜索不到商品、listing 报错、问题修复优先级、变体异常。"
 description_en: "Use when a seller asks which Amazon listings are suppressed, not buyable or hidden from search; why a listing…"
 author: SellerSheet AI
-version: 0.18.0
+version: 0.18.1
 metadata: {apis: [data, listings], pattern: Gate}
 description: >-
   Use when a seller asks which Amazon listings are suppressed, not buyable or hidden from search; why a
