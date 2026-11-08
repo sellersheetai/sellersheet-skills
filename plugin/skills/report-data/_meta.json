@@ -200,7 +200,7 @@
         "country_code",
         "item_condition"
       ],
-      "description": "Daily all-listings snapshot for merchant catalog state. After each parse, new SKUs are automatically enriched into the listing_images table (fetch-once).",
+      "description": "Daily all-listings snapshot for merchant catalog state. After each sync, listing_images is brought up to date from the ListingsItems API.",
       "reference": "reference/rpt_get_merchant_listings_all_data.json"
     },
     {
@@ -216,7 +216,7 @@
         "country_code",
         "seller_sku"
       ],
-      "description": "Persistent listing image cache keyed by (store_id, country_code, seller_sku). Populated automatically after GET_MERCHANT_LISTINGS_ALL_DATA syncs — only new SKUs call ListingsItems API. No date in the unique key, so report_date='latest' applies no date filter here; never pin an explicit date.",
+      "description": "What Amazon last said about each listing (image, status, identity, variation role, issues), keyed by (store_id, country_code, seller_sku). Refreshed after each GET_MERCHANT_LISTINGS_ALL_DATA sync; every listing is re-read within 30 days. No date in the unique key, so report_date='latest' applies no date filter here; never pin an explicit date.",
       "reference": "reference/listing_images.json"
     },
     {

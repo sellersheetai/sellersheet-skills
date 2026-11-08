@@ -6,7 +6,7 @@ author: SellerSheet AI
 description: >-
   Use when building or maintaining an Amazon operator dashboard on Google Sheets via SellerSheet MCP — multi-tab status views for inventory, PPC, account health, listings, profit/margin, returns, buy box, cash conversion. Triggers on phrases like "build a dashboard", "operator dashboard", "FBA dashboard", "PPC dashboard", "Amazon overview sheet", "seller dashboard", and on follow-ups like "refresh the dashboard", "add an insight", "the freshness is wrong". Composes the tab plan, applies SellerSheet brand visuals, wires `rpt_*` warehouse data → `_raw_*` tabs → `SQL()` spill → visible tabs with thumbnails, and instruments each cell with provenance + freshness so the dashboard self-explains. Builds on `sellersheet-sheets` (sheet primitives + brand palette + SQL() patterns) and `report-data` (rpt_* tables). Do NOT use for one-off reports — use `sellersheet-sheets` directly for those.
   中文触发词：运营看板、亚马逊仪表盘、库存/广告/账户健康/listing/利润/退货/Buy Box 看板、刷新看板、新增洞察、数据新鲜度。
-version: 0.17.8
+version: 0.18.0
 metadata: {apis: [sheets, drive, data], pattern: Pipeline}
 ---
 
@@ -100,7 +100,7 @@ browser. Reading such a cell back via MCP requires `value_render_option='FORMULA
 | **Inventory and Restock** | What do I reorder, what do I remove? | Every 6h | `rpt_get_fba_inventory_planning_data` + `rpt_get_fba_myi_all_inventory_data` + `listing_images` |
 | **PPC Command** | Where is ad money leaking? What's winning? | Daily 03 UTC | `rpt_sp_campaigns`, `rpt_sp_search_terms`, `rpt_sp_advertised_products`, `rpt_sp_ad_groups` · **requires ad profile access** |
 | **Account Health** | AHR / ODR / VTR / OTDR / Invoice Defect — am I at risk? | Daily 07 UTC | `rpt_get_v2_seller_performance_report` |
-| **Listing Health** | Suppressed / inactive / stranded + buy box | Daily | `rpt_get_merchant_listings_all_data` + `rpt_get_merchants_listings_fyp_report` + `rpt_get_stranded_inventory_ui_data` + `listing_images` + competitive_pricing |
+| **Listing Health** | Suppressed / inactive / stranded + buy box | Daily | `rpt_get_merchant_listings_all_data` + `rpt_get_merchants_listings_fyp_report` + `rpt_get_stranded_inventory_ui_data` + `listing_images` (`issue_severity`, `issue_enforcements`, `variation_role`: count from the listings report, join this) + competitive_pricing |
 | **Profit and Cash** | Margin after fees + ads + COGS + cash conversion pipeline | Weekly + manual COGS | `rpt_orders`, `rpt_get_flat_file_returns_data_by_return_date`, `rpt_sp_campaigns`, `rpt_get_fba_storage_fee_charges_data`, financial_event_groups + user `_raw_cogs` · **net-of-ads requires ad profile access** |
 | **Returns and Refunds** | Return rate, top return SKUs, refund value | Daily | `rpt_get_flat_file_returns_data_by_return_date` + `rpt_get_fba_fulfillment_customer_returns_data` |
 

@@ -3,7 +3,7 @@
     "table": "listing_images",
     "report_type": null,
     "is_snapshot": false,
-    "description": "Persistent listing image cache. One row per (store_id, country_code, seller_sku). Populated automatically after GET_MERCHANT_LISTINGS_ALL_DATA syncs via ListingsItems API — fetch-once, only new SKUs trigger API calls. Variation parentage (parent_sku, parent_asin) comes from the same call; group children under parent_sku to build families. No date in the unique key, so report_date='latest' applies no date filter here (omitting it works too) — never pin an explicit date, which would return only the SKUs touched by the newest enrichment batch.",
+    "description": "What Amazon last said about each listing, from the ListingsItems API: main image, status, identity (FNSKU, product type, created and last-updated dates), variation role and issues. One row per (store_id, country_code, seller_sku), refreshed in place after each GET_MERCHANT_LISTINGS_ALL_DATA sync: new SKUs first, then every listing the seller changed since the last sync, and a rolling re-read that reaches every listing within 30 days (Amazon's own changes, such as a suppression, do not move lastUpdatedDate). Group children under parent_sku to build families; variation_role says which row is the parent. No date in the unique key, so report_date='latest' applies no date filter here (omitting it works too) — never pin an explicit date, which would return only the SKUs touched by the newest enrichment batch.",
     "pii": false,
     "queryable": true,
     "deprecated": false,
@@ -66,6 +66,70 @@
       "db_column": "parentage_fetched_at",
       "type": "timestamp",
       "note": "When Amazon last answered this SKU's variation relationships; NULL = not asked yet (filled on a later enrichment pass)"
+    },
+    {
+      "db_column": "variation_role",
+      "type": "str",
+      "note": "Amazon's variation role for this SKU: parent, child or standalone, from the listing's own relationships; NULL = not read yet (then fall back to parent_sku). A listing with no variation relationship is standalone even when its ASIN is a variation child in the catalog.",
+      "values": ["parent", "child", "standalone"]
+    },
+    {
+      "db_column": "fnsku",
+      "type": "str",
+      "note": "Amazon's fulfillment network SKU (summaries fnSku); NULL for a variation parent or a listing without one"
+    },
+    {
+      "db_column": "product_type",
+      "type": "str",
+      "note": "Amazon product type of the listing, e.g. EXERCISE_MAT"
+    },
+    {
+      "db_column": "amazon_created_at",
+      "type": "timestamptz",
+      "note": "Amazon's createdDate for the listing. UTC instant (timestamptz). Query results show it in the store ref's marketplace local time, without an offset; a bare date in a filter is that marketplace's midnight."
+    },
+    {
+      "db_column": "amazon_updated_at",
+      "type": "timestamptz",
+      "note": "Amazon's lastUpdatedDate for the listing — it moves on the seller's own edits only, not when Amazon changes the listing. UTC instant (timestamptz). Query results show it in the store ref's marketplace local time, without an offset."
+    },
+    {
+      "db_column": "issue_severity",
+      "type": "str",
+      "note": "The worst issue Amazon reports on the listing: ERROR, WARNING, or NONE (no issues, or informational ones only); NULL = not checked yet",
+      "values": ["ERROR", "WARNING", "NONE"]
+    },
+    {
+      "db_column": "issue_enforcements",
+      "type": "str",
+      "note": "Every enforcement action on the listing's issues, sorted and comma-separated, e.g. LISTING_SUPPRESSED,SEARCH_SUPPRESSED; NULL when there is none"
+    },
+    {
+      "db_column": "issues",
+      "type": "json",
+      "note": "Up to 10 issues, worst first: [{code, severity, message (at most 500 characters), attributeNames, enforcements}]; [] = none; NULL = not checked yet"
+    },
+    {
+      "db_column": "issues_checked_at",
+      "type": "timestamptz",
+      "note": "When Amazon's issues for this listing were last read; NULL = never. UTC instant (timestamptz). Query results show it in the store ref's marketplace local time, without an offset."
+    },
+    {
+      "db_column": "fetched_via",
+      "type": "str",
+      "note": "Why the row was last read: new, retry, backfill (a column it lacked), delta (the seller changed the listing), sweep (the rolling re-read), refresh (a person asked for it), reread (an issue or brand-content change)",
+      "values": ["new", "retry", "backfill", "delta", "sweep", "refresh", "reread"]
+    },
+    {
+      "db_column": "last_event_at",
+      "type": "timestamptz",
+      "note": "When the last listing status or issue change Amazon notified for this listing happened; status and issue_* are as of this time when it is later than the last read. NULL = none received. UTC instant (timestamptz)."
+    },
+    {
+      "db_column": "last_event_type",
+      "type": "str",
+      "note": "The kind of that notification: LISTINGS_ITEM_STATUS_CHANGE or LISTINGS_ITEM_ISSUES_CHANGE",
+      "values": ["LISTINGS_ITEM_STATUS_CHANGE", "LISTINGS_ITEM_ISSUES_CHANGE"]
     }
   ],
   "example_query": {
