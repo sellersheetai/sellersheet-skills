@@ -11,6 +11,14 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.19.1] — 2026-11-10
+
+### ChatGPT and Codex: starter prompts that work as soon as a store is connected
+
+- The three starter prompts now use data Amazon returns live: listing errors, sales by week, and
+  Sponsored Products keywords with bids. The old ones needed synced reports, which take time to
+  arrive after a store is connected.
+
 ## [0.19.0] — 2026-11-09
 
 ### amazon-ads: Amazon Marketing Cloud
