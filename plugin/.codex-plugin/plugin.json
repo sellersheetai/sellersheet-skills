@@ -35,9 +35,9 @@
     "privacyPolicyURL": "https://sellersheetai.com/privacy-policy",
     "termsOfServiceURL": "https://sellersheetai.com/terms-of-use",
     "defaultPrompt": [
-      "List every SKU with less than 30 days of sellable inventory and suggest restock quantities",
-      "Show SP campaigns with ACoS above 40% and pull their keywords and bids",
-      "Pull the last 30 days of search-term data and find converting terms I am not targeting yet"
+      "Check live on Amazon which of my listings have errors. Show the 20 most recent, why, and what to fix first",
+      "Show my sales for the last 30 days by week, and how each week compares with the one before",
+      "Pick one of my active listings and suggest Sponsored Products keywords with a bid for each"
     ],
     "brandColor": "#0F9E70",
     "composerIcon": "./assets/icon.png",
