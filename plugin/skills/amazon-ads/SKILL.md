@@ -1,13 +1,13 @@
 ---
 name: amazon-ads
-description_zh: "亚马逊广告、SP/SB/SD 广告活动、广告组、关键词与投放、竞价、预算、否定词、批量创建广告、广告数据导出、变更历史、广告账户与发票。"
+description_zh: "亚马逊广告、SP/SB/SD 广告活动、广告组、关键词与投放、竞价、预算、否定词、批量创建广告、广告数据导出、变更历史、广告账户与发票、亚马逊营销云 AMC（新客、触达与频次、广告活动重叠）。"
 description_en: "Guide for managing Amazon Advertising (SP, SB, SD) using SellerSheet MCP tools."
 author: SellerSheet AI
 description: >-
-  Guide for managing Amazon Advertising (SP, SB, SD) using SellerSheet MCP tools. Use when working with Amazon Ads campaigns, ad groups, keywords, targets, bids, budgets, bulk creation, negative keywords, ad performance data, bulk exports, change history, account management, invoices, or validation configs. Do NOT use for FBA inbound shipments (use fba-inbound) or for sheet formatting/reporting beyond this skill's own recipes (use sellersheet-sheets).
-  中文触发词：亚马逊广告、SP/SB/SD 广告活动、广告组、关键词与投放、竞价、预算、否定词、批量创建广告、广告数据导出、变更历史、广告账户与发票。
-version: 0.18.1
-metadata: {apis: [ads.v1, ads.sp, ads.sb, ads.sd, ads.account, ads.reports], pattern: Gate}
+  Guide for managing Amazon Advertising (SP, SB, SD) using SellerSheet MCP tools. Use when working with Amazon Ads campaigns, ad groups, keywords, targets, bids, budgets, bulk creation, negative keywords, ad performance data, bulk exports, change history, account management, invoices, validation configs, or Amazon Marketing Cloud (AMC) queries — new-to-brand, reach and frequency, campaign overlap, hour of day. Do NOT use for FBA inbound shipments (use fba-inbound) or for sheet formatting/reporting beyond this skill's own recipes (use sellersheet-sheets).
+  中文触发词：亚马逊广告、SP/SB/SD 广告活动、广告组、关键词与投放、竞价、预算、否定词、批量创建广告、广告数据导出、变更历史、广告账户与发票、亚马逊营销云 AMC（新客、触达与频次、广告活动重叠）。
+version: 0.19.0
+metadata: {apis: [ads.v1, ads.sp, ads.sb, ads.sd, ads.account, ads.reports, ads.amc], pattern: Gate}
 ---
 
 # Amazon Ads — SellerSheet MCP Guide
@@ -461,6 +461,23 @@ Use when you need a full snapshot of campaign structure — IDs, states, budgets
 
 **Note:** This is NOT keyword suggestions. For keyword suggestions use `ads_get_ranked_keyword_recommendation`.
 
+### K. Amazon Marketing Cloud (AMC) — what the reports cannot answer
+
+New-to-brand by campaign, impressions per shopper, campaigns that reach the same shoppers,
+orders by hour, add-to-cart by search term. Read `reference/amc.md` first: what is already
+synced, the terms step, the privacy floor.
+
+1. Once per store and Ads country: `ads_amc_turn_on` — **ask the seller first** (it creates an
+   AMC instance Amazon cannot delete). Refused with `amc_terms_not_accepted`: only the seller
+   can accept; `reference/amc.md` has the step to pass on.
+2. `list_amc_templates`: the answer may already be synced. Read its `rpt_amc_*` table with
+   `query_report_data`.
+3. Not synced: `ads_get_data_source` for each table → `ads_create_workflow_execution` (a new
+   query with `dry_run=true` first) → `ads_get_workflow_execution` until `SUCCEEDED` →
+   `ads_get_workflow_execution_download_urls`.
+4. Group by campaign or theme for a small advertiser: per-search-term rows mostly come back
+   with the term hidden (`data.hidden_rows`).
+
 ---
 
 ## Tier 3: Tool Reference
@@ -579,6 +596,25 @@ artifacts._
 | `query_report_data` | Default for all analysis |
 | `ads_create_async_report` | Offline report — 30 min to hours; write reportId to sheet immediately. Build `body` from `reference/report-configs/` (full SP/SB/SD/STV/DSP catalog) |
 | `ads_get_async_report` | Poll when user returns; write rows when COMPLETED |
+
+### Amazon Marketing Cloud (AMC)
+
+| Tool | When |
+|---|---|
+| `list_amc_templates` | Read first: the queries already synced to `rpt_amc_*`, each with its SQL and how to read it |
+| `ads_amc_turn_on` | Once per store and Ads country; ask the seller first (irreversible) |
+| `ads_list_data_sources` / `ads_get_data_source` | The tables; a table's columns and privacy classes |
+| `ads_create_workflow_execution` | Run AMC SQL (a read); `dry_run=true` checks it without running |
+| `ads_get_workflow_execution` | Poll; `REJECTED` carries the reason |
+| `ads_get_workflow_execution_download_urls` | The finished rows |
+| `ads_list_workflow_executions` | The instance's runs, newest first (at most 10 run at a time) |
+| `ads_update_workflow_execution` | Cancel a `PENDING` or `RUNNING` run |
+| `ads_list_workflows` / `ads_get_workflow` / `ads_create_workflow` / `ads_update_workflow` / `ads_delete_workflow` | Saved queries; ask the seller first; SellerSheet's synced ones are read-only |
+| `ads_list_schedules` / `ads_get_schedule` / `ads_create_schedule` / `ads_update_schedule` / `ads_delete_schedule` | Run a saved query Daily or Weekly; ask the seller first |
+| `ads_create_query_based_audience` / `ads_create_lookalike_audience` | An audience from an AMC query; ask the seller first |
+| `ads_get_all_query_based_audiences_by_instance_id` / `ads_get_query_based_audience_by_audience_execution_id` | List audiences; poll one until `SUCCEEDED` |
+| `ads_update_query_based_audience_by_audience_execution_id` / `ads_delete_query_based_audience_by_audience_execution_id` | Fix a `FAILED` audience; delete one |
+| `ads_list_targetable_entities` | Find a finished audience's `audienceId` |
 
 ### Synced Report Tables
 

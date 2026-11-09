@@ -11,6 +11,23 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.19.0] — 2026-11-09
+
+### amazon-ads: Amazon Marketing Cloud
+
+- A new recipe and `reference/amc.md` cover what the Ads reports cannot answer: new-to-brand,
+  ads seen per shopper, campaign overlap, hour of day, add-to-cart by search term.
+- Nine AMC questions are already synced into `rpt_amc_*` tables. `list_amc_templates` says which
+  table answers what, so an AI reads the rows instead of writing SQL.
+- Turning AMC on checks Amazon's AMC terms. `amc_terms_not_accepted` and the one step only the
+  seller can take are written out.
+- Also covered: your own query with a dry run first, saved queries and schedules, audiences, the
+  privacy floor.
+
+### report-data
+
+- Points to `list_amc_templates` for the `rpt_amc_*` tables.
+
 ## [0.18.1] — 2026-11-09
 
 ### report-data

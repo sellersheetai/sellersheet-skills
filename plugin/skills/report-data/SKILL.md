@@ -6,7 +6,7 @@ author: SellerSheet AI
 description: >-
   Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules, requesting on-demand reports, polling for completion, downloading a finished report document from its presigned URL, or analyzing any report table. Covers inventory, listings, orders, financial, and ad report (SP/SB/SD) tables; Brand Analytics has no synced table, so request it on-demand (schemas in amazon-report). Do NOT use for noon.com data (use noon-report-data) or when you don't yet know a report's exact schema — read amazon-report or data-kiosk first, then come back here for the sync/poll/download mechanics.
   中文触发词：亚马逊报告数据、库存报告、补货需求、订单、退货、结算、搜索词、listing 状态、rpt_ 数据仓库查询、报告同步计划、按需报告下载。
-version: 0.18.1
+version: 0.19.0
 metadata: {apis: [data, sp_api_reports], pattern: Pipeline}
 ---
 
@@ -226,6 +226,8 @@ Allowed ops: `sum`, `count`, `avg`, `min`, `max` — the key is **`op`** (not `f
 | `sp_listing_events` | (Amazon listing notifications) | one row per status, issue or brand-content event: when a listing changed — see below |
 
 Full index: `_meta.json` in this skill's folder — one entry per table with its `report_type`, `is_snapshot`, sync `strategy`, `unique_key` (one row per those columns) and a one-line description; retired tables carry `deprecated: true`. S&T now comes from Data Kiosk into `rpt_dk_sales_traffic_by_date` / `rpt_dk_sales_traffic_by_asin` (the old `rpt_sales_and_traffic` is retired); the exact Data Kiosk GraphQL query files ship in the `reference/` folder of the data-kiosk skill.
+
+**AMC tables** (`rpt_amc_*`, for stores with Amazon Marketing Cloud on) are outside that index: `list_amc_templates` gives each one's question and how to read it, `get_table_schema` its columns. The `amazon-ads` skill's `reference/amc.md` has the rest.
 
 **Brand Analytics has no synced table** (search terms, market basket, repeat purchase and demographics were retired from the warehouse on 2026-07-15 — nothing ever landed). Request those reports on-demand (Path 2 below; exact `reportOptions` and document schemas are in the `amazon-report` skill). They need Brand Registry.
 
