@@ -15,7 +15,7 @@
    "Campaign names and budgets: join rpt_ads_campaigns, or read v_ads_campaign_daily.",
    "Typed since 2026-11-13: combined_*, long_term_sales, branded_searches*, brand_store_page_views*, add_to_list* and product_review_page_visits*. A row written (or last rebuilt) before then has them NULL and the value in `extra` under Amazon's field id: read COALESCE(column, (extra->>'metric.<fieldId>')::numeric). A read of the old key alone, extra__metric.combinedSales and the like, misses every newer row: read the typed column, combined_sales and the like, instead.",
    "Never add a Stream number to a v3 number.",
-   "History still loading: a new subscription delivers the dataset's last 70 days over its first 48 hours, so earlier days may be missing until then (Admin → Health lists the accounts)."
+   "History still loading: a new subscription delivers the dataset's last 70 days over its first 48 hours, so earlier days may be missing until then."
   ],
   "pii": false,
   "queryable": true,
