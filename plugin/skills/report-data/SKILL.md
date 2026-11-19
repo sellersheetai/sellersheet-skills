@@ -6,7 +6,7 @@ author: SellerSheet AI
 description: >-
   Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules, requesting on-demand reports, polling for completion, downloading a finished report document from its presigned URL, or analyzing any report table. Covers inventory, listings, orders, financial and Amazon Ads tables — the hourly Marketing Stream tables and views (rpt_ads_*, v_ads_*; campaign trend, search terms, placement, advertised and purchased products, dayparting) and the older SP/SB/SD report tables; Brand Analytics has no synced table, so request it on-demand (schemas in amazon-report). Do NOT use for noon.com data (use noon-report-data) or when you don't yet know a report's exact schema — read amazon-report or data-kiosk first, then come back here for the sync/poll/download mechanics.
   中文触发词：亚马逊报告数据、库存报告、补货需求、订单、退货、结算、搜索词、listing 状态、rpt_ 数据仓库查询、报告同步计划、按需报告下载。
-version: 0.20.1
+version: 0.20.2
 metadata: {apis: [data, sp_api_reports], pattern: Pipeline}
 ---
 
@@ -73,6 +73,7 @@ list_report_syncs(store='myStore-AE')
 | `no_brand_registry` | The report needs Brand Registry, which this account lacks | Enrol in Brand Registry to get this report |
 | `unsupported` | Report type genuinely unavailable for this account (e.g. seller reports on a vendor account) | Permanent — will not run. Don't ask for a retry. |
 | `backfill_complete` | A one-shot history backfill finished | Nothing — the regular schedule carries on |
+| `superseded_by_stream` | This v3 Ads report was replaced by Marketing Stream for the store; its rows stop on the switch day | Nothing to fix, and not a failure. Read the Stream table the v3 table's reference names (for `rpt_sb_purchased_products`: `rpt_ads_converted_product_daily` with `ad_product` = `'Sponsored Brands'`); the v3 table keeps the days before the switch. Take each day from one source only |
 | `paused_by_parent` | Every marketplace of the store is inactive on the plan | Upgrade, or free a slot under My Stores → Edit Marketplaces |
 | `pending_delete` / `force_cancelled_by_delete` | The store is being removed | Nothing to fix |
 | `scheduler_tick_error:<exception>` | The scheduler hit an internal error on this schedule | Mention it; support will look at it |

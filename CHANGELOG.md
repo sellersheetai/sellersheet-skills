@@ -11,6 +11,14 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.20.2] — 2026-11-20
+
+### report-data: `superseded_by_stream`
+
+- A new `disabled_reason`: the store's v3 Ads report was replaced by Marketing Stream. Nothing
+  to fix; read the Stream table the v3 table's reference names, and the v3 table for the days
+  before the switch.
+
 ## [0.20.1] — 2026-11-20
 
 ### report-data: two Marketing Stream caveats corrected
