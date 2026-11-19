@@ -15,7 +15,7 @@
   ],
   "caveats": [
    "Sum disjoint rows: traffic and conversions of one entity can sit on separate rows.",
-   "searchTerm '(Other)' rows hold impressions only (Amazon's reporting threshold).",
+   "search_term '(Other)' gathers the terms Amazon does not name (its reporting threshold): in Sponsored Products impressions only, in Sponsored Brands also spend and sales. Keep it in totals, leave it out of term lists.",
    "Hours and days are the marketplace's own; window_start_utc is the hour as an instant. Dayparting is GROUP BY weekday, hour.",
    "Metrics outside the typed ones (DSP fees, multi-touch, Kindle …) are in `extra`, by Amazon's field id, only when non-zero.",
    "Typed since 2026-11-13: combined_*, long_term_sales, branded_searches*, brand_store_page_views*, add_to_list* and product_review_page_visits*. A row written (or last rebuilt) before then has them NULL and the value in `extra` under Amazon's field id: read COALESCE(column, (extra->>'metric.<fieldId>')::numeric). A read of the old key alone, extra__metric.combinedSales and the like, misses every newer row: read the typed column, combined_sales and the like, instead.",
@@ -24,7 +24,7 @@
    "Conversions mature over attribution_window_days and Amazon restates them for 70 days.",
    "Never add a Stream number to a v3 (rpt_sp_* / rpt_sb_* / rpt_sd_*) number.",
    "For a daily or coarser grain prefer the daily tables or a v_ads_* view.",
-   "History still loading: a new subscription delivers the dataset's last 70 days over its first 48 hours, so earlier days may be missing until then (Admin → Health lists the accounts)."
+   "History still loading: a new subscription delivers the dataset's last 70 days over its first 48 hours, so earlier days may be missing until then."
   ],
   "pii": false,
   "queryable": true,

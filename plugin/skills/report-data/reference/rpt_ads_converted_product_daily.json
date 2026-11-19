@@ -18,7 +18,7 @@
    "Never add a Stream number to a v3 (rpt_*_purchased_products) number.",
    "Replaces rpt_sb_purchased_products for Sponsored Brands (ad_product = 'Sponsored Brands', 14-day attribution, view-through included): orders_14d is purchases, sales_14d sales, units_sold_14d units_sold, new_to_brand_*_14d new_to_brand_*, purchased_asin converted_asin, attribution_type 'Brand Halo' product_relevance 'Brand halo'. Names: join rpt_ads_campaigns / rpt_ads_ad_groups; the currency is `currency`.",
    "combined_*, long_term_sales, add_to_list*, product_review_page_visits* and subscribe_and_save_subscriptions* are typed since 2026-11-20: an older row has them NULL and the value in `extra` under Amazon's field id; read COALESCE(column, (extra->>'metric.<fieldId>')::numeric).",
-   "History still loading: a new subscription delivers the dataset's last 70 days over its first 48 hours, so earlier days may be missing until then (Admin → Health lists the accounts)."
+   "History still loading: a new subscription delivers the dataset's last 70 days over its first 48 hours, so earlier days may be missing until then."
   ],
   "pii": false,
   "queryable": true,

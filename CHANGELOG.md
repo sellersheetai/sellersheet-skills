@@ -11,6 +11,15 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.20.1] — 2026-11-20
+
+### report-data: two Marketing Stream caveats corrected
+
+- The `(Other)` search term holds impressions only in Sponsored Products; in Sponsored Brands it
+  also holds spend and sales. Keep it in totals, leave it out of term lists. The tables said
+  "impressions only" for every ad product.
+- The "history still loading" caveat no longer points to a page sellers cannot open.
+
 ## [0.20.0] — 2026-11-20
 
 ### Amazon Marketing Stream tables: the default for Ads data

@@ -15,7 +15,7 @@
    "Conversions mature over attribution_window_days and Amazon restates them for 70 days.",
    "Ratios (ACOS, ROAS, CTR, CVR) are not stored: compute them from the sums.",
    "Never add a Stream number to a v3 (rpt_sp_* / rpt_sb_* / rpt_sd_*) number.",
-   "'(Other)' rows hold impressions only (Amazon's reporting threshold)."
+   "search_term '(Other)' gathers the terms Amazon does not name (its reporting threshold): in Sponsored Products impressions only, in Sponsored Brands also spend and sales. Keep it in totals, leave it out of term lists."
   ],
   "pii": false,
   "queryable": true,
