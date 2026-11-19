@@ -38,9 +38,9 @@ If `get_user_context` returns zero stores: stop and tell the user to connect a s
 
 ### 3. Ad profile access (Amazon Advertising)
 
-For PPC tabs and ad-attribution columns to populate with real data, the connected store must have **Amazon Advertising profile access** authorized in SellerSheet. Without it, `rpt_sp_campaigns`, `rpt_sp_advertised_products`, `rpt_sp_search_terms` will be empty.
+For PPC tabs and ad-attribution columns to populate with real data, the connected store must have **Amazon Advertising profile access** authorized in SellerSheet. Without it, the Ads views (`v_ads_campaign_daily`, `v_ads_search_term_daily`, `v_ads_product_daily`, `v_ads_placement_daily`) will be empty.
 
-**How to check**: `list_report_syncs(store='<store>')` — if SP-Ads reports are missing or marked `NOT_CONNECTED`, ad profile isn't authorized.
+**How to check**: `get_user_context` lists the store's Ads profiles (`profile_ids`) and when Ads was authorized; then a count on `v_ads_campaign_daily` over the last 7 days returns rows. Empty `profile_ids` means the ad profile isn't authorized.
 
 **If missing**: alert the user with this exact message before building:
 
@@ -96,15 +96,36 @@ browser. Reading such a cell back via MCP requires `value_render_option='FORMULA
 | Tab | Business question | Refresh | Source rpt_* tables |
 |---|---|---|---|
 | **README** | What is this workbook and how do I read it? | Manual | (none) — live freshness table mirrors `_status` |
-| **HOME** | What blew up overnight, what do I touch today? | Daily | `rpt_orders`, `rpt_get_v2_seller_performance_report`, `rpt_get_fba_inventory_planning_data`, `rpt_sp_campaigns`, `rpt_get_merchants_listings_fyp_report`, `rpt_get_fba_myi_all_inventory_data` |
+| **HOME** | What blew up overnight, what do I touch today? | Daily | `rpt_orders`, `rpt_get_v2_seller_performance_report`, `rpt_get_fba_inventory_planning_data`, `v_ads_campaign_daily`, `rpt_get_merchants_listings_fyp_report`, `rpt_get_fba_myi_all_inventory_data` |
 | **Inventory and Restock** | What do I reorder, what do I remove? | Every 6h | `rpt_get_fba_inventory_planning_data` + `rpt_get_fba_myi_all_inventory_data` + `listing_images` |
-| **PPC Command** | Where is ad money leaking? What's winning? | Daily 03 UTC | `rpt_sp_campaigns`, `rpt_sp_search_terms`, `rpt_sp_advertised_products`, `rpt_sp_ad_groups` · **requires ad profile access** |
+| **PPC Command** | Where is ad money leaking? What's winning? | Daily (data hourly) | `v_ads_campaign_daily`, `v_ads_search_term_daily`, `v_ads_product_daily`, `v_ads_placement_daily` (Marketing Stream, every ad product) · **requires ad profile access** |
 | **Account Health** | AHR / ODR / VTR / OTDR / Invoice Defect — am I at risk? | Daily 07 UTC | `rpt_get_v2_seller_performance_report` |
 | **Listing Health** | Suppressed / inactive / stranded + buy box | Daily | `rpt_get_merchant_listings_all_data` + `rpt_get_merchants_listings_fyp_report` + `rpt_get_stranded_inventory_ui_data` + `listing_images` (`issue_severity`, `issue_enforcements`, `variation_role`: count from the listings report, join this) + competitive_pricing |
-| **Profit and Cash** | Margin after fees + ads + COGS + cash conversion pipeline | Weekly + manual COGS | `rpt_orders`, `rpt_get_flat_file_returns_data_by_return_date`, `rpt_sp_campaigns`, `rpt_get_fba_storage_fee_charges_data`, financial_event_groups + user `_raw_cogs` · **net-of-ads requires ad profile access** |
+| **Profit and Cash** | Margin after fees + ads + COGS + cash conversion pipeline | Weekly + manual COGS | `rpt_orders`, `rpt_get_flat_file_returns_data_by_return_date`, `v_ads_product_daily`, `rpt_get_fba_storage_fee_charges_data`, financial_event_groups + user `_raw_cogs` · **net-of-ads requires ad profile access** |
 | **Returns and Refunds** | Return rate, top return SKUs, refund value | Daily | `rpt_get_flat_file_returns_data_by_return_date` + `rpt_get_fba_fulfillment_customer_returns_data` |
 
 Plus **Search & Share** (Brand Analytics: search-term rank, market basket, repeat purchase) — placeholder if BA not enabled.
+
+### PPC Command reads the Marketing Stream views
+
+Each `_raw_ppc*` tab is ONE grouped `query_report_data` over a trailing window (the queries are
+the `report-data` skill's Stream recipes): sums only, ratios computed in the tab.
+
+| Raw tab | View | Group by | Sum |
+|---|---|---|---|
+| `_raw_ppc` | `v_ads_campaign_daily` | `ad_product`, `campaign_id`, `campaign_name`, `campaign_state`, `campaign_budget` | `impressions`, `clicks`, `total_cost`, `purchases`, `sales` |
+| `_raw_ppc_skus` and `_raw_ppc_attribution` | `v_ads_product_daily` | `advertised_sku`, `advertised_asin` | `clicks`, `total_cost`, `purchases`, `units_sold`, `sales` |
+| `_raw_ppc_search_terms` | `v_ads_search_term_daily` | `campaign_id`, `search_term`, `keyword_text`, `match_type` | `clicks`, `total_cost`, `purchases`, `sales` |
+
+- Spend is `total_cost`; ACoS = spend / sales, ROAS = sales / spend, from the sums. Name the
+  window in the header from `attribution_window_days` (7 days for a seller's Sponsored Products,
+  14 for Sponsored Brands and Display); never write "14d" on seller Sponsored Products.
+- Leave `search_term = '(Other)'` out of `_raw_ppc_search_terms`; it stays in campaign totals.
+- Amazon restates conversions for 70 days, so a refresh changes recent rows: rewrite the
+  window, never append to it.
+- Never mix these numbers with the older `rpt_sp_*` / `rpt_sb_*` / `rpt_sd_*` tables in one
+  cell. A store whose Stream data starts inside the window (the `min` of `report_date` on
+  `v_ads_campaign_daily`) gets a note on the tab saying where its data begins.
 
 ## Column order — Image, Store, SKU, then everything else
 

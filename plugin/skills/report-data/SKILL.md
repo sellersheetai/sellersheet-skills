@@ -4,7 +4,7 @@ description_zh: "亚马逊报告数据、库存报告、补货需求、订单、
 description_en: "Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules,…"
 author: SellerSheet AI
 description: >-
-  Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules, requesting on-demand reports, polling for completion, downloading a finished report document from its presigned URL, or analyzing any report table. Covers inventory, listings, orders, financial, and ad report (SP/SB/SD) tables; Brand Analytics has no synced table, so request it on-demand (schemas in amazon-report). Do NOT use for noon.com data (use noon-report-data) or when you don't yet know a report's exact schema — read amazon-report or data-kiosk first, then come back here for the sync/poll/download mechanics.
+  Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules, requesting on-demand reports, polling for completion, downloading a finished report document from its presigned URL, or analyzing any report table. Covers inventory, listings, orders, financial and Amazon Ads tables — the hourly Marketing Stream tables and views (rpt_ads_*, v_ads_*; campaign trend, search terms, placement, advertised and purchased products, dayparting) and the older SP/SB/SD report tables; Brand Analytics has no synced table, so request it on-demand (schemas in amazon-report). Do NOT use for noon.com data (use noon-report-data) or when you don't yet know a report's exact schema — read amazon-report or data-kiosk first, then come back here for the sync/poll/download mechanics.
   中文触发词：亚马逊报告数据、库存报告、补货需求、订单、退货、结算、搜索词、listing 状态、rpt_ 数据仓库查询、报告同步计划、按需报告下载。
 version: 0.19.1
 metadata: {apis: [data, sp_api_reports], pattern: Pipeline}
@@ -14,7 +14,7 @@ metadata: {apis: [data, sp_api_reports], pattern: Pipeline}
 
 ## Prerequisites
 
-Run the standard preflight in [`sellersheet-shared`](../sellersheet-shared/SKILL.md) (installed alongside this skill): `get_user_context` succeeds → version check via `data.skills_catalog` → `data.canUseMcp` is true. **Extra auth for this skill:** Ads-API tables (`rpt_sp_*`, `rpt_sb_*`, `rpt_sd_*`) need Amazon Advertising profile access; on-demand Brand Analytics reports need Brand Registry.
+Run the standard preflight in [`sellersheet-shared`](../sellersheet-shared/SKILL.md) (installed alongside this skill): `get_user_context` succeeds → version check via `data.skills_catalog` → `data.canUseMcp` is true. **Extra auth for this skill:** Ads tables (`rpt_ads_*`, `v_ads_*`, and the older `rpt_sp_*`, `rpt_sb_*`, `rpt_sd_*`) need Amazon Advertising profile access; on-demand Brand Analytics reports need Brand Registry.
 
 ---
 
@@ -127,6 +127,9 @@ filter than reverse-mapping `profile_id`.
 
 #### Ads tables are daily performance rows, not a campaign inventory
 
+For Ads performance read the Marketing Stream tables first ([below](#amazon-ads-marketing-stream-tables)); the
+`rpt_sp_*` / `rpt_sb_*` / `rpt_sd_*` report tables hold the older history.
+
 `rpt_sp_*` / `rpt_sb_*` / `rpt_sd_*` are **DAILY PERFORMANCE rows** — only campaigns with
 delivery in the window appear (live count 47 ENABLED vs 21 in the warehouse, observed). For a
 complete campaign inventory or count, use the live `ads_query_campaign` API instead
@@ -206,6 +209,164 @@ Allowed ops: `sum`, `count`, `avg`, `min`, `max` — the key is **`op`** (not `f
 - Poll-only tables cannot be manually requested from Amazon: `rpt_get_v2_settlement_report_data_flat_file_v2`.
 - **RETIRED 2026-05-04** (skill JSONs marked `_meta.deprecated=true, queryable=false`): `rpt_inventory_age` (data lives in `rpt_get_fba_inventory_planning_data.inv_age_*` and `rpt_get_fba_myi_all_inventory_data.afn-warehouse-quantity`); `rpt_inventory_adjustments` (Amazon report type 2605 throttled — no replacement). Don't query these — they exist only for legacy reads.
 
+### Amazon Ads: Marketing Stream tables
+
+Amazon pushes Ads performance to SellerSheet every hour (Amazon Marketing Stream) for every
+store with Ads connected. **This is the default source for Ads analysis.** One model covers
+Sponsored Products, Brands, Display and Television; `ad_product` says which
+(`'Sponsored Products'`, `'Sponsored Brands'`, `'Sponsored Display'`). Start from a view; every
+relation below has its `reference/<name>.json` (columns, caveats).
+
+| Relation | One row per | Use for |
+|---|---|---|
+| `v_ads_campaign_daily` | campaign × day, with its current name, state, budget, portfolio | trends, year over year (730 days) |
+| `v_ads_search_term_daily` | search term × target × day, with keyword text and match type | harvesting, negative keywords |
+| `v_ads_target_daily` | target × day, with text, match type, bid, state | bid review |
+| `v_ads_placement_daily` | campaign × placement × day | placement split |
+| `v_ads_product_daily` | advertised ASIN and SKU × day | spend and sales per product |
+| `rpt_ads_campaign_hourly` | campaign × marketplace hour, with `weekday` | dayparting, intraday pacing (90 days) |
+| `rpt_ads_converted_product_daily` | advertised product × product bought × day | promoted vs brand halo purchases |
+| `rpt_ads_campaigns`, `rpt_ads_ad_groups`, `rpt_ads_targets`, `rpt_ads_ads` | entity, as it is now | names, states, bids, budgets (archived kept) |
+| `rpt_ads_entity_changes` | changed field | when a name, state, budget or bid changed |
+| `rpt_ads_performance_daily`, `rpt_ads_performance_hourly` | every dimension × day or hour | what no view answers (400 / 75 days) |
+
+**The Stream model.** Read this before you quote a number:
+
+- **Sum the rows.** Rows are disjoint: one entity's traffic and its conversions can sit on
+  separate rows. Always use `aggregations` with `sum`; one row is never a total.
+- **Ratios are computed, never stored.** Spend is `total_cost`. ACOS = total_cost / sales,
+  ROAS = sales / total_cost, CTR = clicks / impressions, CVR = purchases / clicks,
+  CPC = total_cost / clicks, all from the sums.
+- **Attribution is the campaign's default window**, `attribution_window_days`: 7 days for a
+  seller's Sponsored Products, 14 for Sponsored Brands and Sponsored Display. `purchases` and
+  `sales` are that window. There are no 1-day or 30-day columns: never label a number with a
+  window it does not have.
+- **Amazon restates conversions for 70 days.** The latest days keep growing; compare periods
+  only once both have matured past the attribution window.
+- **`(Other)` search terms** gather the terms Amazon does not name (its reporting threshold).
+  In Sponsored Products they carry impressions and no clicks; in Sponsored Brands they also
+  carry spend and sales. Keep them in totals, leave them out of term lists.
+- **Never add a Stream number to a v3 number** (`rpt_sp_*`, `rpt_sb_*`, `rpt_sd_*`): both
+  count the same spend.
+- **The v3 tables hold the older history.** A store's Stream data starts about 70 days before
+  its Stream subscription began; for earlier days read the v3 tables, and take each day from
+  one source only. The first Stream day is the `min` of `report_date` on `v_ads_campaign_daily`.
+- Days and hours are the marketplace's own (`hour` 0–23, `weekday` 1 = Monday … 7 = Sunday).
+  The store ref filters the marketplace; do not filter `country_code` or `profile_id` yourself.
+
+#### Stream recipes
+
+Change the dates and thresholds. Each returns grouped sums; compute the ratios from them.
+
+Campaign trend by week:
+
+```json
+{"store": "myStore-US", "tables": ["v_ads_campaign_daily"],
+ "columns": ["v_ads_campaign_daily.ad_product", "v_ads_campaign_daily.campaign_id", "v_ads_campaign_daily.campaign_name"],
+ "aggregations": [{"column": "v_ads_campaign_daily.impressions", "op": "sum", "alias": "impressions"},
+                  {"column": "v_ads_campaign_daily.clicks", "op": "sum", "alias": "clicks"},
+                  {"column": "v_ads_campaign_daily.total_cost", "op": "sum", "alias": "spend"},
+                  {"column": "v_ads_campaign_daily.purchases", "op": "sum", "alias": "orders"},
+                  {"column": "v_ads_campaign_daily.sales", "op": "sum", "alias": "sales"}],
+ "group_by": ["v_ads_campaign_daily.report_date:week", "v_ads_campaign_daily.ad_product",
+              "v_ads_campaign_daily.campaign_id", "v_ads_campaign_daily.campaign_name"],
+ "filters": [{"column": "v_ads_campaign_daily.report_date", "op": "gte", "value": "2026-09-28"},
+             {"column": "v_ads_campaign_daily.report_date", "op": "lt", "value": "2026-11-16"}],
+ "order_by": [{"column": "v_ads_campaign_daily.report_date:week", "dir": "asc"}, {"column": "spend", "dir": "desc"}]}
+```
+
+Search terms with clicks and no orders (negative keyword candidates). `having` filters the sums:
+
+```json
+{"store": "myStore-US", "tables": ["v_ads_search_term_daily"],
+ "columns": ["v_ads_search_term_daily.campaign_id", "v_ads_search_term_daily.ad_group_id",
+             "v_ads_search_term_daily.search_term", "v_ads_search_term_daily.keyword_text",
+             "v_ads_search_term_daily.match_type"],
+ "aggregations": [{"column": "v_ads_search_term_daily.clicks", "op": "sum", "alias": "clicks"},
+                  {"column": "v_ads_search_term_daily.total_cost", "op": "sum", "alias": "spend"},
+                  {"column": "v_ads_search_term_daily.purchases", "op": "sum", "alias": "orders"}],
+ "group_by": ["v_ads_search_term_daily.campaign_id", "v_ads_search_term_daily.ad_group_id",
+              "v_ads_search_term_daily.search_term", "v_ads_search_term_daily.keyword_text",
+              "v_ads_search_term_daily.match_type"],
+ "filters": [{"column": "v_ads_search_term_daily.report_date", "op": "gte", "value": "2026-10-21"},
+             {"column": "v_ads_search_term_daily.report_date", "op": "lt", "value": "2026-11-18"},
+             {"column": "v_ads_search_term_daily.search_term", "op": "neq", "value": "(Other)"}],
+ "having": [{"column": "clicks", "op": "gte", "value": 5}, {"column": "orders", "op": "eq", "value": 0}],
+ "order_by": [{"column": "spend", "dir": "desc"}], "limit": 50}
+```
+
+A `search_term` that is an ASIN came from a product target. Leave out the last 7 days (14 for
+Sponsored Brands and Display) so late orders cannot clear a term.
+
+Placement split:
+
+```json
+{"store": "myStore-US", "tables": ["v_ads_placement_daily"],
+ "columns": ["v_ads_placement_daily.campaign_id", "v_ads_placement_daily.placement"],
+ "aggregations": [{"column": "v_ads_placement_daily.impressions", "op": "sum", "alias": "impressions"},
+                  {"column": "v_ads_placement_daily.clicks", "op": "sum", "alias": "clicks"},
+                  {"column": "v_ads_placement_daily.total_cost", "op": "sum", "alias": "spend"},
+                  {"column": "v_ads_placement_daily.sales", "op": "sum", "alias": "sales"}],
+ "group_by": ["v_ads_placement_daily.campaign_id", "v_ads_placement_daily.placement"],
+ "filters": [{"column": "v_ads_placement_daily.report_date", "op": "gte", "value": "2026-10-21"},
+             {"column": "v_ads_placement_daily.report_date", "op": "lt", "value": "2026-11-18"}],
+ "order_by": [{"column": "spend", "dir": "desc"}]}
+```
+
+Advertised products:
+
+```json
+{"store": "myStore-US", "tables": ["v_ads_product_daily"],
+ "columns": ["v_ads_product_daily.ad_product", "v_ads_product_daily.advertised_asin", "v_ads_product_daily.advertised_sku"],
+ "aggregations": [{"column": "v_ads_product_daily.clicks", "op": "sum", "alias": "clicks"},
+                  {"column": "v_ads_product_daily.total_cost", "op": "sum", "alias": "spend"},
+                  {"column": "v_ads_product_daily.purchases", "op": "sum", "alias": "orders"},
+                  {"column": "v_ads_product_daily.sales", "op": "sum", "alias": "sales"}],
+ "group_by": ["v_ads_product_daily.ad_product", "v_ads_product_daily.advertised_asin", "v_ads_product_daily.advertised_sku"],
+ "filters": [{"column": "v_ads_product_daily.report_date", "op": "gte", "value": "2026-10-21"},
+             {"column": "v_ads_product_daily.report_date", "op": "lt", "value": "2026-11-18"}],
+ "order_by": [{"column": "spend", "dir": "desc"}]}
+```
+
+What the ads sold, promoted vs brand halo (`product_relevance` is `'Promoted'` when the
+advertised product itself was bought, `'Brand halo'` when another of your products was; add
+`converted_asin` to `columns` and `group_by` to see which). It has no search term or target:
+
+```json
+{"store": "myStore-US", "tables": ["rpt_ads_converted_product_daily"],
+ "columns": ["rpt_ads_converted_product_daily.advertised_asin", "rpt_ads_converted_product_daily.product_relevance"],
+ "aggregations": [{"column": "rpt_ads_converted_product_daily.purchases", "op": "sum", "alias": "orders"},
+                  {"column": "rpt_ads_converted_product_daily.units_sold", "op": "sum", "alias": "units"},
+                  {"column": "rpt_ads_converted_product_daily.sales", "op": "sum", "alias": "sales"}],
+ "group_by": ["rpt_ads_converted_product_daily.advertised_asin", "rpt_ads_converted_product_daily.product_relevance"],
+ "filters": [{"column": "rpt_ads_converted_product_daily.report_date", "op": "gte", "value": "2026-10-21"},
+             {"column": "rpt_ads_converted_product_daily.report_date", "op": "lt", "value": "2026-11-18"}],
+ "order_by": [{"column": "sales", "dir": "desc"}]}
+```
+
+For campaign names on this table, join `rpt_ads_campaigns` on
+`{"store_id": "store_id", "country_code": "country_code", "ad_product": "ad_product", "campaign_id": "campaign_id"}`
+and group by `rpt_ads_campaigns.name`.
+
+Dayparting, by weekday and hour of the marketplace (168 groups):
+
+```json
+{"store": "myStore-US", "tables": ["rpt_ads_campaign_hourly"],
+ "columns": ["rpt_ads_campaign_hourly.weekday", "rpt_ads_campaign_hourly.hour"],
+ "aggregations": [{"column": "rpt_ads_campaign_hourly.clicks", "op": "sum", "alias": "clicks"},
+                  {"column": "rpt_ads_campaign_hourly.total_cost", "op": "sum", "alias": "spend"},
+                  {"column": "rpt_ads_campaign_hourly.purchases", "op": "sum", "alias": "orders"},
+                  {"column": "rpt_ads_campaign_hourly.sales", "op": "sum", "alias": "sales"}],
+ "group_by": ["rpt_ads_campaign_hourly.weekday", "rpt_ads_campaign_hourly.hour"],
+ "filters": [{"column": "rpt_ads_campaign_hourly.report_date", "op": "gte", "value": "2026-10-21"},
+             {"column": "rpt_ads_campaign_hourly.report_date", "op": "lt", "value": "2026-11-18"}],
+ "order_by": [{"column": "rpt_ads_campaign_hourly.weekday", "dir": "asc"}, {"column": "rpt_ads_campaign_hourly.hour", "dir": "asc"}],
+ "limit": 200}
+```
+
+Take whole weeks so every weekday counts the same number of days. For one campaign, add a
+`campaign_id` filter.
+
 ### Available rpt_* tables (key ones)
 
 | Table | Report Type | Notes |
@@ -242,6 +403,7 @@ Most `rpt_*` tables are named after the Amazon report type that feeds them. Thes
 | `rpt_orders` | **Two** report types feed it — `GET_FLAT_FILE_ALL_ORDERS_DATA_BY_ORDER_DATE_GENERAL` (one-shot 30-day backfill at onboard) and `..._BY_LAST_UPDATE_GENERAL` (hourly incremental). No single report type to name it after. |
 | `rpt_sp_purchased_products` | Also fed by two report types. |
 | `rpt_sp_*`, `rpt_sb_*`, `rpt_sd_*` | Ads-API tables — the names are already Amazon-derived. |
+| `rpt_ads_*`, `v_ads_*` | Amazon Marketing Stream: datasets pushed by Amazon, not report types; `v_ads_*` are views over them. |
 | `rpt_dk_*` | Data Kiosk GraphQL datasets, not SP-API report types. |
 | `rpt_noon_*` | noon.com, not Amazon. |
 | `listing_images` | Enrichment cache, not a report. |

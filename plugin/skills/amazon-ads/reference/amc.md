@@ -5,7 +5,8 @@ shopping events (purchases, new-to-brand, add-to-cart), queried in SQL, answered
 aggregates. Look in this order:
 
 1. Spend, clicks, ACOS, orders, search-term waste, what a click ended up buying: the report
-   warehouse (`rpt_sp_*`, see `report-data`). Not AMC.
+   warehouse (the Marketing Stream views `v_ads_*` and `rpt_ads_converted_product_daily`,
+   see `report-data`). Not AMC.
 2. The questions in "Already synced" below: read the table.
 3. Anything else: run your own query.
 

@@ -120,7 +120,7 @@ Direct `_config!$B$2`-style references are banned. Define named ranges (`cfg_fx`
 
 Never use `SUMIFS(spend, name, "*"&REGEXEXTRACT(sku,...)&"*")` to attribute ad cost (or any per-SKU cost) to a SKU. The wildcard matches campaign names containing the SKU prefix — which over-attributes when one campaign promotes multiple sizes/variants (e.g., `KW_SKU-A` matches SKU-A-Queen, -King, -Single — each row eats the full spend, triple-counted).
 
-**Rule:** any per-SKU cost must come from a precomputed attribution table with explicit `(store, sku, value)` keys. For PPC, that means a `_raw_ppc_attribution` tab populated from `rpt_sp_advertised_products` (real SKU-level attribution), not derived from campaign-name regex.
+**Rule:** any per-SKU cost must come from a precomputed attribution table with explicit `(store, sku, value)` keys. For PPC, that means a `_raw_ppc_attribution` tab populated from `v_ads_product_daily` (real SKU-level attribution, every ad product), not derived from campaign-name regex.
 
 ## Common mistakes table
 
