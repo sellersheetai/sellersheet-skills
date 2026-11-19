@@ -3,7 +3,7 @@
   "table": "rpt_sb_purchased_products",
   "report_type": "sbPurchasedProduct",
   "is_snapshot": false,
-  "description": "Sponsored Brands purchased products report.",
+  "description": "Amazon Ads Sponsored Brands purchases by the product bought (Reporting v3 sbPurchasedProduct): one row per marketplace-local day per campaign, ad group and purchased ASIN, 14-day attribution, view-through included. Frozen store by store as each store moves to Marketing Stream.",
   "pii": false,
   "queryable": true,
   "deprecated": false,
@@ -30,7 +30,17 @@
     "nullable": false,
     "null_means": "unplaced"
    }
-  }
+  },
+  "search_aliases": [
+   "sb purchased product",
+   "sponsored brands purchased asin",
+   "sb halo purchases"
+  ],
+  "caveats": [
+   "From a store's move to Marketing Stream its rows stop (its sync shows superseded_by_stream): read rpt_ads_converted_product_daily with ad_product = 'Sponsored Brands' for that store from then on, and for any store when you need the latest days.",
+   "Columns there: orders_14d is purchases, sales_14d sales, units_sold_14d units_sold, new_to_brand_*_14d new_to_brand_*, purchased_asin converted_asin, attribution_type 'Promoted' / 'Brand Halo' product_relevance 'Promoted' / 'Brand halo'; campaign and ad group names from rpt_ads_campaigns / rpt_ads_ad_groups; the currency is `currency`.",
+   "Never add this table's numbers to rpt_ads_converted_product_daily's: the same purchases are in both."
+  ]
  },
  "columns": [
   {

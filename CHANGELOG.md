@@ -11,6 +11,27 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.20.0] — 2026-11-20
+
+### Amazon Marketing Stream tables: the default for Ads data
+
+- `report-data` documents the Marketing Stream tables Amazon pushes every hour: five views
+  (`v_ads_campaign_daily`, `v_ads_search_term_daily`, `v_ads_target_daily`,
+  `v_ads_placement_daily`, `v_ads_product_daily`), the hourly campaign table for dayparting,
+  purchased products (promoted vs brand halo), the full-grain daily and hourly tables, the
+  current campaigns, ad groups, targets and ads, and the change log. Fifteen new
+  `reference/*.json` files list every column.
+- The Stream model in `report-data` and `amazon-ads`: one model for every ad product, rows
+  summed, ratios computed, the default attribution window per ad product, Amazon's 70-day
+  restatement, the `(Other)` search term, and the older v3 report tables for the days before a
+  store's Stream data starts. A Stream number is never added to a v3 number.
+- Six recipes on the views: campaign trend by week, search terms with clicks and no orders,
+  placement split, advertised products, what the ads sold, dayparting by weekday and hour.
+- `amazon-ads` recipes (account health, wasted spend, bid optimization, negative mining,
+  budget, change history) read the Stream views; the v3 tables cover older history.
+- `sellersheet-dashboard`: the PPC Command tab and its `_raw_ppc*` tabs read the Stream views,
+  every ad product.
+
 ## [0.19.1] — 2026-11-10
 
 ### ChatGPT and Codex: starter prompts that work as soon as a store is connected

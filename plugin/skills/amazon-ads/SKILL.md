@@ -4,9 +4,9 @@ description_zh: "亚马逊广告、SP/SB/SD 广告活动、广告组、关键词
 description_en: "Guide for managing Amazon Advertising (SP, SB, SD) using SellerSheet MCP tools."
 author: SellerSheet AI
 description: >-
-  Guide for managing Amazon Advertising (SP, SB, SD) using SellerSheet MCP tools. Use when working with Amazon Ads campaigns, ad groups, keywords, targets, bids, budgets, bulk creation, negative keywords, ad performance data, bulk exports, change history, account management, invoices, validation configs, or Amazon Marketing Cloud (AMC) queries — new-to-brand, reach and frequency, campaign overlap, hour of day. Do NOT use for FBA inbound shipments (use fba-inbound) or for sheet formatting/reporting beyond this skill's own recipes (use sellersheet-sheets).
+  Guide for managing Amazon Advertising (SP, SB, SD) using SellerSheet MCP tools. Use when working with Amazon Ads campaigns, ad groups, keywords, targets, bids, budgets, bulk creation, negative keywords, ad performance data (the Marketing Stream tables and views — search terms, placement, dayparting, purchased products), bulk exports, change history, account management, invoices, validation configs, or Amazon Marketing Cloud (AMC) queries — new-to-brand, reach and frequency, campaign overlap, hour of day. Do NOT use for FBA inbound shipments (use fba-inbound) or for sheet formatting/reporting beyond this skill's own recipes (use sellersheet-sheets).
   中文触发词：亚马逊广告、SP/SB/SD 广告活动、广告组、关键词与投放、竞价、预算、否定词、批量创建广告、广告数据导出、变更历史、广告账户与发票、亚马逊营销云 AMC（新客、触达与频次、广告活动重叠）。
-version: 0.19.1
+version: 0.20.0
 metadata: {apis: [ads.v1, ads.sp, ads.sb, ads.sd, ads.account, ads.reports, ads.amc], pattern: Gate}
 ---
 
@@ -95,26 +95,43 @@ it does not declare a mode. Default is interactive; autopilot is opt-in per conv
   amount or the % increase before the call in interactive mode, and report it after the call
   on autopilot — never silently.
 
-### 3. Two Performance Data Paths
+### 3. Performance Data Paths
 
 | Situation | Tool |
 |---|---|
-| All analysis, optimization, daily ops — default | `query_report_data` on `rpt_sp_*` / `rpt_sb_*` / `rpt_sd_*` |
+| All analysis, optimization, daily ops — default | `query_report_data` on the Marketing Stream views `v_ads_*` and tables `rpt_ads_*` |
+| Days before the store's Stream data starts | `query_report_data` on the v3 report tables `rpt_sp_*` / `rpt_sb_*` / `rpt_sd_*` |
 | Last 1-2 days — may be incomplete | Warn user: Amazon attribution not yet finalized |
 | Need columns/dimensions not in synced tables, OK to wait hours | `ads_create_async_report` + `ads_get_async_report` |
 
 **`query_report_data` is the default.** The offline report path (`ads_create_async_report`)
 takes 30 minutes to several hours — only use it when synced tables genuinely cannot
-serve the need.
+serve the need. `report-data` owns the table guide, the query semantics and the recipes
+(campaign trend, search terms, placement, advertised and purchased products, dayparting).
 
-**The warehouse tables are DAILY PERFORMANCE rows — not a campaign inventory.** A campaign
-with no delivery in the window has no row in `rpt_sp_*` / `rpt_sb_*` / `rpt_sd_*`, so never
-derive "how many campaigns exist" from them; for a complete campaign inventory or count,
-query the live API — `ads_query_campaign` (v1, all products in one call via
-`adProductFilter`). And `report_date: "latest"` pins to the newest **single** day, often a
-zero-spend partial day — for any cost or performance analysis use `report_date: "all"` plus
-explicit date filters (`YYYY-MM-DD` pins one day). `report-data` owns the full query
-semantics of these tables.
+**The Stream model** (Amazon Marketing Stream, pushed hourly):
+
+- One model for SP, SB, SD and Sponsored Television: `ad_product` is `'Sponsored Products'`,
+  `'Sponsored Brands'` or `'Sponsored Display'`.
+- Rows are disjoint: always sum them (`aggregations`, `op: sum`); one row is never a total.
+- Ratios are computed, never stored. Spend is `total_cost`; ACOS = total_cost / sales,
+  ROAS = sales / total_cost, from the sums.
+- `purchases` and `sales` follow `attribution_window_days`: 7 days for a seller's Sponsored
+  Products, 14 for Sponsored Brands and Sponsored Display. No 1-day or 30-day columns exist.
+- Amazon restates conversions for 70 days, so the latest days keep growing.
+- `(Other)` search terms are the terms Amazon does not name (its reporting threshold): in SP
+  impressions only, in SB also spend and sales. Keep them in totals, out of term lists.
+- Never add a Stream number to a v3 number. The v3 tables hold the days before the store's
+  Stream data starts; the first Stream day is the `min` of `report_date` on
+  `v_ads_campaign_daily`.
+
+**Fact tables are not a campaign inventory.** A campaign with no delivery in the window has
+no row in a fact table (Stream or v3). For the list of campaigns use `rpt_ads_campaigns`
+(every campaign as of the daily read, archived ones included; `rpt_ads_ad_groups`,
+`rpt_ads_targets`, `rpt_ads_ads` likewise), or the live `ads_query_campaign` (v1, all
+products in one call via `adProductFilter`) for this minute's state. On the v3 tables,
+`report_date: "latest"` pins to the newest **single** day, often a zero-spend partial day —
+use date filters for any cost or performance analysis.
 
 ### 4. Ad Type Hierarchy
 
@@ -241,32 +258,32 @@ Applies on top of the global sheet-approval convention (§2):
 
 ### A. Account Health Check
 
-1. `query_report_data` on `rpt_sp_campaigns`, `rpt_sb_campaigns`, `rpt_sd_campaigns`
-   — `report_date: "all"` plus a trailing-N-day date filter (never `"latest"`
-   for cost totals — it can land on a zero-spend partial day), sort by `cost`
-   desc (`cost` is the one spend column present on all three tables)
-2. Compute totals — **the metric columns differ by product**: SP has
-   `cost`/`spend` + `sales_14d` + `purchases_14d`; SB and SD have `cost` +
-   `sales` + `purchases` (no `_14d`-suffixed columns at all). ACoS =
-   `cost / sales * 100` on the product's own sales column; plus impressions, clicks
-3. Flag campaigns with ACoS above target or zero sales (SP: `sales_14d = 0`;
-   SB/SD: `sales = 0`)
+1. `query_report_data` on `v_ads_campaign_daily` — a trailing-N-day date filter, grouped by
+   `ad_product`, `campaign_id`, `campaign_name`, summing `total_cost`, `sales`, `purchases`,
+   `clicks`, `impressions`; sort by the spend alias desc (the `report-data` campaign trend
+   recipe without the week bucket). Every ad product in one query.
+2. ACoS = spend / sales * 100 from the sums, per campaign and per `ad_product`
+3. Flag campaigns with ACoS above target or zero sales
 4. Write summary to sheet
+
+For days before the store's Stream data starts, use the v3 tables, whose **metric columns
+differ by product**: SP has `cost` + `sales_14d` + `purchases_14d`; SB and SD have `cost` +
+`sales` + `purchases`.
 
 ### B. Find Wasted Spend
 
-1. `query_report_data` on `rpt_sp_keywords` — filter `cost > threshold AND purchases_14d = 0`
-2. `query_report_data` on `rpt_sp_search_terms` — same filter
-3. Repeat for SB: `rpt_sb_keywords`, `rpt_sb_search_terms` — filter
-   `cost > threshold AND purchases = 0` (SB/SD tables carry no 14d-suffixed
-   columns)
-4. Repeat for SD: `rpt_sd_targets` — `cost > threshold AND purchases = 0`
-5. Write waste list to sheet → propose negatives to user
+1. `query_report_data` on `v_ads_search_term_daily` — the `report-data` negative-candidate
+   recipe: summed clicks `gte` N and summed orders `eq` 0 in `having`, `(Other)` filtered out,
+   the last attribution window left out
+2. The same `having` on `v_ads_target_daily`, grouped by `target_id`, `keyword_text`,
+   `match_type`, `expression` — keywords, product targets and SB themes of every ad product
+3. Write waste list to sheet → propose negatives to user
 
 ### C. Bid Optimization
 
-1. `query_report_data` on `rpt_sp_keywords` — get `cost`, `sales_14d`, `clicks` per keyword
-2. Calculate ACoS per keyword; compare to target
+1. `query_report_data` on `v_ads_target_daily` — group by `ad_product`, `target_id`,
+   `keyword_text`, `match_type`, `bid`, `target_state`; sum `total_cost`, `sales`, `clicks`
+2. Calculate ACoS per target from the sums; compare to target
 3. Resolve each keyword's `targetId`: `ads_query_target` (v1) with
    `adProductFilter` + `keywordFilter` (keywords ARE targets in v1)
 4. Over-target: write bid-down intent to sheet; under-target with good volume:
@@ -304,8 +321,9 @@ Applies on top of the global sheet-approval convention (§2):
 
 ### E. Negative Keyword Mining
 
-1. `query_report_data` on `rpt_sp_search_terms` — filter `cost > threshold AND purchases_14d = 0`
-2. Group by campaign / ad group; review candidates with user
+1. `query_report_data` on `v_ads_search_term_daily` — the `report-data` negative-candidate
+   recipe (grouped by campaign, ad group and term)
+2. Review candidates with user
 3. Write negatives intent to sheet
 4. Create negatives with `ads_create_target` (v1): items carry
    `negative: true` + `keywordTarget {keyword, matchType}`; scope with
@@ -344,8 +362,9 @@ write the tab together; it is human-owned and re-read every mutating run.
    silently stops every member campaign). Judge `usage% ÷ expected-by-this-local-hour`, never
    raw % — curve in reference §9. Relay `usageUpdatedTimestamp`: it can lag
    hours, and zero-spend campaigns report a synthetic midnight stamp.
-2. For flagged campaigns, `query_report_data` on `rpt_*_campaigns`
-   (`report_date: "all"` + date filter) for trailing-7d ACOS.
+2. For flagged campaigns, `query_report_data` on `v_ads_campaign_daily` (a date filter, a
+   `campaign_id` `in` filter, summed `total_cost` and `sales`) for trailing-7d ACOS; for the
+   hour the budget runs out, `rpt_ads_campaign_hourly` by `hour`.
 3. **Route by the 2×2 + preflight (reference §1)** — hot AND unprofitable is a
    bid problem (Recipe C), never a raise; usage <85% EOD means budget is not
    the limiter regardless of what `ads_*_budget_recommendations` suggests.
@@ -450,7 +469,11 @@ Use when you need a full snapshot of campaign structure — IDs, states, budgets
    - Dates are millisecond Unix timestamps (13 digits); range must be within last 90 days
    - Pages by `pageOffset` (0-based) + `count`; there is no `nextToken` on this call
 3. Write history to sheet; filter for unexpected state changes or bid changes
-4. Cross-reference with `rpt_sp_campaigns` performance to correlate changes with metrics
+4. Cross-reference with `v_ads_campaign_daily` performance to correlate changes with metrics
+
+For changes older than 90 days, or across every entity at once, `rpt_ads_entity_changes` holds
+one row per changed field (name, state, budget, bid, …) with old and new value, as SellerSheet's
+daily read saw it: several edits in one day show as one change.
 
 ### J. Campaign Optimization Recommendations
 
@@ -593,7 +616,7 @@ artifacts._
 
 | Tool | When |
 |---|---|
-| `query_report_data` | Default for all analysis |
+| `query_report_data` | Default for all analysis: the Stream views `v_ads_*` first |
 | `ads_create_async_report` | Offline report — 30 min to hours; write reportId to sheet immediately. Build `body` from `reference/report-configs/` (full SP/SB/SD/STV/DSP catalog) |
 | `ads_get_async_report` | Poll when user returns; write rows when COMPLETED |
 
@@ -618,16 +641,25 @@ artifacts._
 
 ### Synced Report Tables
 
-The synced ads tables are `rpt_sp_*`, `rpt_sb_*` and `rpt_sd_*` (campaigns, ad
+**Marketing Stream (default):** the views `v_ads_campaign_daily`, `v_ads_search_term_daily`,
+`v_ads_target_daily`, `v_ads_placement_daily`, `v_ads_product_daily`; the tables
+`rpt_ads_campaign_hourly` (dayparting), `rpt_ads_converted_product_daily` (purchased products,
+promoted vs brand halo), `rpt_ads_performance_daily` / `_hourly` (full grain), the current
+entities `rpt_ads_campaigns`, `rpt_ads_ad_groups`, `rpt_ads_targets`, `rpt_ads_ads`, and
+`rpt_ads_entity_changes`. Every ad product in each; metric names are Amazon's snake-cased
+(`impressions`, `clicks`, `total_cost`, `purchases`, `sales`, `units_sold`,
+`new_to_brand_purchases`, …). The model is in Tier 1 §3.
+
+**v3 report tables (older history):** `rpt_sp_*`, `rpt_sb_*` and `rpt_sd_*` (campaigns, ad
 groups, keywords, targets, search terms, advertised and purchased products, the
 negative-entity tables, and SP-only placement). Not every product has every table
-(SD, for instance, has no keyword or search-term table). The `report-data` skill
-owns the exact table list (`_meta.json`) and every table's columns
-(`reference/<table>.json`). The negative-entity and placement tables let you audit
-current negatives and placement-level performance without an entity-list call.
-Daily-row semantics and the `report_date` rule are in Tier 1 §3 above.
+(SD, for instance, has no keyword or search-term table). The negative-entity tables let
+you audit current negatives without an entity-list call.
 
-Common SP column names (verify others in the reference json before filtering): `cost`,
+The `report-data` skill owns the exact table list (`_meta.json`) and every table's columns
+(`reference/<table>.json`).
+
+Common v3 SP column names (verify others in the reference json before filtering): `cost`,
 `clicks`, `impressions`, `purchases_14d`, `sales_14d`, `acos_clicks_14d`,
 `acos_clicks_7d`. **Column names are snake_case** — not the camelCase used in
 `ads_create_async_report` columns (e.g. warehouse `sales_14d` vs report-config `sales14d`).

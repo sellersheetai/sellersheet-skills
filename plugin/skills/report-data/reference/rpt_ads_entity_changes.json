@@ -1,0 +1,116 @@
+{
+ "_meta": {
+  "table": "rpt_ads_entity_changes",
+  "report_type": null,
+  "is_snapshot": false,
+  "description": "Every change the daily Ads roster saw in an entity's typed field — a campaign renamed or paused, a budget or bid changed, a keyword's state — one row per field: old value, new value, when (detected_at; detected_on the marketplace day). The history behind the current-state rpt_ads_* entity tables.",
+  "search_aliases": [
+   "ads change history",
+   "bid changes",
+   "budget changes",
+   "campaign changes",
+   "entity changes"
+  ],
+  "caveats": [
+   "A change is seen at the daily roster read, not when it was made: several edits in one day show as one change.",
+   "Values are text as the entity table stores them; state and match_type are upper-cased (case only, never a value mapping).",
+   "Kept 400 days."
+  ],
+  "pii": false,
+  "queryable": true,
+  "deprecated": false,
+  "strategy": "ads_roster",
+  "date_column": "detected_on",
+  "unique_key": [
+   "store_id",
+   "country_code",
+   "ad_product",
+   "entity_type",
+   "entity_id",
+   "field",
+   "detected_at"
+  ],
+  "cron": null,
+  "retention_days": 400,
+  "retention_note": "kept 400 days by detected_on; older rows are pruned",
+  "fed_by": [
+   "ads-roster/campaigns",
+   "ads-roster/ad-groups",
+   "ads-roster/targets",
+   "ads-roster/ads"
+  ],
+  "marketplace": {
+   "grain": "per_mkt",
+   "label": {
+    "kind": "requested",
+    "column": "country_code",
+    "values": null,
+    "means": "marketplace",
+    "nullable": false,
+    "null_means": "unplaced"
+   }
+  }
+ },
+ "columns": [
+  {
+   "db_column": "store_id",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Internal tenant scope — auto-applied from `store`; never filter on it manually."
+  },
+  {
+   "db_column": "country_code",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Marketplace code (UK/US/AE/...). Auto-filtered from the store suffix on per-marketplace tables."
+  },
+  {
+   "db_column": "ad_product",
+   "amazon_header": "(SellerSheet change log)",
+   "type": "str",
+   "note": "Which ad product: 'Sponsored Products', 'Sponsored Brands', 'Sponsored Display' (title case). One table holds them all; filter or group on it."
+  },
+  {
+   "db_column": "entity_type",
+   "amazon_header": "(SellerSheet change log)",
+   "type": "str"
+  },
+  {
+   "db_column": "entity_id",
+   "amazon_header": "(SellerSheet change log)",
+   "type": "str"
+  },
+  {
+   "db_column": "field",
+   "amazon_header": "(SellerSheet change log)",
+   "type": "str"
+  },
+  {
+   "db_column": "old_value",
+   "amazon_header": "(SellerSheet change log)",
+   "type": "str"
+  },
+  {
+   "db_column": "new_value",
+   "amazon_header": "(SellerSheet change log)",
+   "type": "str"
+  },
+  {
+   "db_column": "detected_at",
+   "amazon_header": "(SellerSheet change log)",
+   "type": "timestamptz",
+   "note": "UTC instant (timestamptz). Query results show it in the store ref's marketplace local time, without an offset; a bare date in a filter is that marketplace's midnight."
+  },
+  {
+   "db_column": "detected_on",
+   "amazon_header": "(SellerSheet change log)",
+   "type": "date"
+  },
+  {
+   "db_column": "profile_id",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Ads profile id (one per marketplace) — auto-filtered from the store suffix; do not filter manually."
+  }
+ ]
+}

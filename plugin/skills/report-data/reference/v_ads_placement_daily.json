@@ -1,0 +1,757 @@
+{
+ "_meta": {
+  "table": "v_ads_placement_daily",
+  "report_type": null,
+  "is_snapshot": false,
+  "description": "Amazon Ads per campaign per placement (top of search, rest of search, product pages …) per day.",
+  "search_aliases": [
+   "placement report",
+   "top of search",
+   "placement performance"
+  ],
+  "caveats": [
+   "The daily Stream facts summed at this grain; names and states are the entity's CURRENT ones (rpt_ads_* entity tables), never a stale copy.",
+   "Conversions mature over attribution_window_days and Amazon restates them for 70 days.",
+   "Ratios (ACOS, ROAS, CTR, CVR) are not stored: compute them from the sums.",
+   "Never add a Stream number to a v3 (rpt_sp_* / rpt_sb_* / rpt_sd_*) number."
+  ],
+  "pii": false,
+  "queryable": true,
+  "deprecated": false,
+  "strategy": "view",
+  "date_column": "report_date",
+  "unique_key": null,
+  "cron": null,
+  "source_tables": [
+   "rpt_ads_performance_daily"
+  ],
+  "marketplace": {
+   "grain": "per_mkt",
+   "label": {
+    "kind": "requested",
+    "column": "country_code",
+    "values": null,
+    "means": "marketplace",
+    "nullable": false,
+    "null_means": "unplaced"
+   }
+  }
+ },
+ "columns": [
+  {
+   "db_column": "store_id",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Internal tenant scope — auto-applied from `store`; never filter on it manually."
+  },
+  {
+   "db_column": "country_code",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Marketplace code (UK/US/AE/...). Auto-filtered from the store suffix on per-marketplace tables."
+  },
+  {
+   "db_column": "profile_id",
+   "amazon_header": "advertiserAccountAlternateProfileId.value",
+   "type": "str",
+   "note": "Ads profile id (one per marketplace) — auto-filtered from the store suffix; do not filter manually."
+  },
+  {
+   "db_column": "report_date",
+   "amazon_header": "date.value",
+   "type": "date"
+  },
+  {
+   "db_column": "ad_product",
+   "amazon_header": "adProduct.value",
+   "type": "str",
+   "note": "Which ad product: 'Sponsored Products', 'Sponsored Brands', 'Sponsored Display' (title case). One table holds them all; filter or group on it."
+  },
+  {
+   "db_column": "campaign_id",
+   "amazon_header": "campaign.id",
+   "type": "str"
+  },
+  {
+   "db_column": "placement",
+   "amazon_header": "placementClassification.value",
+   "type": "str",
+   "note": "Where the ad showed, e.g. 'Top of Search on-Amazon', 'Detail Page on-Amazon', 'Other on-Amazon'."
+  },
+  {
+   "db_column": "currency",
+   "amazon_header": "budgetCurrency.value",
+   "type": "str",
+   "note": "The budget currency. Sum money within one currency only."
+  },
+  {
+   "db_column": "attribution_window_days",
+   "amazon_header": "(not an Amazon field)",
+   "type": "int",
+   "note": "Look-back days behind this row's conversions: 7 for a seller's Sponsored Products, 14 for Sponsored Brands, Sponsored Display and a vendor's Sponsored Products."
+  },
+  {
+   "db_column": "impressions",
+   "amazon_header": "metric.impressions",
+   "type": "decimal"
+  },
+  {
+   "db_column": "invalid_impressions",
+   "amazon_header": "metric.invalidImpressions",
+   "type": "decimal"
+  },
+  {
+   "db_column": "main_imdb_ad_impressions",
+   "amazon_header": "metric.mainImdbAdImpressions",
+   "type": "decimal"
+  },
+  {
+   "db_column": "clicks",
+   "amazon_header": "metric.clicks",
+   "type": "decimal"
+  },
+  {
+   "db_column": "gross_clicks",
+   "amazon_header": "metric.grossClicks",
+   "type": "decimal"
+  },
+  {
+   "db_column": "invalid_clicks",
+   "amazon_header": "metric.invalidClicks",
+   "type": "decimal"
+  },
+  {
+   "db_column": "main_imdb_ad_clicks",
+   "amazon_header": "metric.mainImdbAdClicks",
+   "type": "decimal"
+  },
+  {
+   "db_column": "measurable_impressions",
+   "amazon_header": "metric.measurableImpressions",
+   "type": "decimal"
+  },
+  {
+   "db_column": "viewable_impressions",
+   "amazon_header": "metric.viewableImpressions",
+   "type": "decimal"
+  },
+  {
+   "db_column": "supply_cost",
+   "amazon_header": "metric.supplyCost",
+   "type": "decimal"
+  },
+  {
+   "db_column": "total_cost",
+   "amazon_header": "metric.totalCost",
+   "type": "decimal",
+   "note": "Ad spend (Amazon's totalCost)."
+  },
+  {
+   "db_column": "interactive_impressions",
+   "amazon_header": "metric.interactiveImpressions",
+   "type": "decimal"
+  },
+  {
+   "db_column": "notification_opens",
+   "amazon_header": "metric.notificationOpens",
+   "type": "decimal"
+  },
+  {
+   "db_column": "notification_clicks",
+   "amazon_header": "metric.notificationClicks",
+   "type": "decimal"
+  },
+  {
+   "db_column": "starts_video_ad",
+   "amazon_header": "metric.startsVideoAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "first_quartile_video_ad",
+   "amazon_header": "metric.firstQuartileVideoAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "midpoint_video_ad",
+   "amazon_header": "metric.midpointVideoAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "third_quartile_video_ad",
+   "amazon_header": "metric.thirdQuartileVideoAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "complete_views_video_ad",
+   "amazon_header": "metric.completeViewsVideoAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "pauses_video_ad",
+   "amazon_header": "metric.pausesVideoAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "resumes_video_ad",
+   "amazon_header": "metric.resumesVideoAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "mutes_video_ad",
+   "amazon_header": "metric.mutesVideoAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "starts_audio_ad",
+   "amazon_header": "metric.startsAudioAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "unmutes_video_ad",
+   "amazon_header": "metric.unmutesVideoAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "first_quartile_audio_ad",
+   "amazon_header": "metric.firstQuartileAudioAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "replays_video_ad",
+   "amazon_header": "metric.replaysVideoAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "midpoint_audio_ad",
+   "amazon_header": "metric.midpointAudioAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "skips_back_video_ad",
+   "amazon_header": "metric.skipsBackVideoAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "skips_forward_video_ad",
+   "amazon_header": "metric.skipsForwardVideoAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "third_quartile_audio_ad",
+   "amazon_header": "metric.thirdQuartileAudioAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "complete_listens_audio_ad",
+   "amazon_header": "metric.completeListensAudioAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "impressions_video_ad",
+   "amazon_header": "metric.impressionsVideoAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "five_second_views_video_ad",
+   "amazon_header": "metric.5secondViewsVideoAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "pauses_audio_ad",
+   "amazon_header": "metric.pausesAudioAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "resumes_audio_ad",
+   "amazon_header": "metric.resumesAudioAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "mutes_audio_ad",
+   "amazon_header": "metric.mutesAudioAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "unmutes_audio_ad",
+   "amazon_header": "metric.unmutesAudioAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "rewinds_audio_ad",
+   "amazon_header": "metric.rewindsAudioAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "skips_audio_ad",
+   "amazon_header": "metric.skipsAudioAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "impressions_audio_ad",
+   "amazon_header": "metric.impressionsAudioAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "plays_audio_ad",
+   "amazon_header": "metric.playsAudioAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "progress_audio_ad",
+   "amazon_header": "metric.progressAudioAd",
+   "type": "decimal"
+  },
+  {
+   "db_column": "purchases",
+   "amazon_header": "metric.purchases",
+   "type": "decimal",
+   "note": "Orders attributed over attribution_window_days."
+  },
+  {
+   "db_column": "sales",
+   "amazon_header": "metric.sales",
+   "type": "decimal",
+   "note": "Sales attributed over attribution_window_days, in `currency`."
+  },
+  {
+   "db_column": "units_sold",
+   "amazon_header": "metric.unitsSold",
+   "type": "decimal"
+  },
+  {
+   "db_column": "purchases_from_clicks",
+   "amazon_header": "metric.purchasesFromClicks",
+   "type": "decimal"
+  },
+  {
+   "db_column": "sales_from_clicks",
+   "amazon_header": "metric.salesFromClicks",
+   "type": "decimal"
+  },
+  {
+   "db_column": "units_sold_from_clicks",
+   "amazon_header": "metric.unitsSoldFromClicks",
+   "type": "decimal"
+  },
+  {
+   "db_column": "purchases_from_views",
+   "amazon_header": "metric.purchasesFromViews",
+   "type": "decimal"
+  },
+  {
+   "db_column": "sales_from_views",
+   "amazon_header": "metric.salesFromViews",
+   "type": "decimal"
+  },
+  {
+   "db_column": "units_sold_from_views",
+   "amazon_header": "metric.unitsSoldFromViews",
+   "type": "decimal"
+  },
+  {
+   "db_column": "purchases_promoted",
+   "amazon_header": "metric.purchasesPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "sales_promoted",
+   "amazon_header": "metric.salesPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "units_sold_promoted",
+   "amazon_header": "metric.unitsSoldPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "purchases_from_clicks_promoted",
+   "amazon_header": "metric.purchasesFromClicksPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "sales_from_clicks_promoted",
+   "amazon_header": "metric.salesFromClicksPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "units_sold_from_clicks_promoted",
+   "amazon_header": "metric.unitsSoldFromClicksPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "purchases_from_views_promoted",
+   "amazon_header": "metric.purchasesFromViewsPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "sales_from_views_promoted",
+   "amazon_header": "metric.salesFromViewsPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "units_sold_from_views_promoted",
+   "amazon_header": "metric.unitsSoldFromViewsPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "purchases_halo",
+   "amazon_header": "metric.purchasesHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "sales_halo",
+   "amazon_header": "metric.salesHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "units_sold_halo",
+   "amazon_header": "metric.unitsSoldHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "purchases_from_clicks_halo",
+   "amazon_header": "metric.purchasesFromClicksHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "sales_from_clicks_halo",
+   "amazon_header": "metric.salesFromClicksHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "units_sold_from_clicks_halo",
+   "amazon_header": "metric.unitsSoldFromClicksHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "purchases_from_views_halo",
+   "amazon_header": "metric.purchasesFromViewsHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "sales_from_views_halo",
+   "amazon_header": "metric.salesFromViewsHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "units_sold_from_views_halo",
+   "amazon_header": "metric.unitsSoldFromViewsHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_purchases",
+   "amazon_header": "metric.newToBrandPurchases",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_sales",
+   "amazon_header": "metric.newToBrandSales",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_units_sold",
+   "amazon_header": "metric.newToBrandUnitsSold",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_purchases_from_clicks",
+   "amazon_header": "metric.newToBrandPurchasesFromClicks",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_sales_from_clicks",
+   "amazon_header": "metric.newToBrandSalesFromClicks",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_units_sold_from_clicks",
+   "amazon_header": "metric.newToBrandUnitsSoldFromClicks",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_purchases_from_views",
+   "amazon_header": "metric.newToBrandPurchasesFromViews",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_units_sold_from_views",
+   "amazon_header": "metric.newToBrandUnitsSoldFromViews",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_sales_from_views",
+   "amazon_header": "metric.newToBrandSalesFromViews",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_purchases_promoted",
+   "amazon_header": "metric.newToBrandPurchasesPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_sales_promoted",
+   "amazon_header": "metric.newToBrandSalesPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_units_sold_promoted",
+   "amazon_header": "metric.newToBrandUnitsSoldPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_purchases_from_clicks_promoted",
+   "amazon_header": "metric.newToBrandPurchasesFromClicksPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_sales_from_clicks_promoted",
+   "amazon_header": "metric.newToBrandSalesFromClicksPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_units_sold_from_clicks_promoted",
+   "amazon_header": "metric.newToBrandUnitsSoldFromClicksPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_purchases_from_views_promoted",
+   "amazon_header": "metric.newToBrandPurchasesFromViewsPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_sales_from_views_promoted",
+   "amazon_header": "metric.newToBrandSalesFromViewsPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_units_sold_from_views_promoted",
+   "amazon_header": "metric.newToBrandUnitsSoldFromViewsPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_purchases_halo",
+   "amazon_header": "metric.newToBrandPurchasesHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_sales_halo",
+   "amazon_header": "metric.newToBrandSalesHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_units_sold_halo",
+   "amazon_header": "metric.newToBrandUnitsSoldHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_purchases_from_clicks_halo",
+   "amazon_header": "metric.newToBrandPurchasesFromClicksHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_sales_from_clicks_halo",
+   "amazon_header": "metric.newToBrandSalesFromClicksHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_units_sold_from_clicks_halo",
+   "amazon_header": "metric.newToBrandUnitsSoldFromClicksHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_purchases_from_views_halo",
+   "amazon_header": "metric.newToBrandPurchasesFromViewsHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_sales_from_views_halo",
+   "amazon_header": "metric.newToBrandSalesFromViewsHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_units_sold_from_views_halo",
+   "amazon_header": "metric.newToBrandUnitsSoldFromViewsHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_detail_page_views",
+   "amazon_header": "metric.newToBrandDetailPageViews",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_detail_page_views_from_clicks",
+   "amazon_header": "metric.newToBrandDetailPageViewsFromClicks",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_detail_page_views_from_views",
+   "amazon_header": "metric.newToBrandDetailPageViewsFromViews",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_detail_page_views_promoted",
+   "amazon_header": "metric.newToBrandDetailPageViewsPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_detail_page_views_from_clicks_promoted",
+   "amazon_header": "metric.newToBrandDetailPageViewsFromClicksPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_detail_page_views_from_views_promoted",
+   "amazon_header": "metric.newToBrandDetailPageViewsFromViewsPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_detail_page_views_halo",
+   "amazon_header": "metric.newToBrandDetailPageViewsHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_detail_page_views_from_clicks_halo",
+   "amazon_header": "metric.newToBrandDetailPageViewsFromClicksHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_detail_page_views_from_views_halo",
+   "amazon_header": "metric.newToBrandDetailPageViewsFromViewsHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_add_to_cart",
+   "amazon_header": "metric.newToBrandAddToCart",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_add_to_cart_from_clicks",
+   "amazon_header": "metric.newToBrandAddToCartFromClicks",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_add_to_cart_from_views",
+   "amazon_header": "metric.newToBrandAddToCartFromViews",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_add_to_cart_promoted",
+   "amazon_header": "metric.newToBrandAddToCartPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_add_to_cart_from_clicks_promoted",
+   "amazon_header": "metric.newToBrandAddToCartFromClicksPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_add_to_cart_from_views_promoted",
+   "amazon_header": "metric.newToBrandAddToCartFromViewsPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_add_to_cart_halo",
+   "amazon_header": "metric.newToBrandAddToCartHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_add_to_cart_from_clicks_halo",
+   "amazon_header": "metric.newToBrandAddToCartFromClicksHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "new_to_brand_add_to_cart_from_views_halo",
+   "amazon_header": "metric.newToBrandAddToCartFromViewsHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "detail_page_views",
+   "amazon_header": "metric.detailPageViews",
+   "type": "decimal"
+  },
+  {
+   "db_column": "detail_page_views_from_clicks",
+   "amazon_header": "metric.detailPageViewsFromClicks",
+   "type": "decimal"
+  },
+  {
+   "db_column": "detail_page_views_from_views",
+   "amazon_header": "metric.detailPageViewsFromViews",
+   "type": "decimal"
+  },
+  {
+   "db_column": "detail_page_views_promoted",
+   "amazon_header": "metric.detailPageViewsPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "detail_page_views_from_clicks_promoted",
+   "amazon_header": "metric.detailPageViewsFromClicksPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "detail_page_views_from_views_promoted",
+   "amazon_header": "metric.detailPageViewsFromViewsPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "detail_page_views_halo",
+   "amazon_header": "metric.detailPageViewsHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "detail_page_views_from_clicks_halo",
+   "amazon_header": "metric.detailPageViewsFromClicksHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "detail_page_views_from_views_halo",
+   "amazon_header": "metric.detailPageViewsFromViewsHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "add_to_cart",
+   "amazon_header": "metric.addToCart",
+   "type": "decimal"
+  },
+  {
+   "db_column": "add_to_cart_from_clicks",
+   "amazon_header": "metric.addToCartFromClicks",
+   "type": "decimal"
+  },
+  {
+   "db_column": "add_to_cart_from_views",
+   "amazon_header": "metric.addToCartFromViews",
+   "type": "decimal"
+  },
+  {
+   "db_column": "add_to_cart_promoted",
+   "amazon_header": "metric.addToCartPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "add_to_cart_from_clicks_promoted",
+   "amazon_header": "metric.addToCartFromClicksPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "add_to_cart_from_views_promoted",
+   "amazon_header": "metric.addToCartFromViewsPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "add_to_cart_halo",
+   "amazon_header": "metric.addToCartHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "add_to_cart_from_clicks_halo",
+   "amazon_header": "metric.addToCartFromClicksHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "add_to_cart_from_views_halo",
+   "amazon_header": "metric.addToCartFromViewsHalo",
+   "type": "decimal"
+  }
+ ]
+}

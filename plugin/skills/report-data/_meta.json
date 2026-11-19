@@ -6,6 +6,7 @@
       "rpt_orders": "Fed by TWO order report types (GET_FLAT_FILE_ALL_ORDERS_DATA_BY_ORDER_DATE_GENERAL for the one-shot 30-day backfill, ..._BY_LAST_UPDATE_GENERAL for the hourly incremental) — no single report type to name it after.",
       "rpt_sp_purchased_products": "Fed by two report types; keeps its shorthand name.",
       "rpt_sp_* / rpt_sb_* / rpt_sd_*": "Ads-API tables — already Amazon-derived names.",
+      "rpt_ads_* / v_ads_*": "Amazon Marketing Stream datasets, pushed by Amazon rather than requested as reports; v_ads_* are views over them. The default source for Ads analysis.",
       "rpt_dk_*": "Data Kiosk GraphQL datasets, not SP-API report types.",
       "rpt_noon_*": "noon.com, not Amazon.",
       "listing_images": "Enrichment cache, not a report.",
@@ -980,6 +981,243 @@
       ],
       "description": "FBA removal SHIPMENT events: what physically left the fulfilment centre against a removal order, with carrier and tracking. The sibling rpt_get_fba_fulfillment_removal_order_detail_data holds the ORDER side — requested vs cancelled vs disposed quantities. Join them on order_id to reconcile requested against shipped.",
       "reference": "reference/rpt_get_fba_fulfillment_removal_shipment_detail_data.json"
+    },
+    {
+      "table": "rpt_ads_ad_groups",
+      "report_type": "ads-roster/ad-groups",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ads_roster",
+      "unique_key": [
+        "store_id",
+        "country_code",
+        "ad_product",
+        "ad_group_id"
+      ],
+      "description": "Current Ads ad groups: name, state, default bid.",
+      "reference": "reference/rpt_ads_ad_groups.json"
+    },
+    {
+      "table": "rpt_ads_ads",
+      "report_type": "ads-roster/ads",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ads_roster",
+      "unique_key": [
+        "store_id",
+        "country_code",
+        "ad_product",
+        "ad_id"
+      ],
+      "description": "Current Ads ads: advertised ASIN and SKU, state.",
+      "reference": "reference/rpt_ads_ads.json"
+    },
+    {
+      "table": "rpt_ads_campaign_daily",
+      "report_type": "ads-performance-v1/campaign-daily",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "stream",
+      "unique_key": [
+        "store_id",
+        "country_code",
+        "report_date",
+        "ad_product",
+        "campaign_id"
+      ],
+      "description": "Stream: per campaign per marketplace day. The long trend, kept 730 days; read it through v_ads_campaign_daily for names.",
+      "reference": "reference/rpt_ads_campaign_daily.json"
+    },
+    {
+      "table": "rpt_ads_campaign_hourly",
+      "report_type": "ads-performance-v1/campaign-hourly",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "stream",
+      "unique_key": [
+        "store_id",
+        "country_code",
+        "report_date",
+        "hour",
+        "ad_product",
+        "campaign_id"
+      ],
+      "description": "Stream: per campaign per marketplace hour, with weekday. Dayparting and intraday pacing; kept 90 days.",
+      "reference": "reference/rpt_ads_campaign_hourly.json"
+    },
+    {
+      "table": "rpt_ads_campaigns",
+      "report_type": "ads-roster/campaigns",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ads_roster",
+      "unique_key": [
+        "store_id",
+        "country_code",
+        "ad_product",
+        "campaign_id"
+      ],
+      "description": "Current Ads campaigns, every ad product: name, state, budget, portfolio. Join to Stream facts for names.",
+      "reference": "reference/rpt_ads_campaigns.json"
+    },
+    {
+      "table": "rpt_ads_converted_product_daily",
+      "report_type": "ads-converted-product-v1",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "stream",
+      "unique_key": [
+        "store_id",
+        "country_code",
+        "report_date",
+        "record_key"
+      ],
+      "description": "Stream: purchases by the product bought, promoted vs brand halo, per campaign, ad group and advertised product. Replaces the purchased-product reports.",
+      "reference": "reference/rpt_ads_converted_product_daily.json"
+    },
+    {
+      "table": "rpt_ads_entity_changes",
+      "report_type": null,
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ads_roster",
+      "unique_key": [
+        "store_id",
+        "country_code",
+        "ad_product",
+        "entity_type",
+        "entity_id",
+        "field",
+        "detected_at"
+      ],
+      "description": "Every change the daily Ads read saw: a name, state, budget or bid, old and new value.",
+      "reference": "reference/rpt_ads_entity_changes.json"
+    },
+    {
+      "table": "rpt_ads_performance_daily",
+      "report_type": "ads-performance-v1/daily",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "stream",
+      "unique_key": [
+        "store_id",
+        "country_code",
+        "report_date",
+        "dims_key"
+      ],
+      "description": "Stream: every ad product per marketplace day at the full grain. The source of the v_ads_* views; kept 400 days.",
+      "reference": "reference/rpt_ads_performance_daily.json"
+    },
+    {
+      "table": "rpt_ads_performance_hourly",
+      "report_type": "ads-performance-v1",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "stream",
+      "unique_key": [
+        "store_id",
+        "country_code",
+        "report_date",
+        "hour",
+        "record_key"
+      ],
+      "description": "Stream: every ad product per marketplace hour at the full grain (campaign, ad group, ad, target, search term, placement, product). Kept 75 days; prefer the daily tables or a view.",
+      "reference": "reference/rpt_ads_performance_hourly.json"
+    },
+    {
+      "table": "rpt_ads_targets",
+      "report_type": "ads-roster/targets",
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "ads_roster",
+      "unique_key": [
+        "store_id",
+        "country_code",
+        "ad_product",
+        "target_id"
+      ],
+      "description": "Current Ads targets: keywords, product targets, SB themes, with bid and state.",
+      "reference": "reference/rpt_ads_targets.json"
+    },
+    {
+      "table": "v_ads_campaign_daily",
+      "report_type": null,
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "view",
+      "unique_key": null,
+      "description": "Stream view: per campaign per day, with current name, state, budget. Campaign trends, year over year.",
+      "reference": "reference/v_ads_campaign_daily.json"
+    },
+    {
+      "table": "v_ads_placement_daily",
+      "report_type": null,
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "view",
+      "unique_key": null,
+      "description": "Stream view: per campaign per placement per day.",
+      "reference": "reference/v_ads_placement_daily.json"
+    },
+    {
+      "table": "v_ads_product_daily",
+      "report_type": null,
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "view",
+      "unique_key": null,
+      "description": "Stream view: per advertised product (ASIN, SKU) per day.",
+      "reference": "reference/v_ads_product_daily.json"
+    },
+    {
+      "table": "v_ads_search_term_daily",
+      "report_type": null,
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "view",
+      "unique_key": null,
+      "description": "Stream view: per customer search term per day, with the matching target. Harvest and negative mining.",
+      "reference": "reference/v_ads_search_term_daily.json"
+    },
+    {
+      "table": "v_ads_target_daily",
+      "report_type": null,
+      "is_snapshot": false,
+      "queryable": true,
+      "pii": false,
+      "deprecated": false,
+      "strategy": "view",
+      "unique_key": null,
+      "description": "Stream view: per target (keyword, product target, theme) per day, with text, match type, bid, state.",
+      "reference": "reference/v_ads_target_daily.json"
     }
   ]
 }

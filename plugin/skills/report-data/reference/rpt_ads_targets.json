@@ -1,0 +1,147 @@
+{
+ "_meta": {
+  "table": "rpt_ads_targets",
+  "report_type": "ads-roster/targets",
+  "is_snapshot": false,
+  "description": "Every Amazon Ads target as it is now — keywords (keyword_text, match_type), targeting clauses (expression) and Sponsored Brands themes (match_type THEME) — with bid and state. target_id is Stream's adGroupTarget.id. Read daily from the Ads API.",
+  "search_aliases": [
+   "keywords",
+   "targets",
+   "keyword bids",
+   "match type",
+   "product targeting",
+   "themes"
+  ],
+  "caveats": [
+   "One row per entity, current state, updated in place — join it to a fact table on (store_id, country_code, ad_product, <id>); it never multiplies a sum.",
+   "Archived entities are kept so old facts keep their names; an entity unseen for 400 days is removed.",
+   "state and match_type are upper-cased across SP / SB / SD — case only, never a value mapping; the rest of Amazon's object is in `attributes`.",
+   "Every change of a field is a row in rpt_ads_entity_changes."
+  ],
+  "pii": false,
+  "queryable": true,
+  "deprecated": false,
+  "strategy": "ads_roster",
+  "date_column": "last_seen_on",
+  "unique_key": [
+   "store_id",
+   "country_code",
+   "ad_product",
+   "target_id"
+  ],
+  "cron": "42 1 * * *",
+  "retention_days": 400,
+  "retention_note": "kept 400 days by last_seen_on; older rows are pruned",
+  "marketplace": {
+   "grain": "per_mkt",
+   "label": {
+    "kind": "requested",
+    "column": "country_code",
+    "values": null,
+    "means": "marketplace",
+    "nullable": false,
+    "null_means": "unplaced"
+   }
+  }
+ },
+ "columns": [
+  {
+   "db_column": "store_id",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Internal tenant scope — auto-applied from `store`; never filter on it manually."
+  },
+  {
+   "db_column": "target_id",
+   "amazon_header": "(Ads API, all ad products)",
+   "type": "str"
+  },
+  {
+   "db_column": "campaign_id",
+   "amazon_header": "(Ads API, all ad products)",
+   "type": "str"
+  },
+  {
+   "db_column": "ad_group_id",
+   "amazon_header": "(Ads API, all ad products)",
+   "type": "str"
+  },
+  {
+   "db_column": "target_kind",
+   "amazon_header": "(Ads API, all ad products)",
+   "type": "str",
+   "note": "'keyword', or 'target' for a targeting clause (its text in `expression`)."
+  },
+  {
+   "db_column": "keyword_text",
+   "amazon_header": "(Ads API, all ad products)",
+   "type": "str",
+   "note": "The keyword's text; NULL for a product or auto target."
+  },
+  {
+   "db_column": "match_type",
+   "amazon_header": "(Ads API, all ad products)",
+   "type": "str",
+   "note": "BROAD, PHRASE, EXACT, THEME (Sponsored Brands), or NULL for a product or auto target."
+  },
+  {
+   "db_column": "expression",
+   "amazon_header": "(Ads API, all ad products)",
+   "type": "json"
+  },
+  {
+   "db_column": "expression_type",
+   "amazon_header": "(Ads API, all ad products)",
+   "type": "str"
+  },
+  {
+   "db_column": "bid",
+   "amazon_header": "(Ads API, all ad products)",
+   "type": "decimal"
+  },
+  {
+   "db_column": "state",
+   "amazon_header": "(Ads API, all ad products)",
+   "type": "str"
+  },
+  {
+   "db_column": "country_code",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Marketplace code (UK/US/AE/...). Auto-filtered from the store suffix on per-marketplace tables."
+  },
+  {
+   "db_column": "ad_product",
+   "amazon_header": "(Ads API, all ad products)",
+   "type": "str",
+   "note": "Which ad product: 'Sponsored Products', 'Sponsored Brands', 'Sponsored Display' (title case). One table holds them all; filter or group on it."
+  },
+  {
+   "db_column": "profile_id",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Ads profile id (one per marketplace) — auto-filtered from the store suffix; do not filter manually."
+  },
+  {
+   "db_column": "first_seen_on",
+   "amazon_header": "(Ads API, all ad products)",
+   "type": "date"
+  },
+  {
+   "db_column": "last_seen_on",
+   "amazon_header": "(Ads API, all ad products)",
+   "type": "date"
+  },
+  {
+   "db_column": "attributes",
+   "amazon_header": "(Ads API, all ad products)",
+   "type": "json"
+  },
+  {
+   "db_column": "ingested_at",
+   "amazon_header": "(infrastructure)",
+   "type": "timestamptz",
+   "note": "Row ingest timestamp (UTC). Bookkeeping, not business data. UTC instant (timestamptz). Query results show it in the store ref's marketplace local time, without an offset; a bare date in a filter is that marketplace's midnight."
+  }
+ ]
+}
