@@ -16,7 +16,8 @@
    "A tombstone (is_tombstone) is a record Amazon deleted: every metric is NULL.",
    "Conversions mature over attribution_window_days and Amazon restates them for 70 days.",
    "Never add a Stream number to a v3 (rpt_*_purchased_products) number.",
-   "Uncalibrated: no delivery of this dataset has been read yet.",
+   "Replaces rpt_sb_purchased_products for Sponsored Brands (ad_product = 'Sponsored Brands', 14-day attribution, view-through included): orders_14d is purchases, sales_14d sales, units_sold_14d units_sold, new_to_brand_*_14d new_to_brand_*, purchased_asin converted_asin, attribution_type 'Brand Halo' product_relevance 'Brand halo'. Names: join rpt_ads_campaigns / rpt_ads_ad_groups; the currency is `currency`.",
+   "combined_*, long_term_sales, add_to_list*, product_review_page_visits* and subscribe_and_save_subscriptions* are typed since 2026-11-20: an older row has them NULL and the value in `extra` under Amazon's field id; read COALESCE(column, (extra->>'metric.<fieldId>')::numeric).",
    "History still loading: a new subscription delivers the dataset's last 70 days over its first 48 hours, so earlier days may be missing until then (Admin → Health lists the accounts)."
   ],
   "pii": false,
@@ -496,6 +497,166 @@
   {
    "db_column": "add_to_cart_from_views_halo",
    "amazon_header": "metric.addToCartFromViewsHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "combined_purchases",
+   "amazon_header": "metric.combinedPurchases",
+   "type": "decimal"
+  },
+  {
+   "db_column": "combined_purchases_from_clicks",
+   "amazon_header": "metric.combinedPurchasesFromClicks",
+   "type": "decimal"
+  },
+  {
+   "db_column": "combined_purchases_from_views",
+   "amazon_header": "metric.combinedPurchasesFromViews",
+   "type": "decimal"
+  },
+  {
+   "db_column": "combined_sales",
+   "amazon_header": "metric.combinedSales",
+   "type": "decimal"
+  },
+  {
+   "db_column": "combined_units_sold",
+   "amazon_header": "metric.combinedUnitsSold",
+   "type": "decimal"
+  },
+  {
+   "db_column": "long_term_sales",
+   "amazon_header": "metric.longTermSales",
+   "type": "decimal"
+  },
+  {
+   "db_column": "add_to_list",
+   "amazon_header": "metric.addToList",
+   "type": "decimal"
+  },
+  {
+   "db_column": "add_to_list_from_clicks",
+   "amazon_header": "metric.addToListFromClicks",
+   "type": "decimal"
+  },
+  {
+   "db_column": "add_to_list_from_views",
+   "amazon_header": "metric.addToListFromViews",
+   "type": "decimal"
+  },
+  {
+   "db_column": "add_to_list_promoted",
+   "amazon_header": "metric.addToListPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "add_to_list_from_clicks_promoted",
+   "amazon_header": "metric.addToListFromClicksPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "add_to_list_from_views_promoted",
+   "amazon_header": "metric.addToListFromViewsPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "add_to_list_halo",
+   "amazon_header": "metric.addToListHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "add_to_list_from_clicks_halo",
+   "amazon_header": "metric.addToListFromClicksHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "add_to_list_from_views_halo",
+   "amazon_header": "metric.addToListFromViewsHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "product_review_page_visits",
+   "amazon_header": "metric.productReviewPageVisits",
+   "type": "decimal"
+  },
+  {
+   "db_column": "product_review_page_visits_from_clicks",
+   "amazon_header": "metric.productReviewPageVisitsFromClicks",
+   "type": "decimal"
+  },
+  {
+   "db_column": "product_review_page_visits_from_views",
+   "amazon_header": "metric.productReviewPageVisitsFromViews",
+   "type": "decimal"
+  },
+  {
+   "db_column": "product_review_page_visits_promoted",
+   "amazon_header": "metric.productReviewPageVisitsPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "product_review_page_visits_from_clicks_promoted",
+   "amazon_header": "metric.productReviewPageVisitsFromClicksPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "product_review_page_visits_from_views_promoted",
+   "amazon_header": "metric.productReviewPageVisitsFromViewsPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "product_review_page_visits_from_clicks_halo",
+   "amazon_header": "metric.productReviewPageVisitsFromClicksHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "product_review_page_visits_from_views_halo",
+   "amazon_header": "metric.productReviewPageVisitsFromViewsHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "subscribe_and_save_subscriptions",
+   "amazon_header": "metric.subscribeAndSaveSubscriptions",
+   "type": "decimal"
+  },
+  {
+   "db_column": "subscribe_and_save_subscriptions_from_clicks",
+   "amazon_header": "metric.subscribeAndSaveSubscriptionsFromClicks",
+   "type": "decimal"
+  },
+  {
+   "db_column": "subscribe_and_save_subscriptions_from_views",
+   "amazon_header": "metric.subscribeAndSaveSubscriptionsFromViews",
+   "type": "decimal"
+  },
+  {
+   "db_column": "subscribe_and_save_subscriptions_promoted",
+   "amazon_header": "metric.subscribeAndSaveSubscriptionsPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "subscribe_and_save_subscriptions_from_clicks_promoted",
+   "amazon_header": "metric.subscribeAndSaveSubscriptionsFromClicksPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "subscribe_and_save_subscriptions_from_views_promoted",
+   "amazon_header": "metric.subscribeAndSaveSubscriptionsFromViewsPromoted",
+   "type": "decimal"
+  },
+  {
+   "db_column": "subscribe_and_save_subscriptions_halo",
+   "amazon_header": "metric.subscribeAndSaveSubscriptionsHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "subscribe_and_save_subscriptions_from_clicks_halo",
+   "amazon_header": "metric.subscribeAndSaveSubscriptionsFromClicksHalo",
+   "type": "decimal"
+  },
+  {
+   "db_column": "subscribe_and_save_subscriptions_from_views_halo",
+   "amazon_header": "metric.subscribeAndSaveSubscriptionsFromViewsHalo",
    "type": "decimal"
   }
  ]
