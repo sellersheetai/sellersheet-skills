@@ -3,7 +3,7 @@
   "table": "rpt_sd_targets",
   "report_type": "sdTargets",
   "is_snapshot": false,
-  "description": "RETIRED (Amazon Ads Reporting v3): days before 2026-09-01 only, read through the ads-v3-archive skill; removed on 2026-12-31. From 2026-09-01 read the Stream tables and views. Sponsored Display target-level daily performance.",
+  "description": "Amazon Ads Sponsored Display per target (audience, product and contextual targeting) per day (Reporting v3 sdTargeting). Retired: v3 report collection stopped for every store on 2026-11-20; Ads data from 2026-09-01 is in v_ads_target_daily (ad_product = 'Sponsored Display'), and this table is deleted on 2026-12-31.",
   "pii": false,
   "queryable": true,
   "deprecated": true,
@@ -30,7 +30,15 @@
     "nullable": false,
     "null_means": "unplaced"
    }
-  }
+  },
+  "search_aliases": [
+   "sd target report v3"
+  ],
+  "caveats": [
+   "For any day from 2026-09-01 read v_ads_target_daily with ad_product = 'Sponsored Display'; use this table only for days before 2026-09-01, until it is deleted on 2026-12-31. Split a range at 2026-09-01 and never add the two: the same Ads data is in both.",
+   "Columns there: target_id as named, targeting_expression / targeting_text / resolved_targeting_expression → expression, bid as named, target_status → target_state, campaign_name and ad_group_name as named. cost → total_cost; impressions, clicks, purchases, sales, units_sold, detail_page_views, add_to_cart and new_to_brand_purchases / _sales / _units_sold / _detail_page_views as named; every *_clicks column → *_from_clicks and every *_views column → *_from_views; purchases_promoted_clicks → purchases_from_clicks_promoted, sales_promoted_clicks → sales_from_clicks_promoted; impressions_views → viewable_impressions; the video_* columns → *_video_ad as for Sponsored Brands. Both are 14-day attribution. cumulative_reach and impressions_frequency_average have no Stream twin; rates and e_cp_* are not stored: compute them from the sums. currency_code → currency.",
+   "Its rows stop on 2026-11-20, when v3 collection ended for every store (its schedules read superseded_by_stream): its newest day is not the newest Ads data."
+  ]
  },
  "columns": [
   {

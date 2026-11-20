@@ -3,7 +3,7 @@
   "table": "rpt_sp_search_terms",
   "report_type": "spSearchTerm",
   "is_snapshot": false,
-  "description": "RETIRED (Amazon Ads Reporting v3): days before 2026-09-01 only, read through the ads-v3-archive skill; removed on 2026-12-31. From 2026-09-01 read the Stream tables and views. Sponsored Products search term report showing which queries triggered ads.",
+  "description": "Amazon Ads Sponsored Products per customer search term per day, by campaign, ad group and the keyword or target that matched it (Reporting v3 spSearchTerm). Retired: v3 report collection stopped for every store on 2026-11-20; Ads data from 2026-09-01 is in v_ads_search_term_daily (ad_product = 'Sponsored Products'), and this table is deleted on 2026-12-31.",
   "pii": false,
   "queryable": true,
   "deprecated": true,
@@ -38,7 +38,15 @@
     "nullable": false,
     "null_means": "unplaced"
    }
-  }
+  },
+  "search_aliases": [
+   "sp search term report v3"
+  ],
+  "caveats": [
+   "For any day from 2026-09-01 read v_ads_search_term_daily with ad_product = 'Sponsored Products'; use this table only for days before 2026-09-01, until it is deleted on 2026-12-31. Split a range at 2026-09-01 and never add the two: the same Ads data is in both.",
+   "Columns there: search_term as named (Stream's '(Other)' row holds what Amazon names no term for), keyword → keyword_text, match_type as named, keyword_id / target_id → target_id (its expression in v_ads_target_daily); campaign and ad group names from rpt_ads_campaigns / rpt_ads_ad_groups. cost and spend → total_cost; impressions and clicks as named; purchases_7d → purchases, sales_7d → sales, units_sold_clicks_7d → units_sold_from_clicks, purchases_same_sku_7d → purchases_promoted, attributed_sales_same_sku_7d → sales_promoted, units_sold_same_sku_7d → units_sold_promoted. Stream keeps one attribution window per row (attribution_window_days: 7 for a seller's Sponsored Products, 14 for a vendor's, whose 14-day columns map the same way); the 1- and 30-day columns have no Stream twin. cost_per_click, click_through_rate, ACOS and ROAS are not stored: compute them from the sums. currency_code → currency.",
+   "Its rows stop on 2026-11-20, when v3 collection ended for every store (its schedules read superseded_by_stream): its newest day is not the newest Ads data."
+  ]
  },
  "columns": [
   {

@@ -11,6 +11,15 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.21.1] — 2026-11-20
+
+### ads-v3-archive holds the retired v3 references alone
+
+- The 19 retired Ads Reporting v3 references leave `report-data` (files and index entries); the
+  `ads-v3-archive` skill documents them until 2026-12-31.
+- Each of them now carries its own description, search aliases and caveats: the 2026-09-01
+  boundary, the Stream relation to read instead, and the column map.
+
 ## [0.21.0] — 2026-11-20
 
 ### Ads performance: Stream only, and a temporary archive skill for earlier days
