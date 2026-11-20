@@ -6,7 +6,7 @@ author: SellerSheet AI
 description: >-
   Guide for managing Amazon Advertising (SP, SB, SD) using SellerSheet MCP tools. Use when working with Amazon Ads campaigns, ad groups, keywords, targets, bids, budgets, bulk creation, negative keywords, ad performance data (the Marketing Stream tables and views — search terms, placement, dayparting, purchased products), bulk exports, change history, account management, invoices, validation configs, or Amazon Marketing Cloud (AMC) queries — new-to-brand, reach and frequency, campaign overlap, hour of day. Do NOT use for FBA inbound shipments (use fba-inbound) or for sheet formatting/reporting beyond this skill's own recipes (use sellersheet-sheets).
   中文触发词：亚马逊广告、SP/SB/SD 广告活动、广告组、关键词与投放、竞价、预算、否定词、批量创建广告、广告数据导出、变更历史、广告账户与发票、亚马逊营销云 AMC（新客、触达与频次、广告活动重叠）。
-version: 0.20.2
+version: 0.21.0
 metadata: {apis: [ads.v1, ads.sp, ads.sb, ads.sd, ads.account, ads.reports, ads.amc], pattern: Gate}
 ---
 
@@ -100,9 +100,11 @@ it does not declare a mode. Default is interactive; autopilot is opt-in per conv
 | Situation | Tool |
 |---|---|
 | All analysis, optimization, daily ops — default | `query_report_data` on the Marketing Stream views `v_ads_*` and tables `rpt_ads_*` |
-| Days before the store's Stream data starts | `query_report_data` on the v3 report tables `rpt_sp_*` / `rpt_sb_*` / `rpt_sd_*` |
 | Last 1-2 days — may be incomplete | Warn user: Amazon attribution not yet finalized |
 | Need columns/dimensions not in synced tables, OK to wait hours | `ads_create_async_report` + `ads_get_async_report` |
+
+**Ads performance from 2026-09-01: the Stream tables and views; before 2026-09-01: see
+ads-v3-archive (until 2026-12-31). Never add the two; split a range at 2026-09-01.**
 
 **`query_report_data` is the default.** The offline report path (`ads_create_async_report`)
 takes 30 minutes to several hours — only use it when synced tables genuinely cannot
@@ -121,17 +123,14 @@ serve the need. `report-data` owns the table guide, the query semantics and the 
 - Amazon restates conversions for 70 days, so the latest days keep growing.
 - `(Other)` search terms are the terms Amazon does not name (its reporting threshold): in SP
   impressions only, in SB also spend and sales. Keep them in totals, out of term lists.
-- Never add a Stream number to a v3 number. The v3 tables hold the days before the store's
-  Stream data starts; the first Stream day is the `min` of `report_date` on
-  `v_ads_campaign_daily`.
 
 **Fact tables are not a campaign inventory.** A campaign with no delivery in the window has
-no row in a fact table (Stream or v3). For the list of campaigns use `rpt_ads_campaigns`
+no row in a fact table. For the list of campaigns use `rpt_ads_campaigns`
 (every campaign as of the daily read, archived ones included; `rpt_ads_ad_groups`,
 `rpt_ads_targets`, `rpt_ads_ads` likewise), or the live `ads_query_campaign` (v1, all
-products in one call via `adProductFilter`) for this minute's state. On the v3 tables,
-`report_date: "latest"` pins to the newest **single** day, often a zero-spend partial day —
-use date filters for any cost or performance analysis.
+products in one call via `adProductFilter`) for this minute's state. Give every cost or
+performance query a date filter: `report_date: "latest"` pins to the newest **single** day,
+often a partial one.
 
 ### 4. Ad Type Hierarchy
 
@@ -265,10 +264,6 @@ Applies on top of the global sheet-approval convention (§2):
 2. ACoS = spend / sales * 100 from the sums, per campaign and per `ad_product`
 3. Flag campaigns with ACoS above target or zero sales
 4. Write summary to sheet
-
-For days before the store's Stream data starts, use the v3 tables, whose **metric columns
-differ by product**: SP has `cost` + `sales_14d` + `purchases_14d`; SB and SD have `cost` +
-`sales` + `purchases`.
 
 ### B. Find Wasted Spend
 
@@ -414,8 +409,9 @@ Monthly + after every event: `ads_get_budget_rules_for_advertiser` (page to
 exhaustion) × SP/SB/SD, reconcile against `Budget Rules Registry`, classify orphans (active
 with zero associations, rules on archived campaigns, expired-still-associated).
 Rules not created by this agent or the operator are flag-only — never touch
-them. For month close, SP's v3 `spCampaigns` report rule columns attribute
-spend to rules day-by-day (SP only; SB/SD reconstruct from the sheet ledger).
+them. For month close, the rule columns of SP's on-demand `spCampaigns` report
+(`ads_create_async_report`) attribute spend to rules day-by-day (SP only; SB/SD
+reconstruct from the sheet ledger).
 For a NOT-yet-created SP campaign's starting budget use
 `ads_get_budget_recommendation` (launch flow, Recipe D).
 
@@ -641,7 +637,7 @@ artifacts._
 
 ### Synced Report Tables
 
-**Marketing Stream (default):** the views `v_ads_campaign_daily`, `v_ads_search_term_daily`,
+**Marketing Stream:** the views `v_ads_campaign_daily`, `v_ads_search_term_daily`,
 `v_ads_target_daily`, `v_ads_placement_daily`, `v_ads_product_daily`; the tables
 `rpt_ads_campaign_hourly` (dayparting), `rpt_ads_converted_product_daily` (purchased products,
 promoted vs brand halo), `rpt_ads_performance_daily` / `_hourly` (full grain), the current
@@ -650,19 +646,12 @@ entities `rpt_ads_campaigns`, `rpt_ads_ad_groups`, `rpt_ads_targets`, `rpt_ads_a
 (`impressions`, `clicks`, `total_cost`, `purchases`, `sales`, `units_sold`,
 `new_to_brand_purchases`, …). The model is in Tier 1 §3.
 
-**v3 report tables (older history):** `rpt_sp_*`, `rpt_sb_*` and `rpt_sd_*` (campaigns, ad
-groups, keywords, targets, search terms, advertised and purchased products, the
-negative-entity tables, and SP-only placement). Not every product has every table
-(SD, for instance, has no keyword or search-term table). The negative-entity tables let
-you audit current negatives without an entity-list call.
+**Negative keyword and target lists:** `rpt_sp_negative_keywords`,
+`rpt_sp_campaign_negative_keywords`, `rpt_sp_negative_targets`,
+`rpt_sp_campaign_negative_targets`, `rpt_sb_negative_keywords` and `rpt_sd_negative_targets`
+let you audit current negatives without an entity-list call.
 
 The `report-data` skill owns the exact table list (`_meta.json`) and every table's columns
-(`reference/<table>.json`).
-
-Common v3 SP column names (verify others in the reference json before filtering): `cost`,
-`clicks`, `impressions`, `purchases_14d`, `sales_14d`, `acos_clicks_14d`,
-`acos_clicks_7d`. **Column names are snake_case** — not the camelCase used in
-`ads_create_async_report` columns (e.g. warehouse `sales_14d` vs report-config `sales14d`).
-
-For column names: load the `report-data` skill;
-its `reference/<table>.json` files list every column.
+(`reference/<table>.json`). **Column names are snake_case** (`total_cost`,
+`new_to_brand_purchases`) — not the camelCase of `ads_create_async_report` columns
+(`sales14d`); never mix the two.

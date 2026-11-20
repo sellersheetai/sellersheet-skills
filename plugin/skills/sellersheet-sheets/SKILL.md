@@ -6,7 +6,7 @@ author: SellerSheet AI
 description: >-
   Use whenever Google Sheets is the deliverable surface and SellerSheet MCP is the tool for sheet I/O. Reads, writes, formats, builds reports, dashboards, financial models, and live-data tables in Google Sheets via SellerSheet MCP endpoints (read_sheet, write_sheet, write_sheet_formula, format_sheet_range, set_sheet_number_format, add_sheet_chart, add_sheet_conditional_format, add_sheet_dropdown, etc.). Trigger when the user references a docs.google.com/spreadsheets URL, asks to publish output to a Google Sheet, builds anything in the SellerSheet workbook ecosystem, needs the live SQL() spill + image-thumbnail patterns, or builds an operator action surface (filter rows, Amazon enum dropdowns, status chips). Do NOT use for local .xlsx files — that's a different skill. This skill is self-contained — no need to load xlsx or any other sheet skill alongside; xlsx-style conventions (financial color coding, number formats, formula best practices) are adapted inline.
   中文触发词：写入 Google 表格、生成报表、看板、财务模型、表格格式化、数字格式、图表、条件格式、下拉菜单、状态标签、SQL() 实时数据。
-version: 0.20.2
+version: 0.21.0
 metadata: {apis: [sheets, drive], pattern: Pipeline}
 ---
 
@@ -230,7 +230,7 @@ Copy-paste templates and verification routines live in `scripts/`.
 - **A sheet that lives entirely server-side and is never opened in a browser** — the `SQL()` and `IMAGE()` patterns require a browser session with the SellerSheet add-on.
 - **Multi-tab operator dashboards** with freshness instrumentation + agent insights → use `sellersheet-dashboard` (it builds on top of this skill).
 - **Amazon business operations** (ads, FBA inbound, warehouse-synced reports) → use the matching domain skill: `amazon-ads`, `fba-inbound`, `report-data`.
-- **Choosing which Amazon `rpt_*` table to query** → use `report-data`.
+- **Choosing which Amazon `rpt_*` table to query** → use `report-data`. Ads performance from 2026-09-01: the Stream tables and views; before 2026-09-01: see ads-v3-archive (until 2026-12-31). Never add the two; split a range at 2026-09-01.
 
 ## First-time setup for users
 

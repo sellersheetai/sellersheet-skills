@@ -11,7 +11,7 @@ Works in Claude Code, Claude Desktop, Codex, Tencent CodeBuddy Code, Gemini CLI,
 
 **Author**: [sellersheetai.com](https://sellersheetai.com)
 **License**: Apache-2.0
-**Latest release**: v0.20.2 ([changelog](./CHANGELOG.md))
+**Latest release**: v0.21.0 ([changelog](./CHANGELOG.md))
 
 ## What you can do
 
@@ -48,17 +48,18 @@ failed action is refunded.
 
 ## Skills in this bundle
 
-Ten skills that teach your agent how to use the SellerSheet MCP well. More skills coming after their reviews complete.
+Twelve skills that teach your agent how to use the SellerSheet MCP well. More skills coming after their reviews complete.
 
 | Skill | What it does |
 |---|---|
 | **sellersheet-sheets** | Google Sheets I/O via SellerSheet MCP — reads, writes, formats, builds reports, dashboards, financial models with brand palette + live `SQL()` + image-thumbnail patterns. Self-contained — production-quality conventions for color, number formats, formulas, and layout are inlined. |
 | **sellersheet-dashboard** | Multi-tab operator dashboards with freshness instrumentation, agent insights, status tabs — for inventory, PPC, account health, listings, profit/margin, returns, buy box, cash conversion. Builds on `sellersheet-sheets`. |
-| **report-data** | Amazon SP-API + Ads-API report querying — 50+ `rpt_*` tables in the SellerSheet warehouse (inventory, listings, orders, returns, financial, ads SP/SB/SD), sync-schedule monitoring, on-demand report flow (create → poll → download the finished document from its presigned URL). Use for inventory levels, restock needs, search terms, settlements, listing status, and any synced-report question. |
+| **report-data** | Amazon SP-API + Ads-API report querying — 40+ `rpt_*` tables and the Ads views in the SellerSheet warehouse (inventory, listings, orders, returns, financial, Amazon Ads from Marketing Stream), sync-schedule monitoring, on-demand report flow (create → poll → download the finished document from its presigned URL). Use for inventory levels, restock needs, search terms, settlements, listing status, and any synced-report question. |
 | **listing-health** | Audit a store's Amazon listings: count suppressed, hidden and rejected listings from the warehouse without calling Amazon, fix what costs sales first, confirm live, agree each change with you, apply it and re-read. Also finds variation families with a broken child. |
 | **image-gen** | Amazon listing images + A+ Content via gpt-image-2 — learn mature competitors' image style, generate/recolor product-faithful images, enforce main-image compliance, build A+ modules, score, and record to the 'Images Generation' sheet. Covers the s0–s8 slot model, OpenAI prompting fundamentals, and the Basic A+ module spec. |
 | **noon-report-data** | noon.com (noon Partners) report querying — the 6 `rpt_noon_*` warehouse tables (orders, finance/transactions, FBN inventory aging, product-views & sales, the catalog export with every listing's prices, stock and live status, FBN catalog) for a connected noon store. Covers the store-ref rule, schedules, per-marketplace semantics, and the snapshot-vs-incremental query nuances. |
 | **amazon-ads** | Amazon Advertising (SP, SB, SD) operations — campaigns, ad groups, keywords/targets, bids, budgets, bulk creation, negatives, exports, change history, recommendations. Bundles 35 real Ads Reporting API v3 `createReport` request bodies with authoritative column sets. |
+| **ads-v3-archive** | Temporary, removed on 2026-12-31. Amazon Ads performance for days before 2026-09-01 from the retired Ads Reporting v3 tables: the 19 tables and their columns, the column map to the Marketing Stream names, the attribution windows, and how to split a date range at 2026-09-01. |
 | **amazon-report** | Amazon SP-API on-demand report documents — the exact `reportType`, required `reportOptions` enums, and full JSON field tree for 22 reports (Brand Analytics, Sales & Traffic, Promotion/Coupon, Vendor, account health), so agents request the right report and parse fields by their real names. NOT for the synced `rpt_*` warehouse — that's `report-data`. |
 | **data-kiosk** | Amazon SP-API Data Kiosk GraphQL authoring — versioned root query types, dataset fields, required arguments, enums, and per-field `@resultRetention` for Sales & Traffic, Economics, and Vendor Analytics, so agents write a valid `createQuery` instead of guessing. |
 | **fba-inbound** | FBA inbound shipments end to end — intake checklist, plan + packing + placement options, the user's transport / delivery-window pick, confirmation, box labels, packing list, tracking, status, plus a warehouse-fishing loop (刷美西仓). Mode A works on the SellerSheet FBA spreadsheet and the sidebar's own plan workbook (the server renders STA-Options, Inbound PL and the label links); Mode B needs no SellerSheet spreadsheet and delivers to chat, HTML, your own sheet or Excel. Never picks an option for you unless you name the rule. |
@@ -250,7 +251,7 @@ Full mechanism: [docs/auto-update.md](./docs/auto-update.md).
 
 | Plugin release | SellerSheet MCP minimum | Agent compatibility |
 |---|---|---|
-| v0.20.x | 2025-Q4 build | Claude Code 1.0+, Claude Desktop 0.10+, Codex CLI any, CodeBuddy Code 2.151+, Gemini CLI 0.5+, Antigravity any |
+| v0.21.x | 2025-Q4 build | Claude Code 1.0+, Claude Desktop 0.10+, Codex CLI any, CodeBuddy Code 2.151+, Gemini CLI 0.5+, Antigravity any |
 
 The plugin ships as one bundle — all skills release together at the plugin version. Each `SKILL.md` frontmatter `version:` mirrors `.claude-plugin/plugin.json`.
 

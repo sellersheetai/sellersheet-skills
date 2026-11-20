@@ -4,10 +4,10 @@
   "naming_note": "Deliberately NOT renamed: fed by two report types, and Ads-API table names are already Amazon-derived.",
   "report_type": "spPurchasedProduct",
   "is_snapshot": false,
-  "description": "Sponsored Products purchased products report — what customers bought after clicking an SP ad.",
+  "description": "RETIRED (Amazon Ads Reporting v3): days before 2026-09-01 only, read through the ads-v3-archive skill; removed on 2026-12-31. From 2026-09-01 read the Stream tables and views. Sponsored Products purchased products report — what customers bought after clicking an SP ad.",
   "pii": false,
   "queryable": true,
-  "deprecated": false,
+  "deprecated": true,
   "strategy": "ad_cron",
   "date_column": "report_date",
   "unique_key": [

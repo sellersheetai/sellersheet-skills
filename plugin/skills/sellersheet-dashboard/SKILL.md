@@ -6,7 +6,7 @@ author: SellerSheet AI
 description: >-
   Use when building or maintaining an Amazon operator dashboard on Google Sheets via SellerSheet MCP — multi-tab status views for inventory, PPC, account health, listings, profit/margin, returns, buy box, cash conversion. Triggers on phrases like "build a dashboard", "operator dashboard", "FBA dashboard", "PPC dashboard", "Amazon overview sheet", "seller dashboard", and on follow-ups like "refresh the dashboard", "add an insight", "the freshness is wrong". Composes the tab plan, applies SellerSheet brand visuals, wires `rpt_*` warehouse data → `_raw_*` tabs → `SQL()` spill → visible tabs with thumbnails, and instruments each cell with provenance + freshness so the dashboard self-explains. Builds on `sellersheet-sheets` (sheet primitives + brand palette + SQL() patterns) and `report-data` (rpt_* tables). Do NOT use for one-off reports — use `sellersheet-sheets` directly for those.
   中文触发词：运营看板、亚马逊仪表盘、库存/广告/账户健康/listing/利润/退货/Buy Box 看板、刷新看板、新增洞察、数据新鲜度。
-version: 0.20.2
+version: 0.21.0
 metadata: {apis: [sheets, drive, data], pattern: Pipeline}
 ---
 
@@ -123,9 +123,9 @@ the `report-data` skill's Stream recipes): sums only, ratios computed in the tab
 - Leave `search_term = '(Other)'` out of `_raw_ppc_search_terms`; it stays in campaign totals.
 - Amazon restates conversions for 70 days, so a refresh changes recent rows: rewrite the
   window, never append to it.
-- Never mix these numbers with the older `rpt_sp_*` / `rpt_sb_*` / `rpt_sd_*` tables in one
-  cell. A store whose Stream data starts inside the window (the `min` of `report_date` on
-  `v_ads_campaign_daily`) gets a note on the tab saying where its data begins.
+- Ads performance from 2026-09-01: the Stream tables and views; before 2026-09-01: see
+  ads-v3-archive (until 2026-12-31). Never add the two; split a range at 2026-09-01. A window
+  that reaches before 2026-09-01 starts there, with a note on the tab saying so.
 
 ## Column order — Image, Store, SKU, then everything else
 

@@ -11,6 +11,23 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.21.0] — 2026-11-20
+
+### Ads performance: Stream only, and a temporary archive skill for earlier days
+
+- One rule, in `amazon-ads`, `report-data`, `sellersheet-dashboard` and `sellersheet-sheets`:
+  Ads performance from 2026-09-01 comes from the Stream tables and views; before 2026-09-01,
+  see `ads-v3-archive` (until 2026-12-31). Never add the two; split a range at 2026-09-01.
+- Those skills no longer teach the retired Ads Reporting v3 tables (`rpt_sp_*`, `rpt_sb_*`,
+  `rpt_sd_*`). The negative keyword and target lists stay: they are still synced.
+- New skill `ads-v3-archive`, removed on 2026-12-31 with the tables it describes: when to use
+  them (days before 2026-09-01 only), the 19 tables and their references, the column map to the
+  Stream names, the attribution windows, how to split a range at 2026-09-01, the gaps to know,
+  and three query examples.
+- The 19 v3 references in `report-data` are marked `deprecated: true` until they move to the
+  archive skill alone.
+- README: the skill count and the `report-data` row brought up to date.
+
 ## [0.20.2] — 2026-11-20
 
 ### report-data: `superseded_by_stream`

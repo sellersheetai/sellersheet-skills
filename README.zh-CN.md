@@ -45,17 +45,18 @@ AI 生图、生成文案和买家洞察按次从 SellerSheet 账户 Credits 扣�
 
 ## 技能包内容
 
-十个技能，教你的智能体用好 SellerSheet MCP。技能文件以英文编写，但会**用你的语言回答**：用中文提问就得到中文说明（工具名、店铺引用、表名、亚马逊术语和表格表头保持英文，服务器按这些名字读取数据）。
+十二个技能，教你的智能体用好 SellerSheet MCP。技能文件以英文编写，但会**用你的语言回答**：用中文提问就得到中文说明（工具名、店铺引用、表名、亚马逊术语和表格表头保持英文，服务器按这些名字读取数据）。
 
 | 技能 | 作用 |
 |---|---|
 | **sellersheet-sheets** | 通过 SellerSheet MCP 读写 Google 表格：报表、看板、财务模型、表格格式化、品牌配色、`SQL()` 实时数据、图片缩略图。自包含，无需其他表格技能。 |
 | **sellersheet-dashboard** | 多页签运营看板：库存、广告（PPC）、账户健康、listing、利润率、退货、Buy Box、现金周转，带数据新鲜度标注和智能体洞察。基于 `sellersheet-sheets`。 |
-| **report-data** | 亚马逊 SP-API 与广告 API 报表数据：查询 SellerSheet 数据仓库中 50+ 张 `rpt_*` 表（库存、listing、订单、退货、财务、品牌分析、SP/SB/SD 广告），查看同步计划，按需报告的 创建 → 轮询 → 下载 流程。库存水位、补货需求、搜索词、结算、listing 状态等问题都用它。 |
+| **report-data** | 亚马逊 SP-API 与广告 API 报表数据：查询 SellerSheet 数据仓库中 40+ 张 `rpt_*` 表与广告视图（库存、listing、订单、退货、财务、来自 Marketing Stream 的亚马逊广告数据），查看同步计划，按需报告的 创建 → 轮询 → 下载 流程。库存水位、补货需求、搜索词、结算、listing 状态等问题都用它。 |
 | **listing-health** | 检查店铺的亚马逊 listing：不调用亚马逊，直接从数据仓库统计被抑制、搜索不到、被拒绝的 listing；先修影响销售的问题，实时确认，每项改动先经你同意，提交后复查。也能找出子体有问题的变体家族。 |
 | **image-gen** | 用 gpt-image-2 生成亚马逊 listing 图片与 A+ 页面：学习成熟竞品的图片风格，生成/改色产品图，检查主图合规，搭建 A+ 模块并评分，记录到「Images Generation」表格。 |
 | **noon-report-data** | noon.com（noon Partners）报表数据：6 张 `rpt_noon_*` 表（订单、财务/交易、FBN 库存账龄、商品浏览与销量、商品目录导出（价格/库存/在售状态）、FBN 商品目录），定时同步，按店铺-站点（如 myStore-AE）与市场语义查询。 |
 | **amazon-ads** | 亚马逊广告（SP、SB、SD）操作：广告活动、广告组、关键词/投放、竞价、预算、批量创建、否定词、导出、变更历史、推荐。内置 35 个真实的广告报表 API v3 `createReport` 请求体。 |
+| **ads-v3-archive** | 临时技能，2026-12-31 移除。2026-09-01 之前的亚马逊广告数据，来自已退役的广告报表 v3 表：19 张表及其列、与 Marketing Stream 列名的对照、归因窗口，以及如何在 2026-09-01 拆分日期范围。 |
 | **amazon-report** | 亚马逊 SP-API 按需报告文档：22 种报告（品牌分析、销售与流量、促销/优惠券、Vendor、账户健康）的精确 `reportType`、必填 `reportOptions` 枚举与完整 JSON 字段树。不用于已同步的 `rpt_*` 仓库，那是 `report-data` 的事。 |
 | **data-kiosk** | 亚马逊 SP-API Data Kiosk GraphQL 查询编写：带版本的根查询类型、数据集字段、必填参数、枚举和逐字段 `@resultRetention`，覆盖销售与流量、经济性、Vendor 分析。 |
 | **fba-inbound** | FBA 入仓全流程：先收集必要信息（发货地址、产品与箱规、承运方式、日期），再建计划、装箱、分仓方案、由你选择运输方案与送达窗口、确认、箱标、装箱单、上传物流单号、货件状态，另有刷美西仓循环。模式 A 直接用 SellerSheet FBA 表格和插件的计划工作簿（STA-Options、Inbound PL、箱标链接由服务器写入）；模式 B 不需要 SellerSheet 表格，结果输出到对话、HTML、你的表格或 Excel。除非你指定规则，否则绝不替你选方案。 |
