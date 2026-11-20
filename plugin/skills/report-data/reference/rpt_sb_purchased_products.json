@@ -6,7 +6,7 @@
   "description": "Amazon Ads Sponsored Brands purchases by the product bought (Reporting v3 sbPurchasedProduct): one row per marketplace-local day per campaign, ad group and purchased ASIN, 14-day attribution, view-through included. Frozen store by store as each store moves to Marketing Stream.",
   "pii": false,
   "queryable": true,
-  "deprecated": false,
+  "deprecated": true,
   "strategy": "ad_cron",
   "date_column": "report_date",
   "unique_key": [

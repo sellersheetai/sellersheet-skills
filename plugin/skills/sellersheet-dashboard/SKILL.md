@@ -123,9 +123,9 @@ the `report-data` skill's Stream recipes): sums only, ratios computed in the tab
 - Leave `search_term = '(Other)'` out of `_raw_ppc_search_terms`; it stays in campaign totals.
 - Amazon restates conversions for 70 days, so a refresh changes recent rows: rewrite the
   window, never append to it.
-- Never mix these numbers with the older `rpt_sp_*` / `rpt_sb_*` / `rpt_sd_*` tables in one
-  cell. A store whose Stream data starts inside the window (the `min` of `report_date` on
-  `v_ads_campaign_daily`) gets a note on the tab saying where its data begins.
+- Ads performance from 2026-09-01: the Stream tables and views; before 2026-09-01: see
+  ads-v3-archive (until 2026-12-31). Never add the two; split a range at 2026-09-01. A window
+  that reaches before 2026-09-01 starts there, with a note on the tab saying so.
 
 ## Column order — Image, Store, SKU, then everything else
 

@@ -230,7 +230,7 @@ Copy-paste templates and verification routines live in `scripts/`.
 - **A sheet that lives entirely server-side and is never opened in a browser** — the `SQL()` and `IMAGE()` patterns require a browser session with the SellerSheet add-on.
 - **Multi-tab operator dashboards** with freshness instrumentation + agent insights → use `sellersheet-dashboard` (it builds on top of this skill).
 - **Amazon business operations** (ads, FBA inbound, warehouse-synced reports) → use the matching domain skill: `amazon-ads`, `fba-inbound`, `report-data`.
-- **Choosing which Amazon `rpt_*` table to query** → use `report-data`.
+- **Choosing which Amazon `rpt_*` table to query** → use `report-data`. Ads performance from 2026-09-01: the Stream tables and views; before 2026-09-01: see ads-v3-archive (until 2026-12-31). Never add the two; split a range at 2026-09-01.
 
 ## First-time setup for users
 

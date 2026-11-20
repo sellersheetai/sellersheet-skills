@@ -81,6 +81,12 @@
       "latest_version": "0.20.2",
       "path": "plugin/skills/listing-health",
       "description": "Audit a store's Amazon listings: count suppressed, hidden and rejected listings from the warehouse without calling Amazon, fix what costs sales first, confirm live, agree each change with the seller, apply it and re-read. Also finds variation families with a broken child."
+    },
+    {
+      "name": "ads-v3-archive",
+      "latest_version": "0.20.2",
+      "path": "plugin/skills/ads-v3-archive",
+      "description": "Temporary, removed on 2026-12-31: Amazon Ads performance for days before 2026-09-01 from the retired Ads Reporting v3 tables — the 19 tables and their columns, the column map to the Marketing Stream names, the attribution windows, and how to split a date range at 2026-09-01."
     }
   ],
   "install_commands": {

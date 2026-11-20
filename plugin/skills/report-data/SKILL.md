@@ -4,7 +4,7 @@ description_zh: "亚马逊报告数据、库存报告、补货需求、订单、
 description_en: "Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules,…"
 author: SellerSheet AI
 description: >-
-  Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules, requesting on-demand reports, polling for completion, downloading a finished report document from its presigned URL, or analyzing any report table. Covers inventory, listings, orders, financial and Amazon Ads tables — the hourly Marketing Stream tables and views (rpt_ads_*, v_ads_*; campaign trend, search terms, placement, advertised and purchased products, dayparting) and the older SP/SB/SD report tables; Brand Analytics has no synced table, so request it on-demand (schemas in amazon-report). Do NOT use for noon.com data (use noon-report-data) or when you don't yet know a report's exact schema — read amazon-report or data-kiosk first, then come back here for the sync/poll/download mechanics.
+  Use when working with Amazon SP-API reports — querying synced report data, checking sync schedules, requesting on-demand reports, polling for completion, downloading a finished report document from its presigned URL, or analyzing any report table. Covers inventory, listings, orders, financial and Amazon Ads tables — the hourly Marketing Stream tables and views (rpt_ads_*, v_ads_*; campaign trend, search terms, placement, advertised and purchased products, dayparting) and the Ads negative keyword and target lists; Brand Analytics has no synced table, so request it on-demand (schemas in amazon-report). Do NOT use for noon.com data (use noon-report-data) or when you don't yet know a report's exact schema — read amazon-report or data-kiosk first, then come back here for the sync/poll/download mechanics.
   中文触发词：亚马逊报告数据、库存报告、补货需求、订单、退货、结算、搜索词、listing 状态、rpt_ 数据仓库查询、报告同步计划、按需报告下载。
 version: 0.20.2
 metadata: {apis: [data, sp_api_reports], pattern: Pipeline}
@@ -14,7 +14,7 @@ metadata: {apis: [data, sp_api_reports], pattern: Pipeline}
 
 ## Prerequisites
 
-Run the standard preflight in [`sellersheet-shared`](../sellersheet-shared/SKILL.md) (installed alongside this skill): `get_user_context` succeeds → version check via `data.skills_catalog` → `data.canUseMcp` is true. **Extra auth for this skill:** Ads tables (`rpt_ads_*`, `v_ads_*`, and the older `rpt_sp_*`, `rpt_sb_*`, `rpt_sd_*`) need Amazon Advertising profile access; on-demand Brand Analytics reports need Brand Registry.
+Run the standard preflight in [`sellersheet-shared`](../sellersheet-shared/SKILL.md) (installed alongside this skill): `get_user_context` succeeds → version check via `data.skills_catalog` → `data.canUseMcp` is true. **Extra auth for this skill:** Ads tables (`rpt_ads_*`, `v_ads_*` and the negative keyword and target lists) need Amazon Advertising profile access; on-demand Brand Analytics reports need Brand Registry.
 
 ---
 
@@ -73,7 +73,7 @@ list_report_syncs(store='myStore-AE')
 | `no_brand_registry` | The report needs Brand Registry, which this account lacks | Enrol in Brand Registry to get this report |
 | `unsupported` | Report type genuinely unavailable for this account (e.g. seller reports on a vendor account) | Permanent — will not run. Don't ask for a retry. |
 | `backfill_complete` | A one-shot history backfill finished | Nothing — the regular schedule carries on |
-| `superseded_by_stream` | This v3 Ads report was replaced by Marketing Stream for the store; its rows stop on the switch day | Nothing to fix, and not a failure. Read the Stream table the v3 table's reference names (for `rpt_sb_purchased_products`: `rpt_ads_converted_product_daily` with `ad_product` = `'Sponsored Brands'`); the v3 table keeps the days before the switch. Take each day from one source only |
+| `superseded_by_stream` | This retired v3 Ads report no longer runs: Marketing Stream replaced it | Nothing to fix, and not a failure. Ads performance comes from the Stream tables and views (below) |
 | `paused_by_parent` | Every marketplace of the store is inactive on the plan | Upgrade, or free a slot under My Stores → Edit Marketplaces |
 | `pending_delete` / `force_cancelled_by_delete` | The store is being removed | Nothing to fix |
 | `scheduler_tick_error:<exception>` | The scheduler hit an internal error on this schedule | Mention it; support will look at it |
@@ -117,29 +117,21 @@ query_report_data(store='myStore-US', tables=['rpt_orders'], ...)
 query_report_data(store='myStore-US', tables=['rpt_get_merchant_listings_all_data'], ...)
 # auto-injects: rpt_get_merchant_listings_all_data.country_code = 'US'
 
-query_report_data(store='myStore-US', tables=['rpt_sp_campaigns'], ...)
-# auto-injects: rpt_sp_campaigns.profile_id = <ads profile_id for US>
+query_report_data(store='myStore-US', tables=['v_ads_campaign_daily'], ...)
+# auto-injects: v_ads_campaign_daily.profile_id = <ads profile_id for US>
 ```
-
-Every ads table (`rpt_sp_*` / `rpt_sb_*` / `rpt_sd_*`) carries both `profile_id`
-and a denormalized `country_code` column (added 2026-05-20). `country_code` is
-populated on every row, so `country_code = 'US'` is an equivalent, simpler
-filter than reverse-mapping `profile_id`.
 
 #### Ads tables are daily performance rows, not a campaign inventory
 
-For Ads performance read the Marketing Stream tables first ([below](#amazon-ads-marketing-stream-tables)); the
-`rpt_sp_*` / `rpt_sb_*` / `rpt_sd_*` report tables hold the older history.
-
-`rpt_sp_*` / `rpt_sb_*` / `rpt_sd_*` are **DAILY PERFORMANCE rows** — only campaigns with
-delivery in the window appear (live count 47 ENABLED vs 21 in the warehouse, observed). For a
-complete campaign inventory or count, use the live `ads_query_campaign` API instead
-(with `adProductFilter` set to `SPONSORED_PRODUCTS` /
-`SPONSORED_BRANDS` / `SPONSORED_DISPLAY`). Also: `report_date='latest'` pins to the newest **single**
-probed-date value, which is often a zero-spend partial day — for any cost or performance
-analysis just add a date filter (which auto-switches 'latest' to 'all' — see Query Rules) or
-pass `report_date='all'` explicitly. The same daily-grain semantics apply to the Data Kiosk
-tables `rpt_dk_sales_traffic_by_date` / `rpt_dk_sales_traffic_by_asin`.
+The Ads performance tables and views ([below](#amazon-ads-marketing-stream-tables)) hold **daily
+(or hourly) performance rows**: only campaigns with delivery in the window appear. For a
+complete campaign inventory or count, use `rpt_ads_campaigns` (every campaign, archived ones
+included) or the live `ads_query_campaign` API (with `adProductFilter` set to
+`SPONSORED_PRODUCTS` / `SPONSORED_BRANDS` / `SPONSORED_DISPLAY`). Also: `report_date='latest'`
+pins to the newest **single** probed-date value, which is often a partial day — for any cost or
+performance analysis just add a date filter (which auto-switches 'latest' to 'all' — see Query
+Rules) or pass `report_date='all'` explicitly. The same daily-grain semantics apply to the Data
+Kiosk tables `rpt_dk_sales_traffic_by_date` / `rpt_dk_sales_traffic_by_asin`.
 
 #### `rpt_orders`: three kinds of row — filter on `order_kind`
 
@@ -203,7 +195,7 @@ Allowed ops: `sum`, `count`, `avg`, `min`, `max` — the key is **`op`** (not `f
     - `"all"` → no date filter. Right for **ID-based lookups** on incremental tables (find a specific `amazon_order_id`, `settlement_id`, `asin`, etc.) where you don't know which date the row was last touched — mandatory for `rpt_orders`, `rpt_get_v2_settlement_report_data_flat_file_v2`, `rpt_get_flat_file_returns_data_by_return_date`, `rpt_get_fba_fulfillment_removal_order_detail_data`, `rpt_get_ledger_detail_view_data`, `rpt_get_fba_reimbursements_data` lookups by primary key — **and for every date-range pull on a date-grain table** (ads dailies, `rpt_dk_*`).
     - `"YYYY-MM-DD"` → exact-date match. Right for **historical analysis** ("what was inventory on 2026-04-15?").
     - **AUTO-OVERRIDE**: when any filter targets a Date/DateTime column of the primary table, `"latest"` automatically behaves as `"all"` — your explicit temporal filter wins over the implicit newest-day pin. The response flags this in `data.report_date_note`. So a natural range query (`date >= '2026-06-10'`) just works without remembering to set `report_date`; pass an explicit `"YYYY-MM-DD"` to pin a specific day regardless.
-- **Date-grain tables** — one row per entity per day, keyed by a business-date column: `report_date` on the `rpt_sp_*`/`rpt_sb_*`/`rpt_sd_*` dailies, `date` on `rpt_dk_sales_traffic_by_date`/`_by_asin` (the bulk-snapshot Ads tables use `snapshot_date`). Filter on that exact name; `get_table_schema` lists the columns. These are **facts, not snapshots**, so `"latest"` keeps its scalar meaning here and pins to the newest **probed-date value** — newest-row-per-entity would mix dates across entities (a campaign that stopped 30 days ago sitting next to today's rows) and any SUM off it would be silently incoherent. That scalar date is often a partial day or one ingest batch, so rankings and totals off it are meaningless — always query these with a date filter (auto-override kicks in) or `report_date='all'`. `get_table_schema` flags these tables in its `notes` field.
+- **Date-grain tables** — one row per entity per day, keyed by a business-date column: `report_date` on the Ads dailies (`v_ads_*`, `rpt_ads_*_daily`), `date` on `rpt_dk_sales_traffic_by_date`/`_by_asin` (the Ads negative keyword and target lists are snapshots on `snapshot_date`). Filter on that exact name; `get_table_schema` lists the columns. These are **facts, not snapshots**, so `"latest"` keeps its scalar meaning here and pins to the newest **probed-date value** — newest-row-per-entity would mix dates across entities (a campaign that stopped 30 days ago sitting next to today's rows) and any SUM off it would be silently incoherent. That scalar date is often a partial day or one ingest batch, so rankings and totals off it are meaningless — always query these with a date filter (auto-override kicks in) or `report_date='all'`. `get_table_schema` flags these tables in its `notes` field.
 - **Efficiency shape** (`(store_id, date)` composite indexes exist on all the big tables): `'all'` + a date-range filter is index-served and cheap; an **unbounded** `'all'` (no date filter, no eq/in filter) scans the store's full history and the response nudges you via `data.report_date_note` — allowed, but prefer a date range, or `aggregations` for summaries (one indexed scan beats paging raw rows). When paging, the exact count runs on **page 1 only** — later pages return `total_count: null` automatically (you already have the total); pass `count='exact'` explicitly if you need a recount.
 - `listing_images` has no date in its unique key, so `"latest"` applies **no date filter at all** there — one row per SKU already IS current state. Omitting `report_date` works too; what you must not do is pin a date, which would return only the SKUs touched by the newest enrichment batch and drop the rest.
 - PII tables are not queryable: `rpt_fba_shipments`, `rpt_seller_feedback`.
@@ -213,7 +205,7 @@ Allowed ops: `sum`, `count`, `avg`, `min`, `max` — the key is **`op`** (not `f
 ### Amazon Ads: Marketing Stream tables
 
 Amazon pushes Ads performance to SellerSheet every hour (Amazon Marketing Stream) for every
-store with Ads connected. **This is the default source for Ads analysis.** One model covers
+store with Ads connected. **This is the source for Ads analysis.** One model covers
 Sponsored Products, Brands, Display and Television; `ad_product` says which
 (`'Sponsored Products'`, `'Sponsored Brands'`, `'Sponsored Display'`). Start from a view; every
 relation below has its `reference/<name>.json` (columns, caveats).
@@ -247,11 +239,8 @@ relation below has its `reference/<name>.json` (columns, caveats).
 - **`(Other)` search terms** gather the terms Amazon does not name (its reporting threshold).
   In Sponsored Products they carry impressions and no clicks; in Sponsored Brands they also
   carry spend and sales. Keep them in totals, leave them out of term lists.
-- **Never add a Stream number to a v3 number** (`rpt_sp_*`, `rpt_sb_*`, `rpt_sd_*`): both
-  count the same spend.
-- **The v3 tables hold the older history.** A store's Stream data starts about 70 days before
-  its Stream subscription began; for earlier days read the v3 tables, and take each day from
-  one source only. The first Stream day is the `min` of `report_date` on `v_ads_campaign_daily`.
+- **Ads performance from 2026-09-01: the Stream tables and views; before 2026-09-01: see
+  ads-v3-archive (until 2026-12-31). Never add the two; split a range at 2026-09-01.**
 - Days and hours are the marketplace's own (`hour` 0–23, `weekday` 1 = Monday … 7 = Sunday).
   The store ref filters the marketplace; do not filter `country_code` or `profile_id` yourself.
 
@@ -402,8 +391,7 @@ Most `rpt_*` tables are named after the Amazon report type that feeds them. Thes
 | Table(s) | Why it keeps a non-Amazon name |
 |---|---|
 | `rpt_orders` | **Two** report types feed it — `GET_FLAT_FILE_ALL_ORDERS_DATA_BY_ORDER_DATE_GENERAL` (one-shot 30-day backfill at onboard) and `..._BY_LAST_UPDATE_GENERAL` (hourly incremental). No single report type to name it after. |
-| `rpt_sp_purchased_products` | Also fed by two report types. |
-| `rpt_sp_*`, `rpt_sb_*`, `rpt_sd_*` | Ads-API tables — the names are already Amazon-derived. |
+| `rpt_sp_negative_keywords`, `rpt_sp_campaign_negative_keywords`, `rpt_sp_negative_targets`, `rpt_sp_campaign_negative_targets`, `rpt_sb_negative_keywords`, `rpt_sd_negative_targets` | Ads-API negative keyword and target lists — the names are already Amazon-derived. |
 | `rpt_ads_*`, `v_ads_*` | Amazon Marketing Stream: datasets pushed by Amazon, not report types; `v_ads_*` are views over them. |
 | `rpt_dk_*` | Data Kiosk GraphQL datasets, not SP-API report types. |
 | `rpt_noon_*` | noon.com, not Amazon. |

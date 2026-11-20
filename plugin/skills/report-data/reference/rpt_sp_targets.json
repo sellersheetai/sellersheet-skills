@@ -3,10 +3,10 @@
   "table": "rpt_sp_targets",
   "report_type": "spTargets",
   "is_snapshot": false,
-  "description": "Sponsored Products target-level daily performance.",
+  "description": "RETIRED (Amazon Ads Reporting v3): days before 2026-09-01 only, read through the ads-v3-archive skill; removed on 2026-12-31. From 2026-09-01 read the Stream tables and views. Sponsored Products target-level daily performance.",
   "pii": false,
   "queryable": true,
-  "deprecated": false,
+  "deprecated": true,
   "strategy": "ad_cron",
   "date_column": "report_date",
   "unique_key": [
