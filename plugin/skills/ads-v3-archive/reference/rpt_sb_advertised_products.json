@@ -3,7 +3,7 @@
   "table": "rpt_sb_advertised_products",
   "report_type": "sbAdvertisedProduct",
   "is_snapshot": false,
-  "description": "RETIRED (Amazon Ads Reporting v3): days before 2026-09-01 only, read through the ads-v3-archive skill; removed on 2026-12-31. From 2026-09-01 read the Stream tables and views. Sponsored Brands advertised product daily performance.",
+  "description": "Amazon Ads Sponsored Brands per advertised product per day (Reporting v3 sbAdvertisedProduct). Retired: v3 report collection stopped for every store on 2026-11-20; Ads data from 2026-09-01 is in v_ads_product_daily (ad_product = 'Sponsored Brands'), and this table is deleted on 2026-12-31.",
   "pii": false,
   "queryable": true,
   "deprecated": true,
@@ -30,7 +30,15 @@
     "nullable": false,
     "null_means": "unplaced"
    }
-  }
+  },
+  "search_aliases": [
+   "sb advertised product report v3"
+  ],
+  "caveats": [
+   "For any day from 2026-09-01 read v_ads_product_daily with ad_product = 'Sponsored Brands'; use this table only for days before 2026-09-01, until it is deleted on 2026-12-31. Split a range at 2026-09-01 and never add the two: the same Ads data is in both.",
+   "Columns there: advertised_asin and advertised_sku as named (Sponsored Display: asin, sku); the view is per product, so per campaign or ad group group rpt_ads_performance_daily by campaign_id, ad_group_id and advertised_asin. cost → total_cost; impressions, clicks, purchases, sales, units_sold, purchases_promoted, sales_promoted, detail_page_views, add_to_cart, viewable_impressions and new_to_brand_purchases / _sales / _units_sold / _detail_page_views as named; every *_clicks column → *_from_clicks; video_complete_views → complete_views_video_ad, video_first_quartile_views → first_quartile_video_ad, video_midpoint_views → midpoint_video_ad, video_third_quartile_views → third_quartile_video_ad, video_5_second_views → five_second_views_video_ad, video_unmutes → unmutes_video_ad. Both are 14-day attribution. Rates, percentages and e_cp_* are not stored: compute them from the sums (new_to_brand_units_sold_percentage = new_to_brand_units_sold / units_sold). currency_code → currency.",
+   "Its rows stop on 2026-11-20, when v3 collection ended for every store (its schedules read superseded_by_stream): its newest day is not the newest Ads data."
+  ]
  },
  "columns": [
   {

@@ -3,7 +3,7 @@
   "table": "rpt_sp_campaign_placement",
   "report_type": "spCampaignsByPlacement",
   "is_snapshot": false,
-  "description": "RETIRED (Amazon Ads Reporting v3): days before 2026-09-01 only, read through the ads-v3-archive skill; removed on 2026-12-31. From 2026-09-01 read the Stream tables and views. SP campaign x placement performance. placement_classification is one of 'Top of Search on-Amazon' / 'Detail Page on-Amazon' / 'Other on-Amazon' (Amazon's actual values; the spec docs older PLACEMENT_TOP/REST/PRODUCT_PAGE constants are not what the live API ships). top_of_search_impression_share is populated only when Amazon's volume threshold is met for the campaign-day; small accounts will see NULL.",
+  "description": "Amazon Ads Sponsored Products per campaign per placement per day (Reporting v3 spCampaigns by campaignPlacement). Retired: v3 report collection stopped for every store on 2026-11-20; Ads data from 2026-09-01 is in v_ads_placement_daily (ad_product = 'Sponsored Products'), and this table is deleted on 2026-12-31.",
   "pii": false,
   "queryable": true,
   "deprecated": true,
@@ -29,7 +29,15 @@
     "nullable": false,
     "null_means": "unplaced"
    }
-  }
+  },
+  "search_aliases": [
+   "sp placement report v3"
+  ],
+  "caveats": [
+   "For any day from 2026-09-01 read v_ads_placement_daily with ad_product = 'Sponsored Products'; use this table only for days before 2026-09-01, until it is deleted on 2026-12-31. Split a range at 2026-09-01 and never add the two: the same Ads data is in both.",
+   "Columns there: placement_classification → placement ('Top of Search on-Amazon', 'Detail Page on-Amazon', 'Other on-Amazon' …), campaign_name from rpt_ads_campaigns. cost and spend → total_cost; impressions and clicks as named; sales_14d → sales, purchases_14d → purchases, units_sold_clicks_14d → units_sold_from_clicks — but this table's conversions are 14-day and Stream's base window is 7 days for a seller (attribution_window_days), so compare traffic and cost across the two, not conversions. top_of_search_impression_share, acos_clicks_14d and roas_clicks_14d have no Stream twin.",
+   "Its rows stop on 2026-11-20, when v3 collection ended for every store (its schedules read superseded_by_stream): its newest day is not the newest Ads data."
+  ]
  },
  "columns": [
   {

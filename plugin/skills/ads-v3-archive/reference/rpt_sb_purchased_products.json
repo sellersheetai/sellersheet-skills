@@ -3,7 +3,7 @@
   "table": "rpt_sb_purchased_products",
   "report_type": "sbPurchasedProduct",
   "is_snapshot": false,
-  "description": "Amazon Ads Sponsored Brands purchases by the product bought (Reporting v3 sbPurchasedProduct): one row per marketplace-local day per campaign, ad group and purchased ASIN, 14-day attribution, view-through included. Frozen store by store as each store moves to Marketing Stream.",
+  "description": "Amazon Ads Sponsored Brands purchases by the product bought (Reporting v3 sbPurchasedProduct): one row per marketplace-local day per campaign, ad group and purchased ASIN, 14-day attribution, view-through included. Retired: v3 report collection stopped for every store on 2026-11-20; Ads data from 2026-09-01 is in rpt_ads_converted_product_daily (ad_product = 'Sponsored Brands'), and this table is deleted on 2026-12-31.",
   "pii": false,
   "queryable": true,
   "deprecated": true,
@@ -37,9 +37,9 @@
    "sb halo purchases"
   ],
   "caveats": [
-   "From a store's move to Marketing Stream its rows stop (its sync shows superseded_by_stream): read rpt_ads_converted_product_daily with ad_product = 'Sponsored Brands' for that store from then on, and for any store when you need the latest days.",
+   "For any day from 2026-09-01 read rpt_ads_converted_product_daily with ad_product = 'Sponsored Brands'; use this table only for days before 2026-09-01, until it is deleted on 2026-12-31. Split a range at 2026-09-01 and never add the two: the same Ads data is in both.",
    "Columns there: orders_14d is purchases, sales_14d sales, units_sold_14d units_sold, new_to_brand_*_14d new_to_brand_*, purchased_asin converted_asin, attribution_type 'Promoted' / 'Brand Halo' product_relevance 'Promoted' / 'Brand halo'; campaign and ad group names from rpt_ads_campaigns / rpt_ads_ad_groups; the currency is `currency`.",
-   "Never add this table's numbers to rpt_ads_converted_product_daily's: the same purchases are in both."
+   "Its rows stop on 2026-11-20, when v3 collection ended for every store (its schedules read superseded_by_stream): its newest day is not the newest Ads data."
   ]
  },
  "columns": [
