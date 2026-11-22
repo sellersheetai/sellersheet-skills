@@ -181,7 +181,10 @@
         "fnsku",
         "reference_id",
         "event_type",
-        "fulfillment_center"
+        "fulfillment_center",
+        "disposition",
+        "reason",
+        "country"
       ],
       "description": "Inventory ledger events across fulfillment centers.",
       "reference": "reference/rpt_get_ledger_detail_view_data.json"
