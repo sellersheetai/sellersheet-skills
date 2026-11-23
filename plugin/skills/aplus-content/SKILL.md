@@ -76,9 +76,11 @@ Every module's JSON: `reference/schema/` (README first).
 | `aplusContent_postContentDocumentApprovalSubmission(store, contentReferenceKey)` | submit for Amazon's review | yes |
 | `aplusContent_postContentDocumentSuspendSubmission(store, contentReferenceKey)` | take live content off every linked ASIN | yes |
 
-Images: put an image URL (or an existing A+ image id) in each image's `uploadDestinationId` and
-leave `imageCropSpecification` out. Create, validate and update upload the URL and set the crop
-to the full image.
+Images: put an image URL (or an existing A+ image id) in each image's `uploadDestinationId`.
+Create, validate and update upload the URL; with `imageCropSpecification` left out they set the
+crop to the full image, so make the image at the module's ratio (`image-gen` has every slot's
+size) or give a crop of that ratio. A crop of another ratio comes back as an Amazon warning,
+`MEDIA_FAILED_VALIDATION` ("dimensions … are not compatible with the image bounds").
 
 ## 3. Workflows
 

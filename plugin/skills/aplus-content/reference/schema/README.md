@@ -35,7 +35,7 @@ Used across every module; they appear by name in the shape tables.
 |---|---|---|
 | `TextComponent` | `{"value": "…", "decoratorSet": [...]}` | `value` 1–10,000 chars unless the module's limits say less; `decoratorSet` optional |
 | `ParagraphComponent` | `{"textList": [TextComponent, …]}` | 1–100 entries, one per line |
-| `ImageComponent` | `{"uploadDestinationId": "…", "altText": "…", "imageCropSpecification": {…}}` | `altText` 1–100 chars. With the SellerSheet tools put an image URL in `uploadDestinationId` (it is uploaded for you) and leave the crop out (it is set to the full image) |
+| `ImageComponent` | `{"uploadDestinationId": "…", "altText": "…", "imageCropSpecification": {…}}` | `altText` 1–100 chars. With the SellerSheet tools put an image URL in `uploadDestinationId` (it is uploaded for you). Left out, the crop is set to the full image, so the image must already have the module's ratio; otherwise give a crop of that ratio, at least the module's minimum size |
 | `VideoComponent` | `{"videoMediaId": "…", "imageMediaId": "…", "imageCropSpecification": {…}}` | all three required |
 | `PlainTextItem` | `{"position": 1, "value": "…"}` | positions unique within their list |
 | `TextItem` | `{"position": 1, "text": TextComponent}` | positions unique within their list |
