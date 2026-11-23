@@ -4,10 +4,9 @@
 
 Read this before writing a `contentDocument` for the A+ tools (create, update, validate). One
 file per module family: `standard.md`, `premium.md`, `brand-story.md`. Each module lists its JSON
-key, every field with its type, whether it is required within its object, and its bounds, then a
-skeleton to fill in (an array shows one item: repeat it within the bounds). Premium and Brand
-Story modules also carry Amazon's own per-field limits (character counts, minimum image sizes);
-for Standard image sizes see `../aplus-modules.md`.
+key, every field with its type, whether it is required within its object, and its bounds; then
+Amazon's own limits for that module (character counts, minimum image sizes); then a skeleton to
+fill in (an array shows one item: repeat it within the bounds).
 
 ## The document
 
@@ -27,17 +26,6 @@ for Standard image sizes see `../aplus-modules.md`.
   cannot change it.
 - `contentModuleList`: 1–100 modules. Each module is `contentModuleType` plus ONE key, the
   module key named in the module's section, holding that module.
-
-## Rules Amazon applies
-
-- A document's modules are all `STANDARD_*`, all `PREMIUM_*` or all `BRAND_STORY_*`, never mixed.
-- A Premium document holds at most 7 modules.
-- A Brand Story document has exactly one `BRAND_STORY_IMAGE_WITH_LOGO`, the carousel's background.
-- Only one document per ASIN per family (A+, Brand Story) is live at a time.
-- Premium and Brand Story need an eligible brand: Amazon checks at create or submit, not at
-  validate, so a clean validation does not prove eligibility.
-- Video modules (`PREMIUM_VIDEO_TEXT`, `PREMIUM_HERO_VIDEO`, `PREMIUM_VIDEO_IMAGE_CAROUSEL`) take
-  media ids that Amazon's media registration returns, which the SellerSheet tools do not create yet.
 
 ## Components
 
