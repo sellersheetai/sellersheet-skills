@@ -28,6 +28,7 @@ the 'Images Generation' sheet. The hard-won rules live in `reference/`.
 - `reference/reference-modes.md` — **the three reference modes (Style / Blend / Exact swap)** — read BEFORE any reference-driven generation; picking the wrong mode wastes credits and drifts layouts
 - `reference/amazon-compliance.md` — main-image hard rules, claims/cert vetting, the QA gate (run before approval), localization
 - `reference/aplus-modules.md` — A+ module dimensions + page arc; copy can be baked into the image or live in Amazon's text fields
+- `reference/aplus-schema/` — the A+ content document: every Standard, Premium and Brand Story module's JSON key, fields, limits and a skeleton (README first, then `standard.md` / `premium.md` / `brand-story.md`) — read BEFORE writing a `contentDocument`
 - `reference/gotchas.md` — the failure modes that WILL bite you (required params, delivery, billing, size & resolution, recolor)
 - `reference/sheet-contract.md` — how to read/write the 'Images Generation' sheet without breaking it (SHARED with the GAS sidebar — use its status vocabulary)
 - `reference/provider-matrix.md` — openai vs nanobanana; the billing-safe reliability rules (never resubmit `processing`; re-run only on `error`)
@@ -139,7 +140,7 @@ reporting done. Close with a status summary.
   separate version lane per language, so localized variants never overwrite the English one.
 
 ## Phase 6 — A+ Content (when the operator wants A+ / Premium A+)
-Read `reference/aplus-modules.md` first. Generate each module image at its dimensions (default to
+Read `reference/aplus-modules.md` first; write the document from `reference/aplus-schema/`. Generate each module image at its dimensions (default to
 the module's exact size) with gpt-image-2 — A+ slots `a1–a5`/`p1–p5` cost the same as any
 other image. Two options for copy: **bake headlines/labels directly into the image**
 (gpt-image-2 renders them — QA every word), OR keep the image clean and put the copy in Amazon's

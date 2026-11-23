@@ -46,7 +46,8 @@ canonical Amazon example uses 5; there is no hard published max — Amazon's edi
 it, typically 5–7). These are the module-type names + image sizes the API
 (`aplusContent_create_and_publish` / `aplusContent_postContentDocumentApprovalSubmission`) expects. The px below are the
 **minimums** — generate at the ratio and ≥ the module px, then resize to exact on
-upload (Amazon also resizes to the module).
+upload (Amazon also resizes to the module). Each module's JSON fields and a skeleton:
+`aplus-schema/standard.md`.
 
 | SP-API module type | Image size (px) | Ratio |
 |--------------------|-----------------|-------|
