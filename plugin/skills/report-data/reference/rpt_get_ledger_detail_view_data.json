@@ -16,13 +16,16 @@
    "fnsku",
    "reference_id",
    "event_type",
-   "fulfillment_center"
+   "fulfillment_center",
+   "disposition",
+   "reason",
+   "country"
   ],
   "cron": "0 1 * * *",
   "retention_days": 90,
-  "retention_note": "rows older than 90 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note",
+  "retention_note": "The policy keeps 90 days by `report_date`, which this table's ingest does not write: rows ingested since 2026-08-20 carry a NULL report_date and are never pruned, so history is kept. Filter on `date` (the day Amazon wrote).",
   "date_column_nullable": true,
-  "date_column_note": "131 legacy rows have NULL report_date AND NULL date (pre-watermark partial writes). All current ingests write both. Add a not_null filter for strict temporal work.",
+  "date_column_note": "`report_date` is NULL on every row ingested since 2026-08-20 (it is stamped only on tables whose business date it is). The business date is `date`, the marketplace day Amazon wrote; use it for temporal work.",
   "marketplace": {
    "grain": "region",
    "label": {
