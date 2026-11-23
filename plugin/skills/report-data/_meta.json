@@ -199,12 +199,11 @@
       "strategy": "request",
       "unique_key": [
         "store_id",
-        "snapshot_date",
-        "seller_sku",
         "country_code",
+        "seller_sku",
         "item_condition"
       ],
-      "description": "Daily all-listings snapshot for merchant catalog state. After each sync, listing_images is brought up to date from the ListingsItems API.",
+      "description": "Current state of the merchant catalog: one row per listing (store, marketplace, SKU, condition), replaced when it changes. After each sync, listing_images is brought up to date from the ListingsItems API.",
       "reference": "reference/rpt_get_merchant_listings_all_data.json"
     },
     {
