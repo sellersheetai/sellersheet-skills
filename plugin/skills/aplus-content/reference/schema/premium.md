@@ -20,7 +20,7 @@ Amazon's limits for this module:
 
 | Field | Required | Constraint |
 |---|---|---|
-| `positionType` | Required | `LEFT` \ |
+| `positionType` | Required | `LEFT` \| `RIGHT` |
 | `headline` | Required | value: 1–80 chars; not blank |
 | `image` | Required | min 800w × 600h px |
 | `subheadline` | Optional | value: max 40 chars |
@@ -104,8 +104,8 @@ Amazon's limits for this module:
 
 | Field | Required | Constraint |
 |---|---|---|
-| `positionType` | Required | `LEFT` \ |
-| `colorType` | Required | `DARK` \ |
+| `positionType` | Required | `LEFT` \| `RIGHT` |
+| `colorType` | Required | `DARK` \| `LIGHT` |
 | `desktopImage` | Required | min 1464w × 600h px |
 | `mobileImage` | Required | min 600w × 450h px |
 | `subheadline` | Optional | value: max 40 chars |
@@ -637,7 +637,7 @@ Amazon's limits for this module:
 | `comparisonMetrics` (3–7 items) | Required |  |
 | `position` | Required | 1–7; unique per array |
 | `metricName` | Optional | value: max 20 chars |
-| `comparisonType` | Required | `checkbox` \ |
+| `comparisonType` | Required | `checkbox` \| `input-field` |
 | `comparisonFields` (3–5 items) | Required |  |
 | `position` | Required | matches product position |
 | `value` | Required | max 20 chars; "true"/"false" for checkbox |
@@ -729,9 +729,9 @@ Amazon's limits for this module:
 | Field | Required | Constraint |
 |---|---|---|
 | `headline` | Required | value: 1–80 chars; not blank |
-| `showATC` | Optional | `true` \ |
-| `showPrices` | Optional | `true` \ |
-| `showReviews` | Optional | `true` \ |
+| `showATC` | Optional | `true` \| `false` |
+| `showPrices` | Optional | `true` \| `false` |
+| `showReviews` | Optional | `true` \| `false` |
 | `comparisonProducts` 4–7 items | Required |  |
 | `position` | Required | 1–7; unique per array |
 | `productTitle` | Required | value: 1–25 chars |
@@ -740,7 +740,7 @@ Amazon's limits for this module:
 | `comparisonRows` 5–12 items | Required |  |
 | `position` | Required | 1–12; unique per array |
 | `metricName` | Optional | value: max 30 chars |
-| `comparisonType` | Required | `checkbox` \ |
+| `comparisonType` | Required | `checkbox` \| `input-field` |
 | `additionalInfo` | Optional | value: max 150 chars |
 | `comparisonFields` 4–7 items | Required |  |
 | `position` | Required | matches product position |
@@ -952,7 +952,7 @@ Amazon's limits for this module:
 
 | Field | Required | Constraint |
 |---|---|---|
-| `colorType` | Required | `DARK` \ |
+| `colorType` | Required | `DARK` \| `LIGHT` |
 | `faqs` 2–5 items | Required |  |
 | `question` | Required | textList: 1 item; max 120 chars |
 | `answer` | Required | textList: 1–5 items; total ≤ 250 chars |
@@ -1049,7 +1049,7 @@ Amazon's limits for this module:
 
 | Field | Required | Constraint |
 |---|---|---|
-| `positionType` | Required | `LEFT` \ |
+| `positionType` | Required | `LEFT` \| `RIGHT` |
 | `headline` | Required | value: 1–80 chars; not blank |
 | `video` | Required | preview image min 800w × 600h px |
 | `title` | Optional | value: max 40 chars |
@@ -1146,7 +1146,7 @@ Amazon's limits for this module:
 | `headline` | Optional | value: max 80 chars |
 | `carouselCards` 2–6 items | Required |  |
 | `position` | Required | 1–6; unique per carousel |
-| `positionType` | Required | `LEFT` \ |
+| `positionType` | Required | `LEFT` \| `RIGHT` |
 | `subheadline` | Required | value: max 80 chars |
 | `title` | Optional | value: max 50 chars |
 | `description` | Optional | textList: 1–4 items; total ≤ 500 chars |
