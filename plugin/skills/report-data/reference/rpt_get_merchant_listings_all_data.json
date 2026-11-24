@@ -4,7 +4,7 @@
   "naming_note": "Renamed 2026-07-10 (migration d5f7a9c1e3b5) — the table name IS the Amazon report type. The old name `rpt_listings_snapshot` still resolves as a read-only compat VIEW; prefer `rpt_get_merchant_listings_all_data` in new queries.",
   "report_type": "GET_MERCHANT_LISTINGS_ALL_DATA",
   "is_snapshot": true,
-  "description": "Daily all-listings snapshot for merchant catalog state.",
+  "description": "Current state of the merchant catalog: one row per listing (store, marketplace, SKU, condition), replaced when it changes. After each sync, listing_images is brought up to date from the ListingsItems API.",
   "pii": false,
   "queryable": true,
   "deprecated": false,
@@ -12,14 +12,12 @@
   "date_column": "snapshot_date",
   "unique_key": [
    "store_id",
-   "snapshot_date",
-   "seller_sku",
    "country_code",
+   "seller_sku",
    "item_condition"
   ],
   "cron": "5 1 * * *",
-  "retention_days": 7,
-  "retention_note": "rows older than 7 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note",
+  "retention_note": "Never pruned: the table holds the current state, one row per listing. A listing Amazon no longer reports is removed at the next sync that carries any listing. `snapshot_date` is the day the row was last written, so every row is current; freshness is the sync state, not this date.",
   "marketplace": {
    "grain": "per_mkt",
    "label": {
@@ -231,6 +229,12 @@
    "amazon_header": "(infrastructure)",
    "type": "str",
    "note": "Marketplace code (UK/US/AE/...). Auto-filtered from the store suffix on per-marketplace tables."
+  },
+  {
+   "db_column": "row_digest",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Internal change-detection digest of the row (binary). Not for analysis; never filter on it."
   }
  ],
  "notes": [

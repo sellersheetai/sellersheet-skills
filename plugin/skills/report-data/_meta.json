@@ -199,12 +199,11 @@
       "strategy": "request",
       "unique_key": [
         "store_id",
-        "snapshot_date",
-        "seller_sku",
         "country_code",
+        "seller_sku",
         "item_condition"
       ],
-      "description": "Daily all-listings snapshot for merchant catalog state. After each sync, listing_images is brought up to date from the ListingsItems API.",
+      "description": "Current state of the merchant catalog: one row per listing (store, marketplace, SKU, condition), replaced when it changes. After each sync, listing_images is brought up to date from the ListingsItems API.",
       "reference": "reference/rpt_get_merchant_listings_all_data.json"
     },
     {
@@ -497,7 +496,6 @@
       "unique_key": [
         "store_id",
         "profile_id",
-        "snapshot_date",
         "keyword_id"
       ],
       "description": "Sponsored Products ad-group-level negative keywords. Daily snapshot. Use to filter search-term mining queries: LEFT JOIN ON (campaign_id, ad_group_id, lower(keyword_text)) WHERE state='ENABLED' AND r.keyword_id IS NULL surfaces terms not yet negated.",
@@ -514,7 +512,6 @@
       "unique_key": [
         "store_id",
         "profile_id",
-        "snapshot_date",
         "keyword_id"
       ],
       "description": "Sponsored Products campaign-level negative keywords (apply across every ad group within a campaign). Daily snapshot. Pair with rpt_sp_negative_keywords for full-coverage negation lookup.",
@@ -531,7 +528,6 @@
       "unique_key": [
         "store_id",
         "profile_id",
-        "snapshot_date",
         "target_id"
       ],
       "description": "Sponsored Products ad-group-level negative product targets (ASIN / category exclusions). Daily snapshot. targeting_expression is a JSON-stringified Amazon clause array — parse to extract the negated ASIN(s) or category id(s).",
@@ -548,7 +544,6 @@
       "unique_key": [
         "store_id",
         "profile_id",
-        "snapshot_date",
         "target_id"
       ],
       "description": "Sponsored Products campaign-level negative product targets. Daily snapshot. Campaign-scope negatives apply to every ad group within the campaign.",
@@ -565,7 +560,6 @@
       "unique_key": [
         "store_id",
         "profile_id",
-        "snapshot_date",
         "keyword_id"
       ],
       "description": "Sponsored Brands negative keywords. Daily snapshot. Separate from SP — different keyword_id namespace, different Amazon endpoint.",
@@ -582,7 +576,6 @@
       "unique_key": [
         "store_id",
         "profile_id",
-        "snapshot_date",
         "target_id"
       ],
       "description": "Sponsored Display negative targets. Daily snapshot. SD has only target-level negatives (no separate keyword negatives or campaign-level endpoint as of API v3).",

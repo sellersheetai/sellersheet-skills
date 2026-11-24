@@ -12,12 +12,10 @@
   "unique_key": [
    "store_id",
    "profile_id",
-   "snapshot_date",
    "keyword_id"
   ],
   "cron": "17 1 * * *",
-  "retention_days": 2,
-  "retention_note": "rows older than 2 days are pruned nightly (newest snapshot per store never pruned where applicable); query beyond the window returns a report_date_note",
+  "retention_note": "Never pruned: the table holds the current state, one row per negative of each advertising profile. A negative Amazon no longer lists is removed at the next sync that lists any. `snapshot_date` is the day the row was last written, so every row is current; freshness is the sync state, not this date.",
   "marketplace": {
    "grain": "per_mkt",
    "label": {
@@ -94,6 +92,12 @@
    "type": "json",
    "comment": "Any Amazon response fields not promoted to a typed column.",
    "note": "Documented opt-outs (2026-07-11): nativeLanguageKeyword / nativeLanguageLocale — localization metadata on a handful of rows, deliberately not promoted."
+  },
+  {
+   "db_column": "row_digest",
+   "amazon_header": "(infrastructure)",
+   "type": "str",
+   "note": "Internal change-detection digest of the row (binary). Not for analysis; never filter on it."
   }
  ],
  "example_query": {
