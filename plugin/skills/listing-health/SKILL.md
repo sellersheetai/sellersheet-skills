@@ -10,7 +10,7 @@ description: >-
   listing stopped selling; what a listing issue means and which to fix first; or which variation families
   have a broken child — "audit my listings", "why is this ASIN suppressed", "fix my listing errors". Counts
   the store from the warehouse without calling Amazon, confirms live, agrees each fix with the seller,
-  applies it and re-reads. Do NOT use for writing new copy or images (image-gen) or for sales, inventory
+  applies it and re-reads. Do NOT use for writing new copy or images (image-gen), for A+ content (aplus-content) or for sales, inventory
   or ads reporting (report-data, amazon-ads).
   中文触发词：listing 被抑制、listing 健康检查、商品不可售、搜索不到商品、listing 报错、问题修复优先级、变体异常。
 ---

@@ -53,7 +53,8 @@ AI 生图、生成文案和买家洞察按次从 SellerSheet 账户 Credits 扣�
 | **sellersheet-dashboard** | 多页签运营看板：库存、广告（PPC）、账户健康、listing、利润率、退货、Buy Box、现金周转，带数据新鲜度标注和智能体洞察。基于 `sellersheet-sheets`。 |
 | **report-data** | 亚马逊 SP-API 与广告 API 报表数据：查询 SellerSheet 数据仓库中 40+ 张 `rpt_*` 表与广告视图（库存、listing、订单、退货、财务、来自 Marketing Stream 的亚马逊广告数据），查看同步计划，按需报告的 创建 → 轮询 → 下载 流程。库存水位、补货需求、搜索词、结算、listing 状态等问题都用它。 |
 | **listing-health** | 检查店铺的亚马逊 listing：不调用亚马逊，直接从数据仓库统计被抑制、搜索不到、被拒绝的 listing；先修影响销售的问题，实时确认，每项改动先经你同意，提交后复查。也能找出子体有问题的变体家族。 |
-| **image-gen** | 用 gpt-image-2 生成亚马逊 listing 图片与 A+ 页面：学习成熟竞品的图片风格，生成/改色产品图，检查主图合规，搭建 A+ 模块并评分，记录到「Images Generation」表格。 |
+| **image-gen** | 用 gpt-image-2 生成亚马逊 listing 图片与 A+ 模块图片：学习成熟竞品的图片风格，生成/改色产品图，检查主图合规，按每个 A+ 模块的尺寸出图（桌面与移动端），评分并记录到「Images Generation」表格。 |
+| **aplus-content** | 亚马逊 A+ 内容从审计到发布：标准 A+、高级 A+ 与品牌故事；查看每个 ASIN 上线的内容、每个模块的 JSON 与限制、预校验、新建、关联 ASIN（整体替换）、提交审核、更新已上线内容、下架，以及每个亚马逊报错的含义。 |
 | **noon-report-data** | noon.com（noon Partners）报表数据：6 张 `rpt_noon_*` 表（订单、财务/交易、FBN 库存账龄、商品浏览与销量、商品目录导出（价格/库存/在售状态）、FBN 商品目录），定时同步，按店铺-站点（如 myStore-AE）与市场语义查询。 |
 | **amazon-ads** | 亚马逊广告（SP、SB、SD）操作：广告活动、广告组、关键词/投放、竞价、预算、批量创建、否定词、导出、变更历史、推荐。内置 35 个真实的广告报表 API v3 `createReport` 请求体。 |
 | **ads-v3-archive** | 临时技能，2026-12-31 移除。2026-09-01 之前的亚马逊广告数据，来自已退役的广告报表 v3 表：19 张表及其列、与 Marketing Stream 列名的对照、归因窗口，以及如何在 2026-09-01 拆分日期范围。 |

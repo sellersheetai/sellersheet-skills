@@ -11,6 +11,15 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+### aplus-content: A+ Content gets its own skill (next release)
+
+- New `aplus-content` skill: Basic and Premium A+ and Brand Story, from finding what is live on
+  an ASIN to create, ASIN links, submit, update, take down and each Amazon error; every module's
+  JSON, limits and a skeleton under `reference/schema/`, generated from Amazon's A+ model.
+- `image-gen` keeps the images: `reference/aplus-image-sizes.md` lists every A+ module's image
+  slots with their minimum sizes (desktop and mobile) and purpose; the document, the Basic module
+  spec and the page arc move to `aplus-content`.
+
 ## [0.21.2] — 2026-11-24
 
 ### report-data: listings and the Ads negative lists are current state

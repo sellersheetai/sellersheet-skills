@@ -1,19 +1,20 @@
 ---
 name: image-gen
-description_zh: "亚马逊产品图生成、listing 图片优化、主图/副图/套图、A+ 页面、学习竞品风格、改色变体图、图片合规检查。"
-description_en: "Use when creating or optimizing Amazon product listing images or A+ Content for a store SKU or a whole…"
+description_zh: "亚马逊产品图生成、listing 图片优化、主图/副图/套图、A+ 模块图片、学习竞品风格、改色变体图、图片合规检查。"
+description_en: "Use when creating or optimizing Amazon product listing images or A+ module images for a store SKU or a whole…"
 author: SellerSheet AI
 description: >-
-  Use when creating or optimizing Amazon product listing images or A+ Content for a store SKU or a
-  whole variation family — learns mature competitors' image style, generates/recolors
+  Use when creating or optimizing Amazon product listing images or A+ module images for a store
+  SKU or a whole variation family — learns mature competitors' image style, generates/recolors
   product-faithful images with gpt-image-2 via the connected image MCP tools, enforces Amazon
-  main-image compliance, builds A+ modules, scores them, builds review previews, and records into
-  the operator's 'Images Generation' Google Sheet. Triggers: "make/optimize listing images",
-  "main/hero image", "A+ content", "A+模块/品牌故事", "competitor image style", "出主图/副图/套图",
-  "recolor variants", "image-gen on the row", "学竞品风格生成产品图", "keep this scene / swap my
-  product in". Default provider openai; gated phases (operator approves before spend). Do NOT
-  use for non-Amazon image edits — for that call the MCP image tools directly.
-  中文触发词：亚马逊产品图生成、listing 图片优化、主图/副图/套图、A+ 页面、学习竞品风格、改色变体图、图片合规检查。
+  main-image compliance, makes every A+ module's images at its size, scores them, builds review
+  previews, and records into the operator's 'Images Generation' Google Sheet. Triggers:
+  "make/optimize listing images", "main/hero image", "A+ images", "A+模块图片", "competitor image
+  style", "出主图/副图/套图", "recolor variants", "image-gen on the row", "学竞品风格生成产品图", "keep
+  this scene / swap my product in". Default provider openai; gated phases (operator approves
+  before spend). Do NOT use to create, publish, update or link A+ content documents (use
+  aplus-content) or for non-Amazon image edits — for that call the MCP image tools directly.
+  中文触发词：亚马逊产品图生成、listing 图片优化、主图/副图/套图、A+ 模块图片、学习竞品风格、改色变体图、图片合规检查。
 version: 0.21.2
 metadata: {apis: [image_gen], pattern: Gate}
 ---
@@ -27,7 +28,8 @@ the 'Images Generation' sheet. The hard-won rules live in `reference/`.
 - `reference/slot-canon.md` — slot model (s0=main … s8), roles, the PHOTOGRAPHIC-vs-GRAPHIC slot split, copy-brief, current column map
 - `reference/reference-modes.md` — **the three reference modes (Style / Blend / Exact swap)** — read BEFORE any reference-driven generation; picking the wrong mode wastes credits and drifts layouts
 - `reference/amazon-compliance.md` — main-image hard rules, claims/cert vetting, the QA gate (run before approval), localization
-- `reference/aplus-modules.md` — A+ module dimensions + page arc; copy can be baked into the image or live in Amazon's text fields
+- `reference/aplus-modules.md` — how to make A+ module images; copy can be baked into the image or live in Amazon's text fields
+- `reference/aplus-image-sizes.md` — every image slot of every A+ module type: minimum size, ratio, desktop and mobile, what the module is for
 - `reference/gotchas.md` — the failure modes that WILL bite you (required params, delivery, billing, size & resolution, recolor)
 - `reference/sheet-contract.md` — how to read/write the 'Images Generation' sheet without breaking it (SHARED with the GAS sidebar — use its status vocabulary)
 - `reference/provider-matrix.md` — openai vs nanobanana; the billing-safe reliability rules (never resubmit `processing`; re-run only on `error`)
@@ -138,12 +140,12 @@ reporting done. Close with a status summary.
 - For a localized text-bearing slot, pass `lang` on `edit_image` — the Image Library keeps a
   separate version lane per language, so localized variants never overwrite the English one.
 
-## Phase 6 — A+ Content (when the operator wants A+ / Premium A+)
-Read `reference/aplus-modules.md` first. Generate each module image at its dimensions (default to
-the module's exact size) with gpt-image-2 — A+ slots `a1–a5`/`p1–p5` cost the same as any
-other image. Two options for copy: **bake headlines/labels directly into the image**
+## Phase 6 — A+ images (when the operator wants A+ / Premium A+ / Brand Story images)
+The module list and the document come from the [`aplus-content`](../aplus-content/SKILL.md)
+skill; this phase makes the images. Read `reference/aplus-modules.md` first and size each image
+from `reference/aplus-image-sizes.md` (desktop and mobile for full-width modules) with
+gpt-image-2 — A+ slots `a1–a5`/`p1–p5` cost the same as any other image. Two options for copy: **bake headlines/labels directly into the image**
 (gpt-image-2 renders them — QA every word), OR keep the image clean and put the copy in Amazon's
 module **text fields** (easier localization — reuse one image, swap the text per marketplace).
-Build the page along the arc (header → benefits → comparison → trust → brand story). If the
-operator has a real logo asset, feed it as an input image so it places accurately. Record into
+If the operator has a real logo asset, feed it as an input image so it places accurately. Record into
 the sheet's a1–a5 / p1–p5 columns; same compliance gate (claims/cert/legibility) applies.
