@@ -3,7 +3,7 @@ name: aplus-content
 description_zh: "A+内容、创建A+、高级A+、品牌故事、更新A+、哪些ASIN有A+、关联ASIN、提交A+审核、下架A+、A+被拒、A+校验报错。"
 description_en: "Use when managing Amazon A+ Content for a store — audit what is live, create Basic or Premium A+ or a Brand…"
 author: SellerSheet AI
-version: 0.22.0
+version: 0.22.1
 metadata: {apis: [aplus], pattern: Gate}
 description: >-
   Use when managing Amazon A+ Content for a store — audit what is live, create Basic or Premium

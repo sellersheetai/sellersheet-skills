@@ -11,6 +11,17 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.22.1] — 2026-11-24
+
+### aplus-content and image-gen follow Amazon's A+ rules
+
+- Each A+ image slot is its own image at the size Amazon gives for it: a full-width Premium or
+  Brand Story module takes a desktop image and a separate mobile image. The advice to crop one
+  scene for both screens, and the image generator's 3:1 workaround, are gone.
+- Create a document as a draft, read its ASINs' badges, then submit: an ASIN Amazon's own content
+  owns, or one outside the brand, shows there before the submit is refused.
+- Premium limit cells that list two values (`LEFT` | `RIGHT`) read whole.
+
 ## [0.22.0] — 2026-11-24
 
 ### aplus-content: A+ Content gets its own skill

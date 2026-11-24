@@ -15,7 +15,7 @@ description: >-
   before spend). Do NOT use to create, publish, update or link A+ content documents (use
   aplus-content) or for non-Amazon image edits — for that call the MCP image tools directly.
   中文触发词：亚马逊产品图生成、listing 图片优化、主图/副图/套图、A+ 模块图片、学习竞品风格、改色变体图、图片合规检查。
-version: 0.22.0
+version: 0.22.1
 metadata: {apis: [image_gen], pattern: Gate}
 ---
 

@@ -6,7 +6,7 @@ author: SellerSheet AI
 description: >-
   Temporary skill, removed on 2026-12-31, for Amazon Ads performance on days before 2026-09-01. Covers the retired Ads Reporting v3 tables rpt_sp_*, rpt_sb_* and rpt_sd_* (campaigns, ad groups, keywords, targets, search terms, placement, advertised and purchased products), their columns, how each column maps to its Marketing Stream name, the attribution windows, and how to split a date range at 2026-09-01. Do NOT use for any day from 2026-09-01 (use report-data and amazon-ads, the Stream tables and views) or for the negative keyword and target lists (use report-data).
   中文触发词：2026-09-01 之前的亚马逊广告历史数据、旧版 v3 广告报表（rpt_sp_、rpt_sb_、rpt_sd_ 表）、跨 2026-09-01 的广告数据拆分与列名对照。
-version: 0.22.0
+version: 0.22.1
 metadata: {apis: [data], pattern: Reference}
 ---
 
