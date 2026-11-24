@@ -8,14 +8,14 @@ other image.
 ## Sizes
 
 Every image slot of every module type, with Amazon's minimum size, ratio and what the module is
-for: `aplus-image-sizes.md`. Generate at the module's ratio and at least its minimum, then
-resize to exact on upload (Amazon also scales to the module).
+for: `aplus-image-sizes.md`. Ask for each image at its slot's size (`size`, for example
+`1464x600`), or larger at the same ratio; Amazon scales it to the module.
 
-- gpt-image-2 takes the size through `size`, at a ratio of 3:1 or less (the server snaps to the
-  nearest valid size). A slot over 3:1 (the 600×180 logo, the 970×300 overlay) is made at 3:1 or
-  less and cropped: about 600×200 for the logo, 970×336 for the overlay.
-- Full-width Premium and Brand Story modules take a desktop image AND a mobile image of another
-  shape (1464×600 with 600×450; Brand Story 1464×625 with 463×625): make both from one scene.
+- Each slot is its own image, composed for that slot. A full-width Premium or Brand Story module
+  takes a desktop image AND a separate mobile image of another shape (1464×600 and 600×450;
+  Brand Story 1464×625 and 463×625): make two images, not one image cropped twice.
+- An image you already have at another shape goes in with a crop of the slot's ratio, at least
+  the slot's minimum size (the document's `imageCropSpecification`).
 - A video slot needs a thumbnail image at the slot's size; the video itself is not made here.
 
 ## Two ways to handle A+ copy

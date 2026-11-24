@@ -76,7 +76,9 @@ Every module's JSON: `reference/schema/` (README first).
 | `aplusContent_postContentDocumentApprovalSubmission(store, contentReferenceKey)` | submit for Amazon's review | yes |
 | `aplusContent_postContentDocumentSuspendSubmission(store, contentReferenceKey)` | take live content off every linked ASIN | yes |
 
-Images: put an image URL (or an existing A+ image id) in each image's `uploadDestinationId`.
+Images: each image slot takes its own image, at least the minimum size Amazon gives for that slot
+in `reference/schema/` (a desktop and a mobile slot are two images of different shapes). Put an
+image URL (or an existing A+ image id) in each image's `uploadDestinationId`.
 Create, validate and update upload the URL; with `imageCropSpecification` left out they set the
 crop to the full image, so make the image at the module's ratio (`image-gen` has every slot's
 size) or give a crop of that ratio. A crop of another ratio comes back as an Amazon warning,
@@ -100,9 +102,14 @@ family (`EBC`), never the tier: the tier is the document's badge.
 4. Dry run: `aplusContent_validateContentDocumentAsinRelations`; fix every entry in
    `data.errors`. A clean dry run does not prove eligibility or ownership of the ASINs.
 5. Show the document; on approve, `aplusContent_create_and_publish` with `submitForApproval`
-   true (or false to leave a DRAFT for review). Read `data.steps`: a failed step stops the rest,
-   and `data.contentReferenceKey` is set once create succeeded.
-6. Status: `SUBMITTED`, then `APPROVED` or `REJECTED` (some accounts are approved at once).
+   false. Read `data.steps`: a failed step stops the rest, and `data.contentReferenceKey` is set
+   once create succeeded.
+6. Read the links with `aplusContent_listContentDocumentAsinRelations` (`includedDataSet`
+   `METADATA`): an ASIN badged `BRAND_NOT_ELIGIBLE`, or a warning such as "an existing retail
+   contribution on this ASIN", will refuse the submit. Link the set again without it, or stop
+   and tell the user (Amazon's own content owns that ASIN). Then
+   `aplusContent_postContentDocumentApprovalSubmission`.
+7. Status: `SUBMITTED`, then `APPROVED` or `REJECTED` (some accounts are approved at once).
    Review typically takes 1–7 business days.
 
 **Change live content.** `aplusContent_getContentDocument` → edit → show the change →

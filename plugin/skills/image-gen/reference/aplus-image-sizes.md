@@ -2,24 +2,23 @@
 
 # A+ module images — the size of every image slot
 
-Every image an A+ module takes, with Amazon's minimum size. Generate at the module's ratio and at
-least the minimum, then resize to exact on upload (Amazon also scales to the module). A ratio over
-3:1 cannot be generated directly: make it at 3:1 or less and crop. A full-width Premium or Brand
-Story module takes a desktop AND a mobile image: make both. Which module to use, and the document
-itself, belong to the `aplus-content` skill.
+Every image an A+ module takes, with Amazon's minimum size. Make each image at its slot's size or
+larger at the same ratio; Amazon scales it to the module. Each slot is its own image: a
+full-width Premium or Brand Story module takes a desktop image AND a separate mobile image. Which
+module to use, and the document itself, belong to the `aplus-content` skill.
 
 ## Standard (Basic) A+
 
 | Module type | What the module is for | Image slot | Minimum size | Ratio |
 |---|---|---|---|---|
-| `STANDARD_COMPANY_LOGO` | The standard company logo image | Image | 600×180 | 3.33:1 (over 3:1) |
+| `STANDARD_COMPANY_LOGO` | The standard company logo image | Image | 600×180 | 3.33:1 |
 | `STANDARD_COMPARISON_TABLE` | The standard product comparison table | Image in blocks 1-6 | 150×300 | 0.50:1 |
 | `STANDARD_FOUR_IMAGE_TEXT` | Four standard images with text, presented across a single row | Image in blocks 1-4 | 220×200 | 1.10:1 |
 | `STANDARD_FOUR_IMAGE_TEXT_QUADRANT` | Four standard images with text, presented on a grid of four quadrants | Image | 135×135 | 1.00:1 |
 | `STANDARD_HEADER_IMAGE_TEXT` | Standard headline text, an image, and body text | Image | 970×600 | 1.62:1 |
 | `STANDARD_IMAGE_SIDEBAR` | Two images, two paragraphs, and two bulleted lists | Main image | 300×400 | 0.75:1 |
 | `STANDARD_IMAGE_SIDEBAR` |  | Sidebar image | 300×175 | 1.71:1 |
-| `STANDARD_IMAGE_TEXT_OVERLAY` | A standard background image with a floating text box | Image | 970×300 | 3.23:1 (over 3:1) |
+| `STANDARD_IMAGE_TEXT_OVERLAY` | A standard background image with a floating text box | Image | 970×300 | 3.23:1 |
 | `STANDARD_MULTIPLE_IMAGE_TEXT` | Standard images with text, presented one at a time | Highlight Image (Note: Thumbnail generated automatically from highlight image) | 300×300 | 1.00:1 |
 | `STANDARD_PRODUCT_DESCRIPTION` | Standard product description text | — (no image Amazon sizes) | — | — |
 | `STANDARD_SINGLE_IMAGE_HIGHLIGHTS` | A standard image with several paragraphs and a bulleted list | Main image | 300×300 | 1.00:1 |
