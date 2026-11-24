@@ -11,7 +11,9 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
-### aplus-content: A+ Content gets its own skill (next release)
+## [0.22.0] — 2026-11-24
+
+### aplus-content: A+ Content gets its own skill
 
 - New `aplus-content` skill: Basic and Premium A+ and Brand Story, from finding what is live on
   an ASIN to create, ASIN links, submit, update, take down and each Amazon error; every module's
