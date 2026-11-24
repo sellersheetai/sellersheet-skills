@@ -100,9 +100,14 @@ family (`EBC`), never the tier: the tier is the document's badge.
 4. Dry run: `aplusContent_validateContentDocumentAsinRelations`; fix every entry in
    `data.errors`. A clean dry run does not prove eligibility or ownership of the ASINs.
 5. Show the document; on approve, `aplusContent_create_and_publish` with `submitForApproval`
-   true (or false to leave a DRAFT for review). Read `data.steps`: a failed step stops the rest,
-   and `data.contentReferenceKey` is set once create succeeded.
-6. Status: `SUBMITTED`, then `APPROVED` or `REJECTED` (some accounts are approved at once).
+   false. Read `data.steps`: a failed step stops the rest, and `data.contentReferenceKey` is set
+   once create succeeded.
+6. Read the links with `aplusContent_listContentDocumentAsinRelations` (`includedDataSet`
+   `METADATA`): an ASIN badged `BRAND_NOT_ELIGIBLE`, or a warning such as "an existing retail
+   contribution on this ASIN", will refuse the submit. Link the set again without it, or stop
+   and tell the user (Amazon's own content owns that ASIN). Then
+   `aplusContent_postContentDocumentApprovalSubmission`.
+7. Status: `SUBMITTED`, then `APPROVED` or `REJECTED` (some accounts are approved at once).
    Review typically takes 1–7 business days.
 
 **Change live content.** `aplusContent_getContentDocument` → edit → show the change →
