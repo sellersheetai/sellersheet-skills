@@ -11,6 +11,18 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.21.2] — 2026-11-24
+
+### report-data: listings and the Ads negative lists are current state
+
+- `rpt_get_merchant_listings_all_data` holds one row per listing (store, marketplace, SKU,
+  condition) as it is now, and the six Ads negative keyword and target tables one row per
+  negative. Neither keeps daily copies or is pruned; `snapshot_date` is the day a row was last
+  written. A listing or negative no longer reported is removed. Read every row for the current
+  catalogue; `report_date='latest'` already does.
+- `rpt_get_ledger_detail_view_data`: the key gains disposition, reason and country; its
+  business date is `date`.
+
 ## [0.21.1] — 2026-11-20
 
 ### ads-v3-archive holds the retired v3 references alone
