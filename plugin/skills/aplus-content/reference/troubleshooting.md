@@ -10,7 +10,6 @@ Amazon names the failing field in the error's `details`, one entry per field, as
 | 400 `InvalidInput`, "The request is not valid…" | a field breaks a rule (required, length, pattern, minimum size); `details` names each |
 | 400 `InvalidInput`, "The request syntax is malformed…" | the JSON does not fit the model (a property misnamed or in the wrong place); `details` lists what is allowed there. Nothing else was checked yet |
 | 200 with `errors` on a dry run | the call worked but the document has problems: read `errors` and `warnings` on every 200 |
-| `CONTENT_FAILED_VALIDATION`, "These keywords violate our community guidelines: …" | Amazon's word filter matches inside words: "teste" is found in "tested". Reword the sentence that holds the named string |
 | 403 `Unauthorized` | the message gives the reason: no access, a document of another marketplace, an ASIN outside the brand |
 | 404 with `NOT_FOUND` | the content reference key does not exist |
 

@@ -37,9 +37,7 @@ makes them. This skill writes the document those images go into.
   the complete set; an ASIN left out loses this content. Read the current set first and send it
   whole.
 - **One family per document.** All `STANDARD_*`, all `PREMIUM_*` (at most 7 modules) or all
-  `BRAND_STORY_*` (exactly one `BRAND_STORY_IMAGE_WITH_LOGO`). Never mixed. Validate and create
-  refuse a mix and an eighth Premium module, but accept a Brand Story without its
-  `BRAND_STORY_IMAGE_WITH_LOGO`: check that card yourself.
+  `BRAND_STORY_*` (exactly one `BRAND_STORY_IMAGE_WITH_LOGO`). Never mixed.
 - **Ids come from tool results only:** a `contentReferenceKey` from a search or a create, ASINs
   from the user or the catalog.
 - **A 200 can still carry problems.** Read `data.errors` and `data.warnings` on every answer.
@@ -85,10 +83,10 @@ Create, validate and update upload the URL; with `imageCropSpecification` left o
 crop to the full image, so make the image at the module's ratio (`image-gen` has every slot's
 size) or give a crop of that ratio. A crop of another ratio comes back as an Amazon warning,
 `MEDIA_FAILED_VALIDATION` ("dimensions … are not compatible with the image bounds").
-Amazon takes PNG or JPEG of at most 3 MiB (3,145,728 bytes) per image. A larger one (an
-AI-generated PNG often is) is re-encoded before upload: an opaque image becomes JPEG at full size, a
-transparent PNG is scaled down, and its upload record carries a `note` saying so. Tell the user,
-and check a scaled image still meets its slot's minimum size.
+The image is uploaded as it is, and Amazon takes at most 3 MiB (3,145,728 bytes) per image. A
+failed upload answers 400 with `errors[]`, one per image: `code` (Amazon's own, e.g.
+`EntityTooLarge` with `proposedSize` and `maxSizeAllowed`), `message`, `url` and `path` (the slot).
+Make or export the image within the limit and send it again. Image URLs must be public.
 
 ## 3. Workflows
 
