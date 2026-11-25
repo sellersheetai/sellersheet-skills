@@ -83,6 +83,10 @@ Create, validate and update upload the URL; with `imageCropSpecification` left o
 crop to the full image, so make the image at the module's ratio (`image-gen` has every slot's
 size) or give a crop of that ratio. A crop of another ratio comes back as an Amazon warning,
 `MEDIA_FAILED_VALIDATION` ("dimensions … are not compatible with the image bounds").
+Amazon takes PNG or JPEG of at most 3 MiB (3,145,728 bytes) per image. A larger one (an
+AI-generated PNG often is) is re-encoded before upload: an opaque image becomes JPEG at full size, a
+transparent PNG is scaled down, and its upload record carries a `note` saying so. Tell the user,
+and check a scaled image still meets its slot's minimum size.
 
 ## 3. Workflows
 
