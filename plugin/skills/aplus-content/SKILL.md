@@ -37,7 +37,9 @@ makes them. This skill writes the document those images go into.
   the complete set; an ASIN left out loses this content. Read the current set first and send it
   whole.
 - **One family per document.** All `STANDARD_*`, all `PREMIUM_*` (at most 7 modules) or all
-  `BRAND_STORY_*` (exactly one `BRAND_STORY_IMAGE_WITH_LOGO`). Never mixed.
+  `BRAND_STORY_*` (exactly one `BRAND_STORY_IMAGE_WITH_LOGO`). Never mixed. Validate and create
+  refuse a mix and an eighth Premium module, but accept a Brand Story without its
+  `BRAND_STORY_IMAGE_WITH_LOGO`: check that card yourself.
 - **Ids come from tool results only:** a `contentReferenceKey` from a search or a create, ASINs
   from the user or the catalog.
 - **A 200 can still carry problems.** Read `data.errors` and `data.warnings` on every answer.
