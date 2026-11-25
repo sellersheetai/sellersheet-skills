@@ -52,10 +52,9 @@ makes them. This skill writes the document those images go into.
 | Who | brand-registered seller, vendor | an eligible brand (Amazon checks at create or submit) | an eligible brand |
 | Badge on the document | `STANDARD` | `PREMIUM` | none |
 
-A Premium module that needs a video (`PREMIUM_VIDEO_TEXT`, `PREMIUM_HERO_VIDEO`,
-`PREMIUM_VIDEO_IMAGE_CAROUSEL`) takes media ids from Amazon's media registration, which these
-tools do not offer yet: build Premium documents without them, and tell the user video modules
-are set up in Seller Central.
+A Premium video module (`PREMIUM_VIDEO_TEXT`, `PREMIUM_HERO_VIDEO`,
+`PREMIUM_VIDEO_IMAGE_CAROUSEL`) takes a `VideoComponent`: `videoMediaId`, `imageMediaId` (its
+thumbnail) and `imageCropSpecification`. Both ids come from `aplusContent_createMedia` (§2).
 
 Which module for which job, the page order and the copy rules: `reference/modules-guide.md`.
 Every module's JSON: `reference/schema/` (README first).
@@ -69,6 +68,9 @@ Every module's JSON: `reference/schema/` (README first).
 | `aplusContent_list_documents_detailed(store)` | up to 50 documents with their content and ASINs, for a sheet | |
 | `aplusContent_getContentDocument(store, contentReferenceKey)` | one document, ready to edit and send back | |
 | `aplusContent_listContentDocumentAsinRelations(store, contentReferenceKey)` | the ASINs a document is linked to | |
+| `aplusContent_upload_image(store, url)` | upload one image; returns its `uploadDestinationId`, size and full crop | yes |
+| `aplusContent_createMedia(store, media_type, url, related_media)` | add a video with its thumbnail (or an image) to the media library; returns the media ids | yes |
+| `aplusContent_getMedia(store, media_id)` | a media asset's status (`AVAILABLE` when usable), URL and issues | |
 | `aplusContent_validateContentDocumentAsinRelations(store, asinSet, contentDocument)` | a dry run of a document against ASINs | |
 | `aplusContent_create_and_publish(store, contentDocument, asinSet, submitForApproval)` | upload images, create, link ASINs, submit (each step reported) | yes |
 | `aplusContent_updateContentDocument(store, contentReferenceKey, contentDocument)` | replace a document's content, key and ASINs kept | yes |
@@ -77,16 +79,25 @@ Every module's JSON: `reference/schema/` (README first).
 | `aplusContent_postContentDocumentSuspendSubmission(store, contentReferenceKey)` | take live content off every linked ASIN | yes |
 
 Images: each image slot takes its own image, at least the minimum size Amazon gives for that slot
-in `reference/schema/` (a desktop and a mobile slot are two images of different shapes). Put an
-image URL (or an existing A+ image id) in each image's `uploadDestinationId`.
-Create, validate and update upload the URL; with `imageCropSpecification` left out they set the
-crop to the full image, so make the image at the module's ratio (`image-gen` has every slot's
-size) or give a crop of that ratio. A crop of another ratio comes back as an Amazon warning,
+in `reference/schema/` (a desktop and a mobile slot are two images of different shapes). Upload
+every image first with `aplusContent_upload_image` and put each `uploadDestinationId` and
+`imageCropSpecification` in its slot: a failed image is then fixed and sent again alone, and
+validate and create upload nothing. (A URL in `uploadDestinationId` also works; create, validate
+and update upload it, which is how the SellerSheet sheet sends images.) The returned crop is the
+full image, so make the image at the module's ratio (`image-gen` has every slot's size) or give a
+crop of that ratio. A crop of another ratio comes back as an Amazon warning,
 `MEDIA_FAILED_VALIDATION` ("dimensions … are not compatible with the image bounds").
 The image is uploaded as it is, and Amazon takes at most 3 MiB (3,145,728 bytes) per image. A
 failed upload answers 400 with `errors[]`, one per image: `code` (Amazon's own, e.g.
 `EntityTooLarge` with `proposedSize` and `maxSizeAllowed`), `message`, `url` and `path` (the slot).
 Make or export the image within the limit and send it again. Image URLs must be public.
+
+Video: `aplusContent_createMedia` with `media_type` `VIDEO`, the video's `url` (MP4 or MOV, at most
+200 MiB) and its thumbnail in `related_media`: `[{associationType: VIDEO_PAIRING, title (three words
+or more), media: {mediaType: IMAGE, url}}]` (the module's preview image size, at most 3 MiB). Use
+`data.mediaId` as `videoMediaId` and `data.relatedMedia[0].media.mediaId` as `imageMediaId`. A new
+video reads `PENDING_PROCESSING`; poll `aplusContent_getMedia` until `status` holds `AVAILABLE`
+before submitting the document.
 
 ## 3. Workflows
 
@@ -100,9 +111,12 @@ family (`EBC`), never the tier: the tier is the document's badge.
 **Create.**
 1. Check what is live on the ASINs (§0). Agree the kind (§1) and the module list
    (`reference/modules-guide.md`) with the user.
-2. Get the images made at their sizes (`image-gen`), or take the user's.
+2. Get the images made at their sizes (`image-gen`), or take the user's. Upload each one
+   (`aplusContent_upload_image`), and each video with its thumbnail (`aplusContent_createMedia`).
 3. Write the document from `reference/schema/` and Amazon's limits there (character counts,
    image minimums, item counts).
+   Show the user how it will look: `python3 scripts/preview_aplus.py document.json` writes a
+   desktop and mobile preview page with its checks (`reference/preview.md`).
 4. Dry run: `aplusContent_validateContentDocumentAsinRelations`; fix every entry in
    `data.errors`. A clean dry run does not prove eligibility or ownership of the ASINs.
 5. Show the document; on approve, `aplusContent_create_and_publish` with `submitForApproval`
