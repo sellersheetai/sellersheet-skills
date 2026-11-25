@@ -170,8 +170,12 @@ def image_url(comp):
     u = u.strip()
     if safe_url(u):
         return "url", u
-    if u.startswith("aplus-media/") and safe_url(MEDIA_HOST + u):
+    # The id forms Amazon returns: an upload ("aplus-media/sc/…"), a media-library asset
+    # ("aplus-media-library-service-media/…"), and a catalog image ("/images/I/…").
+    if u.startswith(("aplus-media/", "aplus-media-library-service-media/")) and safe_url(MEDIA_HOST + u):
         return "url", MEDIA_HOST + u
+    if u.startswith("/images/I/") and safe_url("https://m.media-amazon.com" + u):
+        return "url", "https://m.media-amazon.com" + u
     return "id", u
 
 
@@ -408,8 +412,13 @@ def s_three_image_text(c, m, L):
 # ---------------------------------------------------------------- PREMIUM_* modules
 
 def p_image_text(c, m, L):
-    txt = T(g(m, "subheadline"), "kick") + T(g(m, "headline"), "h1") + P(g(m, "bodyText"))
-    return side(image(c, g(m, "image"), L + "image", (800, 600)), txt, image_right=m.get("positionType") == "RIGHT")
+    # positionType names where the TEXT sits: LEFT puts the text left and the image right
+    # (measured on a live Premium page, 2026-11-26).
+    txt = T(g(m, "subheadline"), "ptopic") + T(g(m, "headline"), "ph1") + P(g(m, "bodyText"), "pbody")
+    img = image(c, g(m, "image"), L + "image", (800, 600))
+    text_right = m.get("positionType") == "RIGHT"
+    return '<div class="pit%s"><div class="pit-img">%s</div><div class="pit-txt">%s</div></div>' % (
+        " text-right" if text_right else "", img, txt)
 
 
 def p_text(c, m, L):
@@ -427,7 +436,8 @@ def p_full_background_text(c, m, L):
 
 
 def p_full_background_image(c, m, L):
-    return _bg(c, m, L) + T(g(m, "headline"), "h1 ctr") + P(g(m, "footer"), "body ctr")
+    # Headline above the image, the footer below, both centred (live Premium page).
+    return T(g(m, "headline"), "ph1 pfb-h ctr") + _bg(c, m, L) + P(g(m, "footer"), "pp1 pfb-f ctr")
 
 
 def _image_columns(c, m, L, size):
@@ -627,11 +637,12 @@ def b_four_asin(c, m, L):
     cells = []
     for i, it in enumerate(items(m, "asinImages")):
         a = g(it, "asinImage")
-        cells.append(image(c, g(a, "productImage"), "%sasinImages[%d].asinImage.productImage" % (L, i), (166, 182))
-                     + '<div class="asin">%s</div>' % esc(text_of(g(a, "productAsin"))))
+        cells.append('<div class="fa-cell" title="%s">%s</div>' % (
+            esc(text_of(g(a, "productAsin"))),
+            image(c, g(a, "productImage"), "%sasinImages[%d].asinImage.productImage" % (L, i), (166, 182))))
     store = '<div class="store">Visit the Store</div>' if text_of(g(m, "brandStoreId")).strip() else ""
-    return '<div class="bcard four">%s<div class="g2">%s</div>%s</div>' % (
-        T(g(m, "title"), "h3"), "".join('<div>%s</div>' % x for x in cells), store)
+    return '<div class="bcard four"><div class="fa-grid">%s</div>%s%s</div>' % (
+        "".join(cells), T(g(m, "title"), "fa-title"), store)
 
 
 def b_questions(c, m, L):
@@ -921,9 +932,12 @@ def render_brand_story(ctx, mods):
         m = g(mods[first], "brandStoryImageWithLogo") or {}
         k, comp = ctx.pick(m)
         bg_html = image(ctx, comp, "Module %d %s" % (first + 1, k), (463, 625) if ctx.mobile else (1464, 625))
-        intro = ('<div class="card intro"><span class="pos">%d &middot; BRAND_STORY_IMAGE_WITH_LOGO</span>'
-                 '<div class="blogo">Brand logo</div>%s%s</div>' % (first + 1, T(g(m, "title"), "h2"),
-                                                                     P(g(m, "description"))))
+        # The logo card is the background's own first panel: empty when the document has no
+        # title or description (the brand's panel is then part of the image itself).
+        words = T(g(m, "title"), "h2") + P(g(m, "description"))
+        intro = ('<div class="card intro%s"><span class="pos">%d &middot; BRAND_STORY_IMAGE_WITH_LOGO</span>%s</div>'
+                 % ("" if words else " blank", first + 1,
+                    '<div class="blogo">Brand logo</div>' + words if words else ""))
     for i, m in enumerate(mods):
         if i == first:
             continue
@@ -935,8 +949,11 @@ def render_brand_story(ctx, mods):
         cards.append('<div class="card"><span class="pos">%d &middot; %s</span>%s</div>' % (i + 1, esc(t), inner))
     if first is None:
         bg_html = placeholder("BRAND_STORY_IMAGE_WITH_LOGO", (1464, 625), "missing")
-    return ('<section class="mod brand"><div class="lbl">From the Brand</div><div class="bs">%s'
-            '<div class="bstrip">%s%s</div></div></section>' % (bg_html, intro, "".join(cards)))
+    dots = '<div class="bdots">%s</div>' % "".join(
+        '<i%s></i>' % (' class="on"' if j == 0 else "") for j in range(len(cards) + 1)) if ctx.mobile else ""
+    arrows = '' if ctx.mobile else '<i class="barrow l"></i><i class="barrow r"></i>'
+    return ('<section class="mod brand"><div class="bs">%s<div class="bstrip">%s%s</div>%s</div>%s</section>'
+            % (bg_html, intro, "".join(cards), arrows, dots))
 
 
 CSS = """
@@ -954,7 +971,7 @@ nav label{cursor:pointer;border:1px solid #6b7785;border-radius:4px;padding:4px 
 .checks ul{margin:0;padding-left:20px}.note{color:var(--muted);font-size:12px;padding:8px 16px 0}
 main{display:flex;gap:24px;padding:16px;overflow-x:auto;align-items:flex-start}
 #v-d:checked~main .pane.m,#v-m:checked~main .pane.d{display:none}
-#v-l:checked~main .lbl,#v-l:checked~main .pos{display:none}
+.lbl,.pos{display:none}#v-l:checked~main .lbl{display:block}#v-l:checked~main .pos{display:inline-block}
 .pane{flex:0 0 auto}.pane>h2{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
 .frame{background:#fff;padding:16px;border:1px solid var(--line)}
 .frame.std{width:1002px}.frame.wide{width:1496px;zoom:.66;font-size:20px}
@@ -1020,12 +1037,74 @@ main{display:flex;gap:24px;padding:16px;overflow-x:auto;align-items:flex-start}
 .phone .h1{font-size:1.3em}.phone .legend{columns:1}.phone .quad{grid-template-columns:1fr}
 .phone .bstrip{min-height:506px;padding:16px}.phone .bstrip>.card{flex:0 0 260px;height:380px}.phone .bstrip>.card.intro{flex-basis:260px}
 .phone .tbl thead th{min-width:90px}
+/* ---- Amazon product page, measured on live pages 2026-11-26 (desktop 1500 px window, mobile 375 px) ---- */
+.lbl,.pos{display:none}#v-l:checked~main .lbl{display:block}#v-l:checked~main .pos{display:inline-block}
+.frame{border:0;background:#fff}
+.frame.wide,.frame.std{width:1500px;zoom:1;font-size:14px;padding:8px 18px 24px}
+.frame.std .mod{max-width:970px;margin:0 auto 28px}
+.wide .mod,.phone .mod.premium{margin:0}
+.frame.phone{width:391px;padding:8px 15px 16px;font-size:16px}
+.pdp-h{font-size:20px;line-height:32px;font-weight:700;margin:0;padding:0 0 4px}
+.phone .pdp-h{font-size:18px;line-height:22px}
+.ph1{font-size:32px;line-height:38.4px;font-weight:700;margin:0}
+.phone .ph1{font-size:22px;line-height:26.4px}
+.pfb-h{padding:40px 0}.phone .pfb-h{padding:20px 0}
+.pp1 p{font-size:20px;line-height:26px;font-weight:300;margin:0}
+.phone .pp1 p{font-size:15px;line-height:21px}
+.pfb-f{padding:40px 0}.phone .pfb-f{padding:20px 0}
+.pit{display:flex;padding:40px}
+.pit>div{flex:0 0 50%;min-width:0}
+.pit-txt{padding:40px;display:flex;flex-direction:column;justify-content:center;order:0}
+.pit-img{order:1}.pit.text-right .pit-txt{order:2}
+.ptopic{font-size:16px;line-height:22.4px;font-weight:700;padding-bottom:0}
+.pit .ph1{padding-bottom:20px}
+.pbody p{font-size:16px;line-height:22.4px;font-weight:300;margin:0 0 14px}
+.phone .pit{display:block;padding:0}
+.phone .pit-txt{padding:20px}
+.phone .ptopic{font-size:13px;line-height:18.2px;padding-bottom:10px}
+.phone .pbody p{font-size:15px;line-height:21px;margin:0 0 8px}
+.bs{position:relative;height:625px;overflow:hidden}
+.bs>.slot,.bs>.ph{position:absolute;inset:0;height:100%;aspect-ratio:auto!important}
+.bs>.slot img{position:absolute;left:0!important;top:0!important;width:100%!important;height:100%!important;object-fit:cover}
+.bstrip{position:absolute;left:72px;top:149px;right:0;display:flex;gap:30px;overflow:hidden;padding:0;min-height:0;align-items:flex-start}
+.bstrip>.card{flex:0 0 362px;height:453px;background:#fff;box-shadow:none;padding:15px;overflow:hidden}
+.bstrip>.card.intro{flex-basis:362px;background:#fff}.bstrip>.card.intro.blank{background:transparent}
+.fa-grid{display:grid;grid-template-columns:162px 162px;grid-auto-rows:185px;gap:6px}
+.fa-cell .slot,.fa-cell .ph{height:185px;aspect-ratio:auto!important;background:#fff;margin:0;padding:2px}
+.fa-cell .slot img{object-fit:contain}
+.fa-title{font-size:18px;line-height:24px;font-weight:700;margin:23px 0 0;padding:0 0 0 0}
+.barrow{position:absolute;top:330px;width:34px;height:65px;background:#fff;border-radius:8px;box-shadow:0 2px 5px rgba(15,17,17,.15)}
+.barrow.l{left:0}.barrow.r{right:0}
+.barrow:after{content:"";position:absolute;top:27px;width:9px;height:9px;border:solid #0f1111;border-width:0 2px 2px 0}
+.barrow.l:after{left:14px;transform:rotate(135deg)}.barrow.r:after{left:10px;transform:rotate(-45deg)}
+.phone .bs{height:auto;padding:80px 0 0;overflow:hidden}
+.phone .bstrip{position:relative;left:auto;top:auto;gap:16px;padding:0 2px 24px;overflow-x:auto}
+.phone .bstrip>.card{flex:0 0 293px;height:auto;min-height:365px;padding:17px}
+.phone .bstrip>.card.intro.blank{display:none}
+.phone .fa-grid{grid-template-columns:124px 124px;grid-auto-rows:141px;gap:10px}
+.phone .fa-cell .slot,.phone .fa-cell .ph{height:141px}
+.phone .fa-title{font-size:16px;line-height:20px;margin-top:25px}
+.bdots{display:flex;gap:4px;justify-content:center;padding:12px 0 4px}
+.bdots i{width:16px;height:16px;border:1.5px solid #565959;border-radius:50%;margin:2px}
+.bdots i.on{background:#c45500;border-color:#c45500}
+/* every other Premium module: Amazon's Premium type scale (the same .aplus-h1 / .aplus-p2 / topic sizes) */
+.mod.premium .h1{font-size:32px;line-height:38.4px}
+.mod.premium .h3{font-size:20px;line-height:26px}
+.mod.premium .body p{font-size:16px;line-height:22.4px;font-weight:300}
+.mod.premium .kick{text-transform:none;letter-spacing:0;font-size:16px;font-weight:700;color:inherit}
+.phone .mod.premium .h1{font-size:22px;line-height:26.4px}
+.phone .mod.premium .h3{font-size:17px;line-height:22px}
+.phone .mod.premium .body p{font-size:15px;line-height:21px}
+.phone .mod.premium .kick{font-size:13px}
 """
 
 JS = """
 (function(){function c(i){var p=i.getAttribute('data-crop').split(',').map(Number),W=i.naturalWidth;
-if(!W||!(p[2]>0)||!(p[3]>0))return;i.style.width=(W/p[2]*100)+'%';i.style.left=(-p[0]/p[2]*100)+'%';
-i.style.top=(-p[1]/p[3]*100)+'%';i.className+=' cropped';i.removeAttribute('data-crop');}
+if(!W||!(p[2]>0)||!(p[3]>0))return;
+/* A crop is in the uploaded file's pixels; Amazon's image host can serve a smaller copy. A crop that does
+   not fit the served image is drawn as the whole image, covering the slot. */
+if(p[0]+p[2]>W*1.01||p[1]+p[3]>i.naturalHeight*1.01){i.removeAttribute('data-crop');return;}i.style.width=(W/p[2]*100)+'%';i.style.left=(-p[0]/p[2]*100)+'%';
+i.style.top=(-p[1]/p[3]*100)+'%';if(i.closest('.bs'))return;i.className+=' cropped';i.removeAttribute('data-crop');}
 function run(){var a=document.querySelectorAll('img[data-crop]');for(var k=0;k<a.length;k++)c(a[k]);return a.length;}
 document.addEventListener('load',function(e){if(e.target.tagName==='IMG'&&e.target.hasAttribute('data-crop'))c(e.target);},true);
 var n=0,t=setInterval(function(){if(!run()||++n>100)clearInterval(t);},300);
@@ -1050,11 +1129,13 @@ def render_page(doc, media):
         if mobile:
             title, cls = "Mobile &middot; 375 px", "phone"
         elif wide:
-            title, cls = "Desktop &middot; 1,464 px, shown at 66%", "wide"
+            title, cls = "Desktop &middot; 1,464 px", "wide"
         else:
             title, cls = "Desktop &middot; 970 px", "std"
-        panes.append('<section class="pane %s"><h2>%s</h2><div class="frame %s">%s</div></section>'
-                     % ("m" if mobile else "d", title, cls, inner))
+        # Amazon's own section heading above the content, as on the product page.
+        heading = '<h2 class="pdp-h">%s</h2>' % ("From the brand" if brand else "Product description")
+        panes.append('<section class="pane %s"><h2>%s</h2><div class="frame %s">%s%s</div></section>'
+                     % ("m" if mobile else "d", title, cls, heading, inner))
     kind = "Brand Story" if brand else ("Premium A+" if "PREMIUM" in fams else "Basic A+")
     meta = "%s &middot; contentType %s &middot; locale %s &middot; %d module%s" % (
         kind, esc(doc.get("contentType")), esc(doc.get("locale")), len(mods), "" if len(mods) == 1 else "s")
@@ -1070,8 +1151,8 @@ def render_page(doc, media):
 <input type="radio" name="v" id="v-b" class="vt"><input type="checkbox" id="v-l" class="vt">
 <header><h1>%s</h1><div class="meta">%s</div>
 <nav><label for="v-d">Desktop</label><label for="v-m">Mobile</label><label for="v-b">Side by side</label>
-<label for="v-l">Hide module labels</label></nav></header>
-%s<div class="note">An approximate layout for review before you create or submit the document. Amazon's own page decides the final look; images are shown from their URLs.</div>
+<label for="v-l">Show module labels</label></nav></header>
+%s<div class="note">Drawn with the sizes, fonts and spacing of Amazon's product page for review before you create or submit; Amazon's page decides the final look. Images are shown from their URLs.</div>
 <main>%s</main><script>%s</script></body></html>
 """ % (esc(doc.get("name") or "A+ document"), CSS, esc(doc.get("name") or "A+ document"), meta, checks,
        "".join(panes), JS)

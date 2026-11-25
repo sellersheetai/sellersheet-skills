@@ -15,7 +15,7 @@ python3 scripts/preview_aplus.py document.json --media-url <videoMediaId>=https:
 - **Input:** a `contentDocument` (`name`, `contentType`, `locale`, `contentModuleList`), or the
   answer of `aplusContent_getContentDocument` as it came back (`{"contentDocument": …}` or
   `{"data": {"contentDocument": …}}`), so a live document can be previewed too. `-` reads stdin.
-- **Views:** Basic at 970 px; Premium and Brand Story at 1,464 px shown at 66%; mobile at 375 px.
+- **Views:** Amazon's product-page sizes, fonts and spacing (measured on live pages): Basic at 970 px, Premium and Brand Story at 1,464 px, mobile at 375 px, under the page's own heading ("Product description", "From the brand").
   Desktop slots show `desktopImage`, mobile shows `mobileImage`. Append `#mobile` or `#both` to
   the page address to open on that view.
 - **Images:** a URL is shown as it is; an Amazon id (`aplus-media/sc/….png`) is shown from
