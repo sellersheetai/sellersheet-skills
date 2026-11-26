@@ -11,6 +11,20 @@ Planned for upcoming releases (under review):
 - `listing-refurbish` — FBA ASIN migration
 - `amazon-listing-optimizer` — Multi-market listing optimization
 
+## [0.22.2] — 2026-11-26
+
+### Ads negative keywords and targets are read live
+
+- The six Ads negative keyword and target tables are no longer synced, and `query_report_data`
+  refuses them with the tools to use instead. Read negatives with `ads_query_target` and
+  `negativeFilter {include: [true]}` (narrowed by keywords, campaign or ad group), or every negative
+  of an account in one file with `ads_target_export`. The export also returns the product and
+  category negatives the tables never held.
+- amazon-ads: the wasted-spend recipe drops candidates that are already negated before proposing
+  them; the negative-mining recipe audits live negatives only.
+- report-data: the six tables, their references and their notes are gone; a sync whose
+  `disabled_reason` is `retired` was switched off on purpose.
+
 ## [0.22.1] — 2026-11-24
 
 ### aplus-content and image-gen follow Amazon's A+ rules
