@@ -4,7 +4,6 @@
     "naming_convention": "Table names ARE the Amazon report types: 'rpt_' + report_type lowercased. Renamed 2026-07-10 (migration d5f7a9c1e3b5). The old internal names (rpt_listings_snapshot, rpt_restock_recommendations, rpt_account_health, ...) still resolve as read-only compat VIEWs — prefer the canonical names below.",
     "tables_deliberately_not_amazon_named": {
       "rpt_orders": "Fed by TWO order report types (GET_FLAT_FILE_ALL_ORDERS_DATA_BY_ORDER_DATE_GENERAL for the one-shot 30-day backfill, ..._BY_LAST_UPDATE_GENERAL for the hourly incremental) — no single report type to name it after.",
-      "rpt_sp_negative_* / rpt_sp_campaign_negative_* / rpt_sb_negative_keywords / rpt_sd_negative_targets": "Ads-API negative keyword and target lists, still synced: already Amazon-derived names. The retired v3 Ads report tables (the other rpt_sp_* / rpt_sb_* / rpt_sd_*) are not in this index: the ads-v3-archive skill documents them, for days before 2026-09-01, until 2026-12-31.",
       "rpt_ads_* / v_ads_*": "Amazon Marketing Stream datasets, pushed by Amazon rather than requested as reports; v_ads_* are views over them. The source for Ads performance from 2026-09-01.",
       "rpt_dk_*": "Data Kiosk GraphQL datasets, not SP-API report types.",
       "rpt_noon_*": "noon.com, not Amazon.",
@@ -484,102 +483,6 @@
       ],
       "description": "Suppressed listings snapshot with issue reasons.",
       "reference": "reference/rpt_get_merchants_listings_fyp_report.json"
-    },
-    {
-      "table": "rpt_sp_negative_keywords",
-      "report_type": "spNegativeKeywords",
-      "is_snapshot": true,
-      "queryable": true,
-      "pii": false,
-      "deprecated": false,
-      "strategy": "ads_list",
-      "unique_key": [
-        "store_id",
-        "profile_id",
-        "keyword_id"
-      ],
-      "description": "Sponsored Products ad-group-level negative keywords. Daily snapshot. Use to filter search-term mining queries: LEFT JOIN ON (campaign_id, ad_group_id, lower(keyword_text)) WHERE state='ENABLED' AND r.keyword_id IS NULL surfaces terms not yet negated.",
-      "reference": "reference/rpt_sp_negative_keywords.json"
-    },
-    {
-      "table": "rpt_sp_campaign_negative_keywords",
-      "report_type": "spCampaignNegativeKeywords",
-      "is_snapshot": true,
-      "queryable": true,
-      "pii": false,
-      "deprecated": false,
-      "strategy": "ads_list",
-      "unique_key": [
-        "store_id",
-        "profile_id",
-        "keyword_id"
-      ],
-      "description": "Sponsored Products campaign-level negative keywords (apply across every ad group within a campaign). Daily snapshot. Pair with rpt_sp_negative_keywords for full-coverage negation lookup.",
-      "reference": "reference/rpt_sp_campaign_negative_keywords.json"
-    },
-    {
-      "table": "rpt_sp_negative_targets",
-      "report_type": "spNegativeTargets",
-      "is_snapshot": true,
-      "queryable": true,
-      "pii": false,
-      "deprecated": false,
-      "strategy": "ads_list",
-      "unique_key": [
-        "store_id",
-        "profile_id",
-        "target_id"
-      ],
-      "description": "Sponsored Products ad-group-level negative product targets (ASIN / category exclusions). Daily snapshot. targeting_expression is a JSON-stringified Amazon clause array — parse to extract the negated ASIN(s) or category id(s).",
-      "reference": "reference/rpt_sp_negative_targets.json"
-    },
-    {
-      "table": "rpt_sp_campaign_negative_targets",
-      "report_type": "spCampaignNegativeTargets",
-      "is_snapshot": true,
-      "queryable": true,
-      "pii": false,
-      "deprecated": false,
-      "strategy": "ads_list",
-      "unique_key": [
-        "store_id",
-        "profile_id",
-        "target_id"
-      ],
-      "description": "Sponsored Products campaign-level negative product targets. Daily snapshot. Campaign-scope negatives apply to every ad group within the campaign.",
-      "reference": "reference/rpt_sp_campaign_negative_targets.json"
-    },
-    {
-      "table": "rpt_sb_negative_keywords",
-      "report_type": "sbNegativeKeywords",
-      "is_snapshot": true,
-      "queryable": true,
-      "pii": false,
-      "deprecated": false,
-      "strategy": "ads_list",
-      "unique_key": [
-        "store_id",
-        "profile_id",
-        "keyword_id"
-      ],
-      "description": "Sponsored Brands negative keywords. Daily snapshot. Separate from SP — different keyword_id namespace, different Amazon endpoint.",
-      "reference": "reference/rpt_sb_negative_keywords.json"
-    },
-    {
-      "table": "rpt_sd_negative_targets",
-      "report_type": "sdNegativeTargets",
-      "is_snapshot": true,
-      "queryable": true,
-      "pii": false,
-      "deprecated": false,
-      "strategy": "ads_list",
-      "unique_key": [
-        "store_id",
-        "profile_id",
-        "target_id"
-      ],
-      "description": "Sponsored Display negative targets. Daily snapshot. SD has only target-level negatives (no separate keyword negatives or campaign-level endpoint as of API v3).",
-      "reference": "reference/rpt_sd_negative_targets.json"
     },
     {
       "table": "rpt_myi_daily_rollup",
