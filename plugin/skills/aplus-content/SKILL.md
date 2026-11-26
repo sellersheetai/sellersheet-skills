@@ -115,8 +115,6 @@ family (`EBC`), never the tier: the tier is the document's badge.
    (`aplusContent_upload_image`), and each video with its thumbnail (`aplusContent_createMedia`).
 3. Write the document from `reference/schema/` and Amazon's limits there (character counts,
    image minimums, item counts).
-   Show the user how it will look: `python3 scripts/preview_aplus.py document.json` writes a
-   desktop and mobile preview page with its checks (`reference/preview.md`).
 4. Dry run: `aplusContent_validateContentDocumentAsinRelations`; fix every entry in
    `data.errors`. A clean dry run does not prove eligibility or ownership of the ASINs.
 5. Show the document; on approve, `aplusContent_create_and_publish` with `submitForApproval`
