@@ -24,10 +24,7 @@ see ads-v3-archive (until 2026-12-31). Never add the two; split a range at 2026-
   and views (`report-data`, `amazon-ads`), even where a v3 table also holds a row for that day.
 - Stream also holds some days before 2026-09-01. Ignore them: before 2026-09-01 the v3 tables
   are the source.
-- Not for the negative keyword and target lists (`rpt_sp_negative_keywords`,
-  `rpt_sp_campaign_negative_keywords`, `rpt_sp_negative_targets`,
-  `rpt_sp_campaign_negative_targets`, `rpt_sb_negative_keywords`, `rpt_sd_negative_targets`):
-  they are current lists, still synced, and `report-data` documents them.
+- Not for negative keywords and targets: they are not synced; read them live (`amazon-ads`).
 
 Run the preflight in [`sellersheet-shared`](../sellersheet-shared/SKILL.md) first. The tables
 need Amazon Advertising access for the store. Read them with `query_report_data`, the same way

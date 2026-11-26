@@ -272,7 +272,10 @@ Applies on top of the global sheet-approval convention (§2):
    the last attribution window left out
 2. The same `having` on `v_ads_target_daily`, grouped by `target_id`, `keyword_text`,
    `match_type`, `expression` — keywords, product targets and SB themes of every ad product
-3. Write waste list to sheet → propose negatives to user
+3. Drop the candidates already negated: `ads_query_target` with `negativeFilter {include: [true]}`
+   and `keywordFilter {include: [<terms>], queryTermMatchType: EXACT_MATCH}` (up to 100 terms a
+   call), narrowed by `campaignIdFilter` or `adGroupIdFilter` when the waste is that scope's
+4. Write waste list to sheet → propose negatives to user
 
 ### C. Bid Optimization
 
@@ -324,8 +327,7 @@ Applies on top of the global sheet-approval convention (§2):
    `negative: true` + `keywordTarget {keyword, matchType}`; scope with
    `adGroupId` (ad-group negative) or `campaignId` alone (campaign negative —
    blocks all ad groups). One tool for SP and SB; audit existing negatives
-   first with `ads_query_target` + `negativeFilter {include: [true]}` (or the
-   synced `rpt_*_negative_*` warehouse tables). Read
+   first with `ads_query_target` + `negativeFilter {include: [true]}`. Read
    `reference/ads-v1/targets.md` before composing.
 
 ### F. Budget Management
@@ -646,10 +648,11 @@ entities `rpt_ads_campaigns`, `rpt_ads_ad_groups`, `rpt_ads_targets`, `rpt_ads_a
 (`impressions`, `clicks`, `total_cost`, `purchases`, `sales`, `units_sold`,
 `new_to_brand_purchases`, …). The model is in Tier 1 §3.
 
-**Negative keyword and target lists:** `rpt_sp_negative_keywords`,
-`rpt_sp_campaign_negative_keywords`, `rpt_sp_negative_targets`,
-`rpt_sp_campaign_negative_targets`, `rpt_sb_negative_keywords` and `rpt_sd_negative_targets`
-let you audit current negatives without an entity-list call.
+**Negative keywords and targets are read live, not from the warehouse.** For a targeted check
+use `ads_query_target` with `negativeFilter {include: [true]}` plus a `keywordFilter`,
+`campaignIdFilter` or `adGroupIdFilter`. For every negative of an account use
+`ads_target_export` with `negativeFilter: [true]` (add `stateFilter` with `ARCHIVED` to include
+archived ones), then `ads_get_export`; above 20,000 records read the file at `data.result.url`.
 
 The `report-data` skill owns the exact table list (`_meta.json`) and every table's columns
 (`reference/<table>.json`). **Column names are snake_case** (`total_cost`,
